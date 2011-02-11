@@ -39,8 +39,29 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\LibraryGrid\LibraryGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LibraryGrid\LibraryGridControl.Designer.cs">
+      <DependentUpon>LibraryGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.Designer.cs">
+      <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SolutionGrid\SolutionGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SolutionGrid\SolutionGridControl.Designer.cs">
+      <DependentUpon>SolutionGridControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TypeLibBrowser\ListViewItemComparer.cs" />
     <Compile Include="Controls\TypeLibBrowser\TypeLibRegistry.cs" />
     <Compile Include="Controls\TypeLibBrowser\RegistryEntries.cs" />
@@ -79,6 +100,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\LibraryGrid\LibraryGridControl.resx">
+      <DependentUpon>LibraryGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.resx">
+      <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SolutionGrid\SolutionGridControl.resx">
+      <DependentUpon>SolutionGridControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\TypeLibBrowser\TypeLibBrowserControl.resx">
       <DependentUpon>TypeLibBrowserControl.cs</DependentUpon>
     </EmbeddedResource>

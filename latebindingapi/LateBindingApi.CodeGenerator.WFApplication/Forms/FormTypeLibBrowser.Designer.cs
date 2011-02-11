@@ -76,6 +76,7 @@
             this.typeLibBrowserControl1.Name = "typeLibBrowserControl1";
             this.typeLibBrowserControl1.Size = new System.Drawing.Size(620, 323);
             this.typeLibBrowserControl1.TabIndex = 19;
+            this.typeLibBrowserControl1.DoubleClick += new System.EventHandler(this.typeLibBrowserControl1_DoubleClick);
             this.typeLibBrowserControl1.Click += new System.EventHandler(this.typeLibBrowserControl1_Click);
             // 
             // FormTypeLibBrowser

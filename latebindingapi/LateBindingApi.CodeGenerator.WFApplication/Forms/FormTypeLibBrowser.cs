@@ -2,7 +2,6 @@
 using System.ComponentModel; 
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Xml;
 
 namespace LateBindingApi.CodeGenerator.WFApplication
 {
@@ -65,5 +64,11 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         }
         
         #endregion
+
+        private void typeLibBrowserControl1_DoubleClick(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
     }
 }

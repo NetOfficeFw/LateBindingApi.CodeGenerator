@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using System.Xml;
+using System.Xml.Linq;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
  
@@ -25,18 +25,15 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             InitializeComponent();
             this.Text = this.GetType().Assembly.GetName().Name;
             _comAnalyzer.Update += new UpdateHandler(comAnalyzer_Update);
+
+            libraryGrid.Initialize(_comAnalyzer.Schema);
+
         }
 
        
         #endregion
 
-        #region Gui Trigger
-
-        void comAnalyzer_Update(object sender, string message)
-        {
-            statusStripMain.Items[0].Text = message;
-            statusStripMain.Refresh();
-        }
+        #region Menu Click Trigger
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -51,8 +48,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             }
         }
         
-        #endregion
-
         private void menuItemLoadTypeLibrary_Click(object sender, EventArgs e)
         {
             try
@@ -60,7 +55,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 FormTypeLibBrowser formBrowser = new FormTypeLibBrowser();
                 if (DialogResult.OK == formBrowser.ShowDialog(this))
                 {
-                    _comAnalyzer.LoadCOMComponents(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject);
+                    _comAnalyzer.LoadTypeLibraries(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject);
                     OnTypeLibrariesLoaded();
                 }
             }
@@ -112,11 +107,77 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 formError.ShowDialog(this);
             }
         }
+        
+        #endregion
 
         private void OnTypeLibrariesLoaded()
         {
-            menuItemSaveProject.Enabled = true;
-            menuItemGenerateCode.Enabled = true;
+            try
+            {
+                libraryTreeBrowser.Show(_comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document"));
+
+                menuItemSaveProject.Enabled = true;
+                menuItemGenerateCode.Enabled = true;
+                splitContainerMain.Visible = true;
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
+       
+        void comAnalyzer_Update(object sender, string message)
+        {
+            try
+            {
+                statusStripMain.Items[0].Text = message;
+                statusStripMain.Refresh();
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+            
+        }
+
+        private void libraryTreeBrowser_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            try
+            {  
+                //invisible all right panel content
+                foreach (Control itemControl in splitContainerMain.Panel2.Controls)
+                    itemControl.Visible = false;
+
+                XElement node = e.Node.Tag as XElement;
+                if (null == node)
+                    return;
+
+                switch (node.Name.LocalName)
+                { 
+                    case "Libraries":
+                        libraryGrid.Show(node);
+                        libraryGrid.Visible = true;
+                        break;
+                    case "Solution":
+                        break;
+                    case "Project":
+                        break;
+                    case "Enum":
+                        break;
+                    case "Interface":
+                        break;
+                    case "CoClass":
+                        break;
+                }
+
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
         }
     }
 }

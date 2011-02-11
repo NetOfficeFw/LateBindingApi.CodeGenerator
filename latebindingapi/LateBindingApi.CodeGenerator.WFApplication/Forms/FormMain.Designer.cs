@@ -54,8 +54,12 @@
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
+            this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
             this.contextMenuStripComponents.SuspendLayout();
             this.menuStripMain.SuspendLayout();
+            this.splitContainerMain.Panel1.SuspendLayout();
+            this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
             this.statusStripMain.SuspendLayout();
             this.SuspendLayout();
@@ -84,7 +88,7 @@
             this.toolStripHelp});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(1069, 24);
+            this.menuStripMain.Size = new System.Drawing.Size(1118, 24);
             this.menuStripMain.TabIndex = 23;
             this.menuStripMain.Text = "Application Menu";
             // 
@@ -102,7 +106,7 @@
             // menuItemLoadProject
             // 
             this.menuItemLoadProject.Name = "menuItemLoadProject";
-            this.menuItemLoadProject.Size = new System.Drawing.Size(152, 22);
+            this.menuItemLoadProject.Size = new System.Drawing.Size(146, 22);
             this.menuItemLoadProject.Text = "Load Project";
             this.menuItemLoadProject.Click += new System.EventHandler(this.menuItemLoadProject_Click);
             // 
@@ -110,19 +114,19 @@
             // 
             this.menuItemSaveProject.Enabled = false;
             this.menuItemSaveProject.Name = "menuItemSaveProject";
-            this.menuItemSaveProject.Size = new System.Drawing.Size(152, 22);
+            this.menuItemSaveProject.Size = new System.Drawing.Size(146, 22);
             this.menuItemSaveProject.Text = "Save Project";
             this.menuItemSaveProject.Click += new System.EventHandler(this.menuItemSaveProject_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -231,21 +235,32 @@
             // 
             // splitContainerMain
             // 
-            this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerMain.Location = new System.Drawing.Point(0, 0);
+            this.splitContainerMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainerMain.Location = new System.Drawing.Point(0, 27);
             this.splitContainerMain.Name = "splitContainerMain";
-            this.splitContainerMain.Size = new System.Drawing.Size(1069, 489);
-            this.splitContainerMain.SplitterDistance = 235;
+            // 
+            // splitContainerMain.Panel1
+            // 
+            this.splitContainerMain.Panel1.Controls.Add(this.libraryTreeBrowser);
+            // 
+            // splitContainerMain.Panel2
+            // 
+            this.splitContainerMain.Panel2.Controls.Add(this.libraryGrid);
+            this.splitContainerMain.Size = new System.Drawing.Size(1118, 437);
+            this.splitContainerMain.SplitterDistance = 301;
             this.splitContainerMain.TabIndex = 25;
             this.splitContainerMain.Visible = false;
             // 
             // statusStripMain
             // 
+            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
             this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
             this.statusStripMain.Location = new System.Drawing.Point(0, 467);
             this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(1069, 22);
+            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
             this.statusStripMain.TabIndex = 26;
             // 
             // toolStripStatusLabel1
@@ -253,11 +268,32 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // libraryTreeBrowser
+            // 
+            this.libraryTreeBrowser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.libraryTreeBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.libraryTreeBrowser.Location = new System.Drawing.Point(0, 0);
+            this.libraryTreeBrowser.Name = "libraryTreeBrowser";
+            this.libraryTreeBrowser.Size = new System.Drawing.Size(301, 437);
+            this.libraryTreeBrowser.TabIndex = 0;
+            this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
+            // 
+            // libraryGrid
+            // 
+            this.libraryGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.libraryGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.libraryGrid.Location = new System.Drawing.Point(0, 0);
+            this.libraryGrid.Name = "libraryGrid";
+            this.libraryGrid.Size = new System.Drawing.Size(813, 437);
+            this.libraryGrid.TabIndex = 0;
+            this.libraryGrid.Visible = false;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1069, 489);
+            this.BackColor = System.Drawing.Color.DarkKhaki;
+            this.ClientSize = new System.Drawing.Size(1118, 489);
             this.Controls.Add(this.statusStripMain);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.splitContainerMain);
@@ -266,6 +302,8 @@
             this.contextMenuStripComponents.ResumeLayout(false);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
+            this.splitContainerMain.Panel1.ResumeLayout(false);
+            this.splitContainerMain.Panel2.ResumeLayout(false);
             this.splitContainerMain.ResumeLayout(false);
             this.statusStripMain.ResumeLayout(false);
             this.statusStripMain.PerformLayout();
@@ -301,6 +339,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripFind;
         private System.Windows.Forms.StatusStrip statusStripMain;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl libraryTreeBrowser;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl libraryGrid;
     }
 }
 

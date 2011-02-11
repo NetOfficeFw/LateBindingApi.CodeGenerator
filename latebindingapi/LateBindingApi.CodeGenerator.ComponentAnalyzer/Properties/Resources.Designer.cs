@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LateBindingApi.CodeGenerator.Core.Properties {
+namespace LateBindingApi.CodeGenerator.ComponentAnalyzer.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace LateBindingApi.CodeGenerator.Core.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LateBindingApi.CodeGenerator.Core.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LateBindingApi.CodeGenerator.ComponentAnalyzer.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

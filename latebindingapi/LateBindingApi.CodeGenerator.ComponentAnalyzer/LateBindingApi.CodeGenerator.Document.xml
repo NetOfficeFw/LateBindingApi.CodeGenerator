@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LateBindingApi.CodeGenerator.Document >
-  <Components>
-  </Components>
+  <Libraries>
+  </Libraries>
   <Solution Name ="LateBindingApi.MySolution">
     <Projects>
     </Projects>
