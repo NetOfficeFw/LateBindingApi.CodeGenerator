@@ -67,9 +67,7 @@
       <xs:element name="RefLibraries"       type="RefLibraries" />
     </xs:sequence>
     <xs:attribute name="Name"        type="xs:string" use="required" /> <!-- name of project -->
-    <xs:attribute name="ProjectName" type="xs:string" use="required" /> <!-- name of project.csharp -->
     <xs:attribute name="Namespace"   type="xs:string" use="required" /> <!-- namespace of project -->
-    <xs:attribute name="Prefix"      type="xs:string" use="required" /> <!-- class prefix of project -->
     <xs:attribute name="Key"         type="xs:string" use="required" /> <!-- unique key of project -->
   </xs:complexType>
   

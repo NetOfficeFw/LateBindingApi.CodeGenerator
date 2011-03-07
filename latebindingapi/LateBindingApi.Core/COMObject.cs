@@ -197,8 +197,7 @@ namespace LateBindingApi.Core
             _listChildVariants.Remove(childObject);
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public void RemoveChildObjects()
+        public void DisposeChildProxies()
         {
             // release all unkown childs and clear list
             foreach (COMVariant itemObject in _listChildVariants)
@@ -234,8 +233,8 @@ namespace LateBindingApi.Core
             IEventBinding eventBind = this as IEventBinding;
             if (null != eventBind)
                 eventBind.DisposeSinkHelper();
-            
-            RemoveChildObjects();
+
+            DisposeChildProxies();
             ReleaseCOMProxy();
         }
 

@@ -44,6 +44,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\InterfaceGrid\InterfaceGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\InterfaceGridControl.Designer.cs">
+      <DependentUpon>InterfaceGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\MethodsGrid\MethodsGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\MethodsGrid\MethodsGridControl.Designer.cs">
+      <DependentUpon>MethodsGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\ParametersGrid\ParametersGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\ParametersGrid\ParametersGridControl.Designer.cs">
+      <DependentUpon>ParametersGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\PropertiesGrid\PropertiesGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\PropertiesGrid\PropertiesGridControl.Designer.cs">
+      <DependentUpon>PropertiesGridControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LibraryGrid\LibraryGridControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -56,11 +80,23 @@
     <Compile Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.Designer.cs">
       <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ProjectGrid\ProjectGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ProjectGrid\ProjectGridControl.Designer.cs">
+      <DependentUpon>ProjectGridControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SolutionGrid\SolutionGridControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\SolutionGrid\SolutionGridControl.Designer.cs">
       <DependentUpon>SolutionGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SourceEdit\SourceEditControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SourceEdit\SourceEditControl.Designer.cs">
+      <DependentUpon>SourceEditControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\TypeLibBrowser\ListViewItemComparer.cs" />
     <Compile Include="Controls\TypeLibBrowser\TypeLibRegistry.cs" />
@@ -100,14 +136,32 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\InterfaceGrid\InterfaceGridControl.resx">
+      <DependentUpon>InterfaceGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InterfaceGrid\MethodsGrid\MethodsGridControl.resx">
+      <DependentUpon>MethodsGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InterfaceGrid\ParametersGrid\ParametersGridControl.resx">
+      <DependentUpon>ParametersGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InterfaceGrid\PropertiesGrid\PropertiesGridControl.resx">
+      <DependentUpon>PropertiesGridControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\LibraryGrid\LibraryGridControl.resx">
       <DependentUpon>LibraryGridControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.resx">
       <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ProjectGrid\ProjectGridControl.resx">
+      <DependentUpon>ProjectGridControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\SolutionGrid\SolutionGridControl.resx">
       <DependentUpon>SolutionGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SourceEdit\SourceEditControl.resx">
+      <DependentUpon>SourceEditControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TypeLibBrowser\TypeLibBrowserControl.resx">
       <DependentUpon>TypeLibBrowserControl.cs</DependentUpon>

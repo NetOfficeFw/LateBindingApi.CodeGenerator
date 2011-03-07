@@ -1,6 +1,6 @@
-﻿namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid
+﻿namespace LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid
 {
-    partial class LibraryGridControl
+    partial class SolutionGridControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -48,17 +48,16 @@
             this.dataGridLibraries.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dataGridLibraries.ShowCellToolTips = false;
             this.dataGridLibraries.ShowEditingIcon = false;
-            this.dataGridLibraries.Size = new System.Drawing.Size(808, 183);
-            this.dataGridLibraries.TabIndex = 11;
-            this.dataGridLibraries.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridLibraries_CellValueChanged);
+            this.dataGridLibraries.Size = new System.Drawing.Size(749, 323);
+            this.dataGridLibraries.TabIndex = 12;
             // 
-            // LibraryGridControl
+            // SolutionGridControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dataGridLibraries);
-            this.Name = "LibraryGridControl";
-            this.Size = new System.Drawing.Size(808, 183);
+            this.Name = "SolutionGridControl";
+            this.Size = new System.Drawing.Size(749, 323);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridLibraries)).EndInit();
             this.ResumeLayout(false);
 
@@ -67,7 +66,5 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridLibraries;
-
-
     }
 }

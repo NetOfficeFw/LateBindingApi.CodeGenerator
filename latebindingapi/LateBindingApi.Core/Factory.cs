@@ -51,7 +51,7 @@ namespace LateBindingApi.Core
             IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
            
             string className = TypeDescriptor.GetClassName(comProxy);
-            string fullClassName = factoryInfo.Namespace + "." + factoryInfo.Prefix + className;
+            string fullClassName = factoryInfo.Namespace + "." + className;
 
             // create new classType
             Type comProxyType = comProxy.GetType();
@@ -106,7 +106,7 @@ namespace LateBindingApi.Core
             {
                 IFactoryInfo factoryInfo = GetFactoryInfo(comVariant);
                 string className = TypeDescriptor.GetClassName(comVariant);
-                string fullClassName = factoryInfo.Namespace + "." + factoryInfo.Prefix + className;
+                string fullClassName = factoryInfo.Namespace + "." + className;
                 COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comVariant, comVariantType, className, fullClassName);
                 return newObject;
             }
@@ -138,8 +138,13 @@ namespace LateBindingApi.Core
                 }
             }
         }
-
-        private static Guid GetParentLibGuid(object comProxy)
+        
+        /// <summary>
+        /// get the guid from type lib there is the type defined
+        /// </summary>
+        /// <param name="comProxy"></param>
+        /// <returns></returns>
+        private static Guid GetParentLibraryGuid(object comProxy)
         {
             Guid returnGuid = Guid.Empty; 
 
@@ -162,10 +167,15 @@ namespace LateBindingApi.Core
 
             return returnGuid;
         }
-
+        
+        /// <summary>
+        /// get wrapper class factory info 
+        /// </summary>
+        /// <param name="comProxy"></param>
+        /// <returns></returns>
         private static IFactoryInfo GetFactoryInfo(object comProxy)
         {
-            Guid targetGuid = GetParentLibGuid(comProxy);
+            Guid targetGuid = GetParentLibraryGuid(comProxy);
         
             foreach (IFactoryInfo item in _factoryList)
             {

@@ -8,7 +8,6 @@ namespace LateBindingApi.Core
 {
     public interface IFactoryInfo
     {
-        string Prefix { get; }
         string Namespace { get; }
         Guid ComponentGuid { get; }
         Assembly Assembly { get; }

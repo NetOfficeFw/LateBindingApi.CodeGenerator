@@ -3,7 +3,7 @@
 namespace LateBindingApi.Core
 {
     /// <summary>
-    /// Indicates Assembly is a latebinding api assembly
+    /// Indicates assembly is a latebinding api assembly
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly)]
     public class LateBindingAttribute: System.Attribute

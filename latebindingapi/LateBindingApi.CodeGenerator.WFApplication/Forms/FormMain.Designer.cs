@@ -55,6 +55,8 @@
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
+            this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
+            this.projectGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl();
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
             this.contextMenuStripComponents.SuspendLayout();
             this.menuStripMain.SuspendLayout();
@@ -247,6 +249,8 @@
             // 
             // splitContainerMain.Panel2
             // 
+            this.splitContainerMain.Panel2.Controls.Add(this.interfaceGrid);
+            this.splitContainerMain.Panel2.Controls.Add(this.projectGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.libraryGrid);
             this.splitContainerMain.Size = new System.Drawing.Size(1118, 437);
             this.splitContainerMain.SplitterDistance = 301;
@@ -278,13 +282,30 @@
             this.libraryTreeBrowser.TabIndex = 0;
             this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
             // 
+            // interfaceGrid
+            // 
+            this.interfaceGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.interfaceGrid.Location = new System.Drawing.Point(217, 16);
+            this.interfaceGrid.Name = "interfaceGrid";
+            this.interfaceGrid.Size = new System.Drawing.Size(231, 128);
+            this.interfaceGrid.TabIndex = 2;
+            this.interfaceGrid.Visible = false;
+            // 
+            // projectGrid
+            // 
+            this.projectGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.projectGrid.Location = new System.Drawing.Point(14, 16);
+            this.projectGrid.Name = "projectGrid";
+            this.projectGrid.Size = new System.Drawing.Size(178, 128);
+            this.projectGrid.TabIndex = 1;
+            this.projectGrid.Visible = false;
+            // 
             // libraryGrid
             // 
             this.libraryGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.libraryGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.libraryGrid.Location = new System.Drawing.Point(0, 0);
+            this.libraryGrid.Location = new System.Drawing.Point(14, 164);
             this.libraryGrid.Name = "libraryGrid";
-            this.libraryGrid.Size = new System.Drawing.Size(813, 437);
+            this.libraryGrid.Size = new System.Drawing.Size(178, 90);
             this.libraryGrid.TabIndex = 0;
             this.libraryGrid.Visible = false;
             // 
@@ -341,6 +362,8 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl libraryTreeBrowser;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl libraryGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl projectGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl interfaceGrid;
     }
 }
 

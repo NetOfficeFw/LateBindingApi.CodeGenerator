@@ -291,15 +291,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 if (null == node)
                 {
                     node = new XElement("Project",
-                           new XElement("Enums"),
-                           new XElement("CoClasses"),
-                           new XElement("DispatchInterfaces"),
-                           new XElement("Interfaces"),
-                           new XElement("RefLibraries"),
-                           new XAttribute("Name",        item.Name),
-                           new XAttribute("ProjectName", "LateBindingApi." + item.Name),
-                           new XAttribute("Namespace",   "LateBindingApi." + item.Name),
-                           new XAttribute("Key",         Utils.NewEncodedGuid()));
+                               new XElement("Enums"),
+                               new XElement("CoClasses"),
+                               new XElement("DispatchInterfaces"),
+                               new XElement("Interfaces"),
+                               new XElement("RefLibraries"),
+                               new XAttribute("Name",        item.Name),
+                               new XAttribute("Namespace",   "LateBindingApi." + item.Name),
+                               new XAttribute("Key",         Utils.NewEncodedGuid()));
 
                     var projects = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").FirstOrDefault();
                     projects.Add(node);

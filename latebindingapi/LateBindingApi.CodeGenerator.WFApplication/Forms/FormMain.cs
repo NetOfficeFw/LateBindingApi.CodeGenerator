@@ -26,8 +26,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             this.Text = this.GetType().Assembly.GetName().Name;
             _comAnalyzer.Update += new UpdateHandler(comAnalyzer_Update);
 
+            foreach (Control item in splitContainerMain.Panel2.Controls)
+	        {
+                item.Dock = DockStyle.Fill;
+	        }
+            
             libraryGrid.Initialize(_comAnalyzer.Schema);
-
+            projectGrid.Initialize(_comAnalyzer.Schema);
+            interfaceGrid.Initialize(_comAnalyzer.Schema);
         }
 
        
@@ -153,7 +159,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 XElement node = e.Node.Tag as XElement;
                 if (null == node)
                     return;
-
+                 
                 switch (node.Name.LocalName)
                 { 
                     case "Libraries":
@@ -163,10 +169,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     case "Solution":
                         break;
                     case "Project":
+                        projectGrid.Show(node);
+                        projectGrid.Visible = true;
                         break;
                     case "Enum":
                         break;
                     case "Interface":
+                        interfaceGrid.Show(node);
+                        interfaceGrid.Visible = true;
                         break;
                     case "CoClass":
                         break;
