@@ -50,6 +50,7 @@
             this.gridParameters.ShowEditingIcon = false;
             this.gridParameters.Size = new System.Drawing.Size(575, 346);
             this.gridParameters.TabIndex = 13;
+            this.gridParameters.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridParameters_CellClick);
             // 
             // ParametersGridControl
             // 

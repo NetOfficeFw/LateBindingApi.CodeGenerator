@@ -38,6 +38,7 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+            this.labelInfo = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonRefresh
@@ -123,10 +124,23 @@
             this.columnHeader5.Text = "Path";
             this.columnHeader5.Width = 272;
             // 
+            // labelInfo
+            // 
+            this.labelInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelInfo.AutoSize = true;
+            this.labelInfo.BackColor = System.Drawing.SystemColors.Info;
+            this.labelInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelInfo.Location = new System.Drawing.Point(513, 11);
+            this.labelInfo.Name = "labelInfo";
+            this.labelInfo.Size = new System.Drawing.Size(127, 15);
+            this.labelInfo.TabIndex = 25;
+            this.labelInfo.Text = "Multiple select is possible";
+            // 
             // TypeLibBrowserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.labelInfo);
             this.Controls.Add(this.buttonRefresh);
             this.Controls.Add(this.textBoxFilter);
             this.Controls.Add(this.label1);
@@ -149,5 +163,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.Label labelInfo;
     }
 }

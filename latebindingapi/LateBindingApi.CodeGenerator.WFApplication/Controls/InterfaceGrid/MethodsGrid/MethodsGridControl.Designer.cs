@@ -67,6 +67,7 @@
             this.textBoxMethodFilter.Name = "textBoxMethodFilter";
             this.textBoxMethodFilter.Size = new System.Drawing.Size(228, 22);
             this.textBoxMethodFilter.TabIndex = 22;
+            this.textBoxMethodFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxMethodFilter_KeyDown);
             // 
             // labelFilterCaption
             // 

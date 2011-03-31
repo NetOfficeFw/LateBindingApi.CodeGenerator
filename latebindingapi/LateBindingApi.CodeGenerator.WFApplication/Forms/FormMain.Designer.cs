@@ -37,12 +37,6 @@
             this.menuItemSaveProject = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFilter = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFilterAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFilterConflicts = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripFilterNoConflicts = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripFind = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTypeLibraries = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemLoadTypeLibrary = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripGenerator = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,12 +46,14 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
-            this.statusStripMain = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
+            this.enumGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl();
             this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
             this.projectGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl();
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
+            this.statusStripMain = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
             this.contextMenuStripComponents.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
@@ -84,7 +80,6 @@
             // 
             this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripApplication,
-            this.toolStripFilter,
             this.toolStripTypeLibraries,
             this.toolStripGenerator,
             this.toolStripHelp});
@@ -131,52 +126,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // toolStripFilter
-            // 
-            this.toolStripFilter.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripFilterAll,
-            this.toolStripFilterConflicts,
-            this.toolStripFilterNoConflicts,
-            this.toolStripSeparator2,
-            this.toolStripFind});
-            this.toolStripFilter.Name = "toolStripFilter";
-            this.toolStripFilter.Size = new System.Drawing.Size(43, 20);
-            this.toolStripFilter.Text = "Filter";
-            // 
-            // toolStripFilterAll
-            // 
-            this.toolStripFilterAll.Checked = true;
-            this.toolStripFilterAll.CheckOnClick = true;
-            this.toolStripFilterAll.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.toolStripFilterAll.Name = "toolStripFilterAll";
-            this.toolStripFilterAll.Size = new System.Drawing.Size(142, 22);
-            this.toolStripFilterAll.Text = "All";
-            // 
-            // toolStripFilterConflicts
-            // 
-            this.toolStripFilterConflicts.CheckOnClick = true;
-            this.toolStripFilterConflicts.Name = "toolStripFilterConflicts";
-            this.toolStripFilterConflicts.Size = new System.Drawing.Size(142, 22);
-            this.toolStripFilterConflicts.Text = "Conflicts";
-            // 
-            // toolStripFilterNoConflicts
-            // 
-            this.toolStripFilterNoConflicts.CheckOnClick = true;
-            this.toolStripFilterNoConflicts.Name = "toolStripFilterNoConflicts";
-            this.toolStripFilterNoConflicts.Size = new System.Drawing.Size(142, 22);
-            this.toolStripFilterNoConflicts.Text = "No Conflicts";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(139, 6);
-            // 
-            // toolStripFind
-            // 
-            this.toolStripFind.Name = "toolStripFind";
-            this.toolStripFind.Size = new System.Drawing.Size(142, 22);
-            this.toolStripFind.Text = "Find ...";
             // 
             // toolStripTypeLibraries
             // 
@@ -249,6 +198,8 @@
             // 
             // splitContainerMain.Panel2
             // 
+            this.splitContainerMain.Panel2.Controls.Add(this.classGrid);
+            this.splitContainerMain.Panel2.Controls.Add(this.enumGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.interfaceGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.projectGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.libraryGrid);
@@ -256,21 +207,6 @@
             this.splitContainerMain.SplitterDistance = 301;
             this.splitContainerMain.TabIndex = 25;
             this.splitContainerMain.Visible = false;
-            // 
-            // statusStripMain
-            // 
-            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
-            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
-            this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
-            this.statusStripMain.TabIndex = 26;
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
             // libraryTreeBrowser
             // 
@@ -281,6 +217,14 @@
             this.libraryTreeBrowser.Size = new System.Drawing.Size(301, 437);
             this.libraryTreeBrowser.TabIndex = 0;
             this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
+            // 
+            // enumGrid
+            // 
+            this.enumGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.enumGrid.Location = new System.Drawing.Point(14, 260);
+            this.enumGrid.Name = "enumGrid";
+            this.enumGrid.Size = new System.Drawing.Size(178, 111);
+            this.enumGrid.TabIndex = 3;
             // 
             // interfaceGrid
             // 
@@ -308,6 +252,28 @@
             this.libraryGrid.Size = new System.Drawing.Size(178, 90);
             this.libraryGrid.TabIndex = 0;
             this.libraryGrid.Visible = false;
+            // 
+            // statusStripMain
+            // 
+            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
+            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
+            this.statusStripMain.Name = "statusStripMain";
+            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
+            this.statusStripMain.TabIndex = 26;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            // 
+            // classGrid
+            // 
+            this.classGrid.Location = new System.Drawing.Point(217, 153);
+            this.classGrid.Name = "classGrid";
+            this.classGrid.Size = new System.Drawing.Size(231, 131);
+            this.classGrid.TabIndex = 4;
             // 
             // FormMain
             // 
@@ -352,18 +318,14 @@
         private System.Windows.Forms.SplitContainer splitContainerMain;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripComponents;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEdit;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFilter;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFilterAll;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFilterConflicts;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFilterNoConflicts;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripFind;
         private System.Windows.Forms.StatusStrip statusStripMain;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl libraryTreeBrowser;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl libraryGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl projectGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl interfaceGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl enumGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl classGrid;
     }
 }
 

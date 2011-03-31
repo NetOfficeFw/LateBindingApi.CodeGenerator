@@ -41,7 +41,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser
 
         #region ControlMethods
 
-        private void ShowElements(XElement project, TreeNode treeProject,string iteratorName, string elementName)
+        private void ShowElements(XElement project, TreeNode treeProject, string iteratorName, string elementName)
         {
             TreeNode treeIterator = treeProject.Nodes.Add(iteratorName, iteratorName);
             foreach (var itemEnum in project.Element(iteratorName).Elements(elementName))
@@ -85,6 +85,56 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser
             treeViewComponents.Nodes.Clear();
         }
         
+        #endregion
+
+        #region Methods
+
+        private XElement GetChildElementByKey(XElement root, string key, string type)
+        {
+            var dispFaces = root.Descendants(type);
+
+            XElement node = (from a in dispFaces.Elements()
+                             where a.Attribute("Key").Value.Equals(key)
+                             select a).FirstOrDefault();
+
+            return node;
+        }
+
+        private void UpdateNodeInfo(ref TreeViewEventArgs e)
+        {
+            XElement node = e.Node.Tag as XElement;
+            if (null != node)
+            {
+                XAttribute keyAttribute = node.Attribute("Key");
+                if (null != keyAttribute)
+                {
+                    string key = keyAttribute.Value;
+                    XElement root = treeViewComponents.Tag as XElement;
+
+                    node = GetChildElementByKey(root, key, "DispatchInterfaces");
+                    if (null != node)
+                    {
+                        e.Node.Tag = node;
+                        return;
+                    }
+
+                    node = GetChildElementByKey(root, key, "Interfaces");
+                    if (null != node)
+                    {
+                        e.Node.Tag = node;
+                        return;
+                    }
+
+                    node = GetChildElementByKey(root, key, "CoClasses");
+                    if (null != node)
+                    {
+                        e.Node.Tag = node;
+                        return;
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Filter Gui Trigger
@@ -163,7 +213,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser
         private void treeViewComponents_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (null != AfterSelect)
+            {
+                UpdateNodeInfo(ref e);
                 AfterSelect(sender, e);
+            }
         }
 
         #endregion

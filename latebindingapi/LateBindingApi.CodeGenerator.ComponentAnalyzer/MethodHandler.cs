@@ -49,8 +49,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="methodNode"></param>
         internal static void AddMethod(XElement libraryNode, XElement methodNode, TLI.MemberInfo itemMember)
         {
-            int optionalParameterCount = itemMember.Parameters.OptionalCount;
-            AddParametersToMethodNode(libraryNode, methodNode, itemMember, false);
+            //AddParametersToMethodNode(libraryNode, methodNode, itemMember, false);
             AddParametersToMethodNode(libraryNode, methodNode, itemMember, true);
         }
 
@@ -68,7 +67,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             if (null == parametersNode)
             {
                 VarTypeInfo returnTypeInfo = itemMember.ReturnType;
-                string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo);
+                string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo,true);
                 parametersNode = new XElement("Parameters",
                                     new XElement("ReturnValue",
                                         new XAttribute("Type", returnTypeName),
@@ -89,7 +88,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 foreach (ParameterInfo paramInfo in itemMember.Parameters)
                 {
                     VarTypeInfo paramTypeInfo = paramInfo.VarTypeInfo;
-                    string paramTypeName = TypeDescriptor.FormattedType(paramTypeInfo);
+                    string paramTypeName = TypeDescriptor.FormattedType(paramTypeInfo,false);
                     XElement parameterNode = new XElement("Parameter",
                                     new XAttribute("Name",       paramInfo.Name),
                                     new XAttribute("Type",       paramTypeName),
@@ -165,9 +164,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     ParameterInfo paramInfo = itemMember.Parameters[(short)(i + 1)];
                     if (true == paramInfo.Name.Equals(itemParam.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase))
                         isEqual = true;
-
+               
                     Marshal.ReleaseComObject(paramInfo);
                     i++;
+
+                    if(false == isEqual)
+                        break;
                 }
 
                 if (true == isEqual)

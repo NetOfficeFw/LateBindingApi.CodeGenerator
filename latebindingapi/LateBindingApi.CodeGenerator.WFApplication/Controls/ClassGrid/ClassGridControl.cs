@@ -10,13 +10,10 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
 
-namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid
+namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid
 {
-    /// <summary>
-    /// shows interface details from document in grid
-    /// </summary>
-    public partial class InterfaceGridControl : UserControl
-    { 
+    public partial class ClassGridControl : UserControl
+    {
         #region Fields
 
         bool _isInitialized;    // stores control was initalized with Initialize() method
@@ -25,11 +22,11 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid
 
         #region Construction
 
-        public InterfaceGridControl()
+        public ClassGridControl()
         {
             InitializeComponent();
         }
-        
+
         #endregion
 
         #region ControlMethods
@@ -37,11 +34,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid
         public void Show(XElement node)
         {
             if (!_isInitialized)
-                throw (new NotSupportedException("InterfaceGridControl is not initialized."));
+                throw (new NotSupportedException("ClassGridControl is not initialized."));
 
             Clear();
-            gridMethodsControl.Show(node.Element("Methods"));
-            gridPropertiesControl.Show(node.Element("Properties"));
+
             sourceEditControl.Show(node);
         }
 
@@ -54,8 +50,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid
 
         public void Initialize(XmlSchema schema)
         {
-            gridMethodsControl.Initialize(schema);
-            gridPropertiesControl.Initialize(schema);
             _isInitialized = true;
         }
 

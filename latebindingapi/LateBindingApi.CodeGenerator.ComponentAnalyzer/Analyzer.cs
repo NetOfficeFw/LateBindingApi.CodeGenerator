@@ -92,7 +92,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             DoUpdate("Load Dispatch Interfaces");
             LoadInterfaces(types, true);
-            
+           
             DoUpdate("Add Inherited Interfaces");
             AddInheritedInterfacesInfo(types, "Interfaces");
 
@@ -326,6 +326,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 TLI.Interfaces interfaces = item.Interfaces;
                 foreach (TLI.InterfaceInfo itemInterface in interfaces)
                 {
+                    
+                    // if (itemInterface.Name != "AddIns")
+                    //   continue;
+                    
                     if (true == TypeDescriptor.IsTargetInterfaceType(itemInterface.TypeKind, wantDispatch))
                     {
                         var faceNode = CreateInterfaceNode(faces, itemInterface);
@@ -335,11 +339,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         {
                             if (true == TypeDescriptor.IsInterfaceMethod(itemMember))
                             {
-                                var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
-                                AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
-                                var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();
-                                AddLibraryKeyToRefLibraries(library, refNode);
-                                MethodHandler.AddMethod(library, methodNode, itemMember);
+                                //if (itemMember.Name == "Add")
+//{ 
+                                    var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
+                                    AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
+                                    var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();
+                                    AddLibraryKeyToRefLibraries(library, refNode);
+                                    MethodHandler.AddMethod(library, methodNode, itemMember);
+                                //}
                             }
                             else if (true == TypeDescriptor.IsInterfaceProperty(itemMember))
                             {

@@ -87,8 +87,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 case "Int16":
                 case "Int32":
                 case "Int64":
+                case "Single":
                 case "double":
-                case "Double":
+                case "Double":                
                 case "string":
                 case "String":
                 case "bool":
@@ -380,44 +381,55 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return false;
         }
-
+     
         /// <summary>
         /// returns friendly formatted type info
         /// converts COM datatype info to kown .net type & LateBindingApi types
         /// </summary>
         /// <param name="typeInfo"></param>
         /// <returns></returns>
-        internal static string FormattedType(VarTypeInfo typeInfo)
+        internal static string FormattedType(VarTypeInfo typeInfo, bool convertUnkownToApiTypes)
         {
             switch (typeInfo.VarType)
             {
-                case TliVarType.VT_EMPTY:       // Type in Component
+                case TliVarType.VT_EMPTY:        // Type in Component
                     return typeInfo.TypeInfo.Name;
 
-                case TliVarType.VT_I4:          // Int32
-                case TliVarType.VT_INT:         // Int32
+                case TliVarType.VT_I4:           // Int32
+                case TliVarType.VT_INT:          // Int32
                     return "Int32";
-                case TliVarType.VT_R8:          // Double
+                case TliVarType.VT_R8:           // Double
                     return "Double";
                 case TliVarType.VT_LPSTR:
                 case TliVarType.VT_LPWSTR:
-                case TliVarType.VT_BSTR:        // String
+                case TliVarType.VT_BSTR:         // String
                     return "string";
                  
-                case TliVarType.VT_BOOL:        // Bool
+                case TliVarType.VT_BOOL:         // Bool
                     return "bool";
                 case TliVarType.VT_VOID:
-                    return "void";              // Void
+                    return "void";               // Void
+                case TliVarType.VT_HRESULT:
+                    return "Int32";
 
                 case TliVarType.VT_UNKNOWN:      // COMProxy
                 case TliVarType.VT_DISPATCH:     // COMProxy
-                    return "COMProxy";
+                    
+                    if(true == convertUnkownToApiTypes)
+                        return "COMProxy";
+                    else
+                        return "object";
+
                 case TliVarType.VT_VARIANT:
-                    return "COMVariant";
+
+                    if (true == convertUnkownToApiTypes)
+                        return "COMVariant";
+                    else
+                        return "object";
 
                 /*Unkown*/
                 case TliVarType.VT_R4:
-                    return typeInfo.VarType.ToString();
+                    return "Single";
                 case TliVarType.VT_I2:
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_I1:
@@ -462,8 +474,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_RESERVED:
                     return typeInfo.VarType.ToString();
-                case TliVarType.VT_HRESULT:
-                    return typeInfo.VarType.ToString();
                 case TliVarType.VT_PTR:
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_SAFEARRAY:
@@ -481,7 +491,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 case TliVarType.VT_DATE:
                     return typeInfo.VarType.ToString();
                 default:
-                    return "COMVariant";
+                    if (true == convertUnkownToApiTypes)
+                        return "COMVariant";
+                    else
+                        return "object";
 
                 //throw (new ArgumentException("Unkown ReturnType " + typeInfo.VarType.ToString()));
             }
@@ -530,7 +543,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             return returnList;
         }
 
-
         /// <summary>
         /// return all inherited interfaces from interface
         /// exlude IDispatch and IUnkown
@@ -556,8 +568,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return returnList;
         }
-
-
 
         /// <summary>
         /// Get members from interface

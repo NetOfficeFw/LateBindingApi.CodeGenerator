@@ -30,10 +30,12 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 	        {
                 item.Dock = DockStyle.Fill;
 	        }
-            
+
             libraryGrid.Initialize(_comAnalyzer.Schema);
             projectGrid.Initialize(_comAnalyzer.Schema);
             interfaceGrid.Initialize(_comAnalyzer.Schema);
+            enumGrid.Initialize(_comAnalyzer.Schema);
+            classGrid.Initialize(_comAnalyzer.Schema);
         }
 
        
@@ -173,12 +175,16 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                         projectGrid.Visible = true;
                         break;
                     case "Enum":
+                        enumGrid.Show(node);
+                        enumGrid.Visible = true;
                         break;
                     case "Interface":
                         interfaceGrid.Show(node);
                         interfaceGrid.Visible = true;
                         break;
                     case "CoClass":
+                        classGrid.Show(node);
+                        classGrid.Visible = true;
                         break;
                 }
 

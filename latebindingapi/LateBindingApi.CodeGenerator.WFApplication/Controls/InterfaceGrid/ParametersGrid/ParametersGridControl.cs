@@ -55,6 +55,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Para
             {
                 gridParameters.Rows.Add();
                 DataGridViewRow newRow = gridParameters.Rows[gridParameters.Rows.Count - 1];
+                newRow.Tag = item;
 
                 foreach (var attribute in item.Attributes())
                 {
@@ -64,6 +65,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Para
                     cell.Tag = attribute;
                     cell.Style.BackColor = GetCellColor(columnName);
                 }
+
+                newRow.Cells["Delete"].Style.BackColor = Color.FromKnownColor(KnownColor.Gray);
             }
 
             _showFlag = false;
@@ -94,16 +97,13 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Para
 
             DataGridViewButtonColumn newButtonColumn = new DataGridViewButtonColumn();
             gridParameters.Columns.Add(newButtonColumn);
+            newButtonColumn.Name = "Delete";
             newButtonColumn.HeaderText = "Delete";
             newButtonColumn.ReadOnly = true;
-            newButtonColumn.Width = 50;
+            newButtonColumn.Width = 40;
 
-            newButtonColumn = new DataGridViewButtonColumn();
-            gridParameters.Columns.Add(newButtonColumn);
-            newButtonColumn.HeaderText = "Edit";
-            newButtonColumn.ReadOnly = true;
-            newButtonColumn.Width = 50;
-
+            gridParameters.Columns["Name"].Width = 90;
+            gridParameters.Columns["Type"].Width = 90;
             _isInitialized = true;
         }
 
@@ -147,6 +147,38 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Para
             {
                 string message = string.Format("An error occured.{0}Details:{0}{1}", Environment.NewLine, throwedException.Message);
                 MessageBox.Show(this, message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void gridParameters_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if ((e.RowIndex < 0) || (true == _showFlag) || (false == _isInitialized))
+                return;
+
+            DataGridViewRow selectRow = gridParameters.Rows[e.RowIndex];
+            if (gridParameters.Columns[e.ColumnIndex] is DataGridViewButtonColumn)
+            {
+                string typeAction = gridParameters.Columns[e.ColumnIndex].HeaderText;
+                switch (typeAction)
+                {
+                    case "Delete":
+                    {
+                            string question = string.Format("Delete {0} ?", selectRow.Cells[0].Value);
+                            DialogResult dr = MessageBox.Show(question, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (dr == DialogResult.Yes)
+                            {
+                                XElement node = selectRow.Tag as XElement;
+                                XElement parentNode = node.Parent;
+                                node.Remove();
+
+                                if (parentNode.Elements("Parameters").Count() == 0)
+                                    parentNode.Remove();
+
+                                gridParameters.Rows.Remove(selectRow);
+                            }
+                            break;
+                    }
+                }
             }
         }
 

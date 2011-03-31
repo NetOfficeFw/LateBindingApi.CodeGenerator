@@ -67,6 +67,7 @@
             this.textBoxMethodFilter.Name = "textBoxMethodFilter";
             this.textBoxMethodFilter.Size = new System.Drawing.Size(228, 22);
             this.textBoxMethodFilter.TabIndex = 22;
+            this.textBoxMethodFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxMethodFilter_KeyDown);
             // 
             // labelFilterCaption
             // 
@@ -98,6 +99,8 @@
             this.gridProperties.ShowEditingIcon = false;
             this.gridProperties.Size = new System.Drawing.Size(720, 123);
             this.gridProperties.TabIndex = 13;
+            this.gridProperties.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridProperties_CellValueChanged);
+            this.gridProperties.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridProperties_CellClick);
             // 
             // parametersGridControl
             // 

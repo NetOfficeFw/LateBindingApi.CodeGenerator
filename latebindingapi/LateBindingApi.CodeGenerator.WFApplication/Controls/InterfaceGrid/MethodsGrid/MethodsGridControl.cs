@@ -40,19 +40,23 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Meth
             if (methodsNode.Name.LocalName != "Methods")
                 throw (new NotSupportedException("node is not a Methods node."));
 
+            gridMethods.Tag = methodsNode;
+
             _showFlag = true;
 
             Clear();
             foreach (var item in methodsNode.Elements("Method"))
             {
+                if (false == FilterPassed(item))
+                    continue;
+
                 foreach (var itemParameters in item.Elements("Parameters"))
                 {
                     // add new row
                     gridMethods.Rows.Add();
                     DataGridViewRow newRow = gridMethods.Rows[gridMethods.Rows.Count - 1];
-                    newRow.Tag = item;
+                    newRow.Tag = itemParameters;
 
-                    //
                     foreach (var attribute in item.Attributes())
                     {
                         string columnName = attribute.Name.LocalName;
@@ -63,13 +67,12 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Meth
                     }
                     
                     newRow.Cells["ReturnType"].Value = itemParameters.Element("ReturnValue").Attribute("Type").Value;
-                    newRow.Cells["Versions"].Value = "ABC";
-
+                    newRow.Cells["Versions"].Value = GetDependencies(itemParameters.Element("RefLibraries"));
+                    
                     newRow.Cells["ReturnType"].Style.BackColor = GetCellColor("ReturnType");
                     newRow.Cells["Versions"].Style.BackColor = GetCellColor("Versions");
                     newRow.Cells["Delete"].Style.BackColor = Color.FromKnownColor(KnownColor.Gray);
-                    newRow.Cells["Edit"].Style.BackColor = Color.FromKnownColor(KnownColor.Gray);
-                    
+           
                 }
             }
 
@@ -98,13 +101,13 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Meth
                 gridMethods.Columns.Add(item.Name, item.Name);
                 DataGridViewColumn newColumn = gridMethods.Columns[gridMethods.Columns.Count - 1];
                 newColumn.ReadOnly = true;
-                newColumn.Width = 50;
+                newColumn.Width = 150;
             }
 
             gridMethods.Columns.Add("Versions", "Versions");
             DataGridViewColumn newColumnVersions = gridMethods.Columns[gridMethods.Columns.Count - 1];
             newColumnVersions.ReadOnly = true;
-            newColumnVersions.Width = 50;
+            newColumnVersions.Width = 150;
 
             DataGridViewButtonColumn newButtonColumn = new DataGridViewButtonColumn();
             gridMethods.Columns.Add(newButtonColumn);
@@ -113,13 +116,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Meth
             newButtonColumn.ReadOnly = true;
             newButtonColumn.Width = 70;
             
-            newButtonColumn = new DataGridViewButtonColumn();
-            gridMethods.Columns.Add(newButtonColumn);
-            newButtonColumn.Name = "Edit";
-            newButtonColumn.HeaderText = "Edit";
-            newButtonColumn.ReadOnly = true;
-            newButtonColumn.Width = 70;
-
             parametersGridControl.Initialize(schema);
 
             _isInitialized = true;
@@ -141,6 +137,48 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Meth
                 return Color.DarkKhaki;
             else
                 return Color.White;
+        }
+        
+        /// <summary>
+        /// returns supported library versions of an element as string 
+        /// </summary>
+        /// <param name="refLibraries"></param>
+        /// <returns></returns>
+        private string GetDependencies(XElement refLibraries)
+        {
+            string result = "";
+            XElement librariesNode = refLibraries.Document.Descendants("Libraries").FirstOrDefault();
+
+            foreach (var item in refLibraries.Descendants("Ref"))
+            {
+                string refKey = item.Attribute("Key").Value;
+
+                var libNode = (from a in librariesNode.Elements()
+                               where a.Attribute("Key").Value.Equals(refKey, StringComparison.InvariantCultureIgnoreCase)
+                               select a).FirstOrDefault();
+
+                result += libNode.Attribute("Version").Value + "; ";
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// returns method name matched with filter
+        /// </summary>
+        /// <param name="methodNode"></param>
+        /// <returns></returns>
+        private bool FilterPassed(XElement methodNode)
+        {
+            string searchText = textBoxMethodFilter.Text.Trim();
+            if ("" == searchText)
+                return true;
+
+            string caption = methodNode.Attribute("Name").Value;
+            if (caption.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) > -1)
+                return true;
+            else
+                return false;
         }
 
         #endregion
@@ -181,24 +219,38 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Meth
                 string typeAction = gridMethods.Columns[e.ColumnIndex].HeaderText;
                 switch (typeAction)
                 {
-                    case "Edit":
-                    {
-                        MessageBox.Show("Edit"); 
-                        break;
-                    }
                     case "Delete":
                     {
                         string question = string.Format("Delete {0} ?", selectRow.Cells[1].Value);
                         DialogResult dr = MessageBox.Show(question, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (dr == DialogResult.Yes)
                         {
-                            XElement node = selectRow.Tag as XElement; 
-                            node.Remove();                            
+                            XElement node = selectRow.Tag as XElement;
+                            XElement parentNode = node.Parent;
+                            node.Remove();
+
+                            if (parentNode.Elements("Parameters").Count() == 0)
+                                parentNode.Remove();
+
                             gridMethods.Rows.Remove(selectRow);
-                        }
-                        break;
+                         }
+                         break;
                     }
                 }
+            }
+            else
+            {
+                XElement node = selectRow.Tag as XElement;
+                parametersGridControl.Show(node);
+            }
+        }
+        
+        private void textBoxMethodFilter_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Return)
+            {
+                XElement methodsNode = gridMethods.Tag as XElement;
+                Show(methodsNode);
             }
         }
 
