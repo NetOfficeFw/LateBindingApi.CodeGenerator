@@ -56,6 +56,12 @@
     <Compile Include="Controls\EnumGrid\EnumGridControl.Designer.cs">
       <DependentUpon>EnumGridControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\InheritedGrid\InheritedGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InheritedGrid\InheritedGridControl.Designer.cs">
+      <DependentUpon>InheritedGridControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\InterfaceGrid\InterfaceGridControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -153,6 +159,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\EnumGrid\EnumGridControl.resx">
       <DependentUpon>EnumGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InheritedGrid\InheritedGridControl.resx">
+      <DependentUpon>InheritedGridControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\InterfaceGrid\InterfaceGridControl.resx">
       <DependentUpon>InterfaceGridControl.cs</DependentUpon>

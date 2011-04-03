@@ -39,17 +39,18 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid
             Clear();
 
             sourceEditControl.Show(node);
+            inheritedControl.Show(node);
         }
 
         public void Clear()
         {
-            gridMethodsControl.Clear();
-            gridPropertiesControl.Clear();
             sourceEditControl.Clear();
+            inheritedControl.Clear();
         }
 
         public void Initialize(XmlSchema schema)
         {
+            inheritedControl.Initialize(schema);
             _isInitialized = true;
         }
 

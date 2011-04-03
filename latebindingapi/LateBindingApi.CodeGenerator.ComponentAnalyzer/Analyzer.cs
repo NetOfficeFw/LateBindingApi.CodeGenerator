@@ -105,11 +105,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             DoUpdate("Add Inherited CoClasses");
             AddInheritedCoClassInfo(types);
 
-            DoUpdate("Add Event Interfaces");
-
             DoUpdate("Add Default Interfaces");
+            AddDefaultCoClassInfo(types);
 
-
+            DoUpdate("Add Event Interfaces");
+            AddEventCoClassInfo(types);
+             
             DoUpdate("Finsishing operations");
             ReleaseTypeLibrariesList(types);
             Marshal.ReleaseComObject(_typeLibApplication);
@@ -719,17 +720,16 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
         }
 
+    
         /// <summary>
         /// add component key to refs node
         /// </summary>
         /// <param name="component"></param>
         /// <param name="refNode"></param>
-        private void AddInterfaceKeyToInherited(XElement faceNode, string key)
+        private void AddInterfaceKeyToEvent(XElement faceNode, string key, XElement libraryNode)
         {
-
             // check Interface exists 
-            XElement inheritedsNode = faceNode.Element("Inherited");
- 
+            XElement inheritedsNode = faceNode.Element("EventInterfaces");
             var node = (from a in inheritedsNode.Elements("Ref")
                         where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
                         select a).FirstOrDefault();
@@ -737,9 +737,101 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             if (null == node)
             {
                 node = new XElement("Ref",
+                            new XElement("RefLibraries", ""),
                             new XAttribute("Key", key));
 
                 inheritedsNode.Add(node);
+            }
+
+            string libKey = libraryNode.Attribute("Key").Value;
+
+            XElement refsNode = node.Element("RefLibraries");
+            var libRefNode = (from a in refsNode.Elements("Ref")
+                              where a.Attribute("Key").Value.Equals(libKey, StringComparison.InvariantCultureIgnoreCase)
+                              select a).FirstOrDefault();
+
+            if (null == libRefNode)
+            {
+                libRefNode = new XElement("Ref",
+                    new XAttribute("Key", libKey));
+
+                refsNode.Add(libRefNode);
+            }
+        }
+
+        /// <summary>
+        /// add component key to refs node
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="refNode"></param>
+        private void AddInterfaceKeyToDefault(XElement faceNode, string key, XElement libraryNode)
+        {
+            // check Interface exists 
+            XElement inheritedsNode = faceNode.Element("DefaultInterfaces");
+            var node = (from a in inheritedsNode.Elements("Ref")
+                        where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+
+            if (null == node)
+            {
+                node = new XElement("Ref",
+                            new XElement("RefLibraries", ""),
+                            new XAttribute("Key", key));
+
+                inheritedsNode.Add(node);
+            }
+
+            string libKey = libraryNode.Attribute("Key").Value;
+
+            XElement refsNode = node.Element("RefLibraries");
+            var libRefNode = (from a in refsNode.Elements("Ref")
+                              where a.Attribute("Key").Value.Equals(libKey, StringComparison.InvariantCultureIgnoreCase)
+                              select a).FirstOrDefault();
+
+            if (null == libRefNode)
+            {
+                libRefNode = new XElement("Ref",
+                    new XAttribute("Key", libKey));
+
+                refsNode.Add(libRefNode);
+            }
+        }
+
+        /// <summary>
+        /// add component key to refs node
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="refNode"></param>
+        private void AddInterfaceKeyToInherited(XElement faceNode, string key, XElement libraryNode)
+        {
+            // check Interface exists 
+            XElement inheritedsNode = faceNode.Element("Inherited");
+            var node = (from a in inheritedsNode.Elements("Ref")
+                        where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+
+            if (null == node)
+            {
+                node = new XElement("Ref",
+                            new XElement("RefLibraries", ""),
+                            new XAttribute("Key", key));
+
+                inheritedsNode.Add(node);
+            }
+
+            string libKey = libraryNode.Attribute("Key").Value;
+ 
+            XElement refsNode = node.Element("RefLibraries");
+            var libRefNode = (from a in refsNode.Elements("Ref")
+                        where a.Attribute("Key").Value.Equals(libKey, StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+
+            if (null == libRefNode)
+            {
+                libRefNode = new XElement("Ref",
+                    new XAttribute("Key", libKey));
+
+                refsNode.Add(libRefNode);
             }
         }
 
@@ -768,7 +860,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         {
                             XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
                             string key = inheritedInterface.Attribute("Key").Value;
-                            AddInterfaceKeyToInherited(faceNode, key);
+                            AddInterfaceKeyToInherited(faceNode, key, library);
 
                             Marshal.ReleaseComObject(itemInherited);
                         }
@@ -780,33 +872,100 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 Marshal.ReleaseComObject(interfaces);
             }
         }
-        
+
+        /// <summary>
+        /// scan all interfaces in typelibs and info to document about evet interfaces
+        /// all interfaces must be listed in document before call this method
+        /// </summary>
+        /// <param name="list"></param>
+        private void AddEventCoClassInfo(List<TypeLibInfo> list)
+        {
+            foreach (TypeLibInfo itemLib in list)
+            {
+                var libraryNode = GetLibraryNode(itemLib);
+
+                TLI.CoClasses classes = itemLib.CoClasses;
+                foreach (TLI.CoClassInfo itemClass in classes)
+                {
+                    List<InterfaceInfo> inheritedList = TypeDescriptor.GetEventInterfaces(itemClass);
+                    if (inheritedList.Count > 0)
+                    {
+                        XElement classNode = GetClassNode(itemLib, itemClass);
+                        foreach (InterfaceInfo itemInherited in inheritedList)
+                        {
+                            XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
+                            string key = inheritedInterface.Attribute("Key").Value;
+                            AddInterfaceKeyToEvent(classNode, key, libraryNode);
+
+                            Marshal.ReleaseComObject(itemInherited);
+                        }
+                        inheritedList.Clear();
+                    }
+
+                    Marshal.ReleaseComObject(itemClass);
+                }
+                Marshal.ReleaseComObject(classes);
+            }
+        }
+
+        /// <summary>
+        /// scan all interfaces in typelibs and info to document about default interfaces
+        /// all interfaces must be listed in document before call this method
+        /// </summary>
+        /// <param name="list"></param>
+        private void AddDefaultCoClassInfo(List<TypeLibInfo> list)
+        {
+            foreach (TypeLibInfo itemLib in list)
+            {
+                var libraryNode = GetLibraryNode(itemLib);
+
+                TLI.CoClasses classes = itemLib.CoClasses;
+                foreach (TLI.CoClassInfo itemClass in classes)
+                {
+                    List<InterfaceInfo> inheritedList = TypeDescriptor.GetDefaultInterfaces(itemClass);
+                    if (inheritedList.Count > 0)
+                    {
+                        XElement classNode = GetClassNode(itemLib, itemClass);
+                        foreach (InterfaceInfo itemInherited in inheritedList)
+                        {
+                            XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
+                            string key = inheritedInterface.Attribute("Key").Value;
+                            AddInterfaceKeyToDefault(classNode, key, libraryNode);
+
+                            Marshal.ReleaseComObject(itemInherited);
+                        }
+                        inheritedList.Clear();
+                    }
+
+                    Marshal.ReleaseComObject(itemClass);
+                }
+                Marshal.ReleaseComObject(classes);
+            }
+        }
+
         /// <summary>
         /// scan all interfaces in typelibs and info to document about inherited interfaces
         /// all interfaces must be listed in document before call this method
         /// </summary>
         /// <param name="list"></param>
-        /// <param name="wantDispatch"></param>
         private void AddInheritedCoClassInfo(List<TypeLibInfo> list)
         {
-            foreach (TypeLibInfo item in list)
+            foreach (TypeLibInfo itemLib in list)
             {
-                var library = GetLibraryNode(item);
-                var project = GetProjectNode(item.Name);
-                var faces = project.Elements("CoClasses").FirstOrDefault();
-
-                TLI.CoClasses classes = item.CoClasses;
+                var libraryNode = GetLibraryNode(itemLib);
+              
+                TLI.CoClasses classes = itemLib.CoClasses;
                 foreach (TLI.CoClassInfo itemClass in classes)
                 {
                     List<InterfaceInfo> inheritedList = TypeDescriptor.GetInheritedInterfaces(itemClass);
                     if (inheritedList.Count > 0)
                     {
-                        XElement faceNode = GetClassNode(item, itemClass);
+                        XElement classNode = GetClassNode(itemLib, itemClass);
                         foreach (InterfaceInfo itemInherited in inheritedList)
                         {
                             XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
                             string key = inheritedInterface.Attribute("Key").Value;
-                            AddInterfaceKeyToInherited(faceNode, key);
+                            AddInterfaceKeyToInherited(classNode, key, libraryNode);
 
                             Marshal.ReleaseComObject(itemInherited);
                         }

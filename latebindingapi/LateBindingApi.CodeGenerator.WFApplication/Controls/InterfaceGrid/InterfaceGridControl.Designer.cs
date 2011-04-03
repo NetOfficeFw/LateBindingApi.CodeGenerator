@@ -35,10 +35,13 @@
             this.gridPropertiesControl = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.PropertiesGrid.PropertiesGridControl();
             this.tabSource = new System.Windows.Forms.TabPage();
             this.sourceEditControl = new LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit.SourceEditControl();
+            this.tabInherited = new System.Windows.Forms.TabPage();
+            this.inheritedControl = new LateBindingApi.CodeGenerator.WFApplication.Controls.InheritedGrid.InheritedGridControl();
             this.tabControlEntities.SuspendLayout();
             this.tabMethods.SuspendLayout();
             this.tabProperties.SuspendLayout();
             this.tabSource.SuspendLayout();
+            this.tabInherited.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlEntities
@@ -46,6 +49,7 @@
             this.tabControlEntities.Controls.Add(this.tabMethods);
             this.tabControlEntities.Controls.Add(this.tabProperties);
             this.tabControlEntities.Controls.Add(this.tabSource);
+            this.tabControlEntities.Controls.Add(this.tabInherited);
             this.tabControlEntities.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlEntities.Location = new System.Drawing.Point(0, 0);
             this.tabControlEntities.Name = "tabControlEntities";
@@ -109,6 +113,25 @@
             this.sourceEditControl.Size = new System.Drawing.Size(688, 293);
             this.sourceEditControl.TabIndex = 0;
             // 
+            // tabInherited
+            // 
+            this.tabInherited.Controls.Add(this.inheritedControl);
+            this.tabInherited.Location = new System.Drawing.Point(4, 22);
+            this.tabInherited.Name = "tabInherited";
+            this.tabInherited.Padding = new System.Windows.Forms.Padding(3);
+            this.tabInherited.Size = new System.Drawing.Size(688, 293);
+            this.tabInherited.TabIndex = 3;
+            this.tabInherited.Text = "Inherited";
+            this.tabInherited.UseVisualStyleBackColor = true;
+            // 
+            // inheritedControl
+            // 
+            this.inheritedControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.inheritedControl.Location = new System.Drawing.Point(3, 3);
+            this.inheritedControl.Name = "inheritedControl";
+            this.inheritedControl.Size = new System.Drawing.Size(682, 287);
+            this.inheritedControl.TabIndex = 0;
+            // 
             // InterfaceGridControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -120,6 +143,7 @@
             this.tabMethods.ResumeLayout(false);
             this.tabProperties.ResumeLayout(false);
             this.tabSource.ResumeLayout(false);
+            this.tabInherited.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -133,6 +157,8 @@
         private LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.MethodsGrid.MethodsGridControl gridMethodsControl;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.PropertiesGrid.PropertiesGridControl gridPropertiesControl;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit.SourceEditControl sourceEditControl;
+        private System.Windows.Forms.TabPage tabInherited;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.InheritedGrid.InheritedGridControl inheritedControl;
 
     }
 }

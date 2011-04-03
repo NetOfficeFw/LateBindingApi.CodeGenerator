@@ -141,6 +141,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             {
                 statusStripMain.Items[0].Text = message;
                 statusStripMain.Refresh();
+                Application.DoEvents();
             }
             catch (Exception throwedException)
             {

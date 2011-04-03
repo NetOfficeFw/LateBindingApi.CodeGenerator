@@ -544,7 +544,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         }
 
         /// <summary>
-        /// return all inherited interfaces from interface
+        /// return all inherited interfaces from itemClass
         /// exlude IDispatch and IUnkown
         /// </summary>
         /// <param name="itemInterface"></param>
@@ -565,6 +565,50 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     Marshal.ReleaseComObject(itemImplied);
             }
             Marshal.ReleaseComObject(impliedInterfaces);
+
+            return returnList;
+        }
+        
+        /// <summary>
+        /// return all event interfaces from itemClass
+        /// exlude IDispatch and IUnkown
+        /// </summary>
+        /// <param name="itemInterface"></param>
+        /// <returns></returns>
+        internal static List<TLI.InterfaceInfo> GetEventInterfaces(TLI.CoClassInfo itemClass)
+        {
+            List<TLI.InterfaceInfo> returnList = new List<InterfaceInfo>();
+
+            TLI.InterfaceInfo itemImplied = itemClass.DefaultEventInterface;
+            if (null == itemImplied)
+                return returnList;
+
+            if (("IDispatch" != itemImplied.Name) && ("IUnknown" != itemImplied.Name))
+                returnList.Add(itemImplied);
+            else
+                Marshal.ReleaseComObject(itemImplied);
+
+            return returnList;
+        }
+
+        /// <summary>
+        /// return all default interfaces from itemClass
+        /// exlude IDispatch and IUnkown
+        /// </summary>
+        /// <param name="itemInterface"></param>
+        /// <returns></returns>
+        internal static List<TLI.InterfaceInfo> GetDefaultInterfaces(TLI.CoClassInfo itemClass)
+        {
+            List<TLI.InterfaceInfo> returnList = new List<InterfaceInfo>();
+
+            TLI.InterfaceInfo itemImplied = itemClass.DefaultInterface;
+            if (null == itemImplied)
+                return returnList;
+ 
+            if (("IDispatch" != itemImplied.Name) && ("IUnknown" != itemImplied.Name))
+                returnList.Add(itemImplied);
+            else
+                Marshal.ReleaseComObject(itemImplied);
 
             return returnList;
         }

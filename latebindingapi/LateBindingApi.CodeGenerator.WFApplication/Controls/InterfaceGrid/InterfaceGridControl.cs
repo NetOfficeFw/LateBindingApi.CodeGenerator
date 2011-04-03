@@ -43,6 +43,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid
             gridMethodsControl.Show(node.Element("Methods"));
             gridPropertiesControl.Show(node.Element("Properties"));
             sourceEditControl.Show(node);
+            inheritedControl.Show(node);
         }
 
         public void Clear()
@@ -50,12 +51,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid
             gridMethodsControl.Clear();
             gridPropertiesControl.Clear();
             sourceEditControl.Clear();
+            inheritedControl.Clear();
         }
 
         public void Initialize(XmlSchema schema)
         {
             gridMethodsControl.Initialize(schema);
             gridPropertiesControl.Initialize(schema);
+            inheritedControl.Initialize(schema);
             _isInitialized = true;
         }
 

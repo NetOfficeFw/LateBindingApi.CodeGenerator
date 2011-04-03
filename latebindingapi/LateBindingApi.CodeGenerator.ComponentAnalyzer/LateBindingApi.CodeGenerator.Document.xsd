@@ -20,6 +20,9 @@
   </xs:complexType>
   
   <xs:complexType name="Ref">
+    <xs:sequence>
+      <xs:element name="RefLibraries" type="RefLibraries" />
+    </xs:sequence>
     <xs:attribute name="Key" type="xs:string" use="required" />
   </xs:complexType>
   
@@ -70,7 +73,7 @@
     <xs:attribute name="Namespace"   type="xs:string" use="required" /> <!-- namespace of project -->
     <xs:attribute name="Key"         type="xs:string" use="required" /> <!-- unique key of project -->
   </xs:complexType>
-  
+
   <xs:complexType name="RefInterfaces">
     <xs:sequence>
       <xs:element name="RefInterface" type="Ref" minOccurs ="0" maxOccurs ="unbounded"/>
@@ -90,6 +93,7 @@
       <xs:element name="DispIds"              type="DispIds" />
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="Inherited"            type="RefInterfaces" />
+      <xs:element name="DefaultInterfaces"    type="RefInterfaces" />
     </xs:sequence>
     <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name -->
     <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
