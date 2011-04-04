@@ -31,6 +31,7 @@
             this.buttonOkay = new System.Windows.Forms.Button();
             this.checkBoxAddToCurrentProject = new System.Windows.Forms.CheckBox();
             this.typeLibBrowserControl1 = new LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser.TypeLibBrowserControl();
+            this.checkBoxDoAsync = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -82,11 +83,23 @@
             this.typeLibBrowserControl1.DoubleClick += new System.EventHandler(this.typeLibBrowserControl1_DoubleClick);
             this.typeLibBrowserControl1.Click += new System.EventHandler(this.typeLibBrowserControl1_Click);
             // 
+            // checkBoxDoAsync
+            // 
+            this.checkBoxDoAsync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxDoAsync.AutoSize = true;
+            this.checkBoxDoAsync.Location = new System.Drawing.Point(184, 356);
+            this.checkBoxDoAsync.Name = "checkBoxDoAsync";
+            this.checkBoxDoAsync.Size = new System.Drawing.Size(138, 17);
+            this.checkBoxDoAsync.TabIndex = 20;
+            this.checkBoxDoAsync.Text = "Use Backgroundworker";
+            this.checkBoxDoAsync.UseVisualStyleBackColor = true;
+            // 
             // FormTypeLibBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(642, 386);
+            this.Controls.Add(this.checkBoxDoAsync);
             this.Controls.Add(this.typeLibBrowserControl1);
             this.Controls.Add(this.checkBoxAddToCurrentProject);
             this.Controls.Add(this.buttonCancel);
@@ -110,6 +123,7 @@
         private System.Windows.Forms.Button buttonOkay;
         private System.Windows.Forms.CheckBox checkBoxAddToCurrentProject;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser.TypeLibBrowserControl typeLibBrowserControl1;
+        private System.Windows.Forms.CheckBox checkBoxDoAsync;
 
 
     }

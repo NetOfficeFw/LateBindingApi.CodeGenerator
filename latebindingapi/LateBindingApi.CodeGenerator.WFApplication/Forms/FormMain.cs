@@ -57,21 +57,30 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         
         private void menuItemLoadTypeLibrary_Click(object sender, EventArgs e)
         {
+            FormTypeLibBrowser formBrowser =null;
             try
-            {
-                FormTypeLibBrowser formBrowser = new FormTypeLibBrowser();
+            {          
+                formBrowser = new FormTypeLibBrowser();
                 this.Refresh();
+               
                 if (DialogResult.OK == formBrowser.ShowDialog(this))
-                    _comAnalyzer.LoadTypeLibraries(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject, false);
+                { 
+                    //invisible all left&right panel content
+                    foreach (Control itemControl in splitContainerMain.Panel2.Controls)
+                        itemControl.Visible = false;
+
+                    foreach (Control itemControl in splitContainerMain.Panel1.Controls)
+                        itemControl.Visible = false;
+
+                    this.Cursor = Cursors.WaitCursor;
+                    menuStripMain.Enabled = false; 
+                    _comAnalyzer.LoadTypeLibraries(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject, formBrowser.DoAsync);
+                }
             }
             catch (Exception throwedException)
             {
                 FormShowError formError = new FormShowError(throwedException);
                 formError.ShowDialog(this);
-            }
-            finally
-            {
-                statusStripMain.Items[0].Text = string.Empty;
             }
         }
 
@@ -114,22 +123,27 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 formError.ShowDialog(this);
             }
         }
-        
+
+        private void menuItemGenerateCode_Click(object sender, EventArgs e)
+        {
+
+        }
+
         #endregion
 
         private void comAnalyzer_OnTypeLibrariesLoaded(TimeSpan timeElapsed)
         {
             try
             {
-                //invisible all right panel content
-                foreach (Control itemControl in splitContainerMain.Panel2.Controls)
-                    itemControl.Visible = false;
-
+                foreach (Control itemControl in splitContainerMain.Panel1.Controls)
+                    itemControl.Visible = true;
                 libraryTreeBrowser.Show(_comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document"));
+                menuStripMain.Enabled = true; 
                 menuItemSaveProject.Enabled = true;
                 menuItemGenerateCode.Enabled = true;
                 splitContainerMain.Visible = true;
                 statusStripMain.Items[0].Text = string.Format("Loaded in {0}", timeElapsed);
+                this.Cursor = Cursors.Default;
             }
             catch (Exception throwedException)
             {

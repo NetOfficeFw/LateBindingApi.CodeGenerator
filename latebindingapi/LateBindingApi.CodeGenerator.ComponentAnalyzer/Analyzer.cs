@@ -26,6 +26,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         XmlSchema                _schema;
         
         BackgroundWorker        _worker;
+        bool                    _doAsync;
         bool                    _addToCurrentProject;
         string[]                _files;
         TimeSpan                _timeElapsed;
@@ -40,6 +41,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         #endregion
 
         #region Properties
+
+        public bool DoAsync
+        {
+            get
+            {
+                return _doAsync;
+            }
+        }
 
         public XDocument Document
         {
@@ -62,13 +71,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             DateTime startTime = DateTime.Now;
-
+            
             DoUpdate("Prepare");
             _typeLibApplication = new TLIApplication();
             if (false == _addToCurrentProject)
                 ResetDocument();
 
-            DoUpdate("Load Type Libraries");
+            DoUpdate("Scan Type Libraries");
             List<TypeLibInfo> types = LoadLibraries(_files);
 
             DoUpdate("Add Dependencies");
@@ -77,31 +86,31 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             DoUpdate("Load Solution"); 
             LoadSolution(types);
 
-            DoUpdate("Load Enums"); 
+            DoUpdate("Scan Enums"); 
             LoadEnums(types);
 
-            DoUpdate("Load Interfaces");
+            DoUpdate("Scan Interfaces");
             LoadInterfaces(types, false);
 
-            DoUpdate("Load Dispatch Interfaces"); 
+            DoUpdate("Scan Dispatch Interfaces"); 
             LoadInterfaces(types, true);
 
-            DoUpdate("Add Inherited Interfaces"); 
+            DoUpdate("Scan Inherited Interfaces"); 
             AddInheritedInterfacesInfo(types, "Interfaces");
 
-            DoUpdate("Add Inherited DispatchInterfaces"); 
+            DoUpdate("Scan Inherited DispatchInterfaces"); 
             AddInheritedInterfacesInfo(types, "DispatchInterfaces");
 
-            DoUpdate("Load CoClasses"); 
+            DoUpdate("Scan CoClasses"); 
             LoadCoClasses(types);
 
-            DoUpdate("Add Inherited CoClasses"); 
+            DoUpdate("Scan Inherited CoClasses"); 
             AddInheritedCoClassInfo(types);
 
-            DoUpdate("Add Default Interfaces"); 
+            DoUpdate("Scan Default Interfaces"); 
             AddDefaultCoClassInfo(types);
 
-            DoUpdate("Add Event Interfaces"); 
+            DoUpdate("Scan Event Interfaces"); 
             AddEventCoClassInfo(types);
 
             DoUpdate("Finsishing operations"); 
@@ -109,10 +118,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             Marshal.ReleaseComObject(_typeLibApplication);
             _typeLibApplication = null;
             DoUpdate("Done");
-
-            DateTime endTime = DateTime.Now;
-
-            _timeElapsed = endTime - startTime;
+       
+            _timeElapsed = DateTime.Now - startTime;
         }
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -169,6 +176,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="addToCurrentProject">dont clear old project</param>
         public void LoadTypeLibraries(string[] files, bool addToCurrentProject, bool doAsync)
         {
+            _doAsync = doAsync;
             _worker.WorkerReportsProgress = doAsync;
             _files = files;
             _addToCurrentProject = addToCurrentProject;
@@ -262,7 +270,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         {
             // check lib not exists in document
             string guid = Utils.EncodeGuid(libInfo.GUID);
-            var node = (from a in _document.Elements("Libraries").Elements("Library")
+            var node = (from a in _document.Descendants("Libraries").Elements("Library")
                         where a.Attribute("GUID").Value.Equals(guid) &&
                               a.Attribute("Name").Value.Equals(libInfo.Name) &&
                               a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
@@ -277,8 +285,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             new XAttribute("Key", Utils.NewEncodedGuid()),
                             new XAttribute("GUID", guid),
                             new XAttribute("HelpFile", Utils.RemoveBadChars(libInfo.HelpFile)),
-                            new XAttribute("Major", libInfo.MajorVersion),
-                            new XAttribute("Minor", libInfo.MinorVersion),
+                            new XAttribute("Major", libInfo.MajorVersion.ToString()),
+                            new XAttribute("Minor", libInfo.MinorVersion.ToString()),
                             new XAttribute("LCID", libInfo.LCID),
                             new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(libInfo)),
                             new XAttribute("Version", libInfo.Name.Substring(0, 2).ToUpper() + "1"),

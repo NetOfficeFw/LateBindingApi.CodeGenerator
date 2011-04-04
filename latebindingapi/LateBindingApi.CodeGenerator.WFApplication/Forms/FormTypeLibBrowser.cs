@@ -17,6 +17,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         #endregion
         
         #region Properties
+        
+        public bool DoAsync
+        {
+            get
+            {
+                return checkBoxDoAsync.Checked;
+            }
+        }
 
         public bool AddToCurrentProject 
         {

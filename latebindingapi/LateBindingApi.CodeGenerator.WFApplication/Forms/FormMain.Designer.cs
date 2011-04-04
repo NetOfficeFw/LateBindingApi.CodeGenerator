@@ -47,13 +47,13 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
+            this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
             this.enumGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl();
             this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
             this.projectGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl();
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
             this.contextMenuStripComponents.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
@@ -156,6 +156,7 @@
             this.menuItemGenerateCode.Name = "menuItemGenerateCode";
             this.menuItemGenerateCode.Size = new System.Drawing.Size(158, 22);
             this.menuItemGenerateCode.Text = "Generate Code";
+            this.menuItemGenerateCode.Click += new System.EventHandler(this.menuItemGenerateCode_Click);
             // 
             // toolStripHelp
             // 
@@ -218,6 +219,13 @@
             this.libraryTreeBrowser.TabIndex = 0;
             this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
             // 
+            // classGrid
+            // 
+            this.classGrid.Location = new System.Drawing.Point(217, 153);
+            this.classGrid.Name = "classGrid";
+            this.classGrid.Size = new System.Drawing.Size(231, 131);
+            this.classGrid.TabIndex = 4;
+            // 
             // enumGrid
             // 
             this.enumGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -267,13 +275,6 @@
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
-            // 
-            // classGrid
-            // 
-            this.classGrid.Location = new System.Drawing.Point(217, 153);
-            this.classGrid.Name = "classGrid";
-            this.classGrid.Size = new System.Drawing.Size(231, 131);
-            this.classGrid.TabIndex = 4;
             // 
             // FormMain
             // 
