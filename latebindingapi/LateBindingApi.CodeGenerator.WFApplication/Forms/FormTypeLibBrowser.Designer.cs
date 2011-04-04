@@ -72,6 +72,9 @@
             // 
             // typeLibBrowserControl1
             // 
+            this.typeLibBrowserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.typeLibBrowserControl1.Location = new System.Drawing.Point(10, 12);
             this.typeLibBrowserControl1.Name = "typeLibBrowserControl1";
             this.typeLibBrowserControl1.Size = new System.Drawing.Size(620, 323);

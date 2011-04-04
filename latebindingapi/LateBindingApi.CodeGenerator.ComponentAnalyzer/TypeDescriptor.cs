@@ -612,7 +612,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return returnList;
         }
-
+        
         /// <summary>
         /// Get members from interface
         /// exclude IDispatch Members, IUnkown Members and, any other members there comes from inherited interfaces

@@ -25,11 +25,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             InitializeComponent();
             this.Text = this.GetType().Assembly.GetName().Name;
             _comAnalyzer.Update += new UpdateHandler(comAnalyzer_Update);
+            _comAnalyzer.Finish += new FinishHandler(comAnalyzer_OnTypeLibrariesLoaded);
 
             foreach (Control item in splitContainerMain.Panel2.Controls)
-	        {
                 item.Dock = DockStyle.Fill;
-	        }
 
             libraryGrid.Initialize(_comAnalyzer.Schema);
             projectGrid.Initialize(_comAnalyzer.Schema);
@@ -61,11 +60,9 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             try
             {
                 FormTypeLibBrowser formBrowser = new FormTypeLibBrowser();
+                this.Refresh();
                 if (DialogResult.OK == formBrowser.ShowDialog(this))
-                {
-                    _comAnalyzer.LoadTypeLibraries(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject);
-                    OnTypeLibrariesLoaded();
-                }
+                    _comAnalyzer.LoadTypeLibraries(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject, false);
             }
             catch (Exception throwedException)
             {
@@ -86,8 +83,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 fileDialog.Filter = "ProjectFiles|*.xml";
                 if (DialogResult.OK == fileDialog.ShowDialog(this))
                 {
+                    DateTime startTime = DateTime.Now;
                     _comAnalyzer.LoadProject(fileDialog.FileName);
-                    OnTypeLibrariesLoaded();
+                    TimeSpan timeElapsed = DateTime.Now - startTime;
+                    comAnalyzer_OnTypeLibrariesLoaded(timeElapsed);
                 }
             }
             catch (Exception throwedException)
@@ -118,15 +117,19 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         
         #endregion
 
-        private void OnTypeLibrariesLoaded()
+        private void comAnalyzer_OnTypeLibrariesLoaded(TimeSpan timeElapsed)
         {
             try
             {
-                libraryTreeBrowser.Show(_comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document"));
+                //invisible all right panel content
+                foreach (Control itemControl in splitContainerMain.Panel2.Controls)
+                    itemControl.Visible = false;
 
+                libraryTreeBrowser.Show(_comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document"));
                 menuItemSaveProject.Enabled = true;
                 menuItemGenerateCode.Enabled = true;
                 splitContainerMain.Visible = true;
+                statusStripMain.Items[0].Text = string.Format("Loaded in {0}", timeElapsed);
             }
             catch (Exception throwedException)
             {
@@ -141,7 +144,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             {
                 statusStripMain.Items[0].Text = message;
                 statusStripMain.Refresh();
-                Application.DoEvents();
             }
             catch (Exception throwedException)
             {

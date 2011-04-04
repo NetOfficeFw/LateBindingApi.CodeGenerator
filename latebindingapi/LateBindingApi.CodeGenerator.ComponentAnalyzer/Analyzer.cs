@@ -7,12 +7,14 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
- 
+using System.ComponentModel;
+
 using TLI;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {
     public delegate void UpdateHandler(object sender, string message);
+    public delegate void FinishHandler(TimeSpan timeElapsed);
 
     public partial class Analyzer
     {
@@ -23,11 +25,17 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         XmlSchemaSet             _schemaSet;
         XmlSchema                _schema;
         
+        BackgroundWorker        _worker;
+        bool                    _addToCurrentProject;
+        string[]                _files;
+        TimeSpan                _timeElapsed;
+
         #endregion
 
         #region Events
 
         public event UpdateHandler Update;
+        public event FinishHandler Finish;
 
         #endregion
 
@@ -51,11 +59,102 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
       
         #endregion
 
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            DateTime startTime = DateTime.Now;
+
+            DoUpdate("Prepare");
+            _typeLibApplication = new TLIApplication();
+            if (false == _addToCurrentProject)
+                ResetDocument();
+
+            DoUpdate("Load Type Libraries");
+            List<TypeLibInfo> types = LoadLibraries(_files);
+
+            DoUpdate("Add Dependencies");
+            AddDependencies(types);
+
+            DoUpdate("Load Solution"); 
+            LoadSolution(types);
+
+            DoUpdate("Load Enums"); 
+            LoadEnums(types);
+
+            DoUpdate("Load Interfaces");
+            LoadInterfaces(types, false);
+
+            DoUpdate("Load Dispatch Interfaces"); 
+            LoadInterfaces(types, true);
+
+            DoUpdate("Add Inherited Interfaces"); 
+            AddInheritedInterfacesInfo(types, "Interfaces");
+
+            DoUpdate("Add Inherited DispatchInterfaces"); 
+            AddInheritedInterfacesInfo(types, "DispatchInterfaces");
+
+            DoUpdate("Load CoClasses"); 
+            LoadCoClasses(types);
+
+            DoUpdate("Add Inherited CoClasses"); 
+            AddInheritedCoClassInfo(types);
+
+            DoUpdate("Add Default Interfaces"); 
+            AddDefaultCoClassInfo(types);
+
+            DoUpdate("Add Event Interfaces"); 
+            AddEventCoClassInfo(types);
+
+            DoUpdate("Finsishing operations"); 
+            ReleaseTypeLibrariesList(types);
+            Marshal.ReleaseComObject(_typeLibApplication);
+            _typeLibApplication = null;
+            DoUpdate("Done");
+
+            DateTime endTime = DateTime.Now;
+
+            _timeElapsed = endTime - startTime;
+        }
+
+        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            string message = e.UserState as string;
+            if (null != Update)
+                Update(this, message);
+        }
+
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (null != Finish)
+                Finish(_timeElapsed);
+        }
+
+        /// <summary>
+        /// fires update event to client
+        /// </summary>
+        /// <param name="message"></param>
+        private void DoUpdate(string message)
+        {
+            if (true == _worker.WorkerReportsProgress)
+                _worker.ReportProgress(0, message);
+            else
+            {
+                if (null != Update)
+                    Update(this, message);
+            }
+        }
+
         #region Construction
 
         public Analyzer()
         {
+            _worker = new BackgroundWorker();
+            _worker.WorkerSupportsCancellation = false;
+            _worker.WorkerReportsProgress = true;
+            _worker.DoWork += new DoWorkEventHandler(worker_DoWork);
+            _worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
             ResetDocument();
+
+            _worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted); 
         }
 
         #endregion
@@ -68,55 +167,18 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="files">typelib paths</param>
         /// <param name="addToCurrentProject">dont clear old project</param>
-        public void LoadTypeLibraries(string[] files, bool addToCurrentProject)
+        public void LoadTypeLibraries(string[] files, bool addToCurrentProject, bool doAsync)
         {
-            DoUpdate("Prepare");
-            _typeLibApplication = new TLIApplication();
-            if (false == addToCurrentProject)
-                ResetDocument();
-
-            DoUpdate("Load Type Libraries");
-            List<TypeLibInfo> types = LoadLibraries(files);
-
-            DoUpdate("Add Dependencies");
-            AddDependencies(types);
-
-            DoUpdate("Load Solution");
-            LoadSolution(types);
-
-            DoUpdate("Load Enums");
-            LoadEnums(types);
-
-            DoUpdate("Load Interfaces");
-            LoadInterfaces(types, false);
-
-            DoUpdate("Load Dispatch Interfaces");
-            LoadInterfaces(types, true);
-           
-            DoUpdate("Add Inherited Interfaces");
-            AddInheritedInterfacesInfo(types, "Interfaces");
-
-            DoUpdate("Add Inherited DispatchInterfaces");
-            AddInheritedInterfacesInfo(types, "DispatchInterfaces");
-
-            DoUpdate("Load CoClasses");
-            LoadCoClasses(types);
-
-            DoUpdate("Add Inherited CoClasses");
-            AddInheritedCoClassInfo(types);
-
-            DoUpdate("Add Default Interfaces");
-            AddDefaultCoClassInfo(types);
-
-            DoUpdate("Add Event Interfaces");
-            AddEventCoClassInfo(types);
-             
-            DoUpdate("Finsishing operations");
-            ReleaseTypeLibrariesList(types);
-            Marshal.ReleaseComObject(_typeLibApplication);
-            _typeLibApplication = null;
-
-            DoUpdate("Done!");
+            _worker.WorkerReportsProgress = doAsync;
+            _files = files;
+            _addToCurrentProject = addToCurrentProject;
+            if (true == doAsync)
+                _worker.RunWorkerAsync();
+            else
+            { 
+                worker_DoWork(null, new DoWorkEventArgs(null));
+                worker_RunWorkerCompleted(null, new RunWorkerCompletedEventArgs(null, null, false));
+            }
         }
 
         /// <summary>
@@ -143,16 +205,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         
         #region Private Methods
 
-        /// <summary>
-        /// fires update event to client
-        /// </summary>
-        /// <param name="message"></param>
-        private void DoUpdate(string message)
-        {
-            if (null != Update)
-                Update(this, message); 
-        }
-        
         /// <summary>
         /// load all typelib files
         /// </summary>
@@ -327,10 +379,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 TLI.Interfaces interfaces = item.Interfaces;
                 foreach (TLI.InterfaceInfo itemInterface in interfaces)
                 {
-                    
-                    // if (itemInterface.Name != "AddIns")
-                    //   continue;
-                    
                     if (true == TypeDescriptor.IsTargetInterfaceType(itemInterface.TypeKind, wantDispatch))
                     {
                         var faceNode = CreateInterfaceNode(faces, itemInterface);
@@ -340,14 +388,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         {
                             if (true == TypeDescriptor.IsInterfaceMethod(itemMember))
                             {
-                                //if (itemMember.Name == "Add")
-//{ 
-                                    var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
-                                    AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
-                                    var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();
-                                    AddLibraryKeyToRefLibraries(library, refNode);
-                                    MethodHandler.AddMethod(library, methodNode, itemMember);
-                                //}
+                                var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
+                                AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
+                                var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();
+                                AddLibraryKeyToRefLibraries(library, refNode);
+                                MethodHandler.AddMethod(library, methodNode, itemMember);
                             }
                             else if (true == TypeDescriptor.IsInterfaceProperty(itemMember))
                             {
@@ -692,16 +737,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="members"></param>
         private void DetectMembersTypesDefinedInExternalLibrary(List<TypeLibInfo> list, Members members)
         {
+            bool found = false;
+            string containingFile = "";
+
             foreach (MemberInfo itemMember in members)
             {
-                VarTypeInfo typeInfo = itemMember.ReturnType;
+                VarTypeInfo typeInfo = itemMember.ReturnType;             
                 if ((typeInfo != null) && (true == typeInfo.IsExternalType))
                 {
-                    bool found = false;
-                    string containingFile = typeInfo.TypeLibInfoExternal.ContainingFile;
-                    foreach (TypeLibInfo item in list)
+                    found = false;
+                    containingFile = typeInfo.TypeLibInfoExternal.ContainingFile;
+                    foreach (TypeLibInfo itemLib in list)
                     {
-                        if (item.ContainingFile == containingFile)
+                        if (itemLib.ContainingFile == containingFile)
                         {
                             found = true;
                             break;
@@ -715,12 +763,42 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         AddTypeLibToDocument(libInfo);
                     }
                 }
+
+                Parameters memberParams = itemMember.Parameters;
+                foreach (ParameterInfo itemParam in memberParams)
+                {
+                    VarTypeInfo paramTypeInfo = itemParam.VarTypeInfo;
+                    if ((paramTypeInfo != null) && (true == paramTypeInfo.IsExternalType))
+                    {
+                         found = false;
+                         containingFile = paramTypeInfo.TypeLibInfoExternal.ContainingFile;
+                         foreach (TypeLibInfo itemLib in list)
+                         {
+                             if (itemLib.ContainingFile == containingFile)
+                             {
+                                 found = true;
+                                 break;
+                             }
+                         }
+
+                         if (false == found)
+                         {
+                             TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
+                             list.Add(libInfo);
+                             AddTypeLibToDocument(libInfo);
+                         }
+                    }
+
+                    Marshal.ReleaseComObject(paramTypeInfo);
+                    Marshal.ReleaseComObject(itemParam);
+                }
+                Marshal.ReleaseComObject(memberParams);
+
                 if (null != typeInfo)
                     Marshal.ReleaseComObject(typeInfo);
             }
         }
 
-    
         /// <summary>
         /// add component key to refs node
         /// </summary>
@@ -866,13 +944,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         }
                         inheritedList.Clear();
                     }
-       
+
                     Marshal.ReleaseComObject(itemInterface);
                 }
                 Marshal.ReleaseComObject(interfaces);
             }
         }
-
+ 
         /// <summary>
         /// scan all interfaces in typelibs and info to document about evet interfaces
         /// all interfaces must be listed in document before call this method
