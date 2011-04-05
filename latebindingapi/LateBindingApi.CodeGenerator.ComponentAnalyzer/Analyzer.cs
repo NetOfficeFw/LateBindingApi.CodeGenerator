@@ -16,7 +16,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     public delegate void UpdateHandler(object sender, string message);
     public delegate void FinishHandler(TimeSpan timeElapsed);
 
-    public partial class Analyzer
+    public class Analyzer
     {
         #region Fields
         
@@ -41,6 +41,22 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         #endregion
 
         #region Properties
+
+        public bool CancellationPending
+        {
+            get
+            {
+                return _worker.CancellationPending;
+            }
+        }
+
+        public bool IsBusy
+        {
+            get
+            {
+                return _worker.IsBusy;
+            }
+        }
 
         public bool DoAsync
         {
@@ -68,62 +84,92 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
       
         #endregion
 
+        #region Construction
+
+        public Analyzer()
+        {
+            _worker = new BackgroundWorker();
+            _worker.WorkerSupportsCancellation = true;
+            _worker.WorkerReportsProgress = true;
+            _worker.DoWork += new DoWorkEventHandler(worker_DoWork);
+            _worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
+            _worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
+            ResetDocument();
+        }
+
+        #endregion
+
+        #region Backgroundworker
+
+        public void CancelAsync()
+        {
+            _worker.CancelAsync();
+        }
+
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            DateTime startTime = DateTime.Now;
-            
-            DoUpdate("Prepare");
-            _typeLibApplication = new TLIApplication();
-            if (false == _addToCurrentProject)
-                ResetDocument();
+            try
+            {
+                DateTime startTime = DateTime.Now;
 
-            DoUpdate("Scan Type Libraries");
-            List<TypeLibInfo> types = LoadLibraries(_files);
+                DoUpdate("Prepare");
+                _typeLibApplication = new TLIApplication();
+                if (false == _addToCurrentProject)
+                    ResetDocument();
 
-            DoUpdate("Add Dependencies");
-            AddDependencies(types);
+                DoUpdate("Scan Type Libraries");
+                List<TypeLibInfo> types = LoadLibraries(_files);
 
-            DoUpdate("Load Solution"); 
-            LoadSolution(types);
+                DoUpdate("Add Dependencies");
+                AddDependencies(types);
 
-            DoUpdate("Scan Enums"); 
-            LoadEnums(types);
+                DoUpdate("Load Solution");
+                LoadSolution(types);
 
-            DoUpdate("Scan Interfaces");
-            LoadInterfaces(types, false);
+                DoUpdate("Scan Enums");
+                LoadEnums(types);
 
-            DoUpdate("Scan Dispatch Interfaces"); 
-            LoadInterfaces(types, true);
+                DoUpdate("Scan Interfaces");
+                LoadInterfaces(types, false);
 
-            DoUpdate("Scan Inherited Interfaces"); 
-            AddInheritedInterfacesInfo(types, "Interfaces");
+                DoUpdate("Scan Dispatch Interfaces");
+                LoadInterfaces(types, true);
 
-            DoUpdate("Scan Inherited DispatchInterfaces"); 
-            AddInheritedInterfacesInfo(types, "DispatchInterfaces");
+                DoUpdate("Scan Inherited Interfaces");
+                AddInheritedInterfacesInfo(types, "Interfaces");
 
-            DoUpdate("Scan CoClasses"); 
-            LoadCoClasses(types);
+                DoUpdate("Scan Inherited DispatchInterfaces");
+                AddInheritedInterfacesInfo(types, "DispatchInterfaces");
 
-            DoUpdate("Scan Inherited CoClasses"); 
-            AddInheritedCoClassInfo(types);
+                DoUpdate("Scan CoClasses");
+                LoadCoClasses(types);
 
-            DoUpdate("Scan Default Interfaces"); 
-            AddDefaultCoClassInfo(types);
+                DoUpdate("Scan Inherited CoClasses");
+                AddInheritedCoClassInfo(types);
 
-            DoUpdate("Scan Event Interfaces"); 
-            AddEventCoClassInfo(types);
+                DoUpdate("Scan Default Interfaces");
+                AddDefaultCoClassInfo(types);
 
-            DoUpdate("Finsishing operations"); 
-            ReleaseTypeLibrariesList(types);
-            Marshal.ReleaseComObject(_typeLibApplication);
-            _typeLibApplication = null;
-            DoUpdate("Done");
-       
-            _timeElapsed = DateTime.Now - startTime;
+                DoUpdate("Scan Event Interfaces");
+                AddEventCoClassInfo(types);
+
+                DoUpdate("Finsishing operations");
+                ReleaseTypeLibrariesList(types);
+                Marshal.ReleaseComObject(_typeLibApplication);
+                _typeLibApplication = null;
+
+                _timeElapsed = DateTime.Now - startTime;
+                DoUpdate("Done");
+            }
+            catch (Exception throwedException)
+            {
+                if (false == _worker.CancellationPending)
+                    throw (throwedException);
+            }
         }
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
+        { 
             string message = e.UserState as string;
             if (null != Update)
                 Update(this, message);
@@ -150,20 +196,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
         }
 
-        #region Construction
-
-        public Analyzer()
-        {
-            _worker = new BackgroundWorker();
-            _worker.WorkerSupportsCancellation = false;
-            _worker.WorkerReportsProgress = true;
-            _worker.DoWork += new DoWorkEventHandler(worker_DoWork);
-            _worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
-            ResetDocument();
-
-            _worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted); 
-        }
-
         #endregion
  
         #region LoadSave Methods
@@ -180,6 +212,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             _worker.WorkerReportsProgress = doAsync;
             _files = files;
             _addToCurrentProject = addToCurrentProject;
+
             if (true == doAsync)
                 _worker.RunWorkerAsync();
             else
@@ -244,10 +277,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             for (int i = 0; i < list.Count; i++)
             {
                 TypeLibInfo libInfo = list[i];
+                XElement libNode = GetLibraryNode(libInfo);
                 CoClasses classInfos = libInfo.CoClasses;
                 foreach (CoClassInfo itemInfo in classInfos)
                 {
-                    DetectMembersTypesDefinedInExternalLibrary(list, itemInfo.DefaultInterface.Members);
+                    DetectMembersTypesDefinedInExternalLibrary(list, itemInfo.DefaultInterface.Members,libNode);
                     Marshal.ReleaseComObject(itemInfo);
                 }
                 Marshal.ReleaseComObject(classInfos);
@@ -255,7 +289,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 Interfaces faceInfos = libInfo.Interfaces;
                 foreach (InterfaceInfo itemInfo in faceInfos)
                 {
-                    DetectMembersTypesDefinedInExternalLibrary(list, itemInfo.Members);
+                    DetectMembersTypesDefinedInExternalLibrary(list, itemInfo.Members,libNode);
                     Marshal.ReleaseComObject(itemInfo);
                 }
                 Marshal.ReleaseComObject(faceInfos);
@@ -743,11 +777,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="list"></param>
         /// <param name="members"></param>
-        private void DetectMembersTypesDefinedInExternalLibrary(List<TypeLibInfo> list, Members members)
+        private void DetectMembersTypesDefinedInExternalLibrary(List<TypeLibInfo> list, Members members, XElement libNode)
         {
             bool found = false;
             string containingFile = "";
-
+            
             foreach (MemberInfo itemMember in members)
             {
                 VarTypeInfo typeInfo = itemMember.ReturnType;             
@@ -759,11 +793,24 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     {
                         if (itemLib.ContainingFile == containingFile)
                         {
+                            XElement dependLibNode = (from a in libNode.Elements("DependLib")
+                                                      where a.Attribute("Name").Value.Equals(itemLib.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                                                      a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(itemLib), StringComparison.InvariantCultureIgnoreCase)
+                                                      select a).FirstOrDefault();
+                            if (null == dependLibNode)
+                            { 
+                                dependLibNode = new XElement("DependLib",
+                                           new XAttribute("Name", itemLib.Name),
+                                           new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
+                               
+                                libNode.Add(dependLibNode);
+                            }
+
                             found = true;
                             break;
                         }
                     }
-                    
+                   
                     if (false == found)
                     {
                         TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
@@ -784,6 +831,17 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                          {
                              if (itemLib.ContainingFile == containingFile)
                              {
+                                 XElement dependLibNode = (from a in libNode.Elements("DependLib")
+                                                           where a.Attribute("Name").Value.Equals(itemLib.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                                                           a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(itemLib), StringComparison.InvariantCultureIgnoreCase)
+                                                           select a).FirstOrDefault();
+                                 if (null == dependLibNode)
+                                 {
+                                     dependLibNode = new XElement("DependLib",
+                                           new XAttribute("Name", itemLib.Name),
+                                           new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
+                                    libNode.Add(dependLibNode);
+                                 }
                                  found = true;
                                  break;
                              }

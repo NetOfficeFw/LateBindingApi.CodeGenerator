@@ -131,6 +131,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 
         #endregion
 
+        #region Trigger
+
         private void comAnalyzer_OnTypeLibrariesLoaded(TimeSpan timeElapsed)
         {
             try
@@ -138,7 +140,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 foreach (Control itemControl in splitContainerMain.Panel1.Controls)
                     itemControl.Visible = true;
                 libraryTreeBrowser.Show(_comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document"));
-                menuStripMain.Enabled = true; 
+                menuStripMain.Enabled = true;
                 menuItemSaveProject.Enabled = true;
                 menuItemGenerateCode.Enabled = true;
                 splitContainerMain.Visible = true;
@@ -151,7 +153,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 formError.ShowDialog(this);
             }
         }
-       
+
         void comAnalyzer_Update(object sender, string message)
         {
             try
@@ -164,13 +166,13 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 FormShowError formError = new FormShowError(throwedException);
                 formError.ShowDialog(this);
             }
-            
+
         }
 
         private void libraryTreeBrowser_AfterSelect(object sender, TreeViewEventArgs e)
         {
             try
-            {  
+            {
                 //invisible all right panel content
                 foreach (Control itemControl in splitContainerMain.Panel2.Controls)
                     itemControl.Visible = false;
@@ -178,9 +180,9 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 XElement node = e.Node.Tag as XElement;
                 if (null == node)
                     return;
-                 
+
                 switch (node.Name.LocalName)
-                { 
+                {
                     case "Libraries":
                         libraryGrid.Show(node);
                         libraryGrid.Visible = true;
@@ -212,5 +214,22 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 formError.ShowDialog(this);
             }
         }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                // abort async operation
+                if ((true == _comAnalyzer.DoAsync) && (true == _comAnalyzer.IsBusy))
+                    _comAnalyzer.CancelAsync();
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
+
+        #endregion
     }
 }

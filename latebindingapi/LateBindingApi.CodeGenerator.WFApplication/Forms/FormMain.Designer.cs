@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.contextMenuStripComponents = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItemEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.toolStripApplication = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemLoadProject = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,35 +43,20 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.statusStripMain = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
             this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
             this.enumGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl();
             this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
             this.projectGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl();
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
-            this.statusStripMain = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.contextMenuStripComponents.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
             this.statusStripMain.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // contextMenuStripComponents
-            // 
-            this.contextMenuStripComponents.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemEdit});
-            this.contextMenuStripComponents.Name = "contextMenuStripComponents";
-            this.contextMenuStripComponents.Size = new System.Drawing.Size(104, 26);
-            this.contextMenuStripComponents.Text = "Edit";
-            // 
-            // toolStripMenuItemEdit
-            // 
-            this.toolStripMenuItemEdit.Name = "toolStripMenuItemEdit";
-            this.toolStripMenuItemEdit.Size = new System.Drawing.Size(103, 22);
-            this.toolStripMenuItemEdit.Text = "Edit";
             // 
             // menuStripMain
             // 
@@ -209,6 +191,21 @@
             this.splitContainerMain.TabIndex = 25;
             this.splitContainerMain.Visible = false;
             // 
+            // statusStripMain
+            // 
+            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
+            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
+            this.statusStripMain.Name = "statusStripMain";
+            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
+            this.statusStripMain.TabIndex = 26;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            // 
             // libraryTreeBrowser
             // 
             this.libraryTreeBrowser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -261,21 +258,6 @@
             this.libraryGrid.TabIndex = 0;
             this.libraryGrid.Visible = false;
             // 
-            // statusStripMain
-            // 
-            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
-            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
-            this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
-            this.statusStripMain.TabIndex = 26;
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -287,7 +269,7 @@
             this.Controls.Add(this.splitContainerMain);
             this.Name = "FormMain";
             this.Text = "Form1";
-            this.contextMenuStripComponents.ResumeLayout(false);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
             this.splitContainerMain.Panel1.ResumeLayout(false);
@@ -317,8 +299,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripGenerator;
         private System.Windows.Forms.ToolStripMenuItem menuItemGenerateCode;
         private System.Windows.Forms.SplitContainer splitContainerMain;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStripComponents;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEdit;
         private System.Windows.Forms.StatusStrip statusStripMain;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl libraryTreeBrowser;

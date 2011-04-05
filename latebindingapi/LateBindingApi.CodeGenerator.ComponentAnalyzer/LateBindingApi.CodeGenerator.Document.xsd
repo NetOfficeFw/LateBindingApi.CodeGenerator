@@ -25,6 +25,11 @@
     </xs:sequence>
     <xs:attribute name="Key" type="xs:string" use="required" />
   </xs:complexType>
+
+  <xs:complexType name="DependLib">
+    <xs:attribute name="Name" type="xs:string" use="required" />
+    <xs:attribute name="Description" type="xs:string" use="required" />
+  </xs:complexType>
   
   <xs:complexType name="Libraries">
     <xs:sequence>
@@ -34,6 +39,7 @@
   
   <xs:complexType name="Library">
     <xs:sequence>
+      <xs:element name="DependLib"      type="DependLib" minOccurs ="0" maxOccurs ="unbounded"/>
     </xs:sequence>
     <xs:attribute name="Name"           type="xs:string" />       <!-- Library Name -->
     <xs:attribute name="File"           type="xs:string"/>        <!-- Assembly Path -->

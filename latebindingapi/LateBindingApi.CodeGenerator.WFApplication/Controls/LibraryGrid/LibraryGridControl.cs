@@ -58,12 +58,26 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid
 	            }
             }
 
+            foreach (var item in node.Elements("Library"))
+            {
+                string libName = item.Attribute("Description").Value;
+                textBoxDepends.AppendText(libName + Environment.NewLine);
+                foreach (var depend in item.Elements("DependLib"))
+                {
+                    string dependName = depend.Attribute("Description").Value;
+                    textBoxDepends.AppendText("\t" + dependName + Environment.NewLine);
+                }
+            }
+
+            sourceControl.Show(node);
             _showFlag = false;
         }
 
         public void Clear()
         {
+            textBoxDepends.Clear();
             dataGridLibraries.Rows.Clear();
+            sourceControl.Clear(); 
         }
 
         public void Initialize(XmlSchema schema)
@@ -88,7 +102,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid
                     newColumn.ReadOnly = false;
                 }
 
-            }
+            }           
             _isInitialized = true;
         }
 
