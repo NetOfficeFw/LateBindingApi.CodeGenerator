@@ -30,8 +30,8 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOkay = new System.Windows.Forms.Button();
             this.checkBoxAddToCurrentProject = new System.Windows.Forms.CheckBox();
-            this.typeLibBrowserControl1 = new LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser.TypeLibBrowserControl();
             this.checkBoxDoAsync = new System.Windows.Forms.CheckBox();
+            this.typeLibBrowserControl1 = new LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser.TypeLibBrowserControl();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -71,6 +71,18 @@
             this.checkBoxAddToCurrentProject.Text = "Add to current Project";
             this.checkBoxAddToCurrentProject.UseVisualStyleBackColor = true;
             // 
+            // checkBoxDoAsync
+            // 
+            this.checkBoxDoAsync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxDoAsync.AutoSize = true;
+            this.checkBoxDoAsync.Location = new System.Drawing.Point(184, 356);
+            this.checkBoxDoAsync.Name = "checkBoxDoAsync";
+            this.checkBoxDoAsync.Size = new System.Drawing.Size(170, 17);
+            this.checkBoxDoAsync.TabIndex = 20;
+            this.checkBoxDoAsync.Text = "Use Thread for scan operation";
+            this.checkBoxDoAsync.UseVisualStyleBackColor = true;
+            this.checkBoxDoAsync.Visible = false;
+            // 
             // typeLibBrowserControl1
             // 
             this.typeLibBrowserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -82,17 +94,6 @@
             this.typeLibBrowserControl1.TabIndex = 19;
             this.typeLibBrowserControl1.DoubleClick += new System.EventHandler(this.typeLibBrowserControl1_DoubleClick);
             this.typeLibBrowserControl1.Click += new System.EventHandler(this.typeLibBrowserControl1_Click);
-            // 
-            // checkBoxDoAsync
-            // 
-            this.checkBoxDoAsync.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxDoAsync.AutoSize = true;
-            this.checkBoxDoAsync.Location = new System.Drawing.Point(184, 356);
-            this.checkBoxDoAsync.Name = "checkBoxDoAsync";
-            this.checkBoxDoAsync.Size = new System.Drawing.Size(138, 17);
-            this.checkBoxDoAsync.TabIndex = 20;
-            this.checkBoxDoAsync.Text = "Use Backgroundworker";
-            this.checkBoxDoAsync.UseVisualStyleBackColor = true;
             // 
             // FormTypeLibBrowser
             // 

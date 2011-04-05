@@ -665,7 +665,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     description = rk.GetValue(values[0]) as string;
                 rk.Close();
             }
-
+            if (description == "Office, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71E9BCE111E9429C")
+            { 
+            }
             return description;
         }
     }

@@ -24,8 +24,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         XDocument                _document;
         XmlSchemaSet             _schemaSet;
         XmlSchema                _schema;
-        
-        BackgroundWorker        _worker;
+
+        ThreadJob               _threadJob;
         bool                    _doAsync;
         bool                    _addToCurrentProject;
         string[]                _files;
@@ -41,20 +41,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         #endregion
 
         #region Properties
-
-        public bool CancellationPending
+        
+        public bool IsAlive
         {
             get
             {
-                return _worker.CancellationPending;
-            }
-        }
-
-        public bool IsBusy
-        {
-            get
-            {
-                return _worker.IsBusy;
+                return _threadJob.IsAlive;
             }
         }
 
@@ -88,25 +80,22 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
         public Analyzer()
         {
-            _worker = new BackgroundWorker();
-            _worker.WorkerSupportsCancellation = true;
-            _worker.WorkerReportsProgress = true;
-            _worker.DoWork += new DoWorkEventHandler(worker_DoWork);
-            _worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
-            _worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
-            ResetDocument();
+            _threadJob = new ThreadJob();
+            _threadJob.DoWork += new System.Threading.ThreadStart(threadJob_DoWork);
+            _threadJob.RunWorkerCompleted += new ThreadCompletedEventHandler(threadJob_RunWorkerCompleted);
+             ResetDocument();
         }
 
         #endregion
 
         #region Backgroundworker
 
-        public void CancelAsync()
+        public void Abort()
         {
-            _worker.CancelAsync();
+            _threadJob.Abort();
         }
 
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void threadJob_DoWork()
         {
             try
             {
@@ -163,19 +152,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
             catch (Exception throwedException)
             {
-                if (false == _worker.CancellationPending)
-                    throw (throwedException);
+                throw (throwedException);
             }
         }
 
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        { 
-            string message = e.UserState as string;
-            if (null != Update)
-                Update(this, message);
-        }
-
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void threadJob_RunWorkerCompleted()
         {
             if (null != Finish)
                 Finish(_timeElapsed);
@@ -187,13 +168,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="message"></param>
         private void DoUpdate(string message)
         {
-            if (true == _worker.WorkerReportsProgress)
-                _worker.ReportProgress(0, message);
-            else
-            {
-                if (null != Update)
-                    Update(this, message);
-            }
+            if (null != Update)
+                Update(this, message);
         }
 
         #endregion
@@ -209,16 +185,15 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         public void LoadTypeLibraries(string[] files, bool addToCurrentProject, bool doAsync)
         {
             _doAsync = doAsync;
-            _worker.WorkerReportsProgress = doAsync;
             _files = files;
             _addToCurrentProject = addToCurrentProject;
 
             if (true == doAsync)
-                _worker.RunWorkerAsync();
+                _threadJob.Start();
             else
-            { 
-                worker_DoWork(null, new DoWorkEventArgs(null));
-                worker_RunWorkerCompleted(null, new RunWorkerCompletedEventArgs(null, null, false));
+            {
+                threadJob_DoWork();
+                threadJob_RunWorkerCompleted();
             }
         }
 
@@ -793,29 +768,36 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     {
                         if (itemLib.ContainingFile == containingFile)
                         {
-                            XElement dependLibNode = (from a in libNode.Elements("DependLib")
-                                                      where a.Attribute("Name").Value.Equals(itemLib.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                                                      a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(itemLib), StringComparison.InvariantCultureIgnoreCase)
-                                                      select a).FirstOrDefault();
-                            if (null == dependLibNode)
-                            { 
-                                dependLibNode = new XElement("DependLib",
-                                           new XAttribute("Name", itemLib.Name),
-                                           new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
-                               
-                                libNode.Add(dependLibNode);
-                            }
-
                             found = true;
                             break;
                         }
                     }
-                   
+
                     if (false == found)
                     {
                         TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
                         list.Add(libInfo);
                         AddTypeLibToDocument(libInfo);
+                    }
+                   
+                    foreach (TypeLibInfo itemLib in list)
+                    {
+                        if (itemLib.ContainingFile == containingFile)
+                        {
+                            XElement dependLibNode = (from a in libNode.Elements("DependLib")
+                                                      where a.Attribute("Name").Value.Equals(itemLib.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                                                      a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(itemLib), StringComparison.InvariantCultureIgnoreCase)
+                                                      select a).FirstOrDefault();
+
+                            if (null == dependLibNode)
+                            {
+                                dependLibNode = new XElement("DependLib",
+                                           new XAttribute("Name", itemLib.Name),
+                                           new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
+
+                                libNode.Add(dependLibNode);
+                            }
+                        }
                     }
                 }
 
@@ -829,19 +811,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                          containingFile = paramTypeInfo.TypeLibInfoExternal.ContainingFile;
                          foreach (TypeLibInfo itemLib in list)
                          {
+                            
                              if (itemLib.ContainingFile == containingFile)
                              {
-                                 XElement dependLibNode = (from a in libNode.Elements("DependLib")
-                                                           where a.Attribute("Name").Value.Equals(itemLib.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                                                           a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(itemLib), StringComparison.InvariantCultureIgnoreCase)
-                                                           select a).FirstOrDefault();
-                                 if (null == dependLibNode)
-                                 {
-                                     dependLibNode = new XElement("DependLib",
-                                           new XAttribute("Name", itemLib.Name),
-                                           new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
-                                    libNode.Add(dependLibNode);
-                                 }
                                  found = true;
                                  break;
                              }
@@ -853,6 +825,27 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                              list.Add(libInfo);
                              AddTypeLibToDocument(libInfo);
                          }
+
+                         foreach (TypeLibInfo itemLib in list)
+                         {
+                             if (itemLib.ContainingFile == containingFile)
+                             {
+                                 XElement dependLibNode = (from a in libNode.Elements("DependLib")
+                                                           where a.Attribute("Name").Value.Equals(itemLib.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                                                           a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(itemLib), StringComparison.InvariantCultureIgnoreCase)
+                                                           select a).FirstOrDefault();
+
+                                 if (null == dependLibNode)
+                                 {
+                                     dependLibNode = new XElement("DependLib",
+                                                new XAttribute("Name", itemLib.Name),
+                                                new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
+
+                                     libNode.Add(dependLibNode);
+                                 }
+                             }
+                         }
+
                     }
 
                     Marshal.ReleaseComObject(paramTypeInfo);

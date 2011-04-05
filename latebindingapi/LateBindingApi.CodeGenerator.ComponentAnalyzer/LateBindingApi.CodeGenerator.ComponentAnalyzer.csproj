@@ -53,6 +53,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="PropertyHandler.cs" />
+    <Compile Include="ThreadJob.cs" />
     <Compile Include="TypeDescriptor.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>

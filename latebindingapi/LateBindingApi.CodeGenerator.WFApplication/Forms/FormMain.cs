@@ -154,19 +154,33 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             }
         }
 
+        private void UpdateStrip()
+        {
+            statusStripMain.Items[0].Text = statusStripMain.Tag as string;
+        }
+
         void comAnalyzer_Update(object sender, string message)
         {
             try
             {
-                statusStripMain.Items[0].Text = message;
-                statusStripMain.Refresh();
+                
+                if (true == statusStripMain.InvokeRequired)
+                {
+                    statusStripMain.Tag = message;
+                    statusStripMain.Invoke(new MethodInvoker(UpdateStrip));
+                }
+                else
+                {  
+                    statusStripMain.Items[0].Text = message;
+                    statusStripMain.Refresh();
+                }
+                
             }
             catch (Exception throwedException)
             {
                 FormShowError formError = new FormShowError(throwedException);
                 formError.ShowDialog(this);
             }
-
         }
 
         private void libraryTreeBrowser_AfterSelect(object sender, TreeViewEventArgs e)
@@ -220,8 +234,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             try
             {
                 // abort async operation
-                if ((true == _comAnalyzer.DoAsync) && (true == _comAnalyzer.IsBusy))
-                    _comAnalyzer.CancelAsync();
+                if ((true == _comAnalyzer.DoAsync) && (true == _comAnalyzer.IsAlive))
+                    _comAnalyzer.Abort();
             }
             catch (Exception throwedException)
             {

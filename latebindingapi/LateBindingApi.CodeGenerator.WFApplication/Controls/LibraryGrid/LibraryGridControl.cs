@@ -57,7 +57,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid
                     cell.Style.BackColor = GetCellColor(columnName);
 	            }
             }
-
+            
             foreach (var item in node.Elements("Library"))
             {
                 string libName = item.Attribute("Description").Value;
