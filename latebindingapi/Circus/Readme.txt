@@ -1,0 +1,1 @@
+This is a VB6 dummy project to see the typelib analyzer scan the most common COM datatypes correctly.

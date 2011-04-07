@@ -28,43 +28,45 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGridLibraries = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridLibraries)).BeginInit();
+            this.gridSolution = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.gridSolution)).BeginInit();
             this.SuspendLayout();
             // 
-            // dataGridLibraries
+            // gridSolution
             // 
-            this.dataGridLibraries.AllowUserToAddRows = false;
-            this.dataGridLibraries.AllowUserToDeleteRows = false;
-            this.dataGridLibraries.BackgroundColor = System.Drawing.Color.DarkKhaki;
-            this.dataGridLibraries.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
-            this.dataGridLibraries.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridLibraries.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridLibraries.EnableHeadersVisualStyles = false;
-            this.dataGridLibraries.Location = new System.Drawing.Point(0, 0);
-            this.dataGridLibraries.MultiSelect = false;
-            this.dataGridLibraries.Name = "dataGridLibraries";
-            this.dataGridLibraries.RowHeadersVisible = false;
-            this.dataGridLibraries.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dataGridLibraries.ShowCellToolTips = false;
-            this.dataGridLibraries.ShowEditingIcon = false;
-            this.dataGridLibraries.Size = new System.Drawing.Size(749, 323);
-            this.dataGridLibraries.TabIndex = 12;
+            this.gridSolution.AllowUserToAddRows = false;
+            this.gridSolution.AllowUserToDeleteRows = false;
+            this.gridSolution.BackgroundColor = System.Drawing.Color.DarkKhaki;
+            this.gridSolution.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
+            this.gridSolution.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridSolution.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridSolution.EnableHeadersVisualStyles = false;
+            this.gridSolution.Location = new System.Drawing.Point(0, 0);
+            this.gridSolution.MultiSelect = false;
+            this.gridSolution.Name = "gridSolution";
+            this.gridSolution.RowHeadersVisible = false;
+            this.gridSolution.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.gridSolution.ShowCellToolTips = false;
+            this.gridSolution.ShowEditingIcon = false;
+            this.gridSolution.Size = new System.Drawing.Size(747, 321);
+            this.gridSolution.TabIndex = 12;
+            this.gridSolution.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridSolution_CellValueChanged);
             // 
             // SolutionGridControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.dataGridLibraries);
+            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.gridSolution);
             this.Name = "SolutionGridControl";
-            this.Size = new System.Drawing.Size(749, 323);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridLibraries)).EndInit();
+            this.Size = new System.Drawing.Size(747, 321);
+            ((System.ComponentModel.ISupportInitialize)(this.gridSolution)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridLibraries;
+        private System.Windows.Forms.DataGridView gridSolution;
     }
 }

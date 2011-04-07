@@ -43,14 +43,15 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
-            this.statusStripMain = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
             this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
             this.enumGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl();
             this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
             this.projectGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl();
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
+            this.statusStripMain = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.solutionGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -181,6 +182,7 @@
             // 
             // splitContainerMain.Panel2
             // 
+            this.splitContainerMain.Panel2.Controls.Add(this.solutionGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.classGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.enumGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.interfaceGrid);
@@ -190,21 +192,6 @@
             this.splitContainerMain.SplitterDistance = 301;
             this.splitContainerMain.TabIndex = 25;
             this.splitContainerMain.Visible = false;
-            // 
-            // statusStripMain
-            // 
-            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
-            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
-            this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
-            this.statusStripMain.TabIndex = 26;
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
             // libraryTreeBrowser
             // 
@@ -258,6 +245,29 @@
             this.libraryGrid.TabIndex = 0;
             this.libraryGrid.Visible = false;
             // 
+            // statusStripMain
+            // 
+            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
+            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
+            this.statusStripMain.Name = "statusStripMain";
+            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
+            this.statusStripMain.TabIndex = 26;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
+            this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
+            // 
+            // solutionGrid
+            // 
+            this.solutionGrid.Location = new System.Drawing.Point(272, 340);
+            this.solutionGrid.Name = "solutionGrid";
+            this.solutionGrid.Size = new System.Drawing.Size(148, 77);
+            this.solutionGrid.TabIndex = 5;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -307,6 +317,7 @@
         private LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl interfaceGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl enumGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl classGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl solutionGrid;
     }
 }
 

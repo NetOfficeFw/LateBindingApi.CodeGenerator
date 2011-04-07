@@ -66,6 +66,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser
 
             // show projects
             TreeNode treeSolution = treeViewComponents.Nodes.Add("Solution");
+            treeSolution.Tag = node.Element("Solution");
             treeSolution.Expand();
             foreach (var item in node.Element("Solution").Element("Projects").Elements("Project"))
             {
