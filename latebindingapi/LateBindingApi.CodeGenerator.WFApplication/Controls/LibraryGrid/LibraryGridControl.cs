@@ -60,12 +60,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid
             
             foreach (var item in node.Elements("Library"))
             {
-                string libName = item.Attribute("Description").Value;
-                textBoxDepends.AppendText(libName + Environment.NewLine);
+                string libName = item.Attribute("Name").Value;
+                string libDesc = item.Attribute("Description").Value;
+                textBoxDepends.AppendText(libName + " - " + libDesc + Environment.NewLine);
                 foreach (var depend in item.Elements("DependLib"))
                 {
-                    string dependName = depend.Attribute("Description").Value;
-                    textBoxDepends.AppendText("\t" + dependName + Environment.NewLine);
+                    string dependName = depend.Attribute("Name").Value;
+                    string dependDesc = depend.Attribute("Description").Value;
+                    textBoxDepends.AppendText("\t" + dependName + " - " + dependDesc + Environment.NewLine);
                 }
             }
 
@@ -97,10 +99,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid
                     newColumn.ReadOnly = false;
 
                 if (newColumn.Name == "Description")
-                {
                     newColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill; 
-                    newColumn.ReadOnly = false;
-                }
 
             }           
             _isInitialized = true;

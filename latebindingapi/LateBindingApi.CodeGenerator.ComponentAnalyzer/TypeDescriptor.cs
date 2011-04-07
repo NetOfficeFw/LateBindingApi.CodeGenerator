@@ -60,7 +60,20 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <returns></returns>
         internal static bool IsRef(VarTypeInfo typeInfo)
         {
-            return false;
+            if( (typeInfo.VarType == TliVarType.VT_EMPTY) || ( typeInfo.VarType == TliVarType.VT_ARRAY) )
+            {
+                if (typeInfo.PointerLevel > 1)
+                    return true;
+                else
+                    return false;
+            }
+            else
+            {
+                if (typeInfo.PointerLevel > 0)
+                    return true;
+                else
+                    return false;
+            }
         }
 
         /// <summary>
@@ -70,8 +83,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <returns></returns>
         internal static bool IsArray(VarTypeInfo typeInfo)
         {
-
-            return false;
+            if (typeInfo.VarType == TliVarType.VT_ARRAY)
+                return true;
+            else
+            {
+                bool isKnown = Enum.IsDefined(typeInfo.VarType.GetType(), typeInfo.VarType);
+                return !isKnown;
+            }
         }
         
         /// <summary>
@@ -389,65 +407,58 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="typeInfo"></param>
         /// <returns></returns>
         internal static string FormattedType(VarTypeInfo typeInfo, bool convertUnkownToApiTypes)
-        {
+        { 
             switch (typeInfo.VarType)
             {
                 case TliVarType.VT_EMPTY:        // Type in Component
+                case TliVarType.VT_ARRAY:
                     return typeInfo.TypeInfo.Name;
-
-                case TliVarType.VT_I4:           // Int32
-                case TliVarType.VT_INT:          // Int32
-                    return "Int32";
-                case TliVarType.VT_R8:           // Double
-                    return "Double";
-                case TliVarType.VT_LPSTR:
-                case TliVarType.VT_LPWSTR:
-                case TliVarType.VT_BSTR:         // String
-                    return "string";
-                 
-                case TliVarType.VT_BOOL:         // Bool
-                    return "bool";
-                case TliVarType.VT_VOID:
-                    return "void";               // Void
+                case TliVarType.VT_CY:
+                    return "float";
+                case TliVarType.VT_DATE:
+                    return "DateTime";
+                case TliVarType.VT_UI1:
+                    return "byte";
+                case TliVarType.VT_R4:
+                    return "Single";
+                case TliVarType.VT_I1:
+                case TliVarType.VT_I2:
+                case TliVarType.VT_UI2:
+                    return "Int16";
+                case TliVarType.VT_I4:
+                case TliVarType.VT_UI4:
+                case TliVarType.VT_INT:
                 case TliVarType.VT_HRESULT:
                     return "Int32";
-
-                case TliVarType.VT_UNKNOWN:      // COMProxy
-                case TliVarType.VT_DISPATCH:     // COMProxy
-                    
+                case TliVarType.VT_I8:
+                case TliVarType.VT_UI8:
+                    return "Int64";
+                case TliVarType.VT_R8:          
+                    return "Double";
+                case TliVarType.VT_DECIMAL:
+                    return "decimal";
+                case TliVarType.VT_UINT:
+                    return "UIntPtr";
+                case TliVarType.VT_LPSTR:
+                case TliVarType.VT_LPWSTR:
+                case TliVarType.VT_BSTR:         
+                    return "string";
+                case TliVarType.VT_BOOL:        
+                    return "bool";
+                case TliVarType.VT_VOID:
+                    return "void";
+                case TliVarType.VT_UNKNOWN:
+                case TliVarType.VT_DISPATCH:
                     if(true == convertUnkownToApiTypes)
                         return "COMProxy";
                     else
                         return "object";
-
                 case TliVarType.VT_VARIANT:
-
                     if (true == convertUnkownToApiTypes)
                         return "COMVariant";
                     else
                         return "object";
-
-                /*Unkown*/
-                case TliVarType.VT_R4:
-                    return "Single";
-                case TliVarType.VT_I2:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_I1:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_I8:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_UI1:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_UI2:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_UI4:
-                    return typeInfo.TypedVariant.GetType().Name;
-                case TliVarType.VT_UI8:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_UINT:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_DECIMAL:
-                    return typeInfo.VarType.ToString();
+                /*Unkown*/  
                  case TliVarType.VT_FILETIME:
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_BLOB:
@@ -468,8 +479,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_VECTOR:
                     return typeInfo.VarType.ToString();
-                case TliVarType.VT_ARRAY:
-                    return typeInfo.VarType.ToString();
                 case TliVarType.VT_BYREF:
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_RESERVED:
@@ -486,17 +495,42 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_ERROR:
                     return typeInfo.VarType.ToString();
-                case TliVarType.VT_CY:
-                    return typeInfo.VarType.ToString();
-                case TliVarType.VT_DATE:
-                    return typeInfo.VarType.ToString();
                 default:
-                    if (true == convertUnkownToApiTypes)
-                        return "COMVariant";
-                    else
-                        return "object";
+                    int i = Convert.ToInt32(typeInfo.VarType);
+                    switch (i)
+                    {
+                        case 8194:
+                            return "Int16";
+                        case 8195:
+                            return "Int32";
+                        case 8196:
+                            return "Single";
+                        case 8197:
+                            return "Double";
+                        case 8198:
+                            return "float";
+                        case 8199:
+                            return "DateTime";
+                        case 8200:
+                            return "String";
+                        case 8201:
+                            if (true == convertUnkownToApiTypes)
+                                return "COMProxy";
+                            else
+                                return "object";
+                        case 8204:
+                            if (true == convertUnkownToApiTypes)
+                                return "COMVariant";
+                            else
+                                return "object";
+                        case 8203:
+                            return "bool";
+                        case 8209:
+                            return "byte";
 
-                //throw (new ArgumentException("Unkown ReturnType " + typeInfo.VarType.ToString()));
+                        default:
+                            return i.ToString();
+                    }
             }
         }
 
@@ -665,9 +699,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     description = rk.GetValue(values[0]) as string;
                 rk.Close();
             }
-            if (description == "Office, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71E9BCE111E9429C")
-            { 
-            }
+
             return description;
         }
     }

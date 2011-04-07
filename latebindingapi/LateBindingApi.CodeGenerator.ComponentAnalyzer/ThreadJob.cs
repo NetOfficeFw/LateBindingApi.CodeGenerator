@@ -9,7 +9,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     public delegate void ThreadProgressHandler();
     public delegate void ThreadCompletedEventHandler();
 
-    public class ThreadJob
+    internal class ThreadJob
     {
         Thread _thread = null;
         private System.Windows.Forms.Timer _endTimer;
@@ -40,7 +40,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             _endTimer.Enabled = true;
         }
 
-        void _endTimer_Tick(object sender, EventArgs e)
+        public void Abort()
+        {
+            _thread.Abort();
+        }
+
+        private void _endTimer_Tick(object sender, EventArgs e)
         {
             if (false == _thread.IsAlive)
             {
@@ -49,11 +54,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                 _endTimer.Enabled = false;
             }
-        }
-
-        public void Abort()
-        {
-            _thread.Abort();
         }
     }
 }

@@ -282,10 +282,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             var node = (from a in _document.Descendants("Libraries").Elements("Library")
                         where a.Attribute("GUID").Value.Equals(guid) &&
                               a.Attribute("Name").Value.Equals(libInfo.Name) &&
+                              a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(libInfo)) &&
                               a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
                               a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
                         select a).FirstOrDefault();
-
+              
             if (null == node)
             {
                 node = new XElement("Library",
@@ -453,10 +454,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     var classNode = CreateCoClassNode(classes, itemClass);
                     AddDispatchIdToEntityNode(library, classNode, Utils.EncodeGuid(itemClass.GUID));
                     
-                    // default 
-                    // event
-                    // inherited
-
                     var refComponents = classNode.Elements("RefLibraries").FirstOrDefault();
                     AddLibraryKeyToRefLibraries(library, refComponents);
 
@@ -477,6 +474,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             var library = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Libraries").Elements("Library")
                              where a.Attribute("GUID").Value.Equals(guid) &&
                                    a.Attribute("Name").Value.Equals(libInfo.Name) &&
+                                   a.Attribute("Description").Value.Equals(TypeDescriptor.GetTypeLibDescription(libInfo)) &&
                                    a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
                                    a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
                              select a).FirstOrDefault();

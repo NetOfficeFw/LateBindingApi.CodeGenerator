@@ -156,14 +156,21 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 
         private void UpdateStrip()
         {
-            statusStripMain.Items[0].Text = statusStripMain.Tag as string;
+            try
+            {
+                statusStripMain.Items[0].Text = statusStripMain.Tag as string;
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
         }
 
         void comAnalyzer_Update(object sender, string message)
         {
             try
             {
-                
                 if (true == statusStripMain.InvokeRequired)
                 {
                     statusStripMain.Tag = message;

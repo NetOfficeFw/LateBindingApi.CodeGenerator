@@ -32,8 +32,8 @@
             this.tabControlLibraries = new System.Windows.Forms.TabControl();
             this.tabLibraries = new System.Windows.Forms.TabPage();
             this.tabDepends = new System.Windows.Forms.TabPage();
-            this.tabSource = new System.Windows.Forms.TabPage();
             this.textBoxDepends = new System.Windows.Forms.TextBox();
+            this.tabSource = new System.Windows.Forms.TabPage();
             this.sourceControl = new LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit.SourceEditControl();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridLibraries)).BeginInit();
             this.tabControlLibraries.SuspendLayout();
@@ -96,6 +96,18 @@
             this.tabDepends.Text = "Depends";
             this.tabDepends.UseVisualStyleBackColor = true;
             // 
+            // textBoxDepends
+            // 
+            this.textBoxDepends.BackColor = System.Drawing.Color.DarkKhaki;
+            this.textBoxDepends.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxDepends.Location = new System.Drawing.Point(3, 3);
+            this.textBoxDepends.Multiline = true;
+            this.textBoxDepends.Name = "textBoxDepends";
+            this.textBoxDepends.ReadOnly = true;
+            this.textBoxDepends.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxDepends.Size = new System.Drawing.Size(809, 302);
+            this.textBoxDepends.TabIndex = 0;
+            // 
             // tabSource
             // 
             this.tabSource.Controls.Add(this.sourceControl);
@@ -105,17 +117,6 @@
             this.tabSource.TabIndex = 2;
             this.tabSource.Text = "Source";
             this.tabSource.UseVisualStyleBackColor = true;
-            // 
-            // textBoxDepends
-            // 
-            this.textBoxDepends.BackColor = System.Drawing.Color.DarkKhaki;
-            this.textBoxDepends.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxDepends.Location = new System.Drawing.Point(3, 3);
-            this.textBoxDepends.Multiline = true;
-            this.textBoxDepends.Name = "textBoxDepends";
-            this.textBoxDepends.ReadOnly = true;
-            this.textBoxDepends.Size = new System.Drawing.Size(809, 302);
-            this.textBoxDepends.TabIndex = 0;
             // 
             // sourceControl
             // 

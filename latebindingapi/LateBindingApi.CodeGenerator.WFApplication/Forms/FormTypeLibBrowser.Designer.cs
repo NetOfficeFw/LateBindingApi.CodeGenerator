@@ -81,7 +81,6 @@
             this.checkBoxDoAsync.TabIndex = 20;
             this.checkBoxDoAsync.Text = "Use Thread for scan operation";
             this.checkBoxDoAsync.UseVisualStyleBackColor = true;
-            this.checkBoxDoAsync.Visible = false;
             // 
             // typeLibBrowserControl1
             // 
