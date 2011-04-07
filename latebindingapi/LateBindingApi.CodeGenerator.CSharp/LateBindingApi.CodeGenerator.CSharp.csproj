@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LateBindingApi.CodeGenerator.CSharp</RootNamespace>
     <AssemblyName>LateBindingApi.CodeGenerator.CSharp</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -32,12 +32,38 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="FormConfigDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormConfigDialog.Designer.cs">
+      <DependentUpon>FormConfigDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj">
+      <Project>{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}</Project>
+      <Name>LateBindingApi.CodeGenerator.ComponentAnalyzer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FormConfigDialog.resx">
+      <DependentUpon>FormConfigDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -66,9 +66,9 @@
             this.checkBoxAddToCurrentProject.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxAddToCurrentProject.Location = new System.Drawing.Point(36, 356);
             this.checkBoxAddToCurrentProject.Name = "checkBoxAddToCurrentProject";
-            this.checkBoxAddToCurrentProject.Size = new System.Drawing.Size(129, 17);
+            this.checkBoxAddToCurrentProject.Size = new System.Drawing.Size(128, 17);
             this.checkBoxAddToCurrentProject.TabIndex = 18;
-            this.checkBoxAddToCurrentProject.Text = "Add to current Project";
+            this.checkBoxAddToCurrentProject.Text = "Add to current project";
             this.checkBoxAddToCurrentProject.UseVisualStyleBackColor = true;
             // 
             // checkBoxDoAsync
@@ -77,9 +77,9 @@
             this.checkBoxDoAsync.AutoSize = true;
             this.checkBoxDoAsync.Location = new System.Drawing.Point(184, 356);
             this.checkBoxDoAsync.Name = "checkBoxDoAsync";
-            this.checkBoxDoAsync.Size = new System.Drawing.Size(170, 17);
+            this.checkBoxDoAsync.Size = new System.Drawing.Size(166, 17);
             this.checkBoxDoAsync.TabIndex = 20;
-            this.checkBoxDoAsync.Text = "Use Thread for scan operation";
+            this.checkBoxDoAsync.Text = "Execute on a separate thread";
             this.checkBoxDoAsync.UseVisualStyleBackColor = true;
             // 
             // typeLibBrowserControl1

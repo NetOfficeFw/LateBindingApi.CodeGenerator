@@ -126,7 +126,21 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 
         private void menuItemGenerateCode_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                FormGeneratorBrowser formBrowser = new FormGeneratorBrowser();
+                if (DialogResult.OK == formBrowser.ShowDialog(this))
+                {
+                    ICodeGenerator generator = formBrowser.Selected;
+                    if (DialogResult.OK == generator.ShowConfigDialog(this))
+                        generator.Generate(_comAnalyzer.Document); 
+                }
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
         }
 
         #endregion

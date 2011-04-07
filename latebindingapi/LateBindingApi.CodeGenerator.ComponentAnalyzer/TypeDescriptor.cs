@@ -527,7 +527,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             return "bool";
                         case 8209:
                             return "byte";
-
                         default:
                             return i.ToString();
                     }

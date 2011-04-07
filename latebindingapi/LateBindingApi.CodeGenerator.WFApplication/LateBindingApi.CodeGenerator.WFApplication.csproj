@@ -135,6 +135,12 @@
     <Compile Include="Forms\FormAbout.designer.cs">
       <DependentUpon>FormAbout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormGeneratorBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormGeneratorBrowser.Designer.cs">
+      <DependentUpon>FormGeneratorBrowser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -197,6 +203,9 @@
     <EmbeddedResource Include="Forms\FormAbout.resx">
       <DependentUpon>FormAbout.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormGeneratorBrowser.resx">
+      <DependentUpon>FormGeneratorBrowser.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -230,6 +239,10 @@
     <ProjectReference Include="..\LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj">
       <Project>{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}</Project>
       <Name>LateBindingApi.CodeGenerator.ComponentAnalyzer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LateBindingApi.CodeGenerator.CSharp\LateBindingApi.CodeGenerator.CSharp.csproj">
+      <Project>{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}</Project>
+      <Name>LateBindingApi.CodeGenerator.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
