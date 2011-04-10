@@ -40,8 +40,8 @@
             // 
             // tabControlEntities
             // 
-            this.tabControlEntities.Controls.Add(this.tabSource);
             this.tabControlEntities.Controls.Add(this.tabInherited);
+            this.tabControlEntities.Controls.Add(this.tabSource);
             this.tabControlEntities.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlEntities.Location = new System.Drawing.Point(0, 0);
             this.tabControlEntities.Name = "tabControlEntities";

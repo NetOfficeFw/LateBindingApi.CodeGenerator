@@ -44,6 +44,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
+            this.solutionGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl();
             this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
             this.enumGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl();
             this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
@@ -51,7 +52,7 @@
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.solutionGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl();
+            this.constantGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ConstantGrid.ConstantGridControl();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -182,6 +183,7 @@
             // 
             // splitContainerMain.Panel2
             // 
+            this.splitContainerMain.Panel2.Controls.Add(this.constantGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.solutionGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.classGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.enumGrid);
@@ -202,6 +204,14 @@
             this.libraryTreeBrowser.Size = new System.Drawing.Size(301, 437);
             this.libraryTreeBrowser.TabIndex = 0;
             this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
+            // 
+            // solutionGrid
+            // 
+            this.solutionGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.solutionGrid.Location = new System.Drawing.Point(272, 340);
+            this.solutionGrid.Name = "solutionGrid";
+            this.solutionGrid.Size = new System.Drawing.Size(148, 77);
+            this.solutionGrid.TabIndex = 5;
             // 
             // classGrid
             // 
@@ -261,12 +271,13 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
             this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
             // 
-            // solutionGrid
+            // constantGrid
             // 
-            this.solutionGrid.Location = new System.Drawing.Point(272, 340);
-            this.solutionGrid.Name = "solutionGrid";
-            this.solutionGrid.Size = new System.Drawing.Size(148, 77);
-            this.solutionGrid.TabIndex = 5;
+            this.constantGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.constantGrid.Location = new System.Drawing.Point(476, 311);
+            this.constantGrid.Name = "constantGrid";
+            this.constantGrid.Size = new System.Drawing.Size(104, 90);
+            this.constantGrid.TabIndex = 6;
             // 
             // FormMain
             // 
@@ -318,6 +329,7 @@
         private LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl enumGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl classGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl solutionGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.ConstantGrid.ConstantGridControl constantGrid;
     }
 }
 

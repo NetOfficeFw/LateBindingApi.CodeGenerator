@@ -28,6 +28,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 Settings newSettings = new Settings();
                 newSettings.Folder = textBoxFolder.Text.Trim();
+                newSettings.OpenFolder = checkBoxOpenFolder.Checked; 
                 return newSettings;
             }
         }

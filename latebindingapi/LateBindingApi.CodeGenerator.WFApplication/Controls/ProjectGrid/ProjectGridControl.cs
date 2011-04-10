@@ -74,14 +74,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid
             {
                 dataGridProjects.Columns.Add(item.Name, item.Name);
                 DataGridViewColumn newColumn = dataGridProjects.Columns[dataGridProjects.Columns.Count - 1];
-                newColumn.ReadOnly = true;
-                newColumn.Width = 100;
+                if (newColumn.Name == "Name")
+                    newColumn.ReadOnly = true;
 
-                if (newColumn.Name == "Namespace")
-                {
-                    newColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    newColumn.ReadOnly = false;
-                }
+                if(newColumn.Name == "Namespace")
+                    newColumn.Width = 120;
+                else
+                    newColumn.Width = 60;
+      
             }
             _isInitialized = true;
         }
@@ -130,6 +130,5 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid
         }
 
         #endregion
-    
     }
 }

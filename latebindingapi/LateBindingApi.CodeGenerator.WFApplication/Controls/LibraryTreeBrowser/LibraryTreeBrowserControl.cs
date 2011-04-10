@@ -73,7 +73,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser
                 string projectName = item.Attribute("Name").Value;
                 TreeNode treeProject = treeSolution.Nodes.Add(projectName, projectName);
                 treeProject.Tag = item;
-
+                ShowElements(item, treeProject, "Constants", "Constant");
                 ShowElements(item, treeProject, "Enums", "Enum");
                 ShowElements(item, treeProject, "DispatchInterfaces", "Interface");
                 ShowElements(item, treeProject, "Interfaces", "Interface");

@@ -33,6 +33,7 @@
             this.labelFolder = new System.Windows.Forms.Label();
             this.buttonFolder = new System.Windows.Forms.Button();
             this.labelNotes = new System.Windows.Forms.Label();
+            this.checkBoxOpenFolder = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -99,11 +100,24 @@
             this.labelNotes.TabIndex = 27;
             this.labelNotes.Text = "Click OK to generate a solution with available options";
             // 
+            // checkBoxOpenFolder
+            // 
+            this.checkBoxOpenFolder.AutoSize = true;
+            this.checkBoxOpenFolder.Checked = true;
+            this.checkBoxOpenFolder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxOpenFolder.Location = new System.Drawing.Point(31, 233);
+            this.checkBoxOpenFolder.Name = "checkBoxOpenFolder";
+            this.checkBoxOpenFolder.Size = new System.Drawing.Size(159, 17);
+            this.checkBoxOpenFolder.TabIndex = 28;
+            this.checkBoxOpenFolder.Text = "Open created solution folder";
+            this.checkBoxOpenFolder.UseVisualStyleBackColor = true;
+            // 
             // FormConfigDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(532, 291);
+            this.Controls.Add(this.checkBoxOpenFolder);
             this.Controls.Add(this.labelNotes);
             this.Controls.Add(this.buttonFolder);
             this.Controls.Add(this.labelFolder);
@@ -131,6 +145,7 @@
         private System.Windows.Forms.Label labelFolder;
         private System.Windows.Forms.Button buttonFolder;
         private System.Windows.Forms.Label labelNotes;
+        private System.Windows.Forms.CheckBox checkBoxOpenFolder;
 
     }
 }

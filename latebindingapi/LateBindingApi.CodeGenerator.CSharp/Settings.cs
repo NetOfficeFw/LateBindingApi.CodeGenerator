@@ -10,7 +10,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #region Fields
 
         string _folder;
-
+        bool   _openFolder;
+        
         #endregion
 
         #region Properties
@@ -27,6 +28,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
+        public bool OpenFolder
+        {
+            get
+            {
+                return _openFolder;
+            }
+            internal set
+            {
+                _openFolder = value;
+            }
+        }
         #endregion
 
     }

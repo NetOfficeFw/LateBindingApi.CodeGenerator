@@ -20,6 +20,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     {
         #region Fields
         
+        private readonly string _documentVersion = "0.2";
+        
         TLIApplication           _typeLibApplication;
         XDocument                _document;
         XmlSchemaSet             _schemaSet;
@@ -114,7 +116,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                 DoUpdate("Load Solution");
                 LoadSolution(types);
-
+                
+                DoUpdate("Scan Constants");
+                LoadConstants(types);
+                 
                 DoUpdate("Scan Enums");
                 LoadEnums(types);
 
@@ -141,6 +146,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                 DoUpdate("Scan Event Interfaces");
                 AddEventCoClassInfo(types);
+
+                DoUpdate("Update Project References");
+                UpdateProjectReferences();
 
                 DoUpdate("Finsishing operations");
                 ReleaseTypeLibrariesList(types);
@@ -220,6 +228,102 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         #endregion
         
         #region Private Methods
+
+        /// <summary>
+        ///  returns library node from ref
+        /// </summary>
+        /// <param name="refDependLib"></param>
+        /// <returns></returns>
+        private XElement GetDependLib(XElement refDependLib)
+        {
+            string name = refDependLib.Attribute("Name").Value;
+            string guid = refDependLib.Attribute("GUID").Value;
+            string major = refDependLib.Attribute("Major").Value;
+            string minor = refDependLib.Attribute("Minor").Value;
+            string desc = refDependLib.Attribute("Description").Value;
+
+            XElement dependLibNode = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
+                                 where a.Attribute("Name").Value.Equals(name) &&
+                                   a.Attribute("GUID").Value.Equals(guid) &&
+                                   a.Attribute("Major").Value.Equals(major) &&
+                                   a.Attribute("Minor").Value.Equals(minor) &&
+                                   a.Attribute("Description").Value.Equals(desc)
+                                 select a).FirstOrDefault();
+            return dependLibNode;
+
+        }
+
+        /// <summary>
+        /// returns projects there ref dependLibNode
+        /// </summary>
+        /// <param name="dependLibNode"></param>
+        /// <returns></returns>
+        private List<XElement> GetRefProjects(XElement dependLibNode)
+        {
+            List<XElement> listToReturn = new List<XElement>();
+
+            string dependLibKey = dependLibNode.Attribute("Key").Value;
+            IEnumerable<XElement> projects = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project");
+            foreach (XElement project in projects)
+	        {
+                var refLibNode = (from a in project.Element("RefLibraries").Elements("Ref")
+                                  where a.Attribute("Key").Value.Equals(dependLibKey)
+                                  select a).FirstOrDefault();
+
+                if (null != refLibNode)
+                    listToReturn.Add(project);
+
+	        }
+
+            return listToReturn;
+        }
+
+        /// <summary>
+        ///  add refProjects as ref to project
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="refProjects"></param>
+        private void AddProjectReferences(XElement project, List<XElement> refProjects)
+        {
+            foreach (var item in refProjects)
+            {
+                string key = item.Attribute("Key").Value;
+                var refNode = (from a in project.Element("RefProjects").Elements("RefProject")
+                               where a.Attribute("Key").Value.Equals(key)
+                               select a).FirstOrDefault();
+                if (null == refNode)
+                {
+                    refNode = new XElement("RefProject",
+                        new XAttribute("Key", key));
+
+                    project.Element("RefProjects").Add(refNode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// update project-to-project reference informations
+        /// </summary>
+        void UpdateProjectReferences()
+        {
+            foreach(var project in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").Elements("Project"))
+            {
+                foreach (XElement refLib in project.Element("RefLibraries").Elements())
+                {
+                    string refLibKey = refLib.Attribute("Key").Value;
+                    var refLibNode = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
+                                   where a.Attribute("Key").Value.Equals(refLibKey)
+                                    select a).FirstOrDefault();
+
+                    foreach (XElement dependLib in refLibNode.Elements("DependLib"))
+                    {
+                        XElement dependLibNode = GetDependLib(dependLib);
+                        List<XElement> refProjects = GetRefProjects(dependLibNode);
+                        AddProjectReferences(project, refProjects); 
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// load all typelib files
@@ -308,6 +412,47 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         }
 
         /// <summary>
+        /// load all constantinfos to document
+        /// </summary>
+        /// <param name="typelibs"></param>
+        private void LoadConstants(List<TypeLibInfo> typelibs)
+        {
+            foreach (TypeLibInfo item in typelibs)
+            {
+                var library = GetLibraryNode(item);
+                var project = GetProjectNode(item.Name);
+                var consts = project.Elements("Constants").FirstOrDefault();
+
+                TLI.Constants constants = item.Constants;
+                foreach (TLI.ConstantInfo itemConstant in constants)
+                {
+                    if (itemConstant.TypeKind == TypeKinds.TKIND_MODULE)
+                    {
+                        var constantNode = CreateConstantNode(consts, itemConstant);
+
+                        var refComponents = constantNode.Elements("RefLibraries").FirstOrDefault();
+                        AddLibraryKeyToRefLibraries(library, refComponents);
+
+                        TLI.Members members = itemConstant.Members;
+                        foreach (TLI.MemberInfo itemMember in members)
+                        {
+                            var membersNode = constantNode.Element("Members");
+                            var memberNode = CreateConstantMemberNode(membersNode, itemMember);
+
+                            refComponents = memberNode.Elements("RefLibraries").FirstOrDefault();
+                            AddLibraryKeyToRefLibraries(library, refComponents);
+
+                            Marshal.ReleaseComObject(itemMember);
+                        }
+                        Marshal.ReleaseComObject(members);
+                    }
+                    Marshal.ReleaseComObject(itemConstant);
+                }
+                Marshal.ReleaseComObject(constants);
+            }
+        }
+
+        /// <summary>
         /// load all enuminfos to document
         /// </summary>
         /// <param name="typelibs"></param>
@@ -315,31 +460,33 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         {
             foreach (TypeLibInfo item in typelibs)
             {
-                var library    = GetLibraryNode(item);
+                var library   = GetLibraryNode(item);
                 var project   = GetProjectNode(item.Name);
                 var enums     = project.Elements("Enums").FirstOrDefault();
 
                 TLI.Constants constants = item.Constants;
                 foreach (TLI.ConstantInfo itemConstant in constants)
                 {
-                    var enumNode = CreateEnumNode(enums, itemConstant);
+                    if (itemConstant.TypeKind == TypeKinds.TKIND_ENUM)
+                    { 
+                        var enumNode = CreateEnumNode(enums, itemConstant);
 
-                    var refComponents = enumNode.Elements("RefLibraries").FirstOrDefault();
-                    AddLibraryKeyToRefLibraries(library, refComponents);
-
-                    TLI.Members members = itemConstant.Members;
-                    foreach (TLI.MemberInfo itemMember in members)
-                    {
-                        var membersNode = enumNode.Element("Members");
-                        var memberNode = CreateEnumMemberNode(membersNode, itemMember);
-
-                        refComponents = memberNode.Elements("RefLibraries").FirstOrDefault();
+                        var refComponents = enumNode.Elements("RefLibraries").FirstOrDefault();
                         AddLibraryKeyToRefLibraries(library, refComponents);
+                     
+                        TLI.Members members = itemConstant.Members;
+                        foreach (TLI.MemberInfo itemMember in members)
+                        {
+                            var membersNode = enumNode.Element("Members");
+                            var memberNode = CreateEnumMemberNode(membersNode, itemMember);
 
-                        Marshal.ReleaseComObject(itemMember);
+                            refComponents = memberNode.Elements("RefLibraries").FirstOrDefault();
+                            AddLibraryKeyToRefLibraries(library, refComponents);
+
+                            Marshal.ReleaseComObject(itemMember);
+                        }
+                        Marshal.ReleaseComObject(members);
                     }
-                    Marshal.ReleaseComObject(members);
-
                     Marshal.ReleaseComObject(itemConstant);
                 }
                 Marshal.ReleaseComObject(constants);
@@ -362,17 +509,41 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 if (null == node)
                 {
                     node = new XElement("Project",
+                               new XElement("Constants"),
                                new XElement("Enums"),
                                new XElement("CoClasses"),
                                new XElement("DispatchInterfaces"),
                                new XElement("Interfaces"),
                                new XElement("RefLibraries"),
+                               new XElement("RefProjects"),
                                new XAttribute("Name",        item.Name),
                                new XAttribute("Namespace",   "LateBindingApi." + item.Name),
-                               new XAttribute("Key",         Utils.NewEncodedGuid()));
+                               new XAttribute("Key",         Utils.NewEncodedGuid()),
+                               new XAttribute("Description",        ""),
+                               new XAttribute("Configuration", ""),
+                               new XAttribute("Company", ""),
+                               new XAttribute("Product", ""),
+                               new XAttribute("Copyright", ""),
+                               new XAttribute("Trademark", ""),
+                               new XAttribute("Culture", ""),
+                               new XAttribute("Version", "1.0.0.0"),
+                               new XAttribute("FileVersion", "1.0.0.0") );
 
                     var projects = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").FirstOrDefault();
                     projects.Add(node);
+                }
+                
+                // add library reference
+                XElement libNode = GetLibraryNode(item);
+                string libKey = libNode.Attribute("Key").Value;
+                XElement refLibnode = (from a in node.Element("RefLibraries").Elements("Ref")
+                                       where a.Attribute("Key").Value.Equals(libKey)
+                                       select a).FirstOrDefault();
+                if (null == refLibnode)
+                {
+                    refLibnode = new XElement("Ref",
+                         new XAttribute("Key", libKey));
+                    node.Element("RefLibraries").Add(refLibnode);
                 }
             }
         }
@@ -657,6 +828,33 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         }
 
         /// <summary>
+        /// create new constant node or get existing
+        /// </summary>
+        /// <param name="enums"></param>
+        /// <param name="itemConstant"></param>
+        /// <returns></returns>
+        private XElement CreateConstantNode(XElement constants, TLI.ConstantInfo itemConstant)
+        {
+            // check const exists
+            var constNode = (from a in constants.Elements()
+                            where a.Attribute("Name").Value.Equals(itemConstant.Name, StringComparison.InvariantCultureIgnoreCase)
+                            select a).FirstOrDefault();
+
+            if (null == constNode)
+            {
+                constNode = new XElement("Constant",
+                               new XElement("Members"),
+                               new XElement("RefLibraries"),
+                               new XAttribute("Name", itemConstant.Name),
+                               new XAttribute("Key", Utils.NewEncodedGuid()));
+
+                constants.Add(constNode);
+            }
+
+            return constNode;
+        }
+
+        /// <summary>
         /// create new enum node or get existing
         /// </summary>
         /// <param name="enums"></param>
@@ -681,6 +879,33 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
 
             return enumNode;
+        }
+
+        /// <summary>
+        /// create new constant member node or get existing
+        /// </summary>
+        /// <param name="membersNode"></param>
+        /// <param name="itemMember"></param>
+        /// <returns></returns>
+        private XElement CreateConstantMemberNode(XElement membersNode, TLI.MemberInfo itemMember)
+        {
+            // check enum member exists
+            var memberNode = (from a in membersNode.Elements()
+                              where a.Attribute("Name").Value.Equals(itemMember.Name, StringComparison.InvariantCultureIgnoreCase)
+                              select a).FirstOrDefault();
+
+            if (null == memberNode)
+            {
+                memberNode = new XElement("Member",
+                                new XElement("RefLibraries"),
+                                new XAttribute("Name", itemMember.Name),
+                                new XAttribute("Type", TypeDescriptor.FormattedType(itemMember.ReturnType,false)),
+                                new XAttribute("Value", itemMember.Value));
+                 
+                membersNode.Add(memberNode);
+            }
+
+            return memberNode;
         }
 
         /// <summary>
@@ -791,6 +1016,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             {
                                 dependLibNode = new XElement("DependLib",
                                            new XAttribute("Name", itemLib.Name),
+                                           new XAttribute("GUID", Utils.EncodeGuid(itemLib.GUID)),
+                                           new XAttribute("Major", itemLib.MajorVersion.ToString()),
+                                           new XAttribute("Minor", itemLib.MinorVersion.ToString()),
                                            new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
 
                                 libNode.Add(dependLibNode);
@@ -837,6 +1065,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                  {
                                      dependLibNode = new XElement("DependLib",
                                                 new XAttribute("Name", itemLib.Name),
+                                                new XAttribute("GUID", Utils.EncodeGuid(itemLib.GUID)),
+                                                new XAttribute("Major", itemLib.MajorVersion.ToString()),
+                                                new XAttribute("Minor", itemLib.MinorVersion.ToString()),
                                                 new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(itemLib)));
 
                                      libNode.Add(dependLibNode);
@@ -1116,7 +1347,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         #endregion
 
         #region ResetDocument
-
+        
         /// <summary>
         /// clear document and load template xml
         /// </summary>
@@ -1134,7 +1365,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             _document = XDocument.Parse(xmlTemplateContent);
 
             ValidateSchema();
-        }
+       }
 
         /// <summary>
         /// validate document schema and throws a XmlException in case of rules violated
@@ -1155,6 +1386,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 throw (new XmlException(message));
             }
 
+            // version check
+            XElement docElement = _document.Element("LateBindingApi.CodeGenerator.Document");
+            XAttribute versionAttribute = docElement.Attribute("Version");
+
+            if( (null==versionAttribute) || ("0.2" != versionAttribute.Value) )
+                throw (new NotSupportedException("Document is not a valid LateBindingApi.CodeGenerator.Document Version 0.2"));
         }
          
         #endregion 

@@ -10,6 +10,7 @@
         <xs:element name="Libraries" type="Libraries" />
         <xs:element name="Solution" type="Solution" />
       </xs:sequence>
+      <xs:attribute name="Version" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
   
@@ -28,7 +29,10 @@
 
   <xs:complexType name="DependLib">
     <xs:attribute name="Name" type="xs:string" use="required" />
-    <xs:attribute name="Description" type="xs:string" use="required" />
+    <xs:attribute name="GUID" type="xs:string" use="required" />
+    <xs:attribute name="Major" type="xs:string" use="required" />
+    <xs:attribute name="Minor" type="xs:string" use="required" />
+    <xs:attribute name="Description" type="xs:string" use="required" />    
   </xs:complexType>
   
   <xs:complexType name="Libraries">
@@ -60,6 +64,18 @@
     </xs:sequence>
     <xs:attribute name="Name" type="xs:string" use="required" /> <!-- name of solution.sln -->
   </xs:complexType>
+
+  <xs:complexType name="RefProjects">
+    <xs:sequence>
+      <xs:element name="RefProject" type="RefProject" minOccurs ="0" maxOccurs ="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RefProject">
+    <xs:sequence>
+      <xs:element name="Key" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
   
   <xs:complexType name="Projects">
     <xs:sequence>
@@ -69,15 +85,26 @@
   
   <xs:complexType name="Project">
     <xs:sequence>
+      <xs:element name="Constants"          type="Constants"/>
       <xs:element name="Enums"              type="Enums"/>
       <xs:element name="CoClasses"          type="CoClasses"/>
       <xs:element name="DispatchInterfaces" type="DispatchInterfaces"/>
       <xs:element name="Interfaces"         type="Interfaces"/>
       <xs:element name="RefLibraries"       type="RefLibraries" />
+      <xs:element name="RefProjects"        type="RefProjects" />
     </xs:sequence>
-    <xs:attribute name="Name"        type="xs:string" use="required" /> <!-- name of project -->
-    <xs:attribute name="Namespace"   type="xs:string" use="required" /> <!-- namespace of project -->
-    <xs:attribute name="Key"         type="xs:string" use="required" /> <!-- unique key of project -->
+    <xs:attribute name="Name"           type="xs:string" use="required" /> <!-- name and AssemblyTitle of project -->
+    <xs:attribute name="Namespace"      type="xs:string" use="required" /> <!-- namespace of project -->
+    <xs:attribute name="Key"            type="xs:string" use="required" /> <!-- unique key of project -->
+    <xs:attribute name="Description"    type="xs:string" use="required" /> <!-- AssemblyDescription -->
+    <xs:attribute name="Configuration"  type="xs:string" use="required" /> <!-- AssemblyConfiguration -->
+    <xs:attribute name="Company"        type="xs:string" use="required" /> <!-- AssemblyCompany -->
+    <xs:attribute name="Product"        type="xs:string" use="required" /> <!-- AssemblyProduct -->
+    <xs:attribute name="Copyright"      type="xs:string" use="required" /> <!-- AssemblyCopyright -->
+    <xs:attribute name="Trademark"      type="xs:string" use="required" /> <!-- AssemblyTrademark -->
+    <xs:attribute name="Culture"        type="xs:string" use="required" /> <!-- AssemblyCulture -->
+    <xs:attribute name="Version"        type="xs:string" use="required" /> <!-- AssemblyVersion -->
+    <xs:attribute name="FileVersion"    type="xs:string" use="required" /> <!-- AssemblyFileVersion -->
   </xs:complexType>
 
   <xs:complexType name="RefInterfaces">
@@ -147,7 +174,37 @@
       <xs:element name="Enum" type="Enum" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-
+  
+  <xs:complexType name="Constants">
+    <xs:sequence>
+      <xs:element name="Constant" type="Constant" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="Constant">
+    <xs:sequence>
+      <xs:element name="Members"       type="ConstantMembers" />
+      <xs:element name="RefLibraries"  type="RefLibraries" />
+    </xs:sequence>
+    <xs:attribute name="Name"          type="xs:string"  /> <!-- constant name -->
+    <xs:attribute name="Key"           type="xs:string"  /> <!-- unique key -->
+  </xs:complexType>
+  
+  <xs:complexType name="ConstantMembers">
+    <xs:sequence>
+      <xs:element name="Member" type="ConstantMember" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="ConstantMember">
+    <xs:sequence>
+      <xs:element name="RefLibraries"  type="RefLibraries" />
+    </xs:sequence>
+    <xs:attribute name="Name"          type="xs:string"  /> <!-- member name -->
+    <xs:attribute name="Type"          type="xs:string"  /> <!-- member type -->
+    <xs:attribute name="Value"         type="xs:string" />  <!-- member value -->
+  </xs:complexType>
+  
   <xs:complexType name="Enum">
     <xs:sequence>
       <xs:element name="Members"       type="EnumMembers" />

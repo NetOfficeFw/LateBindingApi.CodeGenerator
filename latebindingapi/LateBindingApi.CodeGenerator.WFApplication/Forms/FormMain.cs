@@ -33,6 +33,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             libraryGrid.Initialize(_comAnalyzer.Schema);
             projectGrid.Initialize(_comAnalyzer.Schema);
             interfaceGrid.Initialize(_comAnalyzer.Schema);
+            constantGrid.Initialize(_comAnalyzer.Schema);
             enumGrid.Initialize(_comAnalyzer.Schema);
             classGrid.Initialize(_comAnalyzer.Schema);
             solutionGrid.Initialize(_comAnalyzer.Schema);
@@ -230,6 +231,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     case "Project":
                         projectGrid.Show(node);
                         projectGrid.Visible = true;
+                        break;
+                    case "Constant":
+                        constantGrid.Show(node);
+                        constantGrid.Visible = true;
                         break;
                     case "Enum":
                         enumGrid.Show(node);
