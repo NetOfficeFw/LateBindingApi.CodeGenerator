@@ -111,7 +111,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
         void _job_DoWork()
         {
             DoUpdate("Create root folder");
-
             XElement solution = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
@@ -124,14 +123,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
-
+                string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
+                string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
+                
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project);
-                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes);
+                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes, faceIncludes, dispatchIncludes);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
             }
 
+            DoUpdate("Create Solution");
             string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(solutionFile, solution);
             SolutionApi.SaveSolutionFile(solutionFolder, solutionFile, solution);

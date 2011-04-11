@@ -46,12 +46,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return assemblyInfo;
         }
 
-        internal static string ReplaceProjectAttributes(string projectFile, Settings settings, XElement project, string enumIncludes, string constIncludes)
+        internal static string ReplaceProjectAttributes(string projectFile, Settings settings, XElement project, string enumIncludes,
+                                        string constIncludes, string faceIncludes, string dispatchIncludes)
         {
             projectFile = projectFile.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
             projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value);
             projectFile = projectFile.Replace("%ConstInclude%", constIncludes);
             projectFile = projectFile.Replace("%EnumInclude%", enumIncludes);
+            projectFile = projectFile.Replace("%FaceInclude%", faceIncludes);
+            projectFile = projectFile.Replace("%DispatchInclude%", dispatchIncludes);
 
             string refProjectInclude = "";
             if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
@@ -62,7 +65,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     XElement refProject = (from a in projects.Elements("Project")
                                            where a.Attribute("Key").Value.Equals(item.Attribute("Key").Value)
                                            select a).FirstOrDefault();
-                    string newRefProject = _ProjectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
+                    string newRefProject = _ProjectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(refProject.Attribute("Key").Value));
                     newRefProject = newRefProject.Replace("%Name%", refProject.Attribute("Name").Value);
                     refProjectInclude += newRefProject;
                     

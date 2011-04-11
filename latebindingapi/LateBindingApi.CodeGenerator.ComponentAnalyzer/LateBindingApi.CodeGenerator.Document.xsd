@@ -126,7 +126,6 @@
       <xs:element name="DispIds"              type="DispIds" />
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="Inherited"            type="RefInterfaces" />
-      <xs:element name="DefaultInterfaces"    type="RefInterfaces" />
     </xs:sequence>
     <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name -->
     <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->

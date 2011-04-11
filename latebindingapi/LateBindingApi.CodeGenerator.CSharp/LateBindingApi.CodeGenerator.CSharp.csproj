@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstantApi.cs" />
+    <Compile Include="DispatchApi.cs" />
     <Compile Include="EnumsApi.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="FormConfigDialog.cs">
@@ -60,6 +61,7 @@
     <Compile Include="HelpBox.Designer.cs">
       <DependentUpon>HelpBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="InterfaceApi.cs" />
     <Compile Include="PathApi.cs" />
     <Compile Include="ProjectApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

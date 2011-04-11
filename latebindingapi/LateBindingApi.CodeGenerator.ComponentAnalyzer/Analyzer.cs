@@ -575,7 +575,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         List<TLI.MemberInfo> listMembers = TypeDescriptor.GetFilteredMembers(itemInterface);
                         foreach (TLI.MemberInfo itemMember in listMembers)
                         {
-                            if (true == TypeDescriptor.IsInterfaceMethod(itemMember))
+                            if (true == TypeDescriptor.IsInterfaceMethod(itemMember, item.Name))
                             {
                                 var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
                                 AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
@@ -742,6 +742,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             var faceNode = (from a in faces.Elements()
                             where a.Attribute("Name").Value.Equals(itemInterface.Name, StringComparison.InvariantCultureIgnoreCase)
                             select a).FirstOrDefault();
+
+            // in case of dispatch look for a mirror interface
+            if (null == faceNode)
+            {
+                if (itemInterface.TypeKind == TypeKinds.TKIND_DISPATCH)
+                {
+                    XElement otherFaces = faces.Parent.Element("Interfaces");
+                    var otherFaceNode = (from a in otherFaces.Elements()
+                                    where a.Attribute("Name").Value.Equals(itemInterface.Name, StringComparison.InvariantCultureIgnoreCase)
+                                    select a).FirstOrDefault();
+                    faceNode = otherFaceNode;
+                }
+            }
 
             if (null == faceNode)
             {

@@ -55,6 +55,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 case InvokeKinds.INVOKE_PROPERTYPUTREF:
                     node.Attribute("InvokeKind").Value = kinds.ToString();
                     break;
+                case InvokeKinds.INVOKE_UNKNOWN:
+                    node.Attribute("InvokeKind").Value ="INVOKE_PROPERTYPUT";
+                    break;
             }
 
             return node;
@@ -203,7 +206,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="typeInfo"></param>
         /// <returns></returns>
         private static string TypeInfo(TypeInfo typeInfo)
-        {
+        {            
             if (null != typeInfo)
             {
                 string info = typeInfo.TypeKind.ToString();

@@ -295,8 +295,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <returns></returns>
-        internal static bool IsIDispatchOrIUnkownMethod(TLI.MemberInfo memberInfo)
+        internal static bool IsIDispatchOrIUnkownMethod(TLI.MemberInfo memberInfo, string libName)
         {
+            if ("stdole" == libName)
+                return false;
+
             switch (memberInfo.Name)
             {
                 case "GetTypeInfoCount":
@@ -322,9 +325,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <returns></returns>
-        internal static bool IsInterfaceMethod(TLI.MemberInfo memberInfo)
+        internal static bool IsInterfaceMethod(TLI.MemberInfo memberInfo, string libName)
         {
-            bool isImpliedMethod = IsIDispatchOrIUnkownMethod(memberInfo);
+            bool isImpliedMethod = IsIDispatchOrIUnkownMethod(memberInfo, libName);
             if (true == isImpliedMethod)
                 return false;
 
@@ -335,7 +338,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     (memberInfo.InvokeKind != InvokeKinds.INVOKE_PROPERTYPUTREF))
                     return true;
                 else
-                    return false;
+                        return false;
             }
             else
             {
@@ -353,6 +356,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <returns></returns>
         internal static bool IsInterfaceProperty(TLI.MemberInfo memberInfo)
         {
+            if (memberInfo.DescKind == DescKinds.DESCKIND_VARDESC)
+                return true;
+
             if (memberInfo.DescKind == DescKinds.DESCKIND_FUNCDESC)
             {
                 if ((memberInfo.InvokeKind == InvokeKinds.INVOKE_PROPERTYGET) ||
@@ -362,7 +368,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     return true;
                 }
                 else
+                { 
                     return false;
+                }
             }
             else
             {

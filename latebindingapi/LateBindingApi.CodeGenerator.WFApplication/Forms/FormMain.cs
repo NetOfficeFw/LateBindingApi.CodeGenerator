@@ -93,6 +93,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 fileDialog.Filter = "ProjectFiles|*.xml";
                 if (DialogResult.OK == fileDialog.ShowDialog(this))
                 {
+                    this.Cursor = Cursors.WaitCursor;
                     DateTime startTime = DateTime.Now;
                     _comAnalyzer.LoadProject(fileDialog.FileName);
                     TimeSpan timeElapsed = DateTime.Now - startTime;
@@ -104,6 +105,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 FormShowError formError = new FormShowError(throwedException);
                 formError.ShowDialog(this);
             }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
 
         private void menuItemSaveProject_Click(object sender, EventArgs e)
@@ -114,6 +119,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 fileDialog.Filter = "ProjectFiles|*.xml";
                 if (DialogResult.OK == fileDialog.ShowDialog(this))
                 {
+                    this.Cursor = Cursors.WaitCursor;
                     _comAnalyzer.SaveProject(fileDialog.FileName);
                     MessageBox.Show("Project successfully saved.", this.GetType().Assembly.GetName().Name, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -123,6 +129,11 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 FormShowError formError = new FormShowError(throwedException);
                 formError.ShowDialog(this);
             }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+
         }
 
         private void menuItemGenerateCode_Click(object sender, EventArgs e)
