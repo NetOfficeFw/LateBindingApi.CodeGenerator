@@ -9,7 +9,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class SolutionApi
     {
-        internal static readonly string _projectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\",\"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\nEndProject\r\n";
+        internal static readonly string _projectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\",\"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
 
         internal static readonly string _buildConfig = "\t\t{%Key%}.Debug|Any CPU.ActiveCfg = Debug|Any CPU\r\n"
                                                      + "\t\t{%Key%}.Debug|Any CPU.Build.0 = Debug|Any CPU\r\n"
@@ -24,6 +24,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {               
                 string newProjectLine = _projectLine.Replace("%Name%", project.Attribute("Name").Value);
                 newProjectLine = newProjectLine.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
+                string depends = "";
+                if(project.Element("RefProjects").Elements("RefProject").Count() > 0)
+                    depends += "\tProjectSection(ProjectDependencies) = postProject\r\n";
+
+                foreach (var item in project.Element("RefProjects").Elements("RefProject"))
+                {
+                    string projKey = item.Attribute("Key").Value;
+                    XElement projNode = (from a in solution.Element("Projects").Elements("Project")
+                                        where a.Attribute("Key").Value.Equals(projKey)
+                                        select a).FirstOrDefault();
+                    string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
+                    depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(projNode.Attribute("Key").Value));               
+                }
+                if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
+                    depends += "\tEndProjectSection\r\n";
+
+                newProjectLine = newProjectLine.Replace("%Depend%", depends);
                 projects += newProjectLine;
                
                 string newConfig = _buildConfig.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
