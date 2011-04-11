@@ -12,7 +12,7 @@ most common old COM Servers doesn't use camel casing. converting the first char 
 #Ref
 a lot of methods has parameters given by reference(ref in C#). This is a default setting in visual basic6 
  for example, but in most cases it is not necesary. if you know you dont need ref, you can remove the attribute and
- the calling code looks more beautiful. ref parameters in events will not be removed.
+ the calling code looks more beautiful. the ref attribute in event parameters will not be removed.
 #
 
 #Framework
