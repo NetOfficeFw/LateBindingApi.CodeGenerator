@@ -52,7 +52,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return solutionFile;
         }
 
-        internal static void SaveSolutionFile(string path, string solutionFile, XElement solution)        
+        internal static void SaveSolutionFile(string path, string solutionFile, XElement solution)
         {
             string solutionName = solution.Attribute("Name").Value;
             PathApi.CreateFolder(path);
@@ -60,11 +60,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
             System.IO.File.WriteAllText(solutionFilePath, solutionFile, Encoding.UTF8);
         }
 
-        internal static void SaveApiBinary(string path)
+        internal static void SaveApiBinary(Settings settings, string path)
         {
-            PathApi.CreateFolder(path); 
-            string binrayFilePath = System.IO.Path.Combine(path, "LateBindingApi.dll");
-            byte[] ressourceDll = RessourceApi.ReadBinaryFromResource("Api.LateBindingApi.dll");
+            string framework = settings.Framework.Substring(settings.Framework.LastIndexOf(" ") + 1); 
+
+            PathApi.CreateFolder(path);
+            string binrayFilePath = System.IO.Path.Combine(path, "LateBindingApi.Core" + "_v" + framework + ".dll");
+            byte[] ressourceDll = RessourceApi.ReadBinaryFromResource("Api.LateBindingApi.Core" + "_v" + framework + ".dll");
             RessourceApi.WriteBinaryToFile(ressourceDll, binrayFilePath);
         }
     }

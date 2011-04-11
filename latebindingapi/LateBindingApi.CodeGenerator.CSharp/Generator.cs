@@ -73,8 +73,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
                 
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project);
-                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, project, enumIncludes, constIncludes);
-
+                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes);
+               
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
             }
@@ -82,7 +82,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(solutionFile, solution);
             SolutionApi.SaveSolutionFile(solutionFolder, solutionFile, solution);
-            SolutionApi.SaveApiBinary(solutionFolder);
+            SolutionApi.SaveApiBinary(_settings, solutionFolder);
 
             if (true == _settings.OpenFolder)
                 System.Diagnostics.Process.Start(solutionFolder);
@@ -90,6 +90,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
  
         #endregion
 
+        /// <summary>
+        /// returns support libary versions for entityNode
+        /// </summary>
+        /// <param name="entityNode"></param>
+        /// <returns></returns>
         internal static string GetSupportByLibraryAttribute(XElement entityNode)
         {
             string result = "";
@@ -110,6 +115,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
+        /// <summary>
+        /// returns xml encoded guid, convert low chars to upper
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
         internal static string ValidateGuid(string guid)
         {
             guid = XmlConvert.DecodeName(guid);

@@ -32,6 +32,7 @@
             this.linkLabel = new System.Windows.Forms.LinkLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.labelProduct = new System.Windows.Forms.Label();
+            this.labelVersion = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -49,7 +50,7 @@
             // linkLabel
             // 
             this.linkLabel.AutoSize = true;
-            this.linkLabel.Location = new System.Drawing.Point(26, 47);
+            this.linkLabel.Location = new System.Drawing.Point(26, 51);
             this.linkLabel.Name = "linkLabel";
             this.linkLabel.Size = new System.Drawing.Size(179, 13);
             this.linkLabel.TabIndex = 26;
@@ -77,11 +78,21 @@
             this.labelProduct.TabIndex = 28;
             this.labelProduct.Text = "labelProduct";
             // 
+            // labelVersion
+            // 
+            this.labelVersion.AutoSize = true;
+            this.labelVersion.Location = new System.Drawing.Point(28, 93);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(64, 13);
+            this.labelVersion.TabIndex = 29;
+            this.labelVersion.Text = "labelVersion";
+            // 
             // FormAbout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(328, 133);
+            this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.labelProduct);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.linkLabel);
@@ -107,6 +118,7 @@
         private System.Windows.Forms.LinkLabel linkLabel;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label labelProduct;
+        private System.Windows.Forms.Label labelVersion;
 
     }
 }

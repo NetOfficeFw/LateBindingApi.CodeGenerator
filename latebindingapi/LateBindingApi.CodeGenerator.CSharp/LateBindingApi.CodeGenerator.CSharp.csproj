@@ -54,6 +54,12 @@
       <DependentUpon>FormConfigDialog.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Project\AssemblyInfo.cs" />
+    <Compile Include="HelpBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HelpBox.Designer.cs">
+      <DependentUpon>HelpBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="PathApi.cs" />
     <Compile Include="ProjectApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,7 +83,17 @@
     <EmbeddedResource Include="Solution\Solution.sln" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Api\LateBindingApi.dll" />
+    <EmbeddedResource Include="HelpBox.resx">
+      <DependentUpon>HelpBox.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Help\HelpText.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Api\LateBindingApi.Core_v2.0.dll" />
+    <EmbeddedResource Include="Api\LateBindingApi.Core_v3.0.dll" />
+    <EmbeddedResource Include="Api\LateBindingApi.Core_v3.5.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

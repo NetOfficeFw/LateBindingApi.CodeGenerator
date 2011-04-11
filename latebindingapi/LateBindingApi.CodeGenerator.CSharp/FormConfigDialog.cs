@@ -16,6 +16,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             InitializeComponent();
             textBoxFolder.Text = Application.StartupPath;
+            comboBoxFramework.SelectedIndex = 0;
         }
         
         #endregion
@@ -28,7 +29,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 Settings newSettings = new Settings();
                 newSettings.Folder = textBoxFolder.Text.Trim();
-                newSettings.OpenFolder = checkBoxOpenFolder.Checked; 
+                newSettings.OpenFolder = checkBoxOpenFolder.Checked;  
+                newSettings.ConvertOptionalsToObject = checkBoxConvertOptionals.Checked;
+                newSettings.ConvertParamNamesToCamelCase = checkBoxConvertToCamel.Checked;
+                newSettings.RemoveRefAttribute = checkBoxRemoveRef.Checked;
+                newSettings.Framework = comboBoxFramework.Text; 
                 return newSettings;
             }
         }
@@ -54,6 +59,31 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 textBoxFolder.Text = folderDialog.SelectedPath;
         }
 
+        private void buttonWhyOptionals_Click(object sender, EventArgs e)
+        {
+            HelpBox box = new HelpBox(this);
+            box.Show("#Optionals");
+        }
+
+        private void buttonWhyCamel_Click(object sender, EventArgs e)
+        {
+            HelpBox box = new HelpBox(this);
+            box.Show("#Camel");
+        }
+
+        private void buttonWhyRef_Click(object sender, EventArgs e)
+        {
+            HelpBox box = new HelpBox(this);
+            box.Show("#Ref");
+        }
+
+        private void buttonWhyFramework_Click(object sender, EventArgs e)
+        {
+            HelpBox box = new HelpBox(this);
+            box.Show("#Framework");
+        }
+
         #endregion
+
     }
 }

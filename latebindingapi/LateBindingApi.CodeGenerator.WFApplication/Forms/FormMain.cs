@@ -135,7 +135,11 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 {
                     ICodeGenerator generator = formBrowser.Selected;
                     if (DialogResult.OK == generator.ShowConfigDialog(this))
-                        generator.Generate(_comAnalyzer.Document); 
+                    {
+                        this.Refresh();
+                        generator.Generate(_comAnalyzer.Document);
+                        MessageBox.Show("Generate complete!", "CodeGenerator", MessageBoxButtons.OK, MessageBoxIcon.Information);  
+                    }
                 }
             }
             catch (Exception throwedException)
@@ -196,8 +200,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 {  
                     statusStripMain.Items[0].Text = message;
                     statusStripMain.Refresh();
-                }
-                
+                }                
             }
             catch (Exception throwedException)
             {
@@ -273,6 +276,33 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             }
         }
 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                FormAbout about = new FormAbout();
+                about.ShowDialog(this);
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
+
+        private void websiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("http://latebindingapi.codeplex.com");
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
+ 
         #endregion
-    }
+     }
 }

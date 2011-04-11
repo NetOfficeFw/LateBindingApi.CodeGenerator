@@ -9,12 +9,17 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 {
     partial class FormAbout : Form
     {
+        #region Construction
+
         public FormAbout()
         {
             InitializeComponent();
             this.Text = String.Format("About {0}", AssemblyTitle);
             this.labelProduct.Text = AssemblyProduct;
+            this.labelVersion.Text = String.Format("Version {0}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
         }
+
+        #endregion
 
         #region Assembly Attribute Accessors
 
@@ -50,9 +55,13 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 
         #endregion
 
+        #region Trigger
+
         private void buttonOk_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+
+        #endregion
     }
 }

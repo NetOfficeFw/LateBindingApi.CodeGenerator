@@ -10,11 +10,64 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #region Fields
 
         string _folder;
+        bool   _convertOptionalsToObject;
+        bool   _convertParamNamesToCamelCase;
+        bool   _removeRefAttribute;
+        string _framework;
         bool   _openFolder;
         
         #endregion
 
         #region Properties
+
+        public bool ConvertOptionalsToObject
+        {
+            get
+            {
+                return _convertOptionalsToObject;
+            }
+            internal set
+            {
+                _convertOptionalsToObject = value;
+            }
+        }
+
+
+        public bool ConvertParamNamesToCamelCase
+        {
+            get
+            {
+                return _convertParamNamesToCamelCase;
+            }
+            internal set
+            {
+                _convertParamNamesToCamelCase = value;
+            }
+        }
+
+        public bool RemoveRefAttribute
+        {
+            get
+            {
+                return _removeRefAttribute;
+            }
+            internal set
+            {
+                _removeRefAttribute = value;
+            }
+        }
+
+        public string Framework
+        {
+            get
+            {
+                return _framework;
+            }
+            internal set
+            {
+                _framework = value;
+            }
+        }
 
         public string Folder
         {
@@ -39,6 +92,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _openFolder = value;
             }
         }
+
         #endregion
 
     }

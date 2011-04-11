@@ -43,16 +43,16 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.statusStripMain = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
+            this.constantGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ConstantGrid.ConstantGridControl();
             this.solutionGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl();
             this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
             this.enumGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid.EnumGridControl();
             this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
             this.projectGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl();
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
-            this.statusStripMain = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.constantGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ConstantGrid.ConstantGridControl();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -157,6 +157,7 @@
             this.websiteToolStripMenuItem.Name = "websiteToolStripMenuItem";
             this.websiteToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.websiteToolStripMenuItem.Text = "&Goto Homepage";
+            this.websiteToolStripMenuItem.Click += new System.EventHandler(this.websiteToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
@@ -168,6 +169,7 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.aboutToolStripMenuItem.Text = "&About...";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // splitContainerMain
             // 
@@ -195,66 +197,6 @@
             this.splitContainerMain.TabIndex = 25;
             this.splitContainerMain.Visible = false;
             // 
-            // libraryTreeBrowser
-            // 
-            this.libraryTreeBrowser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.libraryTreeBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.libraryTreeBrowser.Location = new System.Drawing.Point(0, 0);
-            this.libraryTreeBrowser.Name = "libraryTreeBrowser";
-            this.libraryTreeBrowser.Size = new System.Drawing.Size(301, 437);
-            this.libraryTreeBrowser.TabIndex = 0;
-            this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
-            // 
-            // solutionGrid
-            // 
-            this.solutionGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.solutionGrid.Location = new System.Drawing.Point(272, 340);
-            this.solutionGrid.Name = "solutionGrid";
-            this.solutionGrid.Size = new System.Drawing.Size(148, 77);
-            this.solutionGrid.TabIndex = 5;
-            // 
-            // classGrid
-            // 
-            this.classGrid.Location = new System.Drawing.Point(217, 153);
-            this.classGrid.Name = "classGrid";
-            this.classGrid.Size = new System.Drawing.Size(231, 131);
-            this.classGrid.TabIndex = 4;
-            // 
-            // enumGrid
-            // 
-            this.enumGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.enumGrid.Location = new System.Drawing.Point(14, 260);
-            this.enumGrid.Name = "enumGrid";
-            this.enumGrid.Size = new System.Drawing.Size(178, 111);
-            this.enumGrid.TabIndex = 3;
-            // 
-            // interfaceGrid
-            // 
-            this.interfaceGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.interfaceGrid.Location = new System.Drawing.Point(217, 16);
-            this.interfaceGrid.Name = "interfaceGrid";
-            this.interfaceGrid.Size = new System.Drawing.Size(231, 128);
-            this.interfaceGrid.TabIndex = 2;
-            this.interfaceGrid.Visible = false;
-            // 
-            // projectGrid
-            // 
-            this.projectGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.projectGrid.Location = new System.Drawing.Point(14, 16);
-            this.projectGrid.Name = "projectGrid";
-            this.projectGrid.Size = new System.Drawing.Size(178, 128);
-            this.projectGrid.TabIndex = 1;
-            this.projectGrid.Visible = false;
-            // 
-            // libraryGrid
-            // 
-            this.libraryGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.libraryGrid.Location = new System.Drawing.Point(14, 164);
-            this.libraryGrid.Name = "libraryGrid";
-            this.libraryGrid.Size = new System.Drawing.Size(178, 90);
-            this.libraryGrid.TabIndex = 0;
-            this.libraryGrid.Visible = false;
-            // 
             // statusStripMain
             // 
             this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
@@ -271,13 +213,73 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
             this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
             // 
+            // libraryTreeBrowser
+            // 
+            this.libraryTreeBrowser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.libraryTreeBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.libraryTreeBrowser.Location = new System.Drawing.Point(0, 0);
+            this.libraryTreeBrowser.Name = "libraryTreeBrowser";
+            this.libraryTreeBrowser.Size = new System.Drawing.Size(301, 437);
+            this.libraryTreeBrowser.TabIndex = 0;
+            this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
+            // 
             // constantGrid
             // 
             this.constantGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.constantGrid.Location = new System.Drawing.Point(476, 311);
+            this.constantGrid.Location = new System.Drawing.Point(14, 281);
             this.constantGrid.Name = "constantGrid";
-            this.constantGrid.Size = new System.Drawing.Size(104, 90);
+            this.constantGrid.Size = new System.Drawing.Size(144, 90);
             this.constantGrid.TabIndex = 6;
+            // 
+            // solutionGrid
+            // 
+            this.solutionGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.solutionGrid.Location = new System.Drawing.Point(339, 150);
+            this.solutionGrid.Name = "solutionGrid";
+            this.solutionGrid.Size = new System.Drawing.Size(168, 111);
+            this.solutionGrid.TabIndex = 5;
+            // 
+            // classGrid
+            // 
+            this.classGrid.Location = new System.Drawing.Point(14, 150);
+            this.classGrid.Name = "classGrid";
+            this.classGrid.Size = new System.Drawing.Size(144, 111);
+            this.classGrid.TabIndex = 4;
+            // 
+            // enumGrid
+            // 
+            this.enumGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.enumGrid.Location = new System.Drawing.Point(174, 150);
+            this.enumGrid.Name = "enumGrid";
+            this.enumGrid.Size = new System.Drawing.Size(159, 111);
+            this.enumGrid.TabIndex = 3;
+            // 
+            // interfaceGrid
+            // 
+            this.interfaceGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.interfaceGrid.Location = new System.Drawing.Point(174, 16);
+            this.interfaceGrid.Name = "interfaceGrid";
+            this.interfaceGrid.Size = new System.Drawing.Size(159, 128);
+            this.interfaceGrid.TabIndex = 2;
+            this.interfaceGrid.Visible = false;
+            // 
+            // projectGrid
+            // 
+            this.projectGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.projectGrid.Location = new System.Drawing.Point(14, 16);
+            this.projectGrid.Name = "projectGrid";
+            this.projectGrid.Size = new System.Drawing.Size(144, 128);
+            this.projectGrid.TabIndex = 1;
+            this.projectGrid.Visible = false;
+            // 
+            // libraryGrid
+            // 
+            this.libraryGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.libraryGrid.Location = new System.Drawing.Point(339, 16);
+            this.libraryGrid.Name = "libraryGrid";
+            this.libraryGrid.Size = new System.Drawing.Size(168, 128);
+            this.libraryGrid.TabIndex = 0;
+            this.libraryGrid.Visible = false;
             // 
             // FormMain
             // 
