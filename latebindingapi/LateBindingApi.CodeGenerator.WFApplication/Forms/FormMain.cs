@@ -15,6 +15,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         #region Fields
 
         Analyzer _comAnalyzer = new Analyzer();
+        ICodeGenerator _generator;
 
         #endregion
 
@@ -38,8 +39,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             classGrid.Initialize(_comAnalyzer.Schema);
             solutionGrid.Initialize(_comAnalyzer.Schema);
         }
-
-       
+     
         #endregion
 
         #region Menu Click Trigger
@@ -74,8 +74,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     foreach (Control itemControl in splitContainerMain.Panel1.Controls)
                         itemControl.Visible = false;
 
-                    this.Cursor = Cursors.WaitCursor;
-                    menuStripMain.Enabled = false; 
+                    SetGui(false);
                     _comAnalyzer.LoadTypeLibraries(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject, formBrowser.DoAsync);
                 }
             }
@@ -133,14 +132,64 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 FormGeneratorBrowser formBrowser = new FormGeneratorBrowser();
                 if (DialogResult.OK == formBrowser.ShowDialog(this))
                 {
-                    ICodeGenerator generator = formBrowser.Selected;
-                    if (DialogResult.OK == generator.ShowConfigDialog(this))
+                    _generator = formBrowser.Selected;
+                    if (DialogResult.OK == _generator.ShowConfigDialog(this))
                     {
-                        this.Refresh();
-                        generator.Generate(_comAnalyzer.Document);
-                        MessageBox.Show("Generate complete!", "CodeGenerator", MessageBoxButtons.OK, MessageBoxIcon.Information);  
+                        _generator.Progress += new ICodeGeneratorProgressHandler(generator_Progress);
+                        _generator.Finish += new ICodeGeneratorFinishHandler(generator_Finish);
+                        SetGui(false);
+                        _generator.Generate(_comAnalyzer.Document);
                     }
                 }
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
+
+        void generator_Finish(TimeSpan elapsedTime)
+        {
+            SetGui(true);
+            statusStripMain.Items[0].Text ="Solution generated in " + elapsedTime.ToString(); 
+        }
+
+        void generator_Progress(string message)
+        {
+            if (true == statusStripMain.InvokeRequired)
+            {
+                statusStripMain.Tag = message;
+                statusStripMain.Invoke(new MethodInvoker(UpdateStrip));
+            }
+            else
+            {
+                statusStripMain.Items[0].Text = message;
+                statusStripMain.Refresh();
+            }    
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void SetGui(bool state)
+        {
+            menuStripMain.Enabled = state;
+            menuItemSaveProject.Enabled = state;
+            menuItemGenerateCode.Enabled = state;
+            splitContainerMain.Visible = state;
+            if (true == state)
+                this.Cursor = Cursors.Default;
+            else
+                this.Cursor = Cursors.WaitCursor;
+        }
+
+        private void UpdateStrip()
+        {
+            try
+            {
+                statusStripMain.Items[0].Text = statusStripMain.Tag as string;
             }
             catch (Exception throwedException)
             {
@@ -160,25 +209,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 foreach (Control itemControl in splitContainerMain.Panel1.Controls)
                     itemControl.Visible = true;
                 libraryTreeBrowser.Show(_comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document"));
-                menuStripMain.Enabled = true;
-                menuItemSaveProject.Enabled = true;
-                menuItemGenerateCode.Enabled = true;
-                splitContainerMain.Visible = true;
+                SetGui(true);
                 statusStripMain.Items[0].Text = string.Format("Loaded in {0}", timeElapsed);
-                this.Cursor = Cursors.Default;
-            }
-            catch (Exception throwedException)
-            {
-                FormShowError formError = new FormShowError(throwedException);
-                formError.ShowDialog(this);
-            }
-        }
-
-        private void UpdateStrip()
-        {
-            try
-            {
-                statusStripMain.Items[0].Text = statusStripMain.Tag as string;
             }
             catch (Exception throwedException)
             {
@@ -265,9 +297,13 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         {
             try
             {
-                // abort async operation
+                // abort async analyze operation
                 if ((true == _comAnalyzer.DoAsync) && (true == _comAnalyzer.IsAlive))
                     _comAnalyzer.Abort();
+
+                // abort async generate operation
+                if ((null != _generator) && (true == _generator.IsAlive))
+                    _generator.Abort();
             }
             catch (Exception throwedException)
             {

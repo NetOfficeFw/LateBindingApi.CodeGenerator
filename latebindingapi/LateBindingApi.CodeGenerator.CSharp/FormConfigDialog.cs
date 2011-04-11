@@ -84,6 +84,5 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         #endregion
-
     }
 }

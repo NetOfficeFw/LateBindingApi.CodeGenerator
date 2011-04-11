@@ -14,11 +14,50 @@ namespace LateBindingApi.CodeGenerator.CSharp
     {
         #region Fields
 
+        DateTime _startTimeOperation;
         Settings _settings;
-        
+        XDocument _document;
+        ThreadJob _job = new ThreadJob();
+
         #endregion
 
+        #region Construction
+        
+        public CSharpGenerator()
+        {
+            _job.DoWork += new System.Threading.ThreadStart(_job_DoWork);
+            _job.RunWorkerCompleted += new ThreadCompletedEventHandler(_job_RunWorkerCompleted);
+        }
+
+        void _job_RunWorkerCompleted()
+        {
+            if (null != Finish)
+            {
+                TimeSpan ts = DateTime.Now - _startTimeOperation;
+                Finish(ts);
+            }
+        }
+
+        private void DoUpdate(string message)
+        {
+            if (null != Progress)
+                Progress(message);
+        }
+
+        #endregion
+        
         #region ICodeGenerator Members
+
+        public event ICodeGeneratorProgressHandler Progress;
+        public event ICodeGeneratorFinishHandler Finish;
+
+        public bool IsAlive
+        {
+            get
+            {
+                return _job.IsAlive;
+            }
+        }
 
         public string Name
         {
@@ -44,6 +83,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
+        public void Abort()
+        {
+            _job.Abort(); 
+        }
+
         public DialogResult ShowConfigDialog(Control parentDialog)
         {
             FormConfigDialog formConfig = new FormConfigDialog();
@@ -59,22 +103,31 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         public void Generate(XDocument document)
         {
-            XElement solution = document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
-            string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
+            _document = document;
+            _job.Start();
+            _startTimeOperation = DateTime.Now;
+        }
 
+        void _job_DoWork()
+        {
+            DoUpdate("Create root folder");
+
+            XElement solution = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
+            string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
 
-            var projects = document.Descendants("Project");
+            var projects = _document.Descendants("Project");
             foreach (var project in projects)
             {
+                DoUpdate("Create project " + project.Attribute("Name").Value);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
-                
+
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project);
                 projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes);
-               
+
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
             }

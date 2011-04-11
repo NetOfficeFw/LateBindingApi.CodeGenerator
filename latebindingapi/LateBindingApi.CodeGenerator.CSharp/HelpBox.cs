@@ -46,7 +46,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             helpText = helpText.Substring(i +messageId.Length+"\r\n".Length);
             i = helpText.IndexOf("#\r\n");
             helpText = helpText.Substring(0,i);
-            return helpText;
+            return helpText.Replace("\r\n", "").Replace("{nl}", "\r\n");
         }
     }
 }

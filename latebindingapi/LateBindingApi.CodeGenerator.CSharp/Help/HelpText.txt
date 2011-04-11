@@ -1,24 +1,27 @@
 ﻿#Optionals
-for strong typed optional parameters you can't given System.Reflection.Missing.Value
+for strong typed optional parameters you can't given System.Reflection.Missing.Value use 
+ this option to set all optionals as object. the generated xml documentation header for the property 
+ or function tolds you the origin type.
 #
 
 #Camel
-most common old COM Servers doesn't use camel casing.
-converting the first char to lower of parameter name looks like more as a .NET application
+most common old COM Servers doesn't use camel casing. converting the first char to lower of parameter 
+ name looks like more as a .NET application.
 #
 
 #Ref
-a lot of methods has parameters given by reference(ref in C#). This is a default setting in visual basic6 for example,
-but in most cases it is not necesary. if you know you dont need ref, you can remove the attribute and
-the calling code looks more beautiful. ref parameters in events will not be removed.
+a lot of methods has parameters given by reference(ref in C#). This is a default setting in visual basic6 
+ for example, but in most cases it is not necesary. if you know you dont need ref, you can remove the attribute and
+ the calling code looks more beautiful. ref parameters in events will not be removed.
 #
 
 #Framework
-Why .NET 1.1 is missing?
-- the generator creates VS 2008 solutions and the lowest framework it will go is .NET 2.0
+Why .NET 1.1 is missing?{nl}
+- the generator creates VS 2008 solutions and the lowest framework it will go is .NET 2.0{nl}{nl}
 
-Why .NET 4.0 is missing?
-- C# 4.0 has different languages entities and more features. will coming soon as fast as possible.   
+Why .NET 4.0 is missing?{nl}
+- C# 4.0 has different languages entities and more features. will coming soon as fast as possible.{nl}{nl}
+
+Note:{nl}
+You can generate a solution in .NET 2.0 and then change the framework to NET 1.1 or NET 4.0 for example.
 #
-
-

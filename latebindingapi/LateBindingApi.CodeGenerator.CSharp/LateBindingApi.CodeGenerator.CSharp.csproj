@@ -66,6 +66,7 @@
     <Compile Include="RessourceApi.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SolutionApi.cs" />
+    <Compile Include="ThreadJob.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj">

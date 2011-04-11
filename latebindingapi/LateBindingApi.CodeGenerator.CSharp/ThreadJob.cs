@@ -4,9 +4,9 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
+namespace LateBindingApi.CodeGenerator.CSharp
 {
-    public delegate void ThreadCompletedEventHandler();
+    internal delegate void ThreadCompletedEventHandler();
 
     internal class ThreadJob
     {
@@ -18,10 +18,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
         public bool IsAlive
         {
-            get 
+            get
             {
-                return _thread.IsAlive;
-            }  
+                if (null == _thread)
+                    return false;
+                else
+                    return _thread.IsAlive;
+            }
         }
 
         public void Start()
@@ -32,19 +35,20 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             _thread.IsBackground = false;
             _thread.Start();
             _endTimer = new System.Windows.Forms.Timer();
-            _endTimer.Interval = 100;
+            _endTimer.Interval = 1000;
             _endTimer.Tick += new EventHandler(_endTimer_Tick);
             _endTimer.Enabled = true;
         }
 
         public void Abort()
         {
+            if (null != _thread)
             _thread.Abort();
         }
 
         private void _endTimer_Tick(object sender, EventArgs e)
         {
-            if( (null!=_thread) && (false == _thread.IsAlive))
+            if ((null != _thread) && (false == _thread.IsAlive))
             {
                 _endTimer.Enabled = false;
                 _thread = null;

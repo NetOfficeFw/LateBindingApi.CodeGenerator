@@ -7,12 +7,20 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {
+    public delegate void ICodeGeneratorProgressHandler(string message);
+    public delegate void ICodeGeneratorFinishHandler(TimeSpan elapsedTime); 
+
     public interface ICodeGenerator
     {
-
         string Name { get; }
         string Description { get; }
         Version Version { get; }
+        bool IsAlive { get; }
+
+        /// <summary>
+        /// Cancel async operaton
+        /// </summary>
+        void Abort();
 
         /// <summary>
         /// display config dialog. returns DialogResult.Ok or DialogResult.Cancel
@@ -26,5 +34,15 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="document"></param>
         void Generate(XDocument document);
+
+        /// <summary>
+        /// progress information from worker thread
+        /// </summary>
+        event ICodeGeneratorProgressHandler Progress;
+        
+        /// <summary>
+        /// operation is completed
+        /// </summary>
+        event ICodeGeneratorFinishHandler Finish;
     }
 }

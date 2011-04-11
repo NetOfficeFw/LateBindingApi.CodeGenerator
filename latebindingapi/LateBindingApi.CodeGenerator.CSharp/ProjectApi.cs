@@ -27,7 +27,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             assemblyInfo = assemblyInfo.Replace("%Version%", project.Attribute("Version").Value);
             assemblyInfo = assemblyInfo.Replace("%FileVersion%", project.Attribute("FileVersion").Value);
 
-            string listAssemblies = "Name - Description - SupportByLibrary\r\n";
+            string listAssemblies = "\tName - Description - SupportByLibrary\r\n";
             foreach (XElement item in project.Element("RefLibraries").Elements("Ref"))
             {
                 XElement libNode = (from a in project.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
