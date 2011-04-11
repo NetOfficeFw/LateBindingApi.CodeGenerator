@@ -20,7 +20,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     {
         #region Fields
         
-        private readonly string  _documentVersion = "0.2";
+        private readonly string  _documentVersion = "0.3";
         
         TLIApplication           _typeLibApplication;
         XDocument                _document;
@@ -743,7 +743,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             where a.Attribute("Name").Value.Equals(itemInterface.Name, StringComparison.InvariantCultureIgnoreCase)
                             select a).FirstOrDefault();
 
-            // in case of dispatch look for a mirror interface
+            // look for a mirror interface
             if (null == faceNode)
             {
                 if (itemInterface.TypeKind == TypeKinds.TKIND_DISPATCH)
@@ -752,6 +752,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     var otherFaceNode = (from a in otherFaces.Elements()
                                     where a.Attribute("Name").Value.Equals(itemInterface.Name, StringComparison.InvariantCultureIgnoreCase)
                                     select a).FirstOrDefault();
+                    faceNode = otherFaceNode;
+                }
+                else if (itemInterface.TypeKind == TypeKinds.TKIND_INTERFACE)
+                {
+                    XElement otherFaces = faces.Parent.Element("DispatchInterfaces");
+                    var otherFaceNode = (from a in otherFaces.Elements()
+                                         where a.Attribute("Name").Value.Equals(itemInterface.Name, StringComparison.InvariantCultureIgnoreCase)
+                                         select a).FirstOrDefault();
                     faceNode = otherFaceNode;
                 }
             }
