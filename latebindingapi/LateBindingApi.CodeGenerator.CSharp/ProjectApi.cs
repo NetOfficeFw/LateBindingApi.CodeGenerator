@@ -47,7 +47,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         internal static string ReplaceProjectAttributes(string projectFile, Settings settings, XElement project, string enumIncludes,
-                                        string constIncludes, string faceIncludes, string dispatchIncludes)
+                                        string constIncludes, string faceIncludes, string dispatchIncludes,string factoryInclude)
         {
             projectFile = projectFile.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
             projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value);
@@ -55,7 +55,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%EnumInclude%", enumIncludes);
             projectFile = projectFile.Replace("%FaceInclude%", faceIncludes);
             projectFile = projectFile.Replace("%DispatchInclude%", dispatchIncludes);
+            projectFile = projectFile.Replace("%FactoryInclude%", factoryInclude);
 
+             
             string refProjectInclude = "";
             if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
             {
@@ -76,6 +78,27 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%Framework%", "v" + settings.Framework.Substring(settings.Framework.LastIndexOf(" ") + 1));
             
             return projectFile;
+        }
+       
+        internal static string SaveFactoryFile(string path, XElement project)
+        {
+            string namespaceString = project.Attribute("Namespace").Value;
+            XElement libNode = (from a in project.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
+                                where a.Attribute("Key").Value.Equals(project.Element("RefLibraries").Element("Ref").Attribute("Key").Value)
+                                select a).FirstOrDefault();
+            string guidString = XmlConvert.DecodeName(libNode.Attribute("Key").Value);
+             
+            string factoryFile = RessourceApi.ReadString("Project.ProjectInfo.txt");
+            factoryFile = factoryFile.Replace("%Namespace%", namespaceString);
+            factoryFile = factoryFile.Replace("%GUID%", guidString);
+
+            string fileName = "ProjectInfo.cs";
+            string projectPath = System.IO.Path.Combine(path, project.Attribute("Name").Value +"\\Utils");
+            PathApi.CreateFolder(projectPath);
+            string assemblyFilePath = System.IO.Path.Combine(projectPath, fileName);
+            System.IO.File.WriteAllText(assemblyFilePath, factoryFile, Encoding.UTF8);
+            int i = assemblyFilePath.LastIndexOf("\\");
+            return "\t\t<Compile Include=\"" +  "Utils\\" + fileName + "\" />";
         }
 
         internal static void SaveAssemblyInfoFile(string path, string assemblyFile, XElement project)

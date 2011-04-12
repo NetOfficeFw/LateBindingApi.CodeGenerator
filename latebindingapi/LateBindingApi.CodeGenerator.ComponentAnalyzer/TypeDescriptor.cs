@@ -19,9 +19,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <returns></returns>
         internal static bool IsCOMProxy(VarTypeInfo typeInfo)
         {
-            if (TliVarType.VT_DISPATCH == typeInfo.VarType)
+            if ((TliVarType.VT_DISPATCH == typeInfo.VarType) || (TliVarType.VT_UNKNOWN == typeInfo.VarType))
                 return true;
-
+            
             if (null == typeInfo.TypeInfo)
                 return false;
 
@@ -33,7 +33,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
             else
             {
-                return false;
+                string name = FormattedType(typeInfo, true);
+                if( ("COMObject" == name) || ("COMVariant" == name) )
+                    return true;
+                else
+                    return false;
             }
         }
 
@@ -101,6 +105,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         {
             switch (typeName)
             {
+                case "object":
                 case "int":
                 case "Int16":
                 case "Int32":
@@ -458,7 +463,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 case TliVarType.VT_UNKNOWN:
                 case TliVarType.VT_DISPATCH:
                     if(true == convertUnkownToApiTypes)
-                        return "COMProxy";
+                        return "COMObject";
                     else
                         return "object";
                 case TliVarType.VT_VARIANT:
@@ -523,7 +528,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             return "String";
                         case 8201:
                             if (true == convertUnkownToApiTypes)
-                                return "COMProxy";
+                                return "COMObject";
                             else
                                 return "object";
                         case 8204:

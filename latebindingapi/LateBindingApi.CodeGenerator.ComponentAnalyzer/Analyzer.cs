@@ -20,7 +20,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     {
         #region Fields
         
-        private readonly string  _documentVersion = "0.3";
+        private readonly string  _documentVersion = "0.4";
         
         TLIApplication           _typeLibApplication;
         XDocument                _document;
@@ -1412,7 +1412,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             XAttribute versionAttribute = docElement.Attribute("Version");
 
             if ((null == versionAttribute) || (_documentVersion != versionAttribute.Value))
-                throw (new NotSupportedException("Document is not a valid LateBindingApi.CodeGenerator.Document Version 0.2"));
+                throw (new NotSupportedException("Document is not a valid LateBindingApi.CodeGenerator.Document Version " + _documentVersion));
         }
          
         #endregion 

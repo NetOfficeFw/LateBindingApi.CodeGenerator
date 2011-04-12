@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="ConstantApi.cs" />
     <Compile Include="DispatchApi.cs" />
+    <Compile Include="EnumerableApi.cs" />
+    <EmbeddedResource Include="Enumerator\ProxyEnumerator.txt" />
     <Compile Include="EnumsApi.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="FormConfigDialog.cs">
@@ -64,6 +66,7 @@
     <Compile Include="InterfaceApi.cs" />
     <Compile Include="PathApi.cs" />
     <Compile Include="ProjectApi.cs" />
+    <EmbeddedResource Include="Project\ProjectInfo.txt" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RessourceApi.cs" />
     <Compile Include="Settings.cs" />
@@ -97,6 +100,9 @@
     <EmbeddedResource Include="Api\LateBindingApi.Core_v2.0.dll" />
     <EmbeddedResource Include="Api\LateBindingApi.Core_v3.0.dll" />
     <EmbeddedResource Include="Api\LateBindingApi.Core_v3.5.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Enumerator\NativeEnumerator.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

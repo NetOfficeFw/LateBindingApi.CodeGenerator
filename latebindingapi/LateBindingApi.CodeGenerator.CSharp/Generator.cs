@@ -125,9 +125,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
                 string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
-                
+                string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
+
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project);
-                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes, faceIncludes, dispatchIncludes);
+                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes, faceIncludes, dispatchIncludes, factoryInclude);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);

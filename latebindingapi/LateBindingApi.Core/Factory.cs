@@ -61,6 +61,7 @@ namespace LateBindingApi.Core
 
         private static COMObject CreateObjectFromComProxy(IFactoryInfo factoryInfo, COMObject caller, object comProxy, Type comProxyType, string className, string fullClassName)
         {
+
             Type classType = null;
             if (true == _typeCache.TryGetValue(fullClassName, out classType))
             {
