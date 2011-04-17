@@ -7,6 +7,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class RessourceApi
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         internal static string ReadString(string path)
         {
             string fileName = "LateBindingApi.CodeGenerator.CSharp." + path;

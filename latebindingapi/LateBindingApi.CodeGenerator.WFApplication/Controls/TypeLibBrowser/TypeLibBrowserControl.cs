@@ -122,13 +122,19 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
 
         private bool FilterIsMatched(bool filterEnabled, string name, string filterText)
         {
-            if (filterEnabled == false) return true;
-            int stringPosition = name.IndexOf(filterText, StringComparison.InvariantCultureIgnoreCase);
-            if (stringPosition > -1)
+            if (filterEnabled == false) 
                 return true;
-            else
-                return false;
-        }
+            
+            string[] filterArray = filterText.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string  filter in filterArray)
+            {
+                int stringPosition = name.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
+                if (stringPosition > -1)
+                    return true;
+            }
+
+            return false;            
+         }
 
         #endregion
 
@@ -190,7 +196,45 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
                 KeyDown(sender, e);
         }
 
-        #endregion
+        private void buttonSaveSelection_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "PlainText(.txt)|*.txt";
+            DialogResult dr = sfd.ShowDialog(this);
+            if (dr == DialogResult.OK)
+            {
+                string saveFilePaths = "";
+                foreach (ListViewItem item in listViewTypeLibInfo.SelectedItems)
+                    saveFilePaths += item.SubItems[4].Text + "\r\n";
 
+                if (true == System.IO.File.Exists(sfd.FileName))
+                    System.IO.File.Delete(sfd.FileName);
+
+                System.IO.File.AppendAllText(sfd.FileName, saveFilePaths);
+            }
+        }
+
+        private void buttonLoadSelection_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "PlainText(.txt)|*.txt";
+            DialogResult dr = ofd.ShowDialog(this);
+            if( (dr == DialogResult.OK) && (true == System.IO.File.Exists(ofd.FileName)) )
+            {
+                string fileContent = System.IO.File.ReadAllText(ofd.FileName);
+                string[] filesToSelect = fileContent.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string  item in filesToSelect)
+                {
+                    foreach (ListViewItem viewItem in listViewTypeLibInfo.Items)
+                    {
+                        if (item == viewItem.SubItems[4].Text)
+                            viewItem.Selected = true;
+                    }
+                }
+                listViewTypeLibInfo_Click(this, new EventArgs());
+            }
+        }
+
+        #endregion
     }
 }

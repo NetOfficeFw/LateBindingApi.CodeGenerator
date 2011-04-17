@@ -14,9 +14,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication
     {
         #region Fields
 
-        Analyzer _comAnalyzer = new Analyzer();
+        Analyzer       _comAnalyzer = new Analyzer();
         ICodeGenerator _generator;
-
+        string         _commandLine;
+        
         #endregion
 
         #region Construction
@@ -38,6 +39,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             enumGrid.Initialize(_comAnalyzer.Schema);
             classGrid.Initialize(_comAnalyzer.Schema);
             solutionGrid.Initialize(_comAnalyzer.Schema);
+
+            _commandLine = Environment.CommandLine;
         }
      
         #endregion
@@ -100,11 +103,16 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     comAnalyzer_OnTypeLibrariesLoaded(timeElapsed);
                 }
             }
+            catch (ProjectFileFormatException throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException, "Project file invalid or old version.");
+                formError.ShowDialog(this);
+            }
             catch (Exception throwedException)
             {
                 FormShowError formError = new FormShowError(throwedException);
                 formError.ShowDialog(this);
-            }
+            }                
             finally
             {
                 this.Cursor = Cursors.Default;

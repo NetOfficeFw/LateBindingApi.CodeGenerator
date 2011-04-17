@@ -19,10 +19,14 @@ namespace LateBindingApi.Core
             Method(comObject, name, null);
         }
 
-        public static void Method(COMObject comObject, string name, object[] paramArray)
+        public static void Method(COMObject comObject, string name, object[] paramsArray)
         {
-            paramArray = ValidateParamArray(paramArray);
-            comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramArray, Settings.ThreadCulture);
+            comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
+        }
+
+        public static void Method(COMObject comObject, string name, object[] paramsArray, ParameterModifier[] paramModifiers)
+        {
+            comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.ThreadCulture, null);
         }
 
         public static object MethodReturn(COMObject comObject, string name)
@@ -30,10 +34,15 @@ namespace LateBindingApi.Core
             return MethodReturn(comObject, name);
         }
 
-        public static object MethodReturn(COMObject comObject, string name, object[] paramArray)
+        public static object MethodReturn(COMObject comObject, string name, object[] paramsArray)
         {
-            paramArray = ValidateParamArray(paramArray);
-            object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramArray, Settings.ThreadCulture);
+            object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
+            return returnValue;
+        }
+
+        public static object MethodReturn(COMObject comObject, string name, object[] paramsArray, ParameterModifier[] paramModifiers)
+        {
+            object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.ThreadCulture, null);
             return returnValue;
         }
 
@@ -47,29 +56,52 @@ namespace LateBindingApi.Core
             return returnValue;
         }
 
-        public static object PropertyGet(COMObject comObject, string name, object[] paramArray)
+        public static object PropertyGet(COMObject comObject, string name, object[] paramsArray)
         {
-            paramArray = ValidateParamArray(paramArray);
-            object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramArray, Settings.ThreadCulture);
+            object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
             return returnValue;
         }
 
         public static void PropertySet(COMObject comObject, string name, object value)
         {
-            value = ValidateParam(value);
             comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[]{value}, Settings.ThreadCulture);
         }
 
-        public static void PropertySet(COMObject comObject, string name, object[] paramArray, object value)
+        public static void PropertySet(COMObject comObject, string name, object value, ParameterModifier[] paramModifiers)
         {
-            paramArray = ValidateParamArray(paramArray);
-            value = ValidateParam(value);
-            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[] { value }, Settings.ThreadCulture);
+            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[] { value }, paramModifiers, Settings.ThreadCulture, null);
+        }
+
+        public static void PropertySet(COMObject comObject, string name, object[] value, ParameterModifier[] paramModifiers)
+        {
+            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, value, paramModifiers, Settings.ThreadCulture, null);
+        }
+
+        public static void PropertySet(COMObject comObject, string name, object[] value)
+        {
+            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, value, Settings.ThreadCulture);
         }
 
         #endregion
 
-        #region Methods
+        #region Parameters
+
+        public static ParameterModifier[] CreateParamModifiers(params bool[] isRef)
+        {
+            if (null != isRef)
+            {
+                int parramArrayCount = isRef.Length;
+                ParameterModifier newModifiers = new ParameterModifier(parramArrayCount);
+                
+                for (int i = 0; i < parramArrayCount; i++)
+                    newModifiers[i] = isRef[i];
+
+                ParameterModifier[] returnModifiers = { newModifiers };
+                return returnModifiers;
+            }
+            else
+                return null;
+        }
 
         public static object ValidateParam(object param)
         {
@@ -85,16 +117,14 @@ namespace LateBindingApi.Core
                 return null;
         }
 
-        public static object[] ValidateParamArray(object[] paramArray)
+        public static object[] ValidateParamsArray(params object[] paramsArray)
         {
-            if (null != paramArray)
+            if (null != paramsArray)
             {
-                int parramArrayCount = paramArray.Length;
+                int parramArrayCount = paramsArray.Length;
                 for (int i = 0; i<parramArrayCount; i++)
-                {
-                    paramArray[i] = ValidateParam(paramArray[i]);
-                }
-                return paramArray;
+                    paramsArray[i] = ValidateParam(paramsArray[i]);
+                return paramsArray;
             }
             else
                 return null;
@@ -123,15 +153,13 @@ namespace LateBindingApi.Core
             }
         }
 
-        public static void ReleaseParamArray(object[] paramArray)
+        public static void ReleaseParamsArray(object[] paramsArray)
         {
-            if (null != paramArray)
+            if (null != paramsArray)
             {
-                int parramArrayCount = paramArray.Length;
+                int parramArrayCount = paramsArray.Length;
                 for (int i = 0; i < parramArrayCount; i++)
-                {
-                    ReleaseParam(paramArray[i]);
-                }
+                    ReleaseParam(paramsArray[i]);
             }
         }
 

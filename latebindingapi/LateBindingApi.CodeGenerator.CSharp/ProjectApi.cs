@@ -46,8 +46,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return assemblyInfo;
         }
 
+        internal static void RemoveRefAttribute(XElement projectNode)
+        {
+            IEnumerable<XElement> paramNodes = (from a in projectNode.Descendants("Parameter")
+                                                where a.Attribute("IsRef").Value.Equals("true")
+                                                select a);
+
+            foreach (var item in paramNodes)
+                item.Attribute("IsRef").Value = "false";
+        }
+
         internal static string ReplaceProjectAttributes(string projectFile, Settings settings, XElement project, string enumIncludes,
-                                        string constIncludes, string faceIncludes, string dispatchIncludes,string factoryInclude)
+                                        string constIncludes, string faceIncludes, string dispatchIncludes, string classesIncludes, string factoryInclude)
         {
             projectFile = projectFile.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
             projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value);
@@ -55,8 +65,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%EnumInclude%", enumIncludes);
             projectFile = projectFile.Replace("%FaceInclude%", faceIncludes);
             projectFile = projectFile.Replace("%DispatchInclude%", dispatchIncludes);
+            projectFile = projectFile.Replace("%ClassesInclude%", classesIncludes);
             projectFile = projectFile.Replace("%FactoryInclude%", factoryInclude);
-
              
             string refProjectInclude = "";
             if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
@@ -75,20 +85,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 refProjectInclude = "  <ItemGroup>\r\n" + refProjectInclude + "  </ItemGroup>";
             }
             projectFile = projectFile.Replace("%ProjectRefInclude%", refProjectInclude);
-            projectFile = projectFile.Replace("%Framework%", "v" + settings.Framework.Substring(settings.Framework.LastIndexOf(" ") + 1));
-            
             return projectFile;
         }
        
         internal static string SaveFactoryFile(string path, XElement project)
         {
+            string projectName = project.Attribute("Name").Value;
             string namespaceString = project.Attribute("Namespace").Value;
             XElement libNode = (from a in project.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
                                 where a.Attribute("Key").Value.Equals(project.Element("RefLibraries").Element("Ref").Attribute("Key").Value)
                                 select a).FirstOrDefault();
-            string guidString = XmlConvert.DecodeName(libNode.Attribute("Key").Value);
+            string guidString = XmlConvert.DecodeName(libNode.Attribute("GUID").Value);
              
             string factoryFile = RessourceApi.ReadString("Project.ProjectInfo.txt");
+            factoryFile = factoryFile.Replace("%AssemblyName%", projectName);
             factoryFile = factoryFile.Replace("%Namespace%", namespaceString);
             factoryFile = factoryFile.Replace("%GUID%", guidString);
 

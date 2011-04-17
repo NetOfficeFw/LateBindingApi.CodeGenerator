@@ -29,8 +29,7 @@ namespace LateBindingApi.Core
     {
         #region Fields
 
-        private static List<IFactoryInfo> _factoryList = new List<IFactoryInfo>();
-
+        private static List<IFactoryInfo>       _factoryList = new List<IFactoryInfo>();
         private static Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
 
         #endregion
@@ -81,6 +80,30 @@ namespace LateBindingApi.Core
                 return (COMObject)newClass;
             }
         }
+        
+        /// <summary>
+        ///  creates a new COMVariant array based on type of comVariant[]
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="comVariant"></param>
+        /// <returns></returns>
+        public static COMObject[] CreateObjectArrayFromComProxy(COMObject caller, object[] comProxyArray)
+        {
+            if (null == comProxyArray)
+                return null;
+
+            Type comVariantType = null;
+            COMObject[] newVariantArray = new COMObject[comProxyArray.Length];
+            for (int i = 0; i < comProxyArray.Length; i++)
+            {
+                comVariantType = comProxyArray[i].GetType();
+                IFactoryInfo factoryInfo = GetFactoryInfo(comProxyArray[i]);
+                string className = TypeDescriptor.GetClassName(comProxyArray[i]);
+                string fullClassName = factoryInfo.Namespace + "." + className;
+                newVariantArray[i] = CreateObjectFromComProxy(factoryInfo, caller, comProxyArray[i], comVariantType, className, fullClassName);
+            }
+            return newVariantArray;
+        }
 
         #endregion
 
@@ -113,6 +136,37 @@ namespace LateBindingApi.Core
             }
         }
 
+        /// <summary>
+        ///  creates a new COMVariant array based on type of comVariant[]
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="comVariant"></param>
+        /// <returns></returns>
+        public static COMVariant[] CreateVariantArrayFromComProxy(COMObject caller, object[] comVariantArray)
+        {
+            if (null == comVariantArray)
+                return null;
+
+            Type comVariantType = null;
+            COMVariant[] newVariantArray = new COMVariant[comVariantArray.Length];
+            for (int i = 0; i < comVariantArray.Length; i++)
+            {
+                comVariantType = comVariantArray[i].GetType();
+                if (false == comVariantType.IsCOMObject)
+                {
+                    newVariantArray[i] = new COMVariant(caller, comVariantArray[i], comVariantType);
+                }
+                else
+                {
+                    IFactoryInfo factoryInfo = GetFactoryInfo(comVariantArray[i]);
+                    string className = TypeDescriptor.GetClassName(comVariantArray[i]);
+                    string fullClassName = factoryInfo.Namespace + "." + className;
+                    newVariantArray[i] = CreateObjectFromComProxy(factoryInfo, caller, comVariantArray[i], comVariantType, className, fullClassName);
+                }                    
+             }
+             return newVariantArray;        
+        }
+
         #endregion
 
         /// <summary>
@@ -125,14 +179,14 @@ namespace LateBindingApi.Core
             Assembly callingAssembly = System.Reflection.Assembly.GetCallingAssembly();
             foreach (AssemblyName item in callingAssembly.GetReferencedAssemblies())
             {
-                Assembly itemAssembly = Assembly.Load(item);
+                Assembly itemAssembly = Assembly.Load(item);                 
                 object[] attributes = itemAssembly.GetCustomAttributes(true);
                 foreach (object itemAttribute in attributes)
                 {
                     string fullnameAttribute = itemAttribute.GetType().FullName;
                     if (fullnameAttribute == "LateBindingApi.Core.LateBindingAttribute")
                     {
-                        Type factoryInfoType = itemAssembly.GetType(item.Name + ".Utils.FactoryInfo");
+                        Type factoryInfoType = itemAssembly.GetType(item.Name + ".Utils.ProjectInfo");
                         IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as IFactoryInfo;
                         _factoryList.Add(factoryInfo);
                     }
@@ -176,6 +230,9 @@ namespace LateBindingApi.Core
         /// <returns></returns>
         private static IFactoryInfo GetFactoryInfo(object comProxy)
         {
+            if (_factoryList.Count == 0)
+                throw (new ArgumentOutOfRangeException("Factory are not initialized with generated LateBindingApi assemblies."));
+            
             Guid targetGuid = GetParentLibraryGuid(comProxy);
         
             foreach (IFactoryInfo item in _factoryList)

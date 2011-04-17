@@ -43,13 +43,15 @@
             this.comboBoxFramework = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonWhyFramework = new System.Windows.Forms.Button();
+            this.buttonWhyDocu = new System.Windows.Forms.Button();
+            this.checkBoxCreateDocu = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(416, 257);
+            this.buttonCancel.Location = new System.Drawing.Point(416, 293);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(77, 22);
             this.buttonCancel.TabIndex = 21;
@@ -60,7 +62,7 @@
             // buttonOkay
             // 
             this.buttonOkay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOkay.Location = new System.Drawing.Point(333, 257);
+            this.buttonOkay.Location = new System.Drawing.Point(333, 293);
             this.buttonOkay.Name = "buttonOkay";
             this.buttonOkay.Size = new System.Drawing.Size(77, 22);
             this.buttonOkay.TabIndex = 20;
@@ -99,11 +101,11 @@
             // 
             // labelNotes
             // 
-            this.labelNotes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelNotes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelNotes.AutoSize = true;
             this.labelNotes.BackColor = System.Drawing.SystemColors.Info;
             this.labelNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelNotes.Location = new System.Drawing.Point(53, 262);
+            this.labelNotes.Location = new System.Drawing.Point(53, 293);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(259, 15);
             this.labelNotes.TabIndex = 27;
@@ -111,10 +113,11 @@
             // 
             // checkBoxOpenFolder
             // 
+            this.checkBoxOpenFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxOpenFolder.AutoSize = true;
             this.checkBoxOpenFolder.Checked = true;
             this.checkBoxOpenFolder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 233);
+            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 264);
             this.checkBoxOpenFolder.Name = "checkBoxOpenFolder";
             this.checkBoxOpenFolder.Size = new System.Drawing.Size(159, 17);
             this.checkBoxOpenFolder.TabIndex = 28;
@@ -134,6 +137,8 @@
             // checkBoxConvertToCamel
             // 
             this.checkBoxConvertToCamel.AutoSize = true;
+            this.checkBoxConvertToCamel.Checked = true;
+            this.checkBoxConvertToCamel.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxConvertToCamel.Location = new System.Drawing.Point(53, 95);
             this.checkBoxConvertToCamel.Name = "checkBoxConvertToCamel";
             this.checkBoxConvertToCamel.Size = new System.Drawing.Size(185, 17);
@@ -193,7 +198,7 @@
             ".NET Framework 2.0",
             ".NET Framework 3.0",
             ".NET Framework 3.5"});
-            this.comboBoxFramework.Location = new System.Drawing.Point(53, 176);
+            this.comboBoxFramework.Location = new System.Drawing.Point(53, 209);
             this.comboBoxFramework.Name = "comboBoxFramework";
             this.comboBoxFramework.Size = new System.Drawing.Size(176, 21);
             this.comboBoxFramework.TabIndex = 35;
@@ -201,7 +206,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(50, 160);
+            this.label1.Location = new System.Drawing.Point(50, 193);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(201, 13);
             this.label1.TabIndex = 36;
@@ -210,7 +215,7 @@
             // buttonWhyFramework
             // 
             this.buttonWhyFramework.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 175);
+            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 208);
             this.buttonWhyFramework.Name = "buttonWhyFramework";
             this.buttonWhyFramework.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyFramework.TabIndex = 37;
@@ -218,12 +223,37 @@
             this.buttonWhyFramework.UseVisualStyleBackColor = true;
             this.buttonWhyFramework.Click += new System.EventHandler(this.buttonWhyFramework_Click);
             // 
+            // buttonWhyDocu
+            // 
+            this.buttonWhyDocu.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonWhyDocu.Location = new System.Drawing.Point(242, 155);
+            this.buttonWhyDocu.Name = "buttonWhyDocu";
+            this.buttonWhyDocu.Size = new System.Drawing.Size(48, 21);
+            this.buttonWhyDocu.TabIndex = 39;
+            this.buttonWhyDocu.Text = "Why?";
+            this.buttonWhyDocu.UseVisualStyleBackColor = true;
+            this.buttonWhyDocu.Click += new System.EventHandler(this.buttonWhyDocu_Click);
+            // 
+            // checkBoxCreateDocu
+            // 
+            this.checkBoxCreateDocu.AutoSize = true;
+            this.checkBoxCreateDocu.Checked = true;
+            this.checkBoxCreateDocu.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateDocu.Location = new System.Drawing.Point(53, 159);
+            this.checkBoxCreateDocu.Name = "checkBoxCreateDocu";
+            this.checkBoxCreateDocu.Size = new System.Drawing.Size(150, 17);
+            this.checkBoxCreateDocu.TabIndex = 38;
+            this.checkBoxCreateDocu.Text = "create xml  documentation";
+            this.checkBoxCreateDocu.UseVisualStyleBackColor = true;
+            // 
             // FormConfigDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(532, 291);
+            this.ClientSize = new System.Drawing.Size(532, 327);
+            this.Controls.Add(this.buttonWhyDocu);
+            this.Controls.Add(this.checkBoxCreateDocu);
             this.Controls.Add(this.buttonWhyFramework);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBoxFramework);
@@ -271,6 +301,8 @@
         private System.Windows.Forms.ComboBox comboBoxFramework;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonWhyFramework;
+        private System.Windows.Forms.Button buttonWhyDocu;
+        private System.Windows.Forms.CheckBox checkBoxCreateDocu;
 
     }
 }

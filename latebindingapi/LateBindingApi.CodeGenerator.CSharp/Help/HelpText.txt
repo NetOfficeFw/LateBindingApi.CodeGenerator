@@ -25,3 +25,7 @@ Why .NET 4.0 is missing?{nl}
 Note:{nl}
 you can generate a solution in .NET 2.0 and then change the framework to NET 1.1 or NET 4.0 for example.
 #
+
+#Docu
+generates a xml documentation header for any method and property.
+#

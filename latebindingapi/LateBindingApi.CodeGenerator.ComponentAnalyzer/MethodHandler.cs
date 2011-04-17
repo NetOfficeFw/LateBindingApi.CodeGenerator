@@ -49,8 +49,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="methodNode"></param>
         internal static void AddMethod(XElement libraryNode, XElement methodNode, TLI.MemberInfo itemMember)
         {
-            //AddParametersToMethodNode(libraryNode, methodNode, itemMember, false);
-            AddParametersToMethodNode(libraryNode, methodNode, itemMember, true);
+            AddParametersToMethodNode(libraryNode, methodNode, itemMember);
         }
 
         /// <summary>
@@ -60,23 +59,23 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="methodNode"></param>
         /// <param name="itemMember"></param>
         /// <param name="withOptionalParameters"></param>
-        internal static void AddParametersToMethodNode(XElement libraryNode, XElement methodNode, TLI.MemberInfo itemMember, bool withOptionalParameters)
+        internal static void AddParametersToMethodNode(XElement libraryNode, XElement methodNode, TLI.MemberInfo itemMember)
         {
             // check defintion exists
-            XElement parametersNode = GetParametersNode(methodNode, itemMember, withOptionalParameters);
+            XElement parametersNode = GetParametersNode(methodNode, itemMember);
             if (null == parametersNode)
             {
                 VarTypeInfo returnTypeInfo = itemMember.ReturnType;
-                string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo,true);
+                string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo, true);
                 parametersNode = new XElement("Parameters",
                                     new XElement("ReturnValue",
                                         new XAttribute("Type", returnTypeName),
                                         new XAttribute("TypeKind",   TypeInfo(returnTypeInfo.TypeInfo)),
                                         new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo)),
-                                        new XAttribute("IsExternal", returnTypeInfo.IsExternalType.ToString()),
-                                        new XAttribute("IsEnum",     TypeDescriptor.IsEnum(returnTypeInfo).ToString()),
-                                        new XAttribute("IsArray",    TypeDescriptor.IsArray(returnTypeInfo).ToString()),
-                                        new XAttribute("IsNative",   TypeDescriptor.IsNative(returnTypeName).ToString()),
+                                        new XAttribute("IsExternal", returnTypeInfo.IsExternalType.ToString().ToLower()),
+                                        new XAttribute("IsEnum",     TypeDescriptor.IsEnum(returnTypeInfo).ToString().ToLower()),
+                                        new XAttribute("IsArray",    TypeDescriptor.IsArray(returnTypeInfo).ToString().ToLower()),
+                                        new XAttribute("IsNative",   TypeDescriptor.IsNative(returnTypeName).ToString().ToLower()),
                                         new XAttribute("TypeKey",    TypeDescriptor.GetTypeKey(libraryNode.Document, returnTypeInfo)),
                                         new XAttribute("ProjectKey", TypeDescriptor.GetProjectKey(libraryNode.Document, returnTypeInfo)),
                                         new XAttribute("LibraryKey", TypeDescriptor.GetLibraryKey(libraryNode.Document, returnTypeInfo))),
@@ -88,19 +87,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 foreach (ParameterInfo paramInfo in itemMember.Parameters)
                 {
                     VarTypeInfo paramTypeInfo = paramInfo.VarTypeInfo;
-                    string paramTypeName = TypeDescriptor.FormattedType(paramTypeInfo,false);
+                    string paramTypeName = TypeDescriptor.FormattedType(paramTypeInfo, false);
                     XElement parameterNode = new XElement("Parameter",
                                     new XAttribute("Name",       paramInfo.Name),
                                     new XAttribute("Type",       paramTypeName),
                                     new XAttribute("TypeKind",   TypeInfo(paramTypeInfo.TypeInfo)),
-                                    new XAttribute("IsExternal", paramTypeInfo.IsExternalType.ToString()),
-                                    new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(paramTypeInfo).ToString()),                                   
-                                    new XAttribute("IsOptional", paramInfo.Optional.ToString()),
-                                    new XAttribute("IsEnum",     TypeDescriptor.IsEnum(paramTypeInfo).ToString()),
-                                    new XAttribute("IsRef",      TypeDescriptor.IsRef(paramTypeInfo).ToString()),
-                                    new XAttribute("IsArray",    TypeDescriptor.IsArray(paramTypeInfo).ToString()),
-                                    new XAttribute("IsNative",   TypeDescriptor.IsNative(paramTypeName).ToString()),
-                                    new XAttribute("TypeKey",    TypeDescriptor.GetLibraryKey(libraryNode.Document, paramTypeInfo)),
+                                    new XAttribute("IsExternal", paramTypeInfo.IsExternalType.ToString().ToLower()),
+                                    new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(paramTypeInfo).ToString().ToLower()),
+                                    new XAttribute("IsOptional", paramInfo.Optional.ToString().ToLower()),
+                                    new XAttribute("IsEnum",     TypeDescriptor.IsEnum(paramTypeInfo).ToString().ToLower()),
+                                    new XAttribute("IsRef",      TypeDescriptor.IsRef(paramTypeInfo).ToString().ToLower()),
+                                    new XAttribute("IsArray",    TypeDescriptor.IsArray(paramTypeInfo).ToString().ToLower()),
+                                    new XAttribute("IsNative",   TypeDescriptor.IsNative(paramTypeName).ToString().ToLower()),
+                                    new XAttribute("TypeKey",    TypeDescriptor.GetTypeKey(libraryNode.Document, paramTypeInfo)),
                                     new XAttribute("ProjectKey", TypeDescriptor.GetProjectKey(libraryNode.Document, paramTypeInfo)),
                                     new XAttribute("LibraryKey", TypeDescriptor.GetLibraryKey(libraryNode.Document, paramTypeInfo)));
                     
@@ -139,12 +138,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="itemMember"></param>
         /// <param name="withOptionals"></param>
         /// <returns></returns>
-        internal static XElement GetParametersNode(XElement methodNode, TLI.MemberInfo itemMember, bool withOptionalParameters)
+        internal static XElement GetParametersNode(XElement methodNode, TLI.MemberInfo itemMember)
         {
             int targetParamsCount = itemMember.Parameters.Count;
-            if (false == withOptionalParameters)
-                targetParamsCount -= itemMember.Parameters.OptionalCount;
-
+           
             // list all definitions with target params count
             var parameters = (from a in methodNode.Elements("Parameters")
                               where a.Elements("Parameter").Count() == targetParamsCount

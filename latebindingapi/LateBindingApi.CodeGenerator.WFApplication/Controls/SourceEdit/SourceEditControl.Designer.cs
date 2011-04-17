@@ -28,28 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBoxItem = new System.Windows.Forms.TextBox();
             this.textBoxSearch = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonReset = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
+            this.textBoxItem = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // textBoxItem
-            // 
-            this.textBoxItem.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxItem.BackColor = System.Drawing.Color.White;
-            this.textBoxItem.HideSelection = false;
-            this.textBoxItem.Location = new System.Drawing.Point(0, 31);
-            this.textBoxItem.Multiline = true;
-            this.textBoxItem.Name = "textBoxItem";
-            this.textBoxItem.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxItem.Size = new System.Drawing.Size(614, 456);
-            this.textBoxItem.TabIndex = 22;
-            this.textBoxItem.WordWrap = false;
-            this.textBoxItem.TextChanged += new System.EventHandler(this.textBoxItem_TextChanged);
             // 
             // textBoxSearch
             // 
@@ -94,15 +78,28 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
+            // textBoxItem
+            // 
+            this.textBoxItem.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxItem.Location = new System.Drawing.Point(3, 40);
+            this.textBoxItem.Multiline = true;
+            this.textBoxItem.Name = "textBoxItem";
+            this.textBoxItem.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxItem.Size = new System.Drawing.Size(612, 448);
+            this.textBoxItem.TabIndex = 27;
+            this.textBoxItem.TextChanged += new System.EventHandler(this.textBoxItem_TextChanged);
+            // 
             // SourceEditControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.textBoxItem);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.textBoxSearch);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBoxItem);
             this.Name = "SourceEditControl";
             this.Size = new System.Drawing.Size(615, 491);
             this.ResumeLayout(false);
@@ -112,10 +109,10 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBoxItem;
         private System.Windows.Forms.TextBox textBoxSearch;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Button buttonApply;
+        private System.Windows.Forms.TextBox textBoxItem;
     }
 }

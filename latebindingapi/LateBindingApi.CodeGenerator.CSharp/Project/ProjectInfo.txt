@@ -5,8 +5,11 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using LateBindingApi.Core;
 
-namespace %Namespace%.Utils
+namespace %AssemblyName%.Utils
 {
+    /// <summary>
+    /// necessary factory info, used from LateBindingApi.Core.Factory while Initialize()
+    /// </summary>
     public class ProjectInfo : IFactoryInfo
     {
         #region Field

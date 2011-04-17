@@ -15,12 +15,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {
     public delegate void UpdateHandler(object sender, string message);
     public delegate void FinishHandler(TimeSpan timeElapsed);
-
+    
     public class Analyzer
     {
         #region Fields
         
-        private readonly string  _documentVersion = "0.4";
+        private readonly string  _documentVersion = "0.5";
         
         TLIApplication           _typeLibApplication;
         XDocument                _document;
@@ -138,17 +138,20 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 DoUpdate("Scan CoClasses");
                 LoadCoClasses(types);
 
-                DoUpdate("Scan Inherited CoClasses");
-                AddInheritedCoClassInfo(types);
-
-                DoUpdate("Scan Default Interfaces");
-                AddDefaultCoClassInfo(types);
-
                 DoUpdate("Scan Event Interfaces");
                 AddEventCoClassInfo(types);
 
+                DoUpdate("Scan Default Interfaces");
+                AddDefaultCoClassInfo(types);
+                
+                DoUpdate("Scan Inherited CoClasses");
+                AddInheritedCoClassInfo(types);
+
                 DoUpdate("Update Project References");
                 UpdateProjectReferences();
+
+                DoUpdate("Validate Type Names");
+                ValidateTypeNames();
 
                 DoUpdate("Finsishing operations");
                 ReleaseTypeLibrariesList(types);
@@ -300,7 +303,23 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 }
             }
         }
+        
+        /// <summary>
+        /// validate param type names, change to correct spelling if needed
+        /// </summary>
+        void ValidateTypeNames()
+        { 
+            var interfaceMethods = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").Elements("Project").Elements("Interfaces").Elements("Interface").Elements("Methods").Elements("Method");
+            var dispatchMethods  = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").Elements("Project").Elements("DispatchInterfaces").Elements("Interface").Elements("Methods").Elements("Method");
+            var interfaceProperties = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").Elements("Project").Elements("Interfaces").Elements("Interface").Elements("Properties").Elements("Property");
+            var dispatchProperties = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").Elements("Project").Elements("DispatchInterfaces").Elements("Interface").Elements("Properties").Elements("Property");
 
+            ValidateTypes(interfaceMethods);
+            ValidateTypes(dispatchMethods);
+            ValidateTypes(interfaceProperties);
+            ValidateTypes(dispatchProperties);
+        }
+ 
         /// <summary>
         /// update project-to-project reference informations
         /// </summary>
@@ -633,6 +652,70 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 Marshal.ReleaseComObject(itemClasses);
             }
         }
+        
+        /// <summary>
+        /// validate param type names, change to correct spelling if needed
+        /// </summary>
+        /// <param name="entities"></param>
+        private void ValidateTypes(IEnumerable<XElement> entities)
+        {
+            var pars = entities.Elements("Parameters");
+            foreach (var item in pars.Elements("Parameter"))
+            {
+                if ("" != item.Attribute("TypeKey").Value)
+                    item.Attribute("Type").Value = GetNodeByKey(item.Attribute("TypeKey")).Attribute("Name").Value;
+            }
+
+            foreach (var item in pars)
+            {
+                XElement returnValue = item.Element("ReturnValue");
+                if ("void" != returnValue.Attribute("Type").Value)
+                {
+                    if ("" != returnValue.Attribute("TypeKey").Value)
+                        returnValue.Attribute("Type").Value = GetNodeByKey(returnValue.Attribute("TypeKey")).Attribute("Name").Value;
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// get an element by key attribute
+        /// </summary>
+        /// <param name="attKey"></param>
+        /// <returns></returns>
+        private XElement GetNodeByKey(XAttribute attKey)
+        {
+            var projects = attKey.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project");
+            foreach (var project in projects)
+            {
+                var face = (from a in project.Element("Interfaces").Elements("Interface")
+                            where a.Attribute("Key").Value.Equals(attKey.Value)
+                            select a).FirstOrDefault();
+                if (null != face)
+                    return face;
+
+                face = (from a in project.Element("DispatchInterfaces").Elements("Interface")
+                        where a.Attribute("Key").Value.Equals(attKey.Value)
+                        select a).FirstOrDefault();
+                if (null != face)
+                    return face;
+
+                face = (from a in project.Element("Enums").Elements("Enum")
+                        where a.Attribute("Key").Value.Equals(attKey.Value)
+                        select a).FirstOrDefault();
+                if (null != face)
+                    return face;
+
+
+                face = (from a in project.Element("CoClasses").Elements("CoClass")
+                        where a.Attribute("Key").Value.Equals(attKey.Value)
+                        select a).FirstOrDefault();
+                if (null != face)
+                    return face;
+
+            }
+            throw (new ArgumentOutOfRangeException("key not found"));
+        }
 
         /// <summary>
         /// Get component node from libInfo
@@ -702,6 +785,20 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             if(null == face)
                 face = (from a in project.Element("DispatchInterfaces").Elements("Interface")
                         where a.Attribute("Name").Value.Equals(name)
+                        select a).FirstOrDefault();
+
+            return face;
+        }
+
+        private XElement GetInterfaceNode(XElement projectNode, string key)
+        {
+            var face = (from a in projectNode.Element("Interfaces").Elements("Interface")
+                        where a.Attribute("Key").Value.Equals(key)
+                        select a).FirstOrDefault();
+
+            if (null == face)
+                face = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                        where a.Attribute("Key").Value.Equals(key)
                         select a).FirstOrDefault();
 
             return face;
@@ -1350,10 +1447,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         XElement classNode = GetClassNode(itemLib, itemClass);
                         foreach (InterfaceInfo itemInherited in inheritedList)
                         {
-                            XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
-                            string key = inheritedInterface.Attribute("Key").Value;
-                            AddInterfaceKeyToInherited(classNode, key, libraryNode);
-
+                            if (false == HasEventInterface(classNode, itemInherited.Name))
+                            { 
+                                XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
+                                string key = inheritedInterface.Attribute("Key").Value;
+                                AddInterfaceKeyToInherited(classNode, key, libraryNode);
+                            }
                             Marshal.ReleaseComObject(itemInherited);
                         }
                         inheritedList.Clear();
@@ -1364,7 +1463,26 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 Marshal.ReleaseComObject(classes);
             }
         }
-  
+
+        /// <summary>
+        /// returns info classNode as an EventInterface named with interfaceName
+        /// </summary>
+        /// <param name="classNode"></param>
+        /// <param name="interfaceName"></param>
+        /// <returns></returns>
+        private bool HasEventInterface(XElement classNode, string interfaceName)
+        {
+            foreach (var item in classNode.Element("EventInterfaces").Elements("Ref"))
+	        {
+                string key = item.Attribute("Key").Value;
+                XElement projectNode = classNode.Parent.Parent;
+                XElement face = GetInterfaceNode(projectNode, key);
+                if(face.Attribute("Name").Value == interfaceName)
+                    return true;
+	        }            
+            return false;
+        }
+
         #endregion
 
         #region ResetDocument
@@ -1411,8 +1529,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             XElement docElement = _document.Element("LateBindingApi.CodeGenerator.Document");
             XAttribute versionAttribute = docElement.Attribute("Version");
 
-            if ((null == versionAttribute) || (_documentVersion != versionAttribute.Value))
-                throw (new NotSupportedException("Document is not a valid LateBindingApi.CodeGenerator.Document Version " + _documentVersion));
+            if(null == versionAttribute)
+                throw (new ProjectFileFormatException("Document is not a valid LateBindingApi.CodeGenerator.Document"));
+
+            if (_documentVersion != versionAttribute.Value)
+            {
+                string message = string.Format("Document is not a valid LateBindingApi.CodeGenerator.Document in Version {0}.\r\nThe specified version of your file is {1}.", _documentVersion, versionAttribute.Value);
+                throw (new ProjectFileFormatException(message));            
+            }
         }
          
         #endregion 

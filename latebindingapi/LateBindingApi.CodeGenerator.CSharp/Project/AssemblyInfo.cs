@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using LateBindingApi.Core;
 
 /*
   
@@ -21,3 +22,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("%Culture%")]
 [assembly: AssemblyVersion("%Version%")]
 [assembly: AssemblyFileVersion("%FileVersion%")]
+[assembly: LateBindingAttribute("1.0")]

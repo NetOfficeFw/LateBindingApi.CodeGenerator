@@ -65,7 +65,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string framework = settings.Framework.Substring(settings.Framework.LastIndexOf(" ") + 1); 
 
             PathApi.CreateFolder(path);
-            string binrayFilePath = System.IO.Path.Combine(path, "LateBindingApi.Core" + "_v" + framework + ".dll");
+            string binrayFilePath = System.IO.Path.Combine(path, "LateBindingApi.Core.dll");
             byte[] ressourceDll = RessourceApi.ReadBinaryFromResource("Api.LateBindingApi.Core" + "_v" + framework + ".dll");
             RessourceApi.WriteBinaryToFile(ressourceDll, binrayFilePath);
         }

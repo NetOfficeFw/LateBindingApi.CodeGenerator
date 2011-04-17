@@ -162,7 +162,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string GetQualifier(XElement faceNode, XElement returnType)
         {
-            if(("COMObject" == returnType.Attribute("Type").Value) || ("COMObject" == returnType.Attribute("Type").Value))
+            if(("COMObject" == returnType.Attribute("Type").Value) || ("COMVariant" == returnType.Attribute("Type").Value))
                 return "";
 
             if ("true" == returnType.Attribute("IsEnum").Value)
@@ -177,8 +177,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                               select a).FirstOrDefault();
                         return projectNode.Attribute("Namespace").Value + ".enums.";
                     }
-
-
                 }
                 else
                 {

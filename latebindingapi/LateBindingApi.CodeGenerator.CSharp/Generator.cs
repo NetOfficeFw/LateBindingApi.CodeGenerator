@@ -45,7 +45,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         #endregion
-        
+               
         #region ICodeGenerator Members
 
         public event ICodeGeneratorProgressHandler Progress;
@@ -108,16 +108,27 @@ namespace LateBindingApi.CodeGenerator.CSharp
             _startTimeOperation = DateTime.Now;
         }
 
+        private XDocument CreateWorkingCopy()
+        {            
+            XDocument document = new XDocument(_document);
+            return document;
+        }
+
         void _job_DoWork()
         {
+            DoUpdate("Create Copy");
+            XElement solution = CreateWorkingCopy().Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
+            
             DoUpdate("Create root folder");
-            XElement solution = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
-
+            
             var projects = _document.Descendants("Project");
             foreach (var project in projects)
             {
+                if(true == _settings.RemoveRefAttribute)
+                    ProjectApi.RemoveRefAttribute(project);
+
                 DoUpdate("Create project " + project.Attribute("Name").Value);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
@@ -125,10 +136,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
                 string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
+                string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
-
+                
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project);
-                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes, faceIncludes, dispatchIncludes, factoryInclude);
+                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes,
+                                        faceIncludes, dispatchIncludes, classesIncludes, factoryInclude);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
@@ -145,6 +158,89 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
  
         #endregion
+
+        #region Static Methods
+
+        internal static string GetQualifiedType(Settings settings, XElement value)
+        {
+            if (true == settings.ConvertOptionalsToObject)
+            {
+                if ((null != value.Attribute("IsOptional")) && ("true" == value.Attribute("IsOptional").Value))
+                    return "object";
+            }
+
+            string type = value.Attribute("Type").Value;
+            string space = GetQualifiedNamespace(value);
+            return space + type;
+        }
+
+        internal static string GetQualifiedType(XElement value)
+        {
+            string type = value.Attribute("Type").Value;            
+            string space = GetQualifiedNamespace(value);
+            return space + type;
+        }
+
+
+        internal static string GetQualifiedNamespace(XElement value)
+        {
+            XElement parentProject = value;
+            while (parentProject.Name != "Project")
+                parentProject = parentProject.Parent;
+
+            string type = value.Attribute("Type").Value;
+
+            if (("COMObject" == type) || ("COMVariant" == type) || ("object" == type))
+                return "";
+
+            if ("true" == value.Attribute("IsEnum").Value)
+            {
+                if ("true" == value.Attribute("IsExternal").Value)
+                {
+                    string refProjectKey = value.Attribute("ProjectKey").Value;
+                    if ("" != refProjectKey)
+                    {
+                        XElement projectNode = (from a in value.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
+                                                where a.Attribute("Key").Value.Equals(refProjectKey)
+                                                select a).FirstOrDefault();
+                        return projectNode.Attribute("Namespace").Value + ".Enums.";
+                    }
+                }
+                else
+                {
+                    return parentProject.Attribute("Namespace").Value + ".Enums.";
+                }
+            }
+            else if ("true" == value.Attribute("IsComProxy").Value)
+            {
+                if ("true" == value.Attribute("IsExternal").Value)
+                {
+                    string refProjectKey = value.Attribute("ProjectKey").Value;
+                    if ("" != refProjectKey)
+                    {
+                        XElement projectNode = (from a in value.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
+                                                where a.Attribute("Key").Value.Equals(refProjectKey)
+                                                select a).FirstOrDefault();
+                        return projectNode.Attribute("Namespace").Value + ".";
+                    }
+                }
+                else
+                {
+                    return parentProject.Attribute("Namespace").Value + ".";
+                }
+            }
+
+
+            return "";
+        }
+
+        internal static string TabSpace(int number)
+        {
+            string tabSpace = "";
+            for (int i = 1; i <= number; i++)
+                tabSpace += "\t";
+            return tabSpace;
+        }
 
         /// <summary>
         /// returns support libary versions for entityNode
@@ -190,5 +286,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             return validGuid;
         }
+
+        #endregion
     }
 }

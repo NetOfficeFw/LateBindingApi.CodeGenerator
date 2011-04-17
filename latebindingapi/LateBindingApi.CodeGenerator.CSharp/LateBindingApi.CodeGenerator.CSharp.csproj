@@ -44,8 +44,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoClassApi.cs" />
     <Compile Include="ConstantApi.cs" />
     <Compile Include="DispatchApi.cs" />
+    <Compile Include="DocumentationApi.cs" />
     <Compile Include="EnumerableApi.cs" />
     <EmbeddedResource Include="Enumerator\ProxyEnumerator.txt" />
     <Compile Include="EnumsApi.cs" />
@@ -64,6 +66,8 @@
       <DependentUpon>HelpBox.cs</DependentUpon>
     </Compile>
     <Compile Include="InterfaceApi.cs" />
+    <Compile Include="MethodApi.cs" />
+    <Compile Include="ParameterApi.cs" />
     <Compile Include="PathApi.cs" />
     <Compile Include="ProjectApi.cs" />
     <EmbeddedResource Include="Project\ProjectInfo.txt" />
@@ -103,6 +107,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Enumerator\NativeEnumerator.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CoClass\Constructor.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Interface\Constructor.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Keywords.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

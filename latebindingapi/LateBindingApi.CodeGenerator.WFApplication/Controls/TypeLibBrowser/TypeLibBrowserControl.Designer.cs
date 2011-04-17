@@ -39,6 +39,8 @@
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
             this.labelNotes = new System.Windows.Forms.Label();
+            this.buttonLoadSelection = new System.Windows.Forms.Button();
+            this.buttonSaveSelection = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonRefresh
@@ -88,7 +90,7 @@
             this.listViewTypeLibInfo.HideSelection = false;
             this.listViewTypeLibInfo.Location = new System.Drawing.Point(3, 42);
             this.listViewTypeLibInfo.Name = "listViewTypeLibInfo";
-            this.listViewTypeLibInfo.Size = new System.Drawing.Size(689, 247);
+            this.listViewTypeLibInfo.Size = new System.Drawing.Size(738, 247);
             this.listViewTypeLibInfo.TabIndex = 20;
             this.listViewTypeLibInfo.UseCompatibleStateImageBehavior = false;
             this.listViewTypeLibInfo.View = System.Windows.Forms.View.Details;
@@ -130,23 +132,45 @@
             this.labelNotes.AutoSize = true;
             this.labelNotes.BackColor = System.Drawing.SystemColors.Info;
             this.labelNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelNotes.Location = new System.Drawing.Point(374, 11);
+            this.labelNotes.Location = new System.Drawing.Point(432, 10);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(305, 15);
             this.labelNotes.TabIndex = 26;
             this.labelNotes.Text = "Note: Scan one or more Type Libraries is a long time operation.";
             // 
+            // buttonLoadSelection
+            // 
+            this.buttonLoadSelection.Image = ((System.Drawing.Image)(resources.GetObject("buttonLoadSelection.Image")));
+            this.buttonLoadSelection.Location = new System.Drawing.Point(317, 2);
+            this.buttonLoadSelection.Name = "buttonLoadSelection";
+            this.buttonLoadSelection.Size = new System.Drawing.Size(39, 24);
+            this.buttonLoadSelection.TabIndex = 27;
+            this.buttonLoadSelection.UseVisualStyleBackColor = true;
+            this.buttonLoadSelection.Click += new System.EventHandler(this.buttonLoadSelection_Click);
+            // 
+            // buttonSaveSelection
+            // 
+            this.buttonSaveSelection.Image = ((System.Drawing.Image)(resources.GetObject("buttonSaveSelection.Image")));
+            this.buttonSaveSelection.Location = new System.Drawing.Point(356, 2);
+            this.buttonSaveSelection.Name = "buttonSaveSelection";
+            this.buttonSaveSelection.Size = new System.Drawing.Size(39, 24);
+            this.buttonSaveSelection.TabIndex = 28;
+            this.buttonSaveSelection.UseVisualStyleBackColor = true;
+            this.buttonSaveSelection.Click += new System.EventHandler(this.buttonSaveSelection_Click);
+            // 
             // TypeLibBrowserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.buttonSaveSelection);
+            this.Controls.Add(this.buttonLoadSelection);
             this.Controls.Add(this.labelNotes);
             this.Controls.Add(this.buttonRefresh);
             this.Controls.Add(this.textBoxFilter);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listViewTypeLibInfo);
             this.Name = "TypeLibBrowserControl";
-            this.Size = new System.Drawing.Size(695, 292);
+            this.Size = new System.Drawing.Size(744, 292);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,5 +188,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.Label labelNotes;
+        private System.Windows.Forms.Button buttonLoadSelection;
+        private System.Windows.Forms.Button buttonSaveSelection;
     }
 }

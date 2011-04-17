@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="LateBindingApi, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LateBindingApi.Core_%Framework%.dll</HintPath>
+      <HintPath>..\LateBindingApi.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -45,6 +45,7 @@
     %EnumInclude%
     %FaceInclude%
     %DispatchInclude%
+    %ClassesInclude%
   </ItemGroup>
 %ProjectRefInclude%
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

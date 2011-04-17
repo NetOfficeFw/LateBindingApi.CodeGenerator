@@ -33,6 +33,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newSettings.ConvertOptionalsToObject = checkBoxConvertOptionals.Checked;
                 newSettings.ConvertParamNamesToCamelCase = checkBoxConvertToCamel.Checked;
                 newSettings.RemoveRefAttribute = checkBoxRemoveRef.Checked;
+                newSettings.CreateXmlDocumentation = checkBoxCreateDocu.Checked;  
                 newSettings.Framework = comboBoxFramework.Text; 
                 return newSettings;
             }
@@ -81,6 +82,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             HelpBox box = new HelpBox(this);
             box.Show("#Framework");
+        }
+
+        private void buttonWhyDocu_Click(object sender, EventArgs e)
+        {
+            HelpBox box = new HelpBox(this);
+            box.Show("#Docu");
         }
 
         #endregion

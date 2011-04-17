@@ -11,7 +11,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {
     internal static class TypeDescriptor
     {
-
         /// <summary>
         /// returns typeInfo is COMProxy or not
         /// </summary>
@@ -22,9 +21,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             if ((TliVarType.VT_DISPATCH == typeInfo.VarType) || (TliVarType.VT_UNKNOWN == typeInfo.VarType))
                 return true;
             
+            string name = FormattedType(typeInfo, true);
+                if( ("COMObject" == name) || ("COMVariant" == name) )
+                    return true;
+
             if (null == typeInfo.TypeInfo)
                 return false;
-
+             
             if ((typeInfo.TypeInfo.TypeKind == TypeKinds.TKIND_DISPATCH) ||
                (typeInfo.TypeInfo.TypeKind == TypeKinds.TKIND_INTERFACE) ||
                (typeInfo.TypeInfo.TypeKind == TypeKinds.TKIND_COCLASS))
@@ -33,12 +36,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
             else
             {
-                string name = FormattedType(typeInfo, true);
-                if( ("COMObject" == name) || ("COMVariant" == name) )
-                    return true;
-                else
-                    return false;
-            }
+                return false;
+            }  
         }
 
         /// <summary>
@@ -145,7 +144,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             string guid = Utils.EncodeGuid(libInfo.GUID);
             var libNode = (from a in document.Elements("LateBindingApi.CodeGenerator.Document").Elements("Libraries").Elements("Library")
                            where a.Attribute("GUID").Value.Equals(guid) &&
-                                 a.Attribute("Name").Value.Equals(libInfo.Name) &&
+                                 a.Attribute("Name").Value.Equals(libInfo.Name, StringComparison.InvariantCultureIgnoreCase) &&
                                  a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
                                  a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
                            select a).FirstOrDefault();
@@ -155,34 +154,34 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             // look for project
             string libName = libNode.Attribute("Name").Value;
             var projectNode = (from a in document.Elements("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project")
-                               where a.Attribute("Name").Value.Equals(libName)
+                               where a.Attribute("Name").Value.Equals(libName, StringComparison.InvariantCultureIgnoreCase)
                                select a).FirstOrDefault();
             
             // look for DispatchInterface
             string typeName = typeInfo.TypeInfo.Name;
             var dispatchNode = (from a in projectNode.Elements("DispatchInterfaces").Elements("Interface")
-                           where a.Attribute("Name").Value.Equals(typeName)
+                                where a.Attribute("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
                            select a).FirstOrDefault();
             if (null != dispatchNode)
                 return dispatchNode.Attribute("Key").Value;
 
             // look for Interface
             var faceNode = (from a in projectNode.Elements("Interfaces").Elements("Interface")
-                                where a.Attribute("Name").Value.Equals(typeName)
+                            where a.Attribute("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
                                 select a).FirstOrDefault();
             if (null != faceNode)
                 return faceNode.Attribute("Key").Value;
 
             // look for CoClass
             var classNode = (from a in projectNode.Elements("CoClasses").Elements("CoClass")
-                            where a.Attribute("Name").Value.Equals(typeName)
+                             where a.Attribute("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
                             select a).FirstOrDefault();
             if (null != classNode)
                 return classNode.Attribute("Key").Value;
 
             // look for "Enum"
             var enumNode = (from a in projectNode.Elements("Enums").Elements("Enum")
-                             where a.Attribute("Name").Value.Equals(typeName)
+                             where a.Attribute("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
                              select a).FirstOrDefault();
             if (null != enumNode)
                 return enumNode.Attribute("Key").Value;
@@ -214,7 +213,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             string guid = Utils.EncodeGuid(libInfo.GUID);
             var libNode = (from a in document.Elements("LateBindingApi.CodeGenerator.Document").Elements("Libraries").Elements("Library")
                         where a.Attribute("GUID").Value.Equals(guid) &&
-                              a.Attribute("Name").Value.Equals(libInfo.Name) &&
+                              a.Attribute("Name").Value.Equals(libInfo.Name, StringComparison.InvariantCultureIgnoreCase) &&
                               a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
                               a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
                         select a).FirstOrDefault();
@@ -222,7 +221,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             // look for project
             string name = libNode.Attribute("Name").Value;
             var projectNode = (from a in document.Elements("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project")
-                               where a.Attribute("Name").Value.Equals(name)
+                               where a.Attribute("Name").Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)
                            select a).FirstOrDefault();
 
             Marshal.ReleaseComObject(libInfo);
@@ -257,7 +256,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             var node = (from a in document.Elements("LateBindingApi.CodeGenerator.Document").Elements("Libraries").Elements("Library")
                         where a.Attribute("GUID").Value.Equals(guid) &&
-                              a.Attribute("Name").Value.Equals(libInfo.Name) &&
+                              a.Attribute("Name").Value.Equals(libInfo.Name, StringComparison.InvariantCultureIgnoreCase) &&
                               a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
                               a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
                         select a).FirstOrDefault();
@@ -419,8 +418,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="typeInfo"></param>
         /// <returns></returns>
-        internal static string FormattedType(VarTypeInfo typeInfo, bool convertUnkownToApiTypes)
-        { 
+        internal static string FormattedType(VarTypeInfo typeInfo, bool isNotParameter)
+        {
+            if((typeInfo.TypeInfo!=null) && (typeInfo.TypeInfo.TypeKind == TypeKinds.TKIND_RECORD) )               
+                return "object";
+
             switch (typeInfo.VarType)
             {
                 case TliVarType.VT_EMPTY:        // Type in Component
@@ -459,15 +461,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 case TliVarType.VT_BOOL:        
                     return "bool";
                 case TliVarType.VT_VOID:
-                    return "void";
+                    if (true == isNotParameter)
+                        return "void"; 
+                    else
+                        return "object";    // void**
+
                 case TliVarType.VT_UNKNOWN:
                 case TliVarType.VT_DISPATCH:
-                    if(true == convertUnkownToApiTypes)
+                    if (true == isNotParameter)
                         return "COMObject";
                     else
                         return "object";
                 case TliVarType.VT_VARIANT:
-                    if (true == convertUnkownToApiTypes)
+                    if (true == isNotParameter)
                         return "COMVariant";
                     else
                         return "object";
@@ -527,12 +533,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         case 8200:
                             return "String";
                         case 8201:
-                            if (true == convertUnkownToApiTypes)
+                            if (true == isNotParameter)
                                 return "COMObject";
                             else
                                 return "object";
                         case 8204:
-                            if (true == convertUnkownToApiTypes)
+                            if (true == isNotParameter)
                                 return "COMVariant";
                             else
                                 return "object";

@@ -13,12 +13,25 @@ namespace LateBindingApi.CodeGenerator.CSharp
         bool   _convertOptionalsToObject;
         bool   _convertParamNamesToCamelCase;
         bool   _removeRefAttribute;
+        bool   _createDocu;
         string _framework;
         bool   _openFolder;
         
         #endregion
 
         #region Properties
+
+        public bool CreateXmlDocumentation
+        {
+            get
+            {
+                return _createDocu;
+            }
+            internal set
+            {
+                _createDocu = value;
+            }
+        }
 
         public bool ConvertOptionalsToObject
         {
@@ -31,7 +44,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _convertOptionalsToObject = value;
             }
         }
-
 
         public bool ConvertParamNamesToCamelCase
         {

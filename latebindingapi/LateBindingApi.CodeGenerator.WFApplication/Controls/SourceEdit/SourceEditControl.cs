@@ -38,21 +38,19 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit
 
             Clear();
 
-            textBoxItem.Text = node.ToString();
+            textBoxItem.Text= node.ToString();
             textBoxItem.Tag = node;
-
+             
             _showFlag = false;
         }
 
         public void Clear()
         {
-            textBoxSearch.Text = ""; 
+            textBoxSearch.Text = "";
             textBoxItem.Text = "";
             buttonReset.Enabled = false;
             buttonApply.Enabled = false; 
         }
-
-
 
         #endregion
 
@@ -63,8 +61,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit
             string searchText = textBoxSearch.Text.Trim();
             if( (e.KeyData == Keys.Return) && (searchText != "") )
             {
-                int startPosition = textBoxItem.SelectionStart+1;
-                int foundPosition = textBoxItem.Text.IndexOf(searchText ,startPosition, StringComparison.InvariantCultureIgnoreCase);                   
+                int startPosition = textBoxItem.SelectionStart + 1;
+                int foundPosition = textBoxItem.Text.IndexOf(searchText, startPosition, StringComparison.InvariantCultureIgnoreCase);                   
                 if(foundPosition > -1)
                 {
                     textBoxItem.SelectionStart = foundPosition;
@@ -73,7 +71,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit
                 }
                 else
                 {
-                    textBoxItem.SelectionStart=0;
+                    textBoxItem.SelectionStart = 0;
                 }
             }
         }
@@ -90,7 +88,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit
         private void buttonReset_Click(object sender, EventArgs e)
         {
             _showFlag = true;
-            
+
             XElement node = textBoxItem.Tag as XElement;
             textBoxItem.Text = node.ToString();
             textBoxItem.SelectionStart = 0;
@@ -103,7 +101,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit
 
         private void buttonApply_Click(object sender, EventArgs e)
         {
-            _showFlag = true;          
+            _showFlag = true;
 
             XElement node = textBoxItem.Tag as XElement;
             XElement parent = node.Parent;
