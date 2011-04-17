@@ -79,6 +79,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 
                     SetGui(false);
                     _comAnalyzer.LoadTypeLibraries(formBrowser.SelectedFiles, formBrowser.AddToCurrentProject, formBrowser.DoAsync);
+                    InvisiblePanels();
                 }
             }
             catch (Exception throwedException)
@@ -101,6 +102,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     _comAnalyzer.LoadProject(fileDialog.FileName);
                     TimeSpan timeElapsed = DateTime.Now - startTime;
                     comAnalyzer_OnTypeLibrariesLoaded(timeElapsed);
+                    InvisiblePanels();
                 }
             }
             catch (ProjectFileFormatException throwedException)
@@ -191,6 +193,12 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         #endregion
 
         #region Methods
+
+        private void InvisiblePanels()
+        {
+            foreach (Control itemControl in splitContainerMain.Panel2.Controls)
+                itemControl.Visible = false;
+        }
 
         private void SetGui(bool state)
         {
