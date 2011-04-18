@@ -112,7 +112,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newRefProject = newRefProject.Replace("%Name%", item.Attribute("Name").Value);
                 projectInclude += newRefProject;
 
-                string newUsing = "using " + item.Attribute("Namespace").Value + ";\r\n";
+                string newUsing = "using " + item.Attribute("Name").Value + "Api = " + item.Attribute("Namespace").Value + ";\r\n";
                 formUsings += newUsing;
             }
 

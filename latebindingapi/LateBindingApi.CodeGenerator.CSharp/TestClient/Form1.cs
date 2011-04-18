@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Forms;
 
 using xyz;
-
 namespace ClientApplication
 {
     public class Form1 : System.Windows.Forms.Form
