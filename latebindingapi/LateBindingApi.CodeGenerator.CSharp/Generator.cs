@@ -149,8 +149,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             DoUpdate("Create Solution");
             string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
-            solutionFile = SolutionApi.ReplaceSolutionAttributes(solutionFile, solution);
-            SolutionApi.SaveSolutionFile(solutionFolder, solutionFile, solution);
+            solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);
+            SolutionApi.SaveSolutionFile(_settings, solutionFolder, solutionFile, solution);
             SolutionApi.SaveApiBinary(_settings, solutionFolder);
 
             if (true == _settings.OpenFolder)

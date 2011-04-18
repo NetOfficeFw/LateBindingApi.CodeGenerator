@@ -75,6 +75,10 @@
     <Compile Include="RessourceApi.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SolutionApi.cs" />
+    <EmbeddedResource Include="TestClient\Form1.cs">
+      <SubType>Form</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestClient\Program.cs" />
     <Compile Include="ThreadJob.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +120,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Keywords.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestClient\ClientApplication.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

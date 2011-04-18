@@ -15,11 +15,24 @@ namespace LateBindingApi.CodeGenerator.CSharp
         bool   _removeRefAttribute;
         bool   _createDocu;
         string _framework;
+        bool   _addTestApp;
         bool   _openFolder;
         
         #endregion
 
         #region Properties
+
+        public bool AddTestApp
+        {
+            get
+            {
+                return _addTestApp;
+            }
+            internal set
+            {
+                _addTestApp = value;
+            }
+        }
 
         public bool CreateXmlDocumentation
         {

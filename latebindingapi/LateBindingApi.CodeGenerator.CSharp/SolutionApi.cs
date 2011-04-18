@@ -15,10 +15,29 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                      + "\t\t{%Key%}.Debug|Any CPU.Build.0 = Debug|Any CPU\r\n"
                                                      + "\t\t{%Key%}.Release|Any CPU.ActiveCfg = Release|Any CPU\r\n";
 
-        internal static string ReplaceSolutionAttributes(string solutionFile, XElement solution)
+        internal static string ReplaceSolutionAttributes(Settings settings, string solutionFile, XElement solution)
         {
             string projects = "";
             string configs = "";
+
+            if (true == settings.AddTestApp)
+            {
+                string newProjectLine = _projectLine.Replace("%Name%", "ClientApplication");
+                newProjectLine = newProjectLine.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
+
+                string depends = "\tProjectSection(ProjectDependencies) = postProject\r\n";
+                foreach (var item in solution.Element("Projects").Elements("Project"))                
+                {
+                    string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
+                    depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(item.Attribute("Key").Value));
+                }
+                depends += "\tEndProjectSection\r\n";
+                newProjectLine = newProjectLine.Replace("%Depend%", depends);
+                projects += newProjectLine;
+
+                string newConfig = _buildConfig.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
+                configs += newConfig; 
+            }
 
             foreach (var project in solution.Element("Projects").Elements("Project"))
             {               
@@ -37,6 +56,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
                     depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(projNode.Attribute("Key").Value));               
                 }
+                
                 if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
                     depends += "\tEndProjectSection\r\n";
 
@@ -52,8 +72,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return solutionFile;
         }
 
-        internal static void SaveSolutionFile(string path, string solutionFile, XElement solution)
+        internal static void SaveSolutionFile(Settings settings, string path, string solutionFile, XElement solution)
         {
+            if (true == settings.AddTestApp)
+                SaveTestClient(solution, path);
+
             string solutionName = solution.Attribute("Name").Value;
             PathApi.CreateFolder(path);
             string solutionFilePath = System.IO.Path.Combine(path, solutionName + ".sln");
@@ -68,6 +91,46 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string binrayFilePath = System.IO.Path.Combine(path, "LateBindingApi.Core.dll");
             byte[] ressourceDll = RessourceApi.ReadBinaryFromResource("Api.LateBindingApi.Core" + "_v" + framework + ".dll");
             RessourceApi.WriteBinaryToFile(ressourceDll, binrayFilePath);
+        }
+
+        internal static void SaveTestClient(XElement solution, string path)
+        {
+            string projectFile  = RessourceApi.ReadString("TestClient.ClientApplication.csproj");
+            string programFile  = RessourceApi.ReadString("TestClient.Program.cs");
+            string formFile     = RessourceApi.ReadString("TestClient.Form1.cs");
+            
+            string projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%.csproj\">\r\n"
+                                                   + "      <Project>{%Key%}</Project>\r\n"
+                                                   + "      <Name>%Name%</Name>\r\n"
+                                                   + "    </ProjectReference>\r\n";
+
+            string formUsings = "";
+            string projectInclude = "";
+            foreach (var item in solution.Element("Projects").Elements("Project"))
+            {
+                string newRefProject = projectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(item.Attribute("Key").Value));
+                newRefProject = newRefProject.Replace("%Name%", item.Attribute("Name").Value);
+                projectInclude += newRefProject;
+
+                string newUsing = "using " + item.Attribute("Namespace").Value + ";\r\n";
+                formUsings += newUsing;
+            }
+
+            formFile = formFile.Replace("using xyz;", formUsings);
+
+            string refProjectInclude = "  <ItemGroup>\r\n" + projectInclude + "  </ItemGroup>";
+            projectFile = projectFile.Replace("%ProjectRefInclude%", refProjectInclude);
+
+            string projectPath = System.IO.Path.Combine(path, "ClientApplication");
+            PathApi.CreateFolder(projectPath); 
+            string projectFilePath = System.IO.Path.Combine(projectPath, "ClientApplication.csproj");
+            System.IO.File.WriteAllText(projectFilePath, projectFile, Encoding.UTF8);
+
+            string programFilePath = System.IO.Path.Combine(projectPath, "Program.cs");
+            System.IO.File.WriteAllText(programFilePath, programFile, Encoding.UTF8);
+
+            string formFilePath = System.IO.Path.Combine(projectPath, "Form1.cs");
+            System.IO.File.WriteAllText(formFilePath, formFile, Encoding.UTF8);
         }
     }
 }

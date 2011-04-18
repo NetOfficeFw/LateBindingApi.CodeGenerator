@@ -45,13 +45,14 @@
             this.buttonWhyFramework = new System.Windows.Forms.Button();
             this.buttonWhyDocu = new System.Windows.Forms.Button();
             this.checkBoxCreateDocu = new System.Windows.Forms.CheckBox();
+            this.checkBoxAddTestApplication = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(416, 293);
+            this.buttonCancel.Location = new System.Drawing.Point(416, 302);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(77, 22);
             this.buttonCancel.TabIndex = 21;
@@ -62,7 +63,7 @@
             // buttonOkay
             // 
             this.buttonOkay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOkay.Location = new System.Drawing.Point(333, 293);
+            this.buttonOkay.Location = new System.Drawing.Point(333, 302);
             this.buttonOkay.Name = "buttonOkay";
             this.buttonOkay.Size = new System.Drawing.Size(77, 22);
             this.buttonOkay.TabIndex = 20;
@@ -105,7 +106,7 @@
             this.labelNotes.AutoSize = true;
             this.labelNotes.BackColor = System.Drawing.SystemColors.Info;
             this.labelNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelNotes.Location = new System.Drawing.Point(53, 293);
+            this.labelNotes.Location = new System.Drawing.Point(53, 302);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(259, 15);
             this.labelNotes.TabIndex = 27;
@@ -117,11 +118,11 @@
             this.checkBoxOpenFolder.AutoSize = true;
             this.checkBoxOpenFolder.Checked = true;
             this.checkBoxOpenFolder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 264);
+            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 273);
             this.checkBoxOpenFolder.Name = "checkBoxOpenFolder";
-            this.checkBoxOpenFolder.Size = new System.Drawing.Size(159, 17);
+            this.checkBoxOpenFolder.Size = new System.Drawing.Size(157, 17);
             this.checkBoxOpenFolder.TabIndex = 28;
-            this.checkBoxOpenFolder.Text = "Open created solution folder";
+            this.checkBoxOpenFolder.Text = "open created solution folder";
             this.checkBoxOpenFolder.UseVisualStyleBackColor = true;
             // 
             // checkBoxConvertOptionals
@@ -246,12 +247,26 @@
             this.checkBoxCreateDocu.Text = "create xml  documentation";
             this.checkBoxCreateDocu.UseVisualStyleBackColor = true;
             // 
+            // checkBoxAddTestApplication
+            // 
+            this.checkBoxAddTestApplication.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxAddTestApplication.AutoSize = true;
+            this.checkBoxAddTestApplication.Checked = true;
+            this.checkBoxAddTestApplication.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(53, 250);
+            this.checkBoxAddTestApplication.Name = "checkBoxAddTestApplication";
+            this.checkBoxAddTestApplication.Size = new System.Drawing.Size(299, 17);
+            this.checkBoxAddTestApplication.TabIndex = 40;
+            this.checkBoxAddTestApplication.Text = "add a Windows Forms Application as test client to solution";
+            this.checkBoxAddTestApplication.UseVisualStyleBackColor = true;
+            // 
             // FormConfigDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(532, 327);
+            this.ClientSize = new System.Drawing.Size(532, 336);
+            this.Controls.Add(this.checkBoxAddTestApplication);
             this.Controls.Add(this.buttonWhyDocu);
             this.Controls.Add(this.checkBoxCreateDocu);
             this.Controls.Add(this.buttonWhyFramework);
@@ -303,6 +318,7 @@
         private System.Windows.Forms.Button buttonWhyFramework;
         private System.Windows.Forms.Button buttonWhyDocu;
         private System.Windows.Forms.CheckBox checkBoxCreateDocu;
+        private System.Windows.Forms.CheckBox checkBoxAddTestApplication;
 
     }
 }

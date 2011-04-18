@@ -29,6 +29,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 Settings newSettings = new Settings();
                 newSettings.Folder = textBoxFolder.Text.Trim();
+                newSettings.AddTestApp = checkBoxAddTestApplication.Checked; 
                 newSettings.OpenFolder = checkBoxOpenFolder.Checked;  
                 newSettings.ConvertOptionalsToObject = checkBoxConvertOptionals.Checked;
                 newSettings.ConvertParamNamesToCamelCase = checkBoxConvertToCamel.Checked;
