@@ -31,6 +31,5 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (false == System.IO.Directory.Exists(path))
                 System.IO.Directory.CreateDirectory(path);
         }
-
     }
 }

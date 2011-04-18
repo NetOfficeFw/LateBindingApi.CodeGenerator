@@ -62,9 +62,35 @@ namespace LateBindingApi.Core
             return returnValue;
         }
 
+        public static object PropertyGet(COMObject comObject, string name, object[] paramsArray, ParameterModifier[] paramModifiers)
+        {
+            object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.ThreadCulture, null);
+            return returnValue;
+        }
+
+        public static void PropertySet(COMObject comObject, string name, object[] paramsArray, object value)
+        {
+            object[] newParamsArray = new object[paramsArray.Length + 1];
+            for (int i = 0; i < paramsArray.Length; i++)
+                newParamsArray[i] = paramsArray[i];
+            newParamsArray[newParamsArray.Length - 1] = value;
+
+            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, newParamsArray , Settings.ThreadCulture);
+        }
+
+        public static void PropertySet(COMObject comObject, string name, object[] paramsArray, object value, ParameterModifier[] paramModifiers)
+        {
+            object[] newParamsArray = new object[paramsArray.Length + 1];
+            for (int i = 0; i < paramsArray.Length; i++)
+                newParamsArray[i] = paramsArray[i];
+            newParamsArray[newParamsArray.Length - 1] = value;
+
+            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, newParamsArray, paramModifiers, Settings.ThreadCulture, null);
+        }
+
         public static void PropertySet(COMObject comObject, string name, object value)
         {
-            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[]{value}, Settings.ThreadCulture);
+            comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[] { value }, Settings.ThreadCulture);
         }
 
         public static void PropertySet(COMObject comObject, string name, object value, ParameterModifier[] paramModifiers)

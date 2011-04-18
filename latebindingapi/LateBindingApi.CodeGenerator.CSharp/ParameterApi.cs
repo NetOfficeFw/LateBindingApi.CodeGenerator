@@ -9,6 +9,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
     internal static class ParameterApi
     {
         private static string[] _Keywords;
+        
+        /// <summary>
+        /// call ValidateParameters for all method nodes
+        /// </summary>
+        /// <param name="methodsNode"></param>
+        internal static void ValidateItems(XElement enumeratorNode, string itemName)
+        {
+            foreach (XElement methodNode in enumeratorNode.Elements(itemName))
+            {
+                if ("_NewEnum" == methodNode.Attribute("Name").Value)
+                    continue;
+                if ("_Default" == methodNode.Attribute("Name").Value)
+                    continue;
+
+                ParameterApi.ValidateParameters(methodNode);
+            }
+        }
 
         internal static string ValidateParamName(Settings settings, string name)
         {
@@ -251,7 +268,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="parametersNode"></param>
         /// <param name="withOptionals"></param>
         /// <returns></returns>
-        private static int GetParamsCount(XElement parametersNode, bool withOptionals)
+        internal static int GetParamsCount(XElement parametersNode, bool withOptionals)
         {
             if (false == withOptionals)
             {

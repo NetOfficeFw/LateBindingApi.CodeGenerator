@@ -88,11 +88,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             {
                 VarTypeInfo returnTypeInfo = itemMember.ReturnType;
                 string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo, true);
+                if (returnTypeName == "void")
+                    returnTypeName = "object";
+
                 parametersNode = new XElement("Parameters",
                                     new XElement("ReturnValue",
                                         new XAttribute("Type",       returnTypeName),
                                         new XAttribute("TypeKind",   TypeInfo(returnTypeInfo.TypeInfo)),
-                                        new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo)),
+                                        new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo).ToString().ToLower()),
                                         new XAttribute("IsExternal", returnTypeInfo.IsExternalType.ToString().ToLower()),
                                         new XAttribute("IsEnum",     TypeDescriptor.IsEnum(returnTypeInfo).ToString().ToLower()),
                                         new XAttribute("IsArray",    TypeDescriptor.IsArray(returnTypeInfo).ToString().ToLower()),
@@ -113,8 +116,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                     new XAttribute("Name",          paramInfo.Name),
                                     new XAttribute("Type",          paramTypeName),
                                     new XAttribute("TypeKind",      TypeInfo(paramTypeInfo.TypeInfo)),
-                                    new XAttribute("IsExternal",    paramTypeInfo.IsExternalType.ToString()),
-                                    new XAttribute("IsComProxy",    TypeDescriptor.IsCOMProxy(paramTypeInfo).ToString()),
+                                    new XAttribute("IsExternal",    paramTypeInfo.IsExternalType.ToString().ToLower()),
+                                    new XAttribute("IsComProxy",    TypeDescriptor.IsCOMProxy(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsOptional",    paramInfo.Optional.ToString().ToLower()),
                                     new XAttribute("IsEnum",        TypeDescriptor.IsEnum(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsRef",         TypeDescriptor.IsRef(paramTypeInfo).ToString().ToLower()),

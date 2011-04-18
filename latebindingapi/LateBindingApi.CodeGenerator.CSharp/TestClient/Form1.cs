@@ -17,6 +17,9 @@ namespace ClientApplication
         public Form1()
         {
             InitializeComponent();
+
+            /*Initialize LateBindingApi*/
+            LateBindingApi.Core.Factory.Initialize();
         }
 
         /// <summary>

@@ -71,7 +71,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                     new XElement("ReturnValue",
                                         new XAttribute("Type", returnTypeName),
                                         new XAttribute("TypeKind",   TypeInfo(returnTypeInfo.TypeInfo)),
-                                        new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo)),
+                                        new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo).ToString().ToLower()),
                                         new XAttribute("IsExternal", returnTypeInfo.IsExternalType.ToString().ToLower()),
                                         new XAttribute("IsEnum",     TypeDescriptor.IsEnum(returnTypeInfo).ToString().ToLower()),
                                         new XAttribute("IsArray",    TypeDescriptor.IsArray(returnTypeInfo).ToString().ToLower()),

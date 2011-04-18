@@ -15,7 +15,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string ConvertMethodsToString(Settings settings, XElement methodsNode)
         {
-            ValidateMethods(methodsNode);
+            ParameterApi.ValidateItems(methodsNode, "Method");
 
             string result = "\r\n\t\t#region Methods\r\n\r\n";
             foreach (XElement methodNode in methodsNode.Elements("Method"))
@@ -83,30 +83,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        /// <summary>
-        /// call ValidateParameters for all method nodes
-        /// </summary>
-        /// <param name="methodsNode"></param>
-        private static void ValidateMethods(XElement methodsNode)
-        {
-            foreach (XElement methodNode in methodsNode.Elements("Method"))
-            {
-                if ("_NewEnum" == methodNode.Attribute("Name").Value)
-                    continue;
-                if ("_Default" == methodNode.Attribute("Name").Value)
-                    continue;
-
-                ParameterApi.ValidateParameters(methodNode);
-            }
-        }
-     
+   
         /// <summary>
         /// convert parametersNode to complete method body code
         /// </summary>
         /// <param name="numberOfRootTabs"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        private static string CreateMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
+        internal static string CreateMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
         {
             string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
             string methodBody = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);

@@ -42,6 +42,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid
 
             _showFlag = true;
             Clear();
+            
+            textBoxKey.Text = enumNode.Attribute("Key").Value;
 
             foreach (var item in enumNode.Descendants("Member"))
             {
@@ -63,6 +65,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.EnumGrid
         public void Clear()
         {
             gridMembers.Rows.Clear();
+            textBoxKey.Clear();
         }
 
         public void Initialize(XmlSchema schema)

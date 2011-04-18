@@ -19,8 +19,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     public class Analyzer
     {
         #region Fields
-        
-        private readonly string  _documentVersion = "0.5";
+
+        private readonly string  _documentVersion = "0.6";
         
         TLIApplication           _typeLibApplication;
         XDocument                _document;

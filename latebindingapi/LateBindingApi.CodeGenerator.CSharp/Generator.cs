@@ -181,7 +181,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return space + type;
         }
 
-
         internal static string GetQualifiedNamespace(XElement value)
         {
             XElement parentProject = value;
@@ -193,9 +192,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (("COMObject" == type) || ("COMVariant" == type) || ("object" == type))
                 return "";
 
-            if ("true" == value.Attribute("IsEnum").Value)
+            if (true == value.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
             {
-                if ("true" == value.Attribute("IsExternal").Value)
+                if (true == value.Attribute("IsExternal").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                 {
                     string refProjectKey = value.Attribute("ProjectKey").Value;
                     if ("" != refProjectKey)
@@ -211,9 +210,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     return parentProject.Attribute("Namespace").Value + ".Enums.";
                 }
             }
-            else if ("true" == value.Attribute("IsComProxy").Value)
+            else if (true == value.Attribute("IsComProxy").Value.Equals("true",StringComparison.InvariantCultureIgnoreCase))
             {
-                if ("true" == value.Attribute("IsExternal").Value)
+                if (true == value.Attribute("IsExternal").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                 {
                     string refProjectKey = value.Attribute("ProjectKey").Value;
                     if ("" != refProjectKey)

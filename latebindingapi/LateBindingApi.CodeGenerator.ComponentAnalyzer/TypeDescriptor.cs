@@ -465,7 +465,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         return "void"; 
                     else
                         return "object";    // void**
-
                 case TliVarType.VT_UNKNOWN:
                 case TliVarType.VT_DISPATCH:
                     if (true == isNotParameter)

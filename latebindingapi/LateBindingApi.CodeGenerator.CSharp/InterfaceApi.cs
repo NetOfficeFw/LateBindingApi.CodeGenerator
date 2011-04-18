@@ -59,12 +59,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt"); 
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
             string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value);
+            string properties = PropertyApi.ConvertPropertiesToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsToString(settings, faceNode.Element("Methods"));
 
             result += classDesc;
             result += attributes + "\r\n";
             result += header;
             result += construct;
+            result += properties;
             result += methods;
 
             ScanEnumerable(faceNode, ref result);
