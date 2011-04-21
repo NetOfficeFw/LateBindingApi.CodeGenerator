@@ -20,6 +20,7 @@ namespace ClientApplication
 
             /*Initialize LateBindingApi*/
             LateBindingApi.Core.Factory.Initialize();
+            // LateBindingApi.Core.Settings.EnableEvents = true;
         }
 
         /// <summary>

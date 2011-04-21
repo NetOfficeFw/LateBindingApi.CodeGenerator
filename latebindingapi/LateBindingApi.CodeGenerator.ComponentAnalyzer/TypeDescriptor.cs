@@ -512,7 +512,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 case TliVarType.VT_RECORD:
                     return typeInfo.VarType.ToString();
                 case TliVarType.VT_ERROR:
-                    return typeInfo.VarType.ToString();
+                    return "object";
+                    //return typeInfo.VarType.ToString();
                 default:
                     int i = Convert.ToInt32(typeInfo.VarType);
                     switch (i)
@@ -545,6 +546,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             return "bool";
                         case 8209:
                             return "byte";
+                        case 4113:
+                            return "char";                             
                         default:
                             return i.ToString();
                     }
@@ -663,7 +666,26 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return returnList;
         }
-        
+
+        /// <summary>
+        /// Get members from itemDeclaration
+        /// </summary>
+        /// <param name="itemDeclaration"></param>
+        /// <returns></returns>
+        internal static List<TLI.MemberInfo> GetFilteredMembers(TLI.DeclarationInfo itemDeclaration)
+        {
+            List<TLI.MemberInfo> returnList = new List<MemberInfo>();
+
+            TLI.Members interfaceMembers = itemDeclaration.Members;
+            foreach (TLI.MemberInfo itemMember in interfaceMembers)
+            {
+                    returnList.Add(itemMember);
+            }
+            Marshal.ReleaseComObject(interfaceMembers);
+
+            return returnList;
+        }
+
         /// <summary>
         /// Get members from interface
         /// exclude IDispatch Members, IUnkown Members and, any other members there comes from inherited interfaces

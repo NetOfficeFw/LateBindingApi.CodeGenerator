@@ -181,7 +181,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="typeInfo"></param>
         /// <returns></returns>
-        private static string TypeInfo(TypeInfo typeInfo)
+        internal static string TypeInfo(TypeInfo typeInfo)
         {
             if (null != typeInfo)
             {

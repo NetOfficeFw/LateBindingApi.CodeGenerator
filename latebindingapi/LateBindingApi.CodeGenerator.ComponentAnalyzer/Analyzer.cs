@@ -20,7 +20,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     {
         #region Fields
 
-        private readonly string  _documentVersion = "0.6";
+        private readonly string  _documentVersion = "0.7";
         
         TLIApplication           _typeLibApplication;
         XDocument                _document;
@@ -123,6 +123,15 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 DoUpdate("Scan Enums");
                 LoadEnums(types);
 
+                DoUpdate("Scan Moduls");
+                LoadModuls(types);
+
+                DoUpdate("Scan TypeDefs");
+                LoadTypeDefs(types);
+
+                DoUpdate("Scan Records");
+                LoadRecords(types);
+
                 DoUpdate("Scan Interfaces");
                 LoadInterfaces(types, false);
 
@@ -149,6 +158,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                 DoUpdate("Update Project References");
                 UpdateProjectReferences();
+
+                DoUpdate("Update Event Interfaces");
+                UpdateEventInterfaces();
 
                 DoUpdate("Validate Type Names");
                 ValidateTypeNames();
@@ -530,6 +542,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     node = new XElement("Project",
                                new XElement("Constants"),
                                new XElement("Enums"),
+                               new XElement("Modules"),
+                               new XElement("TypeDefs"),
+                               new XElement("Records"),
                                new XElement("CoClasses"),
                                new XElement("DispatchInterfaces"),
                                new XElement("Interfaces"),
@@ -566,7 +581,104 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 }
             }
         }
+        
+        private void LoadTypeDefs(List<TypeLibInfo> list)
+        {
+            foreach (TypeLibInfo item in list)
+            {
+                var library = GetLibraryNode(item);
+                var project = GetProjectNode(item.Name);
+                var typedefs = project.Elements("TypeDefs").FirstOrDefault();
 
+                TLI.IntrinsicAliases itemTypeDefs = item.IntrinsicAliases;
+                foreach (TLI.IntrinsicAliasInfo itemAlias in itemTypeDefs)
+                {
+                    var modulNode = CreateAliasNode(typedefs, itemAlias);
+                    AddDispatchIdToEntityNode(library, modulNode, Utils.EncodeGuid(itemAlias.GUID));
+
+                    var refComponents = modulNode.Elements("RefLibraries").FirstOrDefault();
+                    AddLibraryKeyToRefLibraries(library, refComponents);
+                      
+                    Marshal.ReleaseComObject(itemAlias);
+                }
+                Marshal.ReleaseComObject(itemTypeDefs);
+            }
+        }
+
+        private void LoadRecords(List<TypeLibInfo> list)
+        {
+            foreach (TypeLibInfo item in list)
+            {
+                var library = GetLibraryNode(item);
+                var project = GetProjectNode(item.Name);
+                var records = project.Elements("Records").FirstOrDefault();
+
+                TLI.Records itemRecords = item.Records;
+                foreach (TLI.RecordInfo itemRecord in itemRecords)
+                {
+                    var recordNode = CreateRecordNode(records, itemRecord);
+                    AddDispatchIdToEntityNode(library, recordNode, Utils.EncodeGuid(itemRecord.GUID));
+
+                    var refComponents = recordNode.Elements("RefLibraries").FirstOrDefault();
+                    AddLibraryKeyToRefLibraries(library, refComponents);
+
+                    TLI.Members members = itemRecord.Members;
+                    foreach (TLI.MemberInfo itemMember in members)
+                    {
+                        var membersNode = recordNode.Element("Members");
+                        var memberNode = CreateRecordMemberNode(membersNode, itemMember);
+
+                        refComponents = memberNode.Elements("RefLibraries").FirstOrDefault();
+                        AddLibraryKeyToRefLibraries(library, refComponents);
+
+                        Marshal.ReleaseComObject(itemMember);
+                    }
+                    Marshal.ReleaseComObject(members);
+
+                    Marshal.ReleaseComObject(itemRecord);
+                }
+                Marshal.ReleaseComObject(itemRecords);
+            }
+        }
+ 
+        private void LoadModuls(List<TypeLibInfo> list)
+        {
+            foreach (TypeLibInfo item in list)
+            {
+                var library = GetLibraryNode(item);
+                var project = GetProjectNode(item.Name);
+                var moduls = project.Elements("Modules").FirstOrDefault();
+                TLI.Declarations itemModuls = item.Declarations;
+                foreach (TLI.DeclarationInfo itemModul in itemModuls)
+                {
+                    var modulNode = CreateModulNode(moduls, itemModul);
+                    AddDispatchIdToEntityNode(library, modulNode, Utils.EncodeGuid(itemModul.GUID));
+
+                    var refComponents = modulNode.Elements("RefLibraries").FirstOrDefault();
+                    AddLibraryKeyToRefLibraries(library, refComponents);
+
+                    List<TLI.MemberInfo> listMembers = TypeDescriptor.GetFilteredMembers(itemModul);
+                    foreach (TLI.MemberInfo itemMember in listMembers)
+                    {
+                        if (true == TypeDescriptor.IsInterfaceMethod(itemMember, item.Name))
+                        {
+                            var methodNode = MethodHandler.CreateMethodNode(itemMember, modulNode);
+                            AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
+                            var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();
+                            AddLibraryKeyToRefLibraries(library, refNode);
+                            MethodHandler.AddMethod(library, methodNode, itemMember);
+                        }
+                        Marshal.ReleaseComObject(itemMember);
+                    }
+                    foreach (TLI.MemberInfo itemFree in listMembers)
+                        Marshal.ReleaseComObject(itemFree);
+
+                    Marshal.ReleaseComObject(itemModul);
+                }
+                Marshal.ReleaseComObject(itemModuls);
+            }
+        }
+        
         /// <summary>
         /// load all interface infos to document
         /// </summary>
@@ -789,7 +901,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return face;
         }
-
+        
+        /// <summary>
+        /// returs existing interface node for key
+        /// </summary>
+        /// <param name="libInfo"></param>
+        /// <param name="itemInterface"></param>
+        /// <returns></returns>
         private XElement GetInterfaceNode(XElement projectNode, string key)
         {
             var face = (from a in projectNode.Element("Interfaces").Elements("Interface")
@@ -869,6 +987,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("DispIds"),
                                new XElement("Inherited"),
                                new XElement("RefLibraries"),
+                               new XAttribute("IsEventInterface", "false"),
                                new XAttribute("Name", itemInterface.Name),
                                new XAttribute("Key",  Utils.NewEncodedGuid()));
 
@@ -876,6 +995,90 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
 
             return faceNode;
+        }
+
+        /// <summary>
+        /// create new record node or get existing
+        /// </summary>
+        /// <param name="classes"></param>
+        /// <param name="itemClass"></param>
+        /// <returns></returns>
+        private XElement CreateRecordNode(XElement records, TLI.RecordInfo itemRecord)
+        {
+            // check class exists
+            var aliasNode = (from a in records.Elements()
+                             where a.Attribute("Name").Value.Equals(itemRecord.Name, StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (null == aliasNode)
+            {
+                aliasNode = new XElement("Record",
+                               new XElement("RefLibraries"),
+                               new XElement("Members"),
+                               new XElement("DispIds"),
+                               new XAttribute("Name", itemRecord.Name),
+                               new XAttribute("Key", Utils.NewEncodedGuid()));
+
+                records.Add(aliasNode);
+            }
+
+            return aliasNode;
+        }
+
+        /// <summary>
+        /// create new alias node or get existing
+        /// </summary>
+        /// <param name="classes"></param>
+        /// <param name="itemClass"></param>
+        /// <returns></returns>
+        private XElement CreateAliasNode(XElement typedefs, TLI.IntrinsicAliasInfo itemAlias)
+        {
+            // check class exists
+            var aliasNode = (from a in typedefs.Elements()
+                             where a.Attribute("Name").Value.Equals(itemAlias.Name, StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (null == aliasNode)
+            {
+                aliasNode = new XElement("Alias",
+                               new XElement("RefLibraries"),
+                               new XElement("DispIds"),
+                               new XAttribute("Name", itemAlias.Name),
+                               new XAttribute("Intrinsic", TypeDescriptor.FormattedType(itemAlias.ResolvedType, false)),
+                               new XAttribute("Key", Utils.NewEncodedGuid()));
+                
+                typedefs.Add(aliasNode);
+            }
+
+            return aliasNode;
+        }
+
+        /// <summary>
+        /// create new module node or get existing
+        /// </summary>
+        /// <param name="classes"></param>
+        /// <param name="itemClass"></param>
+        /// <returns></returns>
+        private XElement CreateModulNode(XElement moduls, TLI.DeclarationInfo itemModul)
+        {
+            // check class exists
+            var modulNode = (from a in moduls.Elements()
+                             where a.Attribute("Name").Value.Equals(itemModul.Name, StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (null == modulNode)
+            {
+                modulNode = new XElement("Module",
+                               new XElement("Methods"),
+                               new XElement("RefLibraries"),
+                               new XElement("DispIds"),
+                               new XAttribute("Name", itemModul.Name),
+                               new XAttribute("Key", Utils.NewEncodedGuid()));
+
+                moduls.Add(modulNode);
+            }
+
+            return modulNode;
         }
 
         /// <summary>
@@ -1025,6 +1228,43 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return memberNode;
         }
+
+        /// <summary>
+        /// create new record member node or get existing
+        /// </summary>
+        /// <param name="membersNode"></param>
+        /// <param name="itemMember"></param>
+        /// <returns></returns>
+        private XElement CreateRecordMemberNode(XElement membersNode, TLI.MemberInfo itemMember)
+        {
+            // check enum member exists
+            var memberNode = (from a in membersNode.Elements()
+                              where a.Attribute("Name").Value.Equals(itemMember.Name, StringComparison.InvariantCultureIgnoreCase)
+                              select a).FirstOrDefault();
+
+            if (null == memberNode)
+            {
+                memberNode = new XElement("Member",
+                                new XElement("RefLibraries"),
+                                new XAttribute("Name", itemMember.Name),
+                                new XAttribute("Type", TypeDescriptor.FormattedType(itemMember.ReturnType, false)),
+                                new XAttribute("TypeKind", MethodHandler.TypeInfo(itemMember.ReturnType.TypeInfo)),
+                                new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(itemMember.ReturnType).ToString().ToLower()),
+                                new XAttribute("IsEnum", TypeDescriptor.IsEnum(itemMember.ReturnType).ToString().ToLower()),
+                                new XAttribute("IsExternal", itemMember.ReturnType.IsExternalType.ToString().ToLower()),
+                                new XAttribute("IsArray", TypeDescriptor.IsArray(itemMember.ReturnType).ToString().ToLower()),
+                                new XAttribute("IsNative", TypeDescriptor.IsNative(itemMember.Name).ToString().ToLower()),
+                                new XAttribute("TypeKey", TypeDescriptor.GetTypeKey(membersNode.Document, itemMember.ReturnType)),
+                                new XAttribute("ProjectKey", TypeDescriptor.GetProjectKey(membersNode.Document, itemMember.ReturnType)),
+                                new XAttribute("LibraryKey", TypeDescriptor.GetLibraryKey(membersNode.Document, itemMember.ReturnType))
+                                );
+                 
+                membersNode.Add(memberNode);
+            }
+
+            return memberNode;
+        }
+
 
         /// <summary>
         /// create new enum member node or get existing
@@ -1356,7 +1596,24 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 Marshal.ReleaseComObject(interfaces);
             }
         }
- 
+
+        /// <summary>
+        /// marks used event interfaces
+        /// </summary>
+        private void UpdateEventInterfaces()
+        {
+            var classes = _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Descendants("CoClass");
+            foreach (var itemClass in classes)
+            {
+                var events = itemClass.Element("EventInterfaces");
+                foreach (var evItem in events.Elements("Ref"))
+                {
+                    XElement face = GetNodeByKey(evItem.Attribute("Key"));
+                    face.Attribute("IsEventInterface").Value = "true";
+                }
+            }
+        }
+
         /// <summary>
         /// scan all interfaces in typelibs and info to document about evet interfaces
         /// all interfaces must be listed in document before call this method

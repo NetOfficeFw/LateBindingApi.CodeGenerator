@@ -5,13 +5,11 @@ namespace LateBindingApi.Core
     public interface IEventBinding
     {
         /// <summary>
-        /// Raise an event
+        /// returns array of all event listeners
         /// </summary>
-        /// <param name="name">event name</param>
-        /// <param name="paramArray">params as array</param>
-        /// <returns>indicates one or more eventlistener has recieved the event</returns>
+        /// <param name="name">name of event</param>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        bool CallEvent(string name, object[] paramArray);
+        Delegate[] GetEventRecipients(string eventName);
         
         /// <summary>
         /// Dispose method

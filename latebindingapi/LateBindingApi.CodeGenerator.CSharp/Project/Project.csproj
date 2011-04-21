@@ -46,6 +46,9 @@
     %FaceInclude%
     %DispatchInclude%
     %ClassesInclude%
+    %EventInclude%
+    %ModulesInclude%
+    %RecordsInclude%
   </ItemGroup>
 %ProjectRefInclude%
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

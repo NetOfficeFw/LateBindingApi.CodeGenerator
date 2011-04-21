@@ -62,6 +62,20 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             this.Close();
         }
 
+        private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("http://latebindingapi.codeplex.com");
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
+
         #endregion
+
     }
 }

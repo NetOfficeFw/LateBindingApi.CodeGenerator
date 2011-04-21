@@ -51,25 +51,29 @@ namespace LateBindingApi.Core
         #region Property
 
         public static object PropertyGet(COMObject comObject, string name)
-        { 
+        {
+            ValidateObject(comObject);
             object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, null, Settings.ThreadCulture);
             return returnValue;
         }
 
         public static object PropertyGet(COMObject comObject, string name, object[] paramsArray)
         {
+            ValidateObject(comObject);
             object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
             return returnValue;
         }
 
         public static object PropertyGet(COMObject comObject, string name, object[] paramsArray, ParameterModifier[] paramModifiers)
         {
+            ValidateObject(comObject);
             object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.ThreadCulture, null);
             return returnValue;
         }
 
         public static void PropertySet(COMObject comObject, string name, object[] paramsArray, object value)
         {
+            ValidateObject(comObject);
             object[] newParamsArray = new object[paramsArray.Length + 1];
             for (int i = 0; i < paramsArray.Length; i++)
                 newParamsArray[i] = paramsArray[i];
@@ -80,6 +84,7 @@ namespace LateBindingApi.Core
 
         public static void PropertySet(COMObject comObject, string name, object[] paramsArray, object value, ParameterModifier[] paramModifiers)
         {
+            ValidateObject(comObject);
             object[] newParamsArray = new object[paramsArray.Length + 1];
             for (int i = 0; i < paramsArray.Length; i++)
                 newParamsArray[i] = paramsArray[i];
@@ -90,21 +95,25 @@ namespace LateBindingApi.Core
 
         public static void PropertySet(COMObject comObject, string name, object value)
         {
+            ValidateObject(comObject);
             comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[] { value }, Settings.ThreadCulture);
         }
 
         public static void PropertySet(COMObject comObject, string name, object value, ParameterModifier[] paramModifiers)
         {
+            ValidateObject(comObject);
             comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[] { value }, paramModifiers, Settings.ThreadCulture, null);
         }
 
         public static void PropertySet(COMObject comObject, string name, object[] value, ParameterModifier[] paramModifiers)
         {
+            ValidateObject(comObject);
             comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, value, paramModifiers, Settings.ThreadCulture, null);
         }
 
         public static void PropertySet(COMObject comObject, string name, object[] value)
         {
+            ValidateObject(comObject);
             comObject.InstanceType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, value, Settings.ThreadCulture);
         }
 
@@ -179,7 +188,7 @@ namespace LateBindingApi.Core
             }
         }
 
-        public static void ReleaseParamsArray(object[] paramsArray)
+        public static void ReleaseParamsArray(params object[] paramsArray)
         {
             if (null != paramsArray)
             {
@@ -187,6 +196,49 @@ namespace LateBindingApi.Core
                 for (int i = 0; i < parramArrayCount; i++)
                     ReleaseParam(paramsArray[i]);
             }
+        }
+
+        public static object[] CreateEventParamsArray(params object[] paramsArray)
+        {
+            object[] returnArray = null;
+            if (null != paramsArray)
+            {
+                int parramArrayCount = paramsArray.Length;
+                for (int i = 0; i < parramArrayCount; i++)
+                    returnArray[i] = paramsArray[i];
+                return returnArray;
+            }
+            else
+                return null;
+        }
+
+        public static object[] CreateEventParamsArray(bool[] paramsModifier, params object[] paramsArray)
+        {
+            object[] returnArray = null;
+            if (null != paramsArray)
+            {
+                int parramArrayCount = paramsArray.Length;
+                for (int i = 0; i < parramArrayCount; i++)
+                {
+                    if (true == paramsModifier[i])
+                        returnArray[i] = paramsArray[i];
+                    else
+                        returnArray.SetValue(paramsArray[i], i);
+                }
+                return returnArray;
+            }
+            else
+                return null;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static void ValidateObject(COMVariant variant)
+        {
+            if (null == variant.UnderlyingObject)
+                throw (new LateBindingApiException("UnderlyingObject is not initalized. This indicates you try to use a Interface in a wrong way."));
         }
 
         #endregion

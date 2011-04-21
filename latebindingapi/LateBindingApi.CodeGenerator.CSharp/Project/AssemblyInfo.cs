@@ -23,3 +23,9 @@ using LateBindingApi.Core;
 [assembly: AssemblyVersion("%Version%")]
 [assembly: AssemblyFileVersion("%FileVersion%")]
 [assembly: LateBindingAttribute("1.0")]
+
+
+/*
+Alias Table
+ 
+%AliasInclude%*/

@@ -1,0 +1,27 @@
+﻿
+        #region IEventBinding Member
+          
+		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public Delegate[] GetEventRecipients(string eventName)
+        {
+            NetRuntimeSystem.Type thisType = this.GetType();
+            MulticastDelegate eventDelegate = (MulticastDelegate)thisType.GetField(
+                                                eventName + "Event",
+                                                NetRuntimeSystem.Reflection.BindingFlags.Instance |
+                                                NetRuntimeSystem.Reflection.BindingFlags.NonPublic).GetValue(this);
+
+            if (null != eventDelegate)
+            {
+                Delegate[] delegates = eventDelegate.GetInvocationList();
+                return delegates;
+            }
+            else
+                return new Delegate[0];
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public void DisposeSinkHelper()
+        {
+%sinkHelperDispose%		}
+        
+        #endregion

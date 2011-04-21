@@ -44,6 +44,7 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
+            this.modulGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ModulGrid.ModulGridControl();
             this.constantGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ConstantGrid.ConstantGridControl();
             this.solutionGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl();
             this.classGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl();
@@ -53,6 +54,8 @@
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.aliasGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.AliasGrid.AliasGridControl();
+            this.recordGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid.RecordGridControl();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -185,6 +188,9 @@
             // 
             // splitContainerMain.Panel2
             // 
+            this.splitContainerMain.Panel2.Controls.Add(this.recordGrid);
+            this.splitContainerMain.Panel2.Controls.Add(this.aliasGrid);
+            this.splitContainerMain.Panel2.Controls.Add(this.modulGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.constantGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.solutionGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.classGrid);
@@ -206,6 +212,13 @@
             this.libraryTreeBrowser.Size = new System.Drawing.Size(301, 437);
             this.libraryTreeBrowser.TabIndex = 0;
             this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
+            // 
+            // modulGrid
+            // 
+            this.modulGrid.Location = new System.Drawing.Point(194, 280);
+            this.modulGrid.Name = "modulGrid";
+            this.modulGrid.Size = new System.Drawing.Size(259, 124);
+            this.modulGrid.TabIndex = 7;
             // 
             // constantGrid
             // 
@@ -281,6 +294,20 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
             this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
             // 
+            // aliasGrid
+            // 
+            this.aliasGrid.Location = new System.Drawing.Point(513, 42);
+            this.aliasGrid.Name = "aliasGrid";
+            this.aliasGrid.Size = new System.Drawing.Size(135, 77);
+            this.aliasGrid.TabIndex = 8;
+            // 
+            // recordGrid
+            // 
+            this.recordGrid.Location = new System.Drawing.Point(573, 175);
+            this.recordGrid.Name = "recordGrid";
+            this.recordGrid.Size = new System.Drawing.Size(135, 106);
+            this.recordGrid.TabIndex = 9;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -332,6 +359,9 @@
         private LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid.ClassGridControl classGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.SolutionGrid.SolutionGridControl solutionGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.ConstantGrid.ConstantGridControl constantGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.ModulGrid.ModulGridControl modulGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.AliasGrid.AliasGridControl aliasGrid;
+        private LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid.RecordGridControl recordGrid;
     }
 }
 

@@ -44,13 +44,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AliasApi.cs" />
     <Compile Include="CoClassApi.cs" />
+    <EmbeddedResource Include="CoClass\EventHelper.txt" />
+    <EmbeddedResource Include="Event\Interface.txt" />
     <Compile Include="ConstantApi.cs" />
     <Compile Include="DispatchApi.cs" />
     <Compile Include="DocumentationApi.cs" />
     <Compile Include="EnumerableApi.cs" />
     <EmbeddedResource Include="Enumerator\ProxyEnumerator.txt" />
     <Compile Include="EnumsApi.cs" />
+    <Compile Include="EventApi.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="FormConfigDialog.cs">
       <SubType>Form</SubType>
@@ -67,12 +71,14 @@
     </Compile>
     <Compile Include="InterfaceApi.cs" />
     <Compile Include="MethodApi.cs" />
+    <Compile Include="ModuleApi.cs" />
     <Compile Include="ParameterApi.cs" />
     <Compile Include="PathApi.cs" />
     <Compile Include="ProjectApi.cs" />
     <EmbeddedResource Include="Project\ProjectInfo.txt" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyApi.cs" />
+    <Compile Include="RecordsApi.cs" />
     <Compile Include="RessourceApi.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SolutionApi.cs" />

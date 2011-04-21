@@ -57,6 +57,7 @@
             this.linkLabel.TabStop = true;
             this.linkLabel.Text = "http://LateBindingApi.Codeplex.com";
             this.linkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.linkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
             // 
             // pictureBox1
             // 

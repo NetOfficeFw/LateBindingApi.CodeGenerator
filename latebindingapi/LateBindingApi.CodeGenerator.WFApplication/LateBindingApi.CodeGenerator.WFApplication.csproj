@@ -45,6 +45,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\AliasGrid\AliasGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\AliasGrid\AliasGridControl.Designer.cs">
+      <DependentUpon>AliasGridControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ClassGrid\ClassGridControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -105,11 +111,23 @@
     <Compile Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.Designer.cs">
       <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ModulGrid\ModulGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ModulGrid\ModulGridControl.Designer.cs">
+      <DependentUpon>ModulGridControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ProjectGrid\ProjectGridControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\ProjectGrid\ProjectGridControl.Designer.cs">
       <DependentUpon>ProjectGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RecordGrid\RecordGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\RecordGrid\RecordGridControl.Designer.cs">
+      <DependentUpon>RecordGridControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\SolutionGrid\SolutionGridControl.cs">
       <SubType>UserControl</SubType>
@@ -167,6 +185,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\AliasGrid\AliasGridControl.resx">
+      <DependentUpon>AliasGridControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ClassGrid\ClassGridControl.resx">
       <DependentUpon>ClassGridControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -197,8 +218,14 @@
     <EmbeddedResource Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.resx">
       <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ModulGrid\ModulGridControl.resx">
+      <DependentUpon>ModulGridControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ProjectGrid\ProjectGridControl.resx">
       <DependentUpon>ProjectGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\RecordGrid\RecordGridControl.resx">
+      <DependentUpon>RecordGridControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\SolutionGrid\SolutionGridControl.resx">
       <DependentUpon>SolutionGridControl.cs</DependentUpon>

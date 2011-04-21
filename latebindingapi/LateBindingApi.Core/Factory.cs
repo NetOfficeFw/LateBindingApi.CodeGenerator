@@ -206,16 +206,16 @@ namespace LateBindingApi.Core
             IDispatch dispatcher = (IDispatch)comProxy;
             COMTypes.ITypeInfo typeInfo = dispatcher.GetTypeInfo(0, 0);
             COMTypes.ITypeLib parentTypeLib = null;
-          
+
             int i = 0;
             typeInfo.GetContainingTypeLib(out parentTypeLib, out i);
             
             IntPtr attributesPointer = IntPtr.Zero;
             parentTypeLib.GetLibAttr(out attributesPointer);
-
+           
             COMTypes.TYPEATTR attributes = (COMTypes.TYPEATTR)Marshal.PtrToStructure(attributesPointer, typeof(COMTypes.TYPEATTR));
             returnGuid = attributes.guid; 
-
+            
             parentTypeLib.ReleaseTLibAttr(attributesPointer);
             Marshal.ReleaseComObject(parentTypeLib);
             Marshal.ReleaseComObject(typeInfo);
@@ -231,7 +231,7 @@ namespace LateBindingApi.Core
         private static IFactoryInfo GetFactoryInfo(object comProxy)
         {
             if (_factoryList.Count == 0)
-                throw (new ArgumentOutOfRangeException("Factory are not initialized with generated LateBindingApi assemblies."));
+                throw (new LateBindingApiException("Factory are not initialized with generated LateBindingApi assemblies."));
             
             Guid targetGuid = GetParentLibraryGuid(comProxy);
         
@@ -241,8 +241,8 @@ namespace LateBindingApi.Core
                     return item;
 
             }
-            
-            throw new ArgumentException(TypeDescriptor.GetClassName(comProxy) + " class not found in LateBindingApi.");
+
+            throw new LateBindingApiException(TypeDescriptor.GetClassName(comProxy) + " class not found in LateBindingApi.");
         }
     }
 }

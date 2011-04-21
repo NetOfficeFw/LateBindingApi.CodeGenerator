@@ -83,6 +83,7 @@
             this.textBoxItem.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxItem.HideSelection = false;
             this.textBoxItem.Location = new System.Drawing.Point(3, 40);
             this.textBoxItem.Multiline = true;
             this.textBoxItem.Name = "textBoxItem";

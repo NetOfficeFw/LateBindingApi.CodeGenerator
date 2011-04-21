@@ -136,12 +136,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
                 string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
+                string eventIncludes = EventApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), project.Element("Interfaces"), _settings, solutionFolder);
+                string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
+                string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
+                string recordsInclude = RecordsApi.ConvertRecordsToFiles(project, project.Element("Records"), _settings, solutionFolder);
+                 
+
                 string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
-                
-                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project);
+
+                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project, typeDefsInclude);
                 projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes,
-                                        faceIncludes, dispatchIncludes, classesIncludes, factoryInclude);
+                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude,factoryInclude);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
@@ -264,6 +270,28 @@ namespace LateBindingApi.CodeGenerator.CSharp
             versions = versions.Substring(0, versions.Length - 1);
             result += "[SupportByLibrary(" + versions + ")]";
             return result;
+        }
+
+        /// <summary>
+        /// returns support libary versions for entityNode as array
+        /// </summary>
+        /// <param name="entityNode"></param>
+        /// <returns></returns>
+        internal static string[] GetSupportByLibraryArray(XElement entityNode)
+        {
+            List<string> result = new List<string>();
+            XElement refLibs = entityNode.Element("RefLibraries");
+            foreach (XElement refLib in refLibs.Elements())
+            {
+                string key = refLib.Attribute("Key").Value;
+                XElement libNode = (from a in entityNode.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
+                                    where a.Attribute("Key").Value.Equals(key)
+                                    select a).FirstOrDefault();
+                string versionAttribute = libNode.Attribute("Version").Value;
+                result.Add(versionAttribute);
+               
+            }
+            return result.ToArray();
         }
 
         /// <summary>

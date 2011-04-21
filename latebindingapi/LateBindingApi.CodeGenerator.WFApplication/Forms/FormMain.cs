@@ -39,6 +39,9 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             enumGrid.Initialize(_comAnalyzer.Schema);
             classGrid.Initialize(_comAnalyzer.Schema);
             solutionGrid.Initialize(_comAnalyzer.Schema);
+            modulGrid.Initialize(_comAnalyzer.Schema);
+            aliasGrid.Initialize(_comAnalyzer.Schema);
+            recordGrid.Initialize(_comAnalyzer.Schema);
 
             _commandLine = Environment.CommandLine;
         }
@@ -46,7 +49,33 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         #endregion
 
         #region Menu Click Trigger
+       
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                FormAbout about = new FormAbout();
+                about.ShowDialog(this);
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
 
+        private void websiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("http://latebindingapi.codeplex.com");
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -310,6 +339,18 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                         classGrid.Show(node);
                         classGrid.Visible = true;
                         break;
+                    case "Modul":
+                        modulGrid.Show(node);
+                        modulGrid.Visible = true;
+                        break;
+                    case "Alias":
+                        aliasGrid.Show(node);
+                        aliasGrid.Visible = true;
+                        break;
+                    case "Record":
+                        recordGrid.Show(node);
+                        recordGrid.Visible = true;
+                        break;
                 }
 
             }
@@ -331,33 +372,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 // abort async generate operation
                 if ((null != _generator) && (true == _generator.IsAlive))
                     _generator.Abort();
-            }
-            catch (Exception throwedException)
-            {
-                FormShowError formError = new FormShowError(throwedException);
-                formError.ShowDialog(this);
-            }
-        }
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                FormAbout about = new FormAbout();
-                about.ShowDialog(this);
-            }
-            catch (Exception throwedException)
-            {
-                FormShowError formError = new FormShowError(throwedException);
-                formError.ShowDialog(this);
-            }
-        }
-
-        private void websiteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                System.Diagnostics.Process.Start("http://latebindingapi.codeplex.com");
             }
             catch (Exception throwedException)
             {

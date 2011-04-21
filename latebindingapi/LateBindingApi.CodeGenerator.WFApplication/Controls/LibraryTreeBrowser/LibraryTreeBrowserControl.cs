@@ -78,6 +78,9 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser
                 ShowElements(item, treeProject, "DispatchInterfaces", "Interface");
                 ShowElements(item, treeProject, "Interfaces", "Interface");
                 ShowElements(item, treeProject, "CoClasses", "CoClass");
+                ShowElements(item, treeProject, "Modules", "Modul");
+                ShowElements(item, treeProject, "Records", "Record");
+                ShowElements(item, treeProject, "TypeDefs", "Alias");
             }
         }
 
@@ -143,12 +146,18 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser
         private bool FilterPassed(string expression)
         {
             string filterText = textBoxFilter.Text.Trim();
-            if (filterText == "") return true;
-
-            if (expression.IndexOf(filterText, 0, StringComparison.InvariantCultureIgnoreCase) > -1)
+            if (filterText == "")
                 return true;
-            else
-                return false;
+
+            string[] filterArray = filterText.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string filter in filterArray)
+            {
+                int stringPosition = expression.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
+                if (stringPosition > -1)
+                    return true;
+            }
+
+            return false;   
         }
 
         private void textBoxFilter_KeyDown(object sender, KeyEventArgs e)

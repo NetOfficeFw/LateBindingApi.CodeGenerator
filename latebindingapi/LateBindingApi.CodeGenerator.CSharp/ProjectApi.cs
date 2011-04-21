@@ -14,7 +14,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                    + "      <Name>%Name%</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";
 
-        internal static string ReplaceAssemblyAttributes(string assemblyInfo, XElement project)
+        internal static string ReplaceAssemblyAttributes(string assemblyInfo, XElement project, string typeDefsInclude)
         {
             assemblyInfo = assemblyInfo.Replace("%Title%", project.Attribute("Name").Value);
             assemblyInfo = assemblyInfo.Replace("%Description%", project.Attribute("Description").Value);
@@ -26,6 +26,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             assemblyInfo = assemblyInfo.Replace("%Culture%", project.Attribute("Culture").Value);
             assemblyInfo = assemblyInfo.Replace("%Version%", project.Attribute("Version").Value);
             assemblyInfo = assemblyInfo.Replace("%FileVersion%", project.Attribute("FileVersion").Value);
+
+            assemblyInfo = assemblyInfo.Replace("%AliasInclude%", typeDefsInclude);
 
             string listAssemblies = "\tName - Description - SupportByLibrary\r\n";
             foreach (XElement item in project.Element("RefLibraries").Elements("Ref"))
@@ -57,7 +59,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         internal static string ReplaceProjectAttributes(string projectFile, Settings settings, XElement project, string enumIncludes,
-                                        string constIncludes, string faceIncludes, string dispatchIncludes, string classesIncludes, string factoryInclude)
+                                        string constIncludes, string faceIncludes, string dispatchIncludes, string classesIncludes, 
+                                                         string eventIncludes, string modulesInclude, string recordsInclude, string factoryInclude)
         {
             projectFile = projectFile.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
             projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value);
@@ -67,7 +70,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%DispatchInclude%", dispatchIncludes);
             projectFile = projectFile.Replace("%ClassesInclude%", classesIncludes);
             projectFile = projectFile.Replace("%FactoryInclude%", factoryInclude);
-             
+            projectFile = projectFile.Replace("%ModulesInclude%", modulesInclude);
+            projectFile = projectFile.Replace("%EventInclude%", eventIncludes);
+            projectFile = projectFile.Replace("%RecordsInclude%", recordsInclude);
+            
             string refProjectInclude = "";
             if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
             {

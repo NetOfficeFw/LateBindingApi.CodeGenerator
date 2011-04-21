@@ -90,6 +90,9 @@
       <xs:element name="CoClasses"          type="CoClasses"/>
       <xs:element name="DispatchInterfaces" type="DispatchInterfaces"/>
       <xs:element name="Interfaces"         type="Interfaces"/>
+      <xs:element name="Modules"            type="Modules"/>
+      <xs:element name="Records"            type="Records"/>
+      <xs:element name="TypeDefs"           type="TypeDefs"/>
       <xs:element name="RefLibraries"       type="RefLibraries" />
       <xs:element name="RefProjects"        type="RefProjects" />
     </xs:sequence>
@@ -129,6 +132,7 @@
     </xs:sequence>
     <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name -->
     <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+    <xs:attribute name="IsEventInterface"     type="xs:string"  use="required" /> <!-- is an event interface -->
   </xs:complexType>
 
   <xs:complexType name="DispatchInterfaces">
@@ -136,13 +140,84 @@
       <xs:element name="DispatchInterface" type="Interface" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
+
+  <xs:complexType name="RecordMembers">
+    <xs:sequence>
+      <xs:element name="Member"         type="RecordMember" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
   
+  <xs:complexType name="RecordMember">
+    <xs:sequence>
+      <xs:element name="RefLibraries"  type="RefLibraries" />
+    </xs:sequence>
+    <xs:attribute name="Name"           type="xs:string"  /> <!-- member name -->
+    <xs:attribute name="Type"           type="xs:string"  /> <!-- member type -->
+    <xs:attribute name="TypeKind"       type="xs:string"  /> <!-- return value typekind -->
+    <xs:attribute name="IsComProxy"     type="xs:boolean" /> <!-- return value is a com object -->
+    <xs:attribute name="IsEnum"         type="xs:boolean" /> <!-- return value is an enum -->
+    <xs:attribute name="IsExternal"     type="xs:boolean" /> <!-- return value type is defined in external library -->
+    <xs:attribute name="IsArray"        type="xs:boolean" /> <!-- return value is an array -->
+    <xs:attribute name="IsNative"       type="xs:boolean" /> <!-- return value is sclar -->
+    <xs:attribute name="TypeKey"        type="xs:string"  /> <!-- key from defined return type  -->
+    <xs:attribute name="ProjectKey"     type="xs:string"  /> <!-- project key there is the return type defined -->
+    <xs:attribute name="LibraryKey"     type="xs:string"  /> <!-- library key there is the return type defined -->
+  </xs:complexType>
+
+  <xs:complexType name="Record">
+    <xs:sequence>
+      <xs:element name="RefLibraries"         type="RefLibraries" />
+      <xs:element name="DispIds"              type="DispIds" />
+      <xs:element name="Members"              type="RecordMembers" />
+    </xs:sequence>
+    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- Record name: readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+  </xs:complexType>
+  
+  <xs:complexType name="Records">
+    <xs:sequence>
+      <xs:element name="Record"               type="Record" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Alias">
+    <xs:sequence>
+      <xs:element name="RefLibraries"         type="RefLibraries" />
+      <xs:element name="DispIds"              type="DispIds" />
+    </xs:sequence>
+    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- Alias name: readonly -->
+    <xs:attribute name="Intrinsic"            type="xs:string"  use="required" /> <!-- alies value -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+  </xs:complexType>
+  
+  <xs:complexType name="TypeDefs">
+    <xs:sequence>
+      <xs:element name="Alias" type="Alias" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="Modules">
+    <xs:sequence>
+      <xs:element name="Modul" type="Modul" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="Modul">
+    <xs:sequence>
+      <xs:element name="Methods"              type="Methods" />
+      <xs:element name="RefLibraries"         type="RefLibraries" />
+      <xs:element name="DispIds"              type="DispIds" />
+    </xs:sequence>
+    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name: readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+  </xs:complexType>
+
   <xs:complexType name="CoClasses">
     <xs:sequence>
       <xs:element name="CoClass" type="CoClass" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="CoClass">
     <xs:sequence>
       <xs:element name="RefLibraries"         type="RefLibraries" />

@@ -147,6 +147,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
 
         private void textBoxFilter_KeyDown(object sender, KeyEventArgs e)
         {
+
             if (e.KeyCode == Keys.Return)
                 ShowResultItems();
         }
