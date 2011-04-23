@@ -14,7 +14,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="propertiesNode"></param>
         /// <returns></returns>
-        internal static string ConvertPropertiesToString(Settings settings, XElement propertiesNode)
+        internal static string ConvertPropertiesLateBindToString(Settings settings, XElement propertiesNode)
         {
             ParameterApi.ValidateItems(propertiesNode, "Property");
 
@@ -25,7 +25,26 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("_NewEnum" == propertyNode.Attribute("Name").Value)
                     continue;
 
-                string method = ConvertPropertyToString(settings, propertyNode);
+                string method = ConvertPropertyLateBindToString(settings, propertyNode);
+                result += method;
+            }
+
+            result += "\t\t#endregion\r\n";
+            return result;
+        }
+        
+        internal static string ConvertPropertiesEarlyBindToString(Settings settings, XElement propertiesNode)
+        {
+            ParameterApi.ValidateItems(propertiesNode, "Property");
+
+            string result = "\r\n\t\t#region Properties\r\n\r\n";
+
+            foreach (XElement propertyNode in propertiesNode.Elements("Property"))
+            {
+                if ("_NewEnum" == propertyNode.Attribute("Name").Value)
+                    continue;
+
+                string method = ConvertPropertyEarlyBindToString(settings, propertyNode);
                 result += method;
             }
 
@@ -38,7 +57,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="propertyNode"></param>
         /// <returns></returns>
-        internal static string ConvertPropertyToString(Settings settings, XElement propertyNode)
+        internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode)
         {           
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
@@ -58,7 +77,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
 
-                string protoype = CreatePropertyPrototypeString(settings, itemParams);
+                string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams);
                 protoype = protoype.Replace("%valueReturn%", valueReturn);
                 method += protoype;
  
@@ -75,7 +94,40 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static string CreatePropertyPrototypeString(Settings settings, XElement itemParams)
+        internal static string ConvertPropertyEarlyBindToString(Settings settings, XElement propertyNode)
+        {
+            string result = "";
+            string name = propertyNode.Attribute("Name").Value;
+            foreach (XElement itemParams in propertyNode.Elements("Parameters"))
+            {
+                string method = "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                method += "\t\t" + "[DispId(" + itemParams.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
+
+                XElement returnValue = itemParams.Element("ReturnValue");
+                method += "\t\t" + GetEarlyBindPropertySignatur(itemParams) + "\r\n\r\n";
+
+
+                result += method;
+            }
+            return result;
+
+        }
+    
+        internal static string GetEarlyBindPropertySignatur(XElement paramsNode)
+        {
+            string dispId = paramsNode.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value;
+            string marshalAs = paramsNode.Element("ReturnValue").Attribute("MarshalAs").Value;
+            if ("" != marshalAs)
+                marshalAs = "[return: MarshalAs(" + marshalAs + ")] ";
+
+            string result = paramsNode.Element("ReturnValue").Attribute("Type").Value + " " + paramsNode.Parent.Attribute("Name").Value + "{";
+
+            result += marshalAs + "[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime), DispId(" + dispId + ")] get;";
+
+            return result + "}";
+        }
+
+        private  static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams)
         {
             string getter = "get_";
             string inParam = "(";
@@ -94,22 +146,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = "";
             string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true);
             int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
-            if( (paramsCountWithOptionals > 0) || (faceName == name))
+            if ((paramsCountWithOptionals > 0) || (faceName == name))
             {
                 result = "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
-                if(name != "this")
+                if (name != "this")
                     result += "\t\t{\r\n%propertyGetBody%\t\t}\r\n\r\n";
                 else
                     result += "\t\t{\r\n\t\t\tget{\r\n%propertyGetBody%\t\t\t}\r\n\t\t}\r\n\r\n";
 
-                if( ("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value) && ("_Default" != itemParams.Parent.Attribute("Name").Value))
+                if (("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value) && ("_Default" != itemParams.Parent.Attribute("Name").Value))
                 {
                     string retValueType = CSharpGenerator.GetQualifiedType(itemParams.Element("ReturnValue"));
                     if ("" != parameters)
                         retValueType = ", " + retValueType;
- 
+
                     result += "\t\tpublic " + "void set_" + name + inParam + parameters + retValueType + " value" + outParam + "\r\n";
-                    result += "\t\t{\r\n%propertySetBody%\t\t}\r\n\r\n";                        
+                    result += "\t\t{\r\n%propertySetBody%\t\t}\r\n\r\n";
                 }
             }
             else
@@ -125,6 +177,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             return result;
+        }
+
+        private static string CreatePropertyEarlyBindPrototypeString(Settings settings, XElement itemParams)
+        {
+            return "";
         }
 
         /// <summary>

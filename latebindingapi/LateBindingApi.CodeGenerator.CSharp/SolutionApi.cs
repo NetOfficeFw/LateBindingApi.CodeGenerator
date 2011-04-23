@@ -40,7 +40,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             foreach (var project in solution.Element("Projects").Elements("Project"))
-            {               
+            {
+                if ("true" == project.Attribute("Ignore").Value)
+                    continue;
+
                 string newProjectLine = _projectLine.Replace("%Name%", project.Attribute("Name").Value);
                 newProjectLine = newProjectLine.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
                 string depends = "";
@@ -108,6 +111,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string projectInclude = "";
             foreach (var item in solution.Element("Projects").Elements("Project"))
             {
+                if ("true" == item.Attribute("Ignore").Value)
+                    continue;
+
                 string newRefProject = projectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(item.Attribute("Key").Value));
                 newRefProject = newRefProject.Replace("%Name%", item.Attribute("Name").Value);
                 projectInclude += newRefProject;

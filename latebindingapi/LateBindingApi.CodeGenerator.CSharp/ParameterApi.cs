@@ -121,9 +121,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                    where a.Elements("Parameter").Count() == 0
                                    select a);
 
-                if (parametersNode.Parent.Attribute("Name").Value == "_PrintOut")
-                {
-                }
                 foreach (XElement item in paramsNodes)
                 {
                     if (item != parametersNode)

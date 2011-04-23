@@ -90,6 +90,7 @@
             this.textBoxItem.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBoxItem.Size = new System.Drawing.Size(612, 448);
             this.textBoxItem.TabIndex = 27;
+            this.textBoxItem.WordWrap = false;
             this.textBoxItem.TextChanged += new System.EventHandler(this.textBoxItem_TextChanged);
             // 
             // SourceEditControl

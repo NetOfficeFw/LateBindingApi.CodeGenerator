@@ -102,7 +102,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             try
             {
                 DateTime startTime = DateTime.Now;
-
+ 
                 DoUpdate("Prepare");
                 _typeLibApplication = new TLIApplication();
                 if (false == _addToCurrentProject)
@@ -539,6 +539,15 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                 if (null == node)
                 {
+                    // exclude OLE
+                    string preNamespace = "LateBindingApi.";
+                    string ignore = "false";
+                    if (("{00020430-0000-0000-C000-000000000046}" == item.GUID))
+                    {
+                        preNamespace = "";
+                        ignore = "true";
+                    }
+
                     node = new XElement("Project",
                                new XElement("Constants"),
                                new XElement("Enums"),
@@ -551,7 +560,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("RefLibraries"),
                                new XElement("RefProjects"),
                                new XAttribute("Name",        item.Name),
-                               new XAttribute("Namespace",   "LateBindingApi." + item.Name),
+                               new XAttribute("Namespace", preNamespace + item.Name),
                                new XAttribute("Key",         Utils.NewEncodedGuid()),
                                new XAttribute("Description",        ""),
                                new XAttribute("Configuration", ""),
@@ -561,7 +570,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XAttribute("Trademark", ""),
                                new XAttribute("Culture", ""),
                                new XAttribute("Version", "1.0.0.0"),
-                               new XAttribute("FileVersion", "1.0.0.0") );
+                               new XAttribute("FileVersion", "1.0.0.0"),
+                               new XAttribute("Ignore", ignore)                               
+                               );
 
                     var projects = _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").FirstOrDefault();
                     projects.Add(node);
@@ -994,6 +1005,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("Inherited"),
                                new XElement("RefLibraries"),
                                new XAttribute("IsEventInterface", "false"),
+                               new XAttribute("IsEarlyBind", "false"),
+                               new XAttribute("TypeLibType", itemInterface.AttributeMask),
                                new XAttribute("Name", itemInterface.Name),
                                new XAttribute("Key",  Utils.NewEncodedGuid()));
 
@@ -1261,15 +1274,15 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                 new XAttribute("TypeKind", MethodHandler.TypeInfo(itemMember.ReturnType.TypeInfo)),
                                 new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(itemMember.ReturnType).ToString().ToLower()),
                                 new XAttribute("IsEnum", TypeDescriptor.IsEnum(itemMember.ReturnType).ToString().ToLower()),
-                                new XAttribute("IsExternal", itemMember.ReturnType.IsExternalType.ToString().ToLower()),
+                                new XAttribute("IsExternal", TypeDescriptor.IsExternal(itemMember.ReturnType).ToString().ToLower()),
                                 new XAttribute("IsArray", TypeDescriptor.IsArray(itemMember.ReturnType).ToString().ToLower()),
                                 new XAttribute("IsNative", TypeDescriptor.IsNative(returnTypeName).ToString().ToLower()),
-                                new XAttribute("MarshalAs", TypeDescriptor.MarshalEnumMemberAsAs(itemMember)),
+                                new XAttribute("MarshalAs", TypeDescriptor.MarshalMemberAsAs(itemMember)),
                                 new XAttribute("TypeKey", TypeDescriptor.GetTypeKey(membersNode.Document, itemMember.ReturnType)),
                                 new XAttribute("ProjectKey", TypeDescriptor.GetProjectKey(membersNode.Document, itemMember.ReturnType)),
                                 new XAttribute("LibraryKey", TypeDescriptor.GetLibraryKey(membersNode.Document, itemMember.ReturnType))
                                 );
-                 
+                  
                 membersNode.Add(memberNode);
             }
 
@@ -1351,7 +1364,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             foreach (MemberInfo itemMember in members)
             {
                 VarTypeInfo typeInfo = itemMember.ReturnType;             
-                if ((typeInfo != null) && (true == typeInfo.IsExternalType))
+                if ((typeInfo != null) && (true == TypeDescriptor.IsExternal(typeInfo)))
                 {
                     found = false;
                     containingFile = typeInfo.TypeLibInfoExternal.ContainingFile;
@@ -1365,10 +1378,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     }
 
                     if (false == found)
-                    {
+                    {     
                         TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
                         list.Add(libInfo);
                         AddTypeLibToDocument(libInfo);
+                        
                     }
                    
                     foreach (TypeLibInfo itemLib in list)
@@ -1394,12 +1408,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         }
                     }
                 }
-
+                
                 Parameters memberParams = itemMember.Parameters;
                 foreach (ParameterInfo itemParam in memberParams)
                 {
                     VarTypeInfo paramTypeInfo = itemParam.VarTypeInfo;
-                    if ((paramTypeInfo != null) && (true == paramTypeInfo.IsExternalType))
+                    if ((paramTypeInfo != null) && (true == TypeDescriptor.IsExternal(paramTypeInfo)))
                     {
                          found = false;
                          containingFile = paramTypeInfo.TypeLibInfoExternal.ContainingFile;
@@ -1415,9 +1429,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                          if (false == found)
                          {
-                             TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
-                             list.Add(libInfo);
-                             AddTypeLibToDocument(libInfo);
+                            TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
+                            list.Add(libInfo);
+                            AddTypeLibToDocument(libInfo);
+                           
                          }
 
                          foreach (TypeLibInfo itemLib in list)

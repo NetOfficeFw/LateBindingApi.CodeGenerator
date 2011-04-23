@@ -68,18 +68,21 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 VarTypeInfo returnTypeInfo = itemMember.ReturnType;
                 string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo, true);
                 parametersNode = new XElement("Parameters",
-                                    new XElement("ReturnValue",
-                                        new XAttribute("Type", returnTypeName),
-                                        new XAttribute("TypeKind",   TypeInfo(returnTypeInfo.TypeInfo)),
-                                        new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo).ToString().ToLower()),
-                                        new XAttribute("IsExternal", returnTypeInfo.IsExternalType.ToString().ToLower()),
-                                        new XAttribute("IsEnum",     TypeDescriptor.IsEnum(returnTypeInfo).ToString().ToLower()),
-                                        new XAttribute("IsArray",    TypeDescriptor.IsArray(returnTypeInfo).ToString().ToLower()),
-                                        new XAttribute("IsNative",   TypeDescriptor.IsNative(returnTypeName).ToString().ToLower()),
-                                        new XAttribute("TypeKey",    TypeDescriptor.GetTypeKey(libraryNode.Document, returnTypeInfo)),
-                                        new XAttribute("ProjectKey", TypeDescriptor.GetProjectKey(libraryNode.Document, returnTypeInfo)),
-                                        new XAttribute("LibraryKey", TypeDescriptor.GetLibraryKey(libraryNode.Document, returnTypeInfo))),
-                                    new XElement("RefLibraries"));
+                                        new XElement("ReturnValue",
+                                            new XAttribute("Type",       returnTypeName),
+                                            new XAttribute("VarType",    returnTypeInfo.VarType),
+                                            new XAttribute("MarshalAs",  TypeDescriptor.MarshalMemberAsAs(returnTypeInfo.VarType)),
+                                            new XAttribute("TypeKind",   TypeInfo(returnTypeInfo.TypeInfo)),
+                                            new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo).ToString().ToLower()),
+                                            new XAttribute("IsExternal", TypeDescriptor.IsExternal(returnTypeInfo).ToString().ToLower()),
+                                            new XAttribute("IsEnum",     TypeDescriptor.IsEnum(returnTypeInfo).ToString().ToLower()),
+                                            new XAttribute("IsArray",    TypeDescriptor.IsArray(returnTypeInfo).ToString().ToLower()),
+                                            new XAttribute("IsNative",   TypeDescriptor.IsNative(returnTypeName).ToString().ToLower()),
+                                            new XAttribute("TypeKey",    TypeDescriptor.GetTypeKey(libraryNode.Document, returnTypeInfo)),
+                                            new XAttribute("ProjectKey", TypeDescriptor.GetProjectKey(libraryNode.Document, returnTypeInfo)),
+                                            new XAttribute("LibraryKey", TypeDescriptor.GetLibraryKey(libraryNode.Document, returnTypeInfo))),
+                                        new XElement("RefLibraries")
+                                      );
 
                 Marshal.ReleaseComObject(itemMember.ReturnType);
 
@@ -92,7 +95,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                     new XAttribute("Name",       paramInfo.Name),
                                     new XAttribute("Type",       paramTypeName),
                                     new XAttribute("TypeKind",   TypeInfo(paramTypeInfo.TypeInfo)),
-                                    new XAttribute("IsExternal", paramTypeInfo.IsExternalType.ToString().ToLower()),
+                                    new XAttribute("VarType",    paramTypeInfo.VarType),
+                                    new XAttribute("MarshalAs",  TypeDescriptor.MarshalMemberAsAs(paramTypeInfo.VarType)),
+                                    new XAttribute("IsExternal", TypeDescriptor.IsExternal(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsOptional", paramInfo.Optional.ToString().ToLower()),
                                     new XAttribute("IsEnum",     TypeDescriptor.IsEnum(paramTypeInfo).ToString().ToLower()),

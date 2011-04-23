@@ -63,8 +63,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {                
                 methodResult += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemMethod) + "\r\n"; 
                 methodResult += "\t\t[PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime), DispId(" + itemMethod.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
-                methodResult += "\t\t" + GetMethodSignatur(itemMethod, false) + ";\r\n\r\n";
-                implementResult += "\t\t" + GetMethodSignatur(itemMethod, true) + "\r\n" + "\t\t{\r\n" + GetMethodImplementCode(itemMethod)+ "\t\t}\r\n\r\n";
+                methodResult += "\t\t" + GetEventMethodSignatur(itemMethod, false) + ";\r\n\r\n";
+                implementResult += "\t\t" + GetEventMethodSignatur(itemMethod, true) + "\r\n" + "\t\t{\r\n" + GetMethodImplementCode(itemMethod) + "\t\t}\r\n\r\n";
             }
             
             if("" !=methodResult)
@@ -74,8 +74,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result = result.Replace("%methodsImplement%", implementResult);
             return result;
         }
-
-        private static string GetMethodSignatur(XElement methodNode, bool withPublic)
+        
+        internal static string GetEventMethodSignatur(XElement methodNode, bool withPublic)
         {
             string publicModifier ="";
             if (true == withPublic)

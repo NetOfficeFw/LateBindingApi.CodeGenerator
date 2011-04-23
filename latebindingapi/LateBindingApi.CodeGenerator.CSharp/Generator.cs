@@ -126,6 +126,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             var projects = _document.Descendants("Project");
             foreach (var project in projects)
             {
+                if ("true" == project.Attribute("Ignore").Value)
+                    continue;
+
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
 
@@ -134,20 +137,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
+                
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
                 string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
+               
                 string eventIncludes = EventApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), project.Element("Interfaces"), _settings, solutionFolder);
                 string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
                 string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
                 string recordsInclude = RecordsApi.ConvertRecordsToFiles(project, project.Element("Records"), _settings, solutionFolder);
                  
-
                 string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
 
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project, typeDefsInclude);
                 projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes,
-                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude,factoryInclude);
+                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, 
+                                        factoryInclude);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
@@ -166,7 +171,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #endregion
 
         #region Static Methods
-
+        
         internal static string GetQualifiedType(Settings settings, XElement value)
         {
             if (true == settings.ConvertOptionalsToObject)

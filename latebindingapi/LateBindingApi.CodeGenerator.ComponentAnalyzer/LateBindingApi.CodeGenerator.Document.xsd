@@ -108,6 +108,7 @@
     <xs:attribute name="Culture"        type="xs:string" use="required" /> <!-- AssemblyCulture -->
     <xs:attribute name="Version"        type="xs:string" use="required" /> <!-- AssemblyVersion -->
     <xs:attribute name="FileVersion"    type="xs:string" use="required" /> <!-- AssemblyFileVersion -->
+    <xs:attribute name="Ignore"         type="xs:string" use="required" /> <!-- dont generate, use only as placeholder -->
   </xs:complexType>
 
   <xs:complexType name="RefInterfaces">
@@ -133,6 +134,8 @@
     <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name -->
     <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
     <xs:attribute name="IsEventInterface"     type="xs:string"  use="required" /> <!-- is an event interface -->
+    <xs:attribute name="IsEarlyBind"          type="xs:string"  use="required" /> <!-- generate as earlybind Interface equals as interop  -->
+    <xs:attribute name="TypeLibType"          type="xs:string"  use="required" /> <!-- TypeLibTypeAttribute -->
   </xs:complexType>
 
   <xs:complexType name="DispatchInterfaces">
@@ -337,6 +340,8 @@
     </xs:sequence>
     <xs:attribute name="Type"           type="xs:string"  /> <!-- return value type -->
     <xs:attribute name="TypeKind"       type="xs:string"  /> <!-- return value typekind -->
+    <xs:attribute name="VarType"        type="xs:string"  /> <!-- VarType structure number -->
+    <xs:attribute name="MarshalAs"      type="xs:string"  /> <!-- marshal attribute info -->
     <xs:attribute name="IsComProxy"     type="xs:boolean" /> <!-- return value is a com object -->
     <xs:attribute name="IsEnum"         type="xs:boolean" /> <!-- return value is an enum -->
     <xs:attribute name="IsExternal"     type="xs:boolean" /> <!-- return value type is defined in external library-->
@@ -359,6 +364,8 @@
     <xs:attribute name="Name"       type="xs:string"  /> <!-- param name -->
     <xs:attribute name="Type"       type="xs:string"  /> <!-- param type -->
     <xs:attribute name="TypeKind"   type="xs:string"  /> <!-- param typekind -->
+    <xs:attribute name="VarType"    type="xs:string"  /> <!-- VarType structure number -->
+    <xs:attribute name="MarshalAs"  type="xs:string"  /> <!-- marshal attribute info -->
     <xs:attribute name="IsExternal" type="xs:boolean" /> <!-- param type is defined in external library -->
     <xs:attribute name="IsComProxy" type="xs:boolean" /> <!-- param is a com object  -->
     <xs:attribute name="IsEnum"     type="xs:boolean" /> <!-- param is an enum -->

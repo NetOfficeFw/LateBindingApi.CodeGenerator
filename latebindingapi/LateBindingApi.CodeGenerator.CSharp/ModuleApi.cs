@@ -50,7 +50,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(moduleNode);
             string header = _classHeader.Replace("%name%", moduleNode.Attribute("Name").Value);
             string classDesc = _classDesc.Replace("%name%", moduleNode.Attribute("Name").Value);
-            string methods = MethodApi.ConvertMethodsToString(settings, moduleNode.Element("Methods"));
+            string methods = MethodApi.ConvertMethodsLateBindToString(settings, moduleNode.Element("Methods"));
 
             result += classDesc;
             result += attributes + "\r\n";

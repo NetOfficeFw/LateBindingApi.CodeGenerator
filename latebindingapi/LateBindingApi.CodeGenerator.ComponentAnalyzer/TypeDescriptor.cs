@@ -128,6 +128,23 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         }
 
         /// <summary>
+        /// checks type is external
+        /// </summary>
+        /// <param name="typeInfo"></param>
+        /// <returns></returns>
+        internal static bool IsExternal(VarTypeInfo typeInfo)
+        {
+            return typeInfo.IsExternalType;
+            /*
+            // OLE Lib is not an external
+            if( (true == typeInfo.IsExternalType) && ("{00020430-0000-0000-C000-000000000046}" != typeInfo.TypeLibInfoExternal.GUID) )
+                return true;         
+            else
+                return false;     
+             */
+        }
+
+        /// <summary>
         /// get key attribute from typeInfo if exists
         /// </summary>
         /// <param name="document"></param>
@@ -136,7 +153,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         internal static string GetTypeKey(XDocument document, VarTypeInfo typeInfo)
         {
             TypeLibInfo libInfo = null;
-            if (true == typeInfo.IsExternalType)
+            if (true == TypeDescriptor.IsExternal(typeInfo))
                 libInfo = typeInfo.TypeLibInfoExternal;
             else
             {
@@ -212,7 +229,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         internal static string GetProjectKey(XDocument document, VarTypeInfo typeInfo)
         {
             TypeLibInfo libInfo = null;
-            if (true == typeInfo.IsExternalType)
+            if (true == TypeDescriptor.IsExternal(typeInfo))
                 libInfo = typeInfo.TypeLibInfoExternal;
             else
             {
@@ -255,7 +272,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         internal static string GetLibraryKey(XDocument document, VarTypeInfo typeInfo)
         {
             TypeLibInfo libInfo = null;
-            if (true == typeInfo.IsExternalType)
+            if (true == TypeDescriptor.IsExternal(typeInfo))
                 libInfo = typeInfo.TypeLibInfoExternal;
             else
             {
@@ -425,9 +442,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             return false;
         }
 
-        internal static string MarshalEnumMemberAsAs(TLI.MemberInfo itemMember)
+
+        internal static string MarshalMemberAsAs( TliVarType type )
         {
-            switch (itemMember.ReturnType.VarType)
+            switch (type)
             {
                 case TliVarType.VT_EMPTY:
                 case TliVarType.VT_ARRAY:
@@ -445,6 +463,35 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
 
             return "";
+        }
+
+
+        internal static string MarshalMemberAsAs(int number)
+        {
+            TliVarType type = (TliVarType)number;
+            switch (type)
+            {
+                case TliVarType.VT_EMPTY:
+                case TliVarType.VT_ARRAY:
+                    return "UnmanagedType.Interface";
+                case TliVarType.VT_LPSTR:
+                case TliVarType.VT_LPWSTR:
+                case TliVarType.VT_BSTR:
+                    return "UnmanagedType.BStr";
+                case TliVarType.VT_VARIANT:
+                    return "UnmanagedType.Struct";
+                case TliVarType.VT_DISPATCH:
+                    return "UnmanagedType.IDispatch";
+                case TliVarType.VT_ERROR:
+                    return "UnmanagedType.Error";
+            }
+
+            return "";
+        }
+
+        internal static string MarshalMemberAsAs(TLI.MemberInfo itemMember)
+        {
+            return MarshalMemberAsAs((int)itemMember.ReturnType.VarType);
         }
 
         internal static string FormattedEnumMemberType(VarTypeInfo typeInfo)

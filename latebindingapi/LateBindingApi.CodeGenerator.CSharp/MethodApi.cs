@@ -13,7 +13,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="methodsNode"></param>
         /// <returns></returns>
-        internal static string ConvertMethodsToString(Settings settings, XElement methodsNode)
+        internal static string ConvertMethodsLateBindToString(Settings settings, XElement methodsNode)
         {
             ParameterApi.ValidateItems(methodsNode, "Method");
 
@@ -23,12 +23,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if("_NewEnum" == methodNode.Attribute("Name").Value)
                     continue;
 
-                string method = ConvertMethodToString(settings, methodNode);
+                string method = ConvertMethodLateBindToString(settings, methodNode);
                 result += method;
             }
             result += "\t\t#endregion\r\n";
             return result;
-
         }
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="methodNode"></param>
         /// <returns></returns>
-        internal static string ConvertMethodToString(Settings settings, XElement methodNode)
+        internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode)
         {
             string inParam = "(";
             string outParam = ")";
@@ -72,9 +71,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string methodBody ="";
                 if ("this" == name)
-                    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateMethodBody(settings, 4, itemParams) + "\t\t\t}\r\n";
+                    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateLateBindMethodBody(settings, 4, itemParams) + "\t\t\t}\r\n";
                 else
-                    methodBody = CreateMethodBody(settings, 3, itemParams);
+                    methodBody = CreateLateBindMethodBody(settings, 3, itemParams);
                 
                 method = method.Replace("%methodbody%", methodBody);
                 result += method + "\r\n";
@@ -83,14 +82,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-   
         /// <summary>
         /// convert parametersNode to complete method body code
         /// </summary>
         /// <param name="numberOfRootTabs"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
+        internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
         {
             string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
             string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
@@ -191,5 +189,77 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             return methodBody;
         }
-     }
+
+        internal static string ConvertMethodEarlyBindToString(Settings settings, XElement methodNode)
+        {
+            string result = "";
+            string name = methodNode.Attribute("Name").Value;
+            foreach (XElement itemParams in methodNode.Elements("Parameters"))
+            {
+                XElement returnValue = itemParams.Element("ReturnValue");
+
+                string method = "";
+                method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+
+                string marshalReturnAs = returnValue.Attribute("MarshalAs").Value;
+                if ("" != marshalReturnAs)
+                    method += "\t\t[return: MarshalAs(" + marshalReturnAs + ")]\r\n";
+
+                method += "\t\t" + "[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime), DispId(" + itemParams.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
+                method += "\t\t" + GetEarlyBindMethodSignatur(itemParams) + ";\r\n\r\n";
+                 
+                result += method;
+            }
+          
+
+            return result;
+        }
+
+        internal static string GetEarlyBindMethodSignatur(XElement paramsNode)
+        {
+            string result = paramsNode.Element("ReturnValue").Attribute("Type").Value + " " + paramsNode.Parent.Attribute("Name").Value + "(";
+            foreach (XElement itemParam in paramsNode.Elements("Parameter"))
+            {
+                string isRef = "";
+                if ("true" == itemParam.Attribute("IsRef").Value)
+                    isRef = "ref ";
+
+                string par = "[In";
+                string marshalAs = itemParam.Attribute("MarshalAs").Value;
+                if ("" != marshalAs)
+                    marshalAs = ", MarshalAs(" + marshalAs + ")]";
+
+                if (("true" == itemParam.Attribute("IsComProxy").Value) || ("COMObject" == itemParam.Attribute("Type").Value) ||
+                    ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
+                {
+                    par += marshalAs + " object " + itemParam.Attribute("Name").Value;
+                }
+                else
+                {
+                    par += marshalAs + isRef + itemParam.Attribute("Type").Value + " " + itemParam.Attribute("Name").Value;
+                }
+
+                result += par + ", ";
+            }
+            if (", " == result.Substring(result.Length - 2))
+                result = result.Substring(0, result.Length - 2);
+
+            return result + ")";
+        }
+
+        internal static string ConvertMethodsEarlyBindToString(Settings settings, XElement methodsNode)
+        {
+            string result = "\t\t#region Methods\r\n\r\n";
+            foreach (XElement methodNode in methodsNode.Elements("Method"))
+            {
+                if ("_NewEnum" == methodNode.Attribute("Name").Value)
+                    continue;
+
+                string method = ConvertMethodEarlyBindToString(settings, methodNode);
+                result += method;
+            }
+            result += "\t\t#endregion\r\n";
+            return result;
+        }
+    }
 }

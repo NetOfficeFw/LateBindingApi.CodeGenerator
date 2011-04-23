@@ -109,5 +109,19 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         }
 
         #endregion
+
+        private void FormGeneratorBrowser_KeyDown(object sender, KeyEventArgs e)
+        {
+            // alt and number marks and double click the ListViewItem
+            if ((e.Modifiers == Keys.Alt) && ((e.KeyValue >= 49) && (e.KeyValue <= 57)))
+            {
+                int itemNumber = e.KeyValue - 48;
+                if (itemNumber <= listViewGenerators.Items.Count)
+                {
+                    listViewGenerators.Items[itemNumber - 1].Selected = true;
+                    listViewGenerators_DoubleClick(this, new EventArgs());
+                }
+            }
+        }
     }
 }

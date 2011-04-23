@@ -10,7 +10,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
 
-
 namespace LateBindingApi.CodeGenerator.WFApplication.Controls.SourceEdit
 {
     public partial class SourceEditControl : UserControl

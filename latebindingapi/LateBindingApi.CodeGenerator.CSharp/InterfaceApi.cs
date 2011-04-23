@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 
@@ -12,6 +13,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                        + "using System;\r\n"
                                        + "using NetRuntimeSystem = System;\r\n"
                                        + "using System.ComponentModel;\r\n"
+                                       + "using System.Runtime.CompilerServices;\r\n"
                                        + "using System.Reflection;\r\n"
                                        + "%enumerableSpace%"
                                        + "using LateBindingApi.Core;\r\n"
@@ -23,6 +25,64 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _classHeader = "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
 
         private static string _classConstructor;
+
+        private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
+        {
+            if ("true" == faceNode.Attribute("IsEarlyBind").Value)
+                return ConvertEarlyBindInterfaceToString(settings, projectNode, faceNode);
+            else
+                return ConvertLateBindInterfaceToString(settings, projectNode, faceNode);
+        }
+        
+        private static string ConvertEarlyBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
+        {
+            string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value).Replace("%enumerableSpace%", "");
+            string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value);
+
+            string version = CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
+            header += "\t" + version + "\r\n";
+            string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
+            header += "\t[ComImport, Guid(\"" + guid + "\"), TypeLibType((short) " + faceNode.Attribute("TypeLibType").Value + ")]\r\n";
+            header += _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
+            header = header.Replace("class", "interface").Replace(" : %inherited%", "").Replace("%enumerable%", "");
+            result += header;
+
+            string methods = MethodApi.ConvertMethodsEarlyBindToString(settings, faceNode.Element("Methods"));
+            result += methods;
+
+            string properties = PropertyApi.ConvertPropertiesEarlyBindToString(settings, faceNode.Element("Properties"));
+            result += properties;
+
+
+            result += "\t}\r\n}";
+            return result;
+        }
+
+        private static string ConvertLateBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
+        {
+            string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
+            string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
+            string header = _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
+            header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
+            if (null == _classConstructor)
+                _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
+            string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value);
+            string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
+            string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));
+
+            result += classDesc;
+            result += attributes + "\r\n";
+            result += header;
+            result += construct;
+            result += properties;
+            result += methods;
+
+            ScanEnumerable(faceNode, ref result);
+
+            result += "\t}\r\n}";
+            return result;
+        }
 
         internal static string ConvertInterfacesToFiles(XElement projectNode, XElement facesNode, Settings settings, string solutionFolder)
         {
@@ -49,32 +109,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             int i = faceFolder.LastIndexOf("\\");
             string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + faceNode.Attribute("Name").Value + ".cs" + "\" />";
-            return result;
-        }
-
-        private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
-        {
-            string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
-            string header = _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
-            header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
-            if (null == _classConstructor)
-                _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt"); 
-            string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value);
-            string properties = PropertyApi.ConvertPropertiesToString(settings, faceNode.Element("Properties"));
-            string methods = MethodApi.ConvertMethodsToString(settings, faceNode.Element("Methods"));
-
-            result += classDesc;
-            result += attributes + "\r\n";
-            result += header;
-            result += construct;
-            result += properties;
-            result += methods;
-
-            ScanEnumerable(faceNode, ref result);
-
-            result += "\t}\r\n}";
             return result;
         }
 

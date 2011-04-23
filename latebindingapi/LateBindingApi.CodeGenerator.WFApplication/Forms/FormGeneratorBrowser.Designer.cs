@@ -111,6 +111,7 @@
             this.Controls.Add(this.listViewGenerators);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOkay);
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormGeneratorBrowser";
@@ -119,6 +120,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Select Generator";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormGeneratorBrowser_KeyDown);
             this.ResumeLayout(false);
 
         }

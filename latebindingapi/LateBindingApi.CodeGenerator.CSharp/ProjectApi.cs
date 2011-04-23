@@ -80,15 +80,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 XElement projects = project.Parent;
                 foreach (XElement item in project.Element("RefProjects").Elements("RefProject"))
                 {
+                    
                     XElement refProject = (from a in projects.Elements("Project")
                                            where a.Attribute("Key").Value.Equals(item.Attribute("Key").Value)
                                            select a).FirstOrDefault();
+
+                    if ("true" == refProject.Attribute("Ignore").Value)
+                        continue;
+
                     string newRefProject = _ProjectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(refProject.Attribute("Key").Value));
                     newRefProject = newRefProject.Replace("%Name%", refProject.Attribute("Name").Value);
                     refProjectInclude += newRefProject;
                     
                 }
-                refProjectInclude = "  <ItemGroup>\r\n" + refProjectInclude + "  </ItemGroup>";
+                if("" != refProjectInclude)
+                    refProjectInclude = "  <ItemGroup>\r\n" + refProjectInclude + "  </ItemGroup>";
             }
             projectFile = projectFile.Replace("%ProjectRefInclude%", refProjectInclude);
             return projectFile;
