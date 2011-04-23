@@ -23,7 +23,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name%\r\n\t///</summary>\r\n";
 
         private static string _classHeader = "\tpublic class %name% : %inherited%, IEventBinding \r\n\t{\r\n" +
-                            "\t\t#pragma warning disable\r\n";
+                                             "\t\t#pragma warning disable\r\n";
 
         private static string _classConstructor;
         
@@ -329,8 +329,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             
             result += line;
-
-            result += "\t\t#pragma warning restore\r\n";
+            result += "\r\n\t\t#endregion\r\n";
             return result;
         }
 
