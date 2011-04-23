@@ -159,6 +159,7 @@
     <xs:attribute name="IsExternal"     type="xs:boolean" /> <!-- return value type is defined in external library -->
     <xs:attribute name="IsArray"        type="xs:boolean" /> <!-- return value is an array -->
     <xs:attribute name="IsNative"       type="xs:boolean" /> <!-- return value is sclar -->
+    <xs:attribute name="MarshalAs"      type="xs:string" />  <!-- MarshalAs Attribute -->
     <xs:attribute name="TypeKey"        type="xs:string"  /> <!-- key from defined return type  -->
     <xs:attribute name="ProjectKey"     type="xs:string"  /> <!-- project key there is the return type defined -->
     <xs:attribute name="LibraryKey"     type="xs:string"  /> <!-- library key there is the return type defined -->
@@ -171,6 +172,8 @@
       <xs:element name="Members"              type="RecordMembers" />
     </xs:sequence>
     <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- Record name: readonly -->
+    <xs:attribute name="GUID"                 type="xs:string"  use="required" /> <!-- Record GUID -->
+    <xs:attribute name="TypeLibType"          type="xs:string"  use="required" /> <!-- TypeLibTypeAttribute -->
     <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
   </xs:complexType>
   

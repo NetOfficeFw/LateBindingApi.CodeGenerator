@@ -60,6 +60,22 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <COMReference Include="Circus">
+      <Guid>{0EE851AE-A5F1-49E9-A166-F33E5188DEF5}</Guid>
+      <VersionMajor>43</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
     <COMReference Include="TLI">
       <Guid>{8B217740-717D-11CE-AB5B-D41203C10000}</Guid>
       <VersionMajor>1</VersionMajor>

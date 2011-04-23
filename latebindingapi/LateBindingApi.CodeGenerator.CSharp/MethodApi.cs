@@ -93,12 +93,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string CreateMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
         {
             string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
-            string methodBody = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
+            string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName    = parametersNode.Parent.Attribute("Name").Value;
             string typeName      = returnValue.Attribute("Type").Value;
             string fullTypeName  = CSharpGenerator.GetQualifiedType(returnValue);
-            
+
             string objectArrayField = "";
             string arrayField = "";
             string arrayName = "";
@@ -171,12 +171,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 else                
                 {
                     methodBody = methodBody.Replace("%modifiers%", "");
-                }
+                }                
             }
             else
             {
                 methodBody += tabSpace + "Invoker.Method(this, \"" + methodName + "\", paramsArray" + modifiers + ");\r\n";
-                methodBody += "";
+                methodBody += "%modifiers%";
+
+                if (true == ParameterApi.HasRefParams(parametersNode, true))
+                {
+                    string modRefs = ParameterApi.CreateParametersToRefUpdateString(settings, numberOfRootTabs, parametersNode, true);
+                    methodBody = methodBody.Replace("%modifiers%", modRefs);
+                }
+                else
+                {
+                    methodBody = methodBody.Replace("%modifiers%", "");
+                }
             }
 
             return methodBody;

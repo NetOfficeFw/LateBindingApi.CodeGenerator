@@ -23,7 +23,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
         public event EventHandler SelectedIndexChanged;
         public new event EventHandler Click;
         public new event EventHandler DoubleClick;
-        public new event KeyEventHandler KeyDown;
 
         #endregion
 
@@ -147,6 +146,16 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
 
         private void textBoxFilter_KeyDown(object sender, KeyEventArgs e)
         {
+            // alt and number marks and double click the ListViewItem
+            if ((e.Modifiers == Keys.Alt) && ( (e.KeyValue >= 49) && (e.KeyValue <= 57) ) )
+            {
+                int itemNumber = e.KeyValue - 48;
+                if(itemNumber <= listViewTypeLibInfo.Items.Count)
+                {
+                    listViewTypeLibInfo.Items[itemNumber-1].Selected = true;
+                    listViewTypeLibInfo_DoubleClick(this, new EventArgs());
+                }
+            }
 
             if (e.KeyCode == Keys.Return)
                 ShowResultItems();
@@ -193,8 +202,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
 
         private void listViewTypeLibInfo_KeyDown(object sender, KeyEventArgs e)
         {
-            if (null != KeyDown)
-                KeyDown(sender, e);
+            if ((e.KeyData == Keys.Return) && (listViewTypeLibInfo.SelectedItems.Count > 0)) 
+                listViewTypeLibInfo_DoubleClick(this, new EventArgs());
         }
 
         private void buttonSaveSelection_Click(object sender, EventArgs e)

@@ -41,11 +41,24 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid
                 throw (new NotSupportedException("RecordGridControl is not initialized."));
 
             Clear();
+           
+            string comConversion = "[StructLayout(LayoutKind.Sequential, Pack=4), ";
+            string typeLibType = node.Attribute("TypeLibType").Value;
+            if ("0" != typeLibType)
+            {
+                typeLibType = "ComConversionLoss, TypeLibType((short) " + typeLibType + ")]";
+            }
+            else
+            {
+                typeLibType = "Guid(\"" + XmlConvert.DecodeName(node.Attribute("GUID").Value) + "\")]";
+            }
+            comConversion += typeLibType;
+            textBoxAlias.AppendText(comConversion + "\r\n");
 
             string version = "SupportByLibrary[" + GetDependencies(node.Element("RefLibraries")) + "]\r\n";
             textBoxAlias.AppendText(version);
             
-            string name = "struct " + node.Attribute("Name").Value + "\r\n{\r\n";
+            string name = "public struct " + node.Attribute("Name").Value + "\r\n{\r\n";
             textBoxAlias.AppendText(name);
 
             foreach (XElement itemMember in node.Element("Members").Elements("Member"))
@@ -55,7 +68,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid
                     arr = "[]";
 
                 string member = "\tSupportByLibrary[" + GetDependencies(node.Element("RefLibraries")) + "]\r\n";
-                member += "\t" + itemMember.Attribute("Type").Value + arr + " " + itemMember.Attribute("Name").Value + ";\r\n";
+                textBoxAlias.AppendText(member);
+
+                string marshalAs = itemMember.Attribute("MarshalAs").Value;
+                if ("" != marshalAs)
+                    marshalAs = "\t[MarshalAs(" + marshalAs + ")]\r\n";
+
+                textBoxAlias.AppendText(marshalAs);
+                member = "\t" + itemMember.Attribute("Type").Value + arr + " " + itemMember.Attribute("Name").Value + ";\r\n\r\n";
                 textBoxAlias.AppendText(member);
             }
             textBoxAlias.AppendText("}\r\n");

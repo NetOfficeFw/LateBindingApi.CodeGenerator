@@ -41,7 +41,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(658, 363);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(77, 22);
-            this.buttonCancel.TabIndex = 17;
+            this.buttonCancel.TabIndex = 25;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -53,7 +53,7 @@
             this.buttonOkay.Location = new System.Drawing.Point(575, 363);
             this.buttonOkay.Name = "buttonOkay";
             this.buttonOkay.Size = new System.Drawing.Size(77, 22);
-            this.buttonOkay.TabIndex = 13;
+            this.buttonOkay.TabIndex = 16;
             this.buttonOkay.Text = "Ok";
             this.buttonOkay.UseVisualStyleBackColor = true;
             this.buttonOkay.Click += new System.EventHandler(this.buttonOkay_Click);
@@ -67,7 +67,8 @@
             this.checkBoxAddToCurrentProject.Location = new System.Drawing.Point(36, 367);
             this.checkBoxAddToCurrentProject.Name = "checkBoxAddToCurrentProject";
             this.checkBoxAddToCurrentProject.Size = new System.Drawing.Size(128, 17);
-            this.checkBoxAddToCurrentProject.TabIndex = 18;
+            this.checkBoxAddToCurrentProject.TabIndex = 17;
+            this.checkBoxAddToCurrentProject.TabStop = false;
             this.checkBoxAddToCurrentProject.Text = "Add to current project";
             this.checkBoxAddToCurrentProject.UseVisualStyleBackColor = true;
             // 
@@ -79,6 +80,7 @@
             this.checkBoxDoAsync.Name = "checkBoxDoAsync";
             this.checkBoxDoAsync.Size = new System.Drawing.Size(166, 17);
             this.checkBoxDoAsync.TabIndex = 20;
+            this.checkBoxDoAsync.TabStop = false;
             this.checkBoxDoAsync.Text = "Execute on a separate thread";
             this.checkBoxDoAsync.UseVisualStyleBackColor = true;
             // 
@@ -98,6 +100,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(768, 397);
             this.Controls.Add(this.checkBoxDoAsync);
             this.Controls.Add(this.typeLibBrowserControl1);

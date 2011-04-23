@@ -109,13 +109,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 case "Int16":
                 case "Int32":
                 case "Int64":
+                case "single":
                 case "Single":
                 case "double":
                 case "Double":                
                 case "string":
                 case "String":
+                case "DateTime":
+                case "decimal":
                 case "bool":
                 case "float":
+                case "short":
+                case "byte":
+                case "Guid":
                     return true;
             }
             return false;
@@ -179,13 +185,20 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             if (null != classNode)
                 return classNode.Attribute("Key").Value;
 
-            // look for "Enum"
+            // look for Enum
             var enumNode = (from a in projectNode.Elements("Enums").Elements("Enum")
                              where a.Attribute("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
                              select a).FirstOrDefault();
             if (null != enumNode)
                 return enumNode.Attribute("Key").Value;
-            
+
+            // look for Record
+            var recordNode = (from a in projectNode.Elements("Records").Elements("Record")
+                            where a.Attribute("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
+                            select a).FirstOrDefault();
+            if (null != recordNode)
+                return recordNode.Attribute("Key").Value;
+
             // type not found
             return "";
         }
@@ -411,7 +424,148 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return false;
         }
-     
+
+        internal static string MarshalEnumMemberAsAs(TLI.MemberInfo itemMember)
+        {
+            switch (itemMember.ReturnType.VarType)
+            {
+                case TliVarType.VT_EMPTY:
+                case TliVarType.VT_ARRAY:
+                    return "UnmanagedType.Interface";
+                case TliVarType.VT_LPSTR:
+                case TliVarType.VT_LPWSTR:
+                case TliVarType.VT_BSTR:
+                    return "UnmanagedType.BStr";
+                case TliVarType.VT_VARIANT:
+                    return "UnmanagedType.Struct";
+                case TliVarType.VT_DISPATCH:
+                    return "UnmanagedType.IDispatch";
+                case TliVarType.VT_ERROR:
+                    return "UnmanagedType.Error";
+            }
+
+            return "";
+        }
+
+        internal static string FormattedEnumMemberType(VarTypeInfo typeInfo)
+        {
+            switch (typeInfo.VarType)
+            {
+                case TliVarType.VT_EMPTY:        // Type in Component
+                case TliVarType.VT_ARRAY:
+                    return "object";
+                case TliVarType.VT_CY:
+                    return "decimal";
+                case TliVarType.VT_DATE:
+                    return "DateTime";
+                case TliVarType.VT_UI1:
+                    return "byte";
+                case TliVarType.VT_R4:
+                    return "float";
+                case TliVarType.VT_I1:
+                case TliVarType.VT_I2:
+                    return "short";
+                case TliVarType.VT_UI2:
+                    return "Int16";
+                case TliVarType.VT_I4:
+                case TliVarType.VT_UI4:
+                case TliVarType.VT_INT:
+                case TliVarType.VT_HRESULT:
+                    return "Int32";
+                case TliVarType.VT_I8:
+                case TliVarType.VT_UI8:
+                    return "Int64";
+                case TliVarType.VT_R8:
+                    return "double";
+                case TliVarType.VT_DECIMAL:
+                    return "decimal";
+                case TliVarType.VT_UINT:
+                    return "UIntPtr";
+                case TliVarType.VT_LPSTR:
+                case TliVarType.VT_LPWSTR:
+                case TliVarType.VT_BSTR:
+                    return "string";
+                case TliVarType.VT_BOOL:
+                    return "short";
+                case TliVarType.VT_VOID:
+                        return "object";    // void**
+                case TliVarType.VT_UNKNOWN:
+                case TliVarType.VT_DISPATCH:
+                        return "object";
+                case TliVarType.VT_VARIANT:
+                        return "object";
+                /*Unkown*/
+                case TliVarType.VT_FILETIME:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_BLOB:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_STREAM:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_STORAGE:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_STREAMED_OBJECT:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_STORED_OBJECT:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_BLOB_OBJECT:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_CF:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_CLSID:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_VECTOR:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_BYREF:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_RESERVED:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_PTR:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_SAFEARRAY:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_CARRAY:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_USERDEFINED:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_RECORD:
+                    return typeInfo.VarType.ToString();
+                case TliVarType.VT_ERROR:
+                    return "object";
+                //return typeInfo.VarType.ToString();
+                default:
+                    int i = Convert.ToInt32(typeInfo.VarType);
+                    switch (i)
+                    {
+                        case 8194:
+                            return "Int16";
+                        case 8195:
+                            return "Int32";
+                        case 8196:
+                            return "Single";
+                        case 8197:
+                            return "Double";
+                        case 8198:
+                            return "float";
+                        case 8199:
+                            return "DateTime";
+                        case 8200:
+                            return "String";
+                        case 8201:  
+                                return "object";
+                        case 8204:
+                                return "object";
+                        case 8203:
+                            return "bool";
+                        case 8209:
+                            return "byte";
+                        case 4113:
+                            return "char";
+                        default:
+                            return i.ToString();
+                    }
+            }
+        }
+
         /// <summary>
         /// returns friendly formatted type info
         /// converts COM datatype info to kown .net type & LateBindingApi types
@@ -420,9 +574,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <returns></returns>
         internal static string FormattedType(VarTypeInfo typeInfo, bool isNotParameter)
         {
-            if((typeInfo.TypeInfo!=null) && (typeInfo.TypeInfo.TypeKind == TypeKinds.TKIND_RECORD) )               
-                return "object";
-
             switch (typeInfo.VarType)
             {
                 case TliVarType.VT_EMPTY:        // Type in Component

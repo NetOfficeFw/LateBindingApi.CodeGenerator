@@ -93,12 +93,12 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         {
             FormTypeLibBrowser formBrowser =null;
             try
-            {          
+            {
                 formBrowser = new FormTypeLibBrowser();
                 this.Refresh();
-               
+
                 if (DialogResult.OK == formBrowser.ShowDialog(this))
-                { 
+                {
                     //invisible all left&right panel content
                     foreach (Control itemControl in splitContainerMain.Panel2.Controls)
                         itemControl.Visible = false;
@@ -115,6 +115,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             {
                 FormShowError formError = new FormShowError(throwedException);
                 formError.ShowDialog(this);
+            }
+            finally
+            {
+                SetGui(true);
             }
         }
 

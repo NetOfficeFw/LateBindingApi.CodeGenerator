@@ -49,7 +49,7 @@
             this.buttonRefresh.Location = new System.Drawing.Point(238, 2);
             this.buttonRefresh.Name = "buttonRefresh";
             this.buttonRefresh.Size = new System.Drawing.Size(39, 24);
-            this.buttonRefresh.TabIndex = 24;
+            this.buttonRefresh.TabIndex = 1;
             this.buttonRefresh.UseVisualStyleBackColor = true;
             this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
             // 
@@ -60,7 +60,7 @@
             this.textBoxFilter.Location = new System.Drawing.Point(53, 4);
             this.textBoxFilter.Name = "textBoxFilter";
             this.textBoxFilter.Size = new System.Drawing.Size(176, 22);
-            this.textBoxFilter.TabIndex = 23;
+            this.textBoxFilter.TabIndex = 0;
             this.textBoxFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxFilter_KeyDown);
             // 
             // label1
@@ -91,7 +91,7 @@
             this.listViewTypeLibInfo.Location = new System.Drawing.Point(3, 42);
             this.listViewTypeLibInfo.Name = "listViewTypeLibInfo";
             this.listViewTypeLibInfo.Size = new System.Drawing.Size(738, 247);
-            this.listViewTypeLibInfo.TabIndex = 20;
+            this.listViewTypeLibInfo.TabIndex = 2;
             this.listViewTypeLibInfo.UseCompatibleStateImageBehavior = false;
             this.listViewTypeLibInfo.View = System.Windows.Forms.View.Details;
             this.listViewTypeLibInfo.Resize += new System.EventHandler(this.listViewTypeLibInfo_Resize);

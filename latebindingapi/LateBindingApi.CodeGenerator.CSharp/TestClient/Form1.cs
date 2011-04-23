@@ -21,6 +21,10 @@ namespace ClientApplication
             /*Initialize LateBindingApi*/
             LateBindingApi.Core.Factory.Initialize();
             // LateBindingApi.Core.Settings.EnableEvents = true;
+            CircusApi.Manege man = new LateBindingApi.Circus.Manege();
+            man.Name = "12345";
+            CircusApi.Doink clown = new LateBindingApi.Circus.Doink();
+            clown.SetTicket(man);
         }
 
         /// <summary>

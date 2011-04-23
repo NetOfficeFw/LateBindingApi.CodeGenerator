@@ -825,6 +825,12 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 if (null != face)
                     return face;
 
+                face = (from a in project.Element("Records").Elements("Record")
+                        where a.Attribute("Key").Value.Equals(attKey.Value)
+                        select a).FirstOrDefault();
+                if (null != face)
+                    return face;
+
             }
             throw (new ArgumentOutOfRangeException("key not found"));
         }
@@ -1017,8 +1023,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("Members"),
                                new XElement("DispIds"),
                                new XAttribute("Name", itemRecord.Name),
+                               new XAttribute("GUID", Utils.EncodeGuid(itemRecord.GUID)),
+                               new XAttribute("TypeLibType", itemRecord.AttributeMask.ToString()),
                                new XAttribute("Key", Utils.NewEncodedGuid()));
-
+                
                 records.Add(aliasNode);
             }
 
@@ -1244,16 +1252,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if (null == memberNode)
             {
+                VarTypeInfo returnTypeInfo = itemMember.ReturnType;
+                string returnTypeName = TypeDescriptor.FormattedEnumMemberType(returnTypeInfo);
                 memberNode = new XElement("Member",
                                 new XElement("RefLibraries"),
                                 new XAttribute("Name", itemMember.Name),
-                                new XAttribute("Type", TypeDescriptor.FormattedType(itemMember.ReturnType, false)),
+                                new XAttribute("Type", returnTypeName),
                                 new XAttribute("TypeKind", MethodHandler.TypeInfo(itemMember.ReturnType.TypeInfo)),
                                 new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(itemMember.ReturnType).ToString().ToLower()),
                                 new XAttribute("IsEnum", TypeDescriptor.IsEnum(itemMember.ReturnType).ToString().ToLower()),
                                 new XAttribute("IsExternal", itemMember.ReturnType.IsExternalType.ToString().ToLower()),
                                 new XAttribute("IsArray", TypeDescriptor.IsArray(itemMember.ReturnType).ToString().ToLower()),
-                                new XAttribute("IsNative", TypeDescriptor.IsNative(itemMember.Name).ToString().ToLower()),
+                                new XAttribute("IsNative", TypeDescriptor.IsNative(returnTypeName).ToString().ToLower()),
+                                new XAttribute("MarshalAs", TypeDescriptor.MarshalEnumMemberAsAs(itemMember)),
                                 new XAttribute("TypeKey", TypeDescriptor.GetTypeKey(membersNode.Document, itemMember.ReturnType)),
                                 new XAttribute("ProjectKey", TypeDescriptor.GetProjectKey(membersNode.Document, itemMember.ReturnType)),
                                 new XAttribute("LibraryKey", TypeDescriptor.GetLibraryKey(membersNode.Document, itemMember.ReturnType))
@@ -1264,7 +1275,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             return memberNode;
         }
-
 
         /// <summary>
         /// create new enum member node or get existing
