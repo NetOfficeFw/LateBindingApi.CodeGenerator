@@ -15,8 +15,95 @@ Option Explicit
 Dim propStringRef As String
 Dim propStringVal As String
 
-Public Property Get ReadOnlyDoinkProperty(Optional i As Integer) As Doink
-    Set ReadOnlyDoinkProperty = Me
+Public Type Manege
+    Active As Boolean
+    One As Byte
+    OLE As OLE_HANDLE
+    Font As StdFont
+    Sing As Single
+    Name As String
+    Id As Integer
+    LongId As Long
+    TicketPrice As Currency
+    Mwst As Double
+    Day As Date
+    Parent As Doink
+    Tag As Object
+    Animals As Variant
+End Type
+
+Public Sub SetTicket(val As Manege)
+
+MsgBox "Ticket " & val.Name & " is " & val.Active
+
+End Sub
+
+Public Sub SetTickets(val() As Manege)
+
+End Sub
+
+Public Function GimmeADoink() As Doink
+ Set GimmeADoink = Me
+End Function
+
+Public Function GimmeALong() As Long
+ GimmeALong = 256
+End Function
+
+Public Property Get ManegeArrayProperty() As Manege()
+    
+  Dim x(0 To 2) As Manege
+  ManegeArrayProperty = x
+  
+End Property
+
+Public Function GimmeATicket() As Manege
+ 
+ Dim man As Manege
+ man.Name = "myManage"
+ man.Day = Now
+ man.Id = 10
+ man.LongId = 23322
+ man.Mwst = 16.03
+ man.TicketPrice = 12.32
+
+ GimmeATicket = man
+
+End Function
+
+Public Property Get TicketProperty() As Manege
+    
+    TicketProperty = GimmeATicket()
+    Set TicketProperty.Parent = Me
+
+End Property
+
+Public Property Let TicketProperty(val As Manege)
+    
+End Property
+
+Public Property Get IndexDoinkProperty(i As Integer) As Doink
+    Set IndexDoinkProperty = Me
+End Property
+
+Public Property Set IndexDoinkProperty(i As Integer, clown As Doink)
+    
+End Property
+
+Public Property Get FullInteger() As Integer
+   FullInteger = 10
+End Property
+
+Public Property Let FullInteger(ByVal i As Integer)
+ 
+End Property
+
+Public Property Get FullInteger2(ByVal i As Integer) As Integer
+   FullInteger2 = i
+End Property
+
+Public Property Let FullInteger2(ByVal i As Integer, ByVal i2 As Integer)
+ 
 End Property
 
 Public Property Get ReadOnlyStringProperty() As String

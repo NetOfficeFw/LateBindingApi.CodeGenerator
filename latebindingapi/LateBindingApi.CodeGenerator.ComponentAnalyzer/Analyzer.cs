@@ -20,7 +20,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     {
         #region Fields
 
-        private readonly string  _documentVersion = "0.7";
+        private readonly string  _documentVersion = "0.8";
         
         TLIApplication           _typeLibApplication;
         XDocument                _document;
@@ -787,6 +787,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             {
                 if ("" != item.Attribute("TypeKey").Value)
                     item.Attribute("Type").Value = GetNodeByKey(item.Attribute("TypeKey")).Attribute("Name").Value;
+
+                if ("GUID" == item.Attribute("Type").Value)
+                    item.Attribute("Type").Value = "Guid";
             }
 
             foreach (var item in pars)
@@ -796,6 +799,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 {
                     if ("" != returnValue.Attribute("TypeKey").Value)
                         returnValue.Attribute("Type").Value = GetNodeByKey(returnValue.Attribute("TypeKey")).Attribute("Name").Value;
+
+                    if ("GUID" == returnValue.Attribute("Type").Value)
+                        returnValue.Attribute("Type").Value = "Guid";
                 }
             }
 

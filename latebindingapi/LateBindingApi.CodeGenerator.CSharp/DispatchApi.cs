@@ -93,6 +93,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
             string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
             string header = _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
+            header += "\t\t#pragma warning disable\r\n";
             header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
@@ -110,6 +111,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             ScanEnumerable(faceNode, ref result);
 
+            result += "\t\t#pragma warning restore\r\n";
             result += "\t}\r\n}";
             return result;
         }

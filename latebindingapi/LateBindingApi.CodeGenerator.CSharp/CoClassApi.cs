@@ -22,7 +22,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         	
         private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name%\r\n\t///</summary>\r\n";
 
-        private static string _classHeader = "\tpublic class %name% : %inherited%, IEventBinding \r\n\t{\r\n";
+        private static string _classHeader = "\tpublic class %name% : %inherited%, IEventBinding \r\n\t{\r\n" +
+                            "\t\t#pragma warning disable\r\n";
 
         private static string _classConstructor;
         
@@ -92,6 +93,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result += header;
             result += construct;
             result += _classEventBinding.Replace("%sinkHelperDispose%", sinkHelperDispose);
+            result += "\t\t#pragma warning restore\r\n";
             result += "\t}\r\n}";
             return result;
         }
@@ -310,8 +312,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string GetEvents(XElement projectNode, XElement faceNode)
         {
             string result = "\r\n\r\n\t\t#region Events\r\n\r\n";
-            result += "\t\t#pragma warning disable\r\n\r\n";
-
             XDocument doc = GetImplementEvents(projectNode, faceNode);
             string line = "";
             foreach (var itemNode in doc.Element("Methods").Elements("Method"))
@@ -331,7 +331,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result += line;
 
             result += "\t\t#pragma warning restore\r\n";
-            result += "\r\n\t\t#endregion\r\n";
             return result;
         }
 
