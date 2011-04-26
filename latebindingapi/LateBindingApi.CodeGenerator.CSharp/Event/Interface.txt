@@ -44,6 +44,13 @@ namespace %namespace%
 			SetupEventBinding(_riid);
 		}
 
+		public %name%_SinkHelper(COMObject eventClass, IConnectionPoint connectPoint): base(eventClass)
+		{
+			_eventClass = eventClass;
+			_eventBinding = (IEventBinding)eventClass;
+			SetupEventBinding(connectPoint);
+		}
+		
 		#endregion
 		
 		#region %name% Members

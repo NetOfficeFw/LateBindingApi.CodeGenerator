@@ -41,7 +41,7 @@ namespace LateBindingApi.Core
         {
             List<string> result = new List<string>();
 
-            IConnectionPointContainer connectionPointContainer = (IConnectionPointContainer)comProxy;
+            IConnectionPointContainer connectionPointContainer = (IConnectionPointContainer)comProxy.UnderlyingObject;
             IEnumConnectionPoints enumPoints = null;
             connectionPointContainer.EnumConnectionPoints(out enumPoints);
             enumPoints.Reset();
@@ -49,6 +49,9 @@ namespace LateBindingApi.Core
             IConnectionPoint[] points = new IConnectionPoint[1];
             while (enumPoints.Next(1, points, IntPtr.Zero) == 0)
             {
+                if (null == points[0])
+                    break; 
+
                 Guid interfaceGuid;
                 points[0].GetConnectionInterface(out interfaceGuid);
                 result.Add(interfaceGuid.ToString());
@@ -65,7 +68,40 @@ namespace LateBindingApi.Core
 
             return resultArray;
         }
-        
+
+        public static string GetConnectionPoint(COMObject comProxy, ref IConnectionPoint point, params string[] sinkIds)
+        {
+            if (null == sinkIds)
+                return null;
+
+            IConnectionPointContainer connectionPointContainer = (IConnectionPointContainer)comProxy.UnderlyingObject;
+            IEnumConnectionPoints enumPoints = null;
+            connectionPointContainer.EnumConnectionPoints(out enumPoints);
+            IConnectionPoint[] points = new IConnectionPoint[1];
+            while (enumPoints.Next(1, points, IntPtr.Zero) == 0) // S_OK = 0 , S_FALSE = 1
+            {
+                if (null == points[0])
+                    break;
+
+                Guid interfaceGuid;
+                points[0].GetConnectionInterface(out interfaceGuid);
+
+                for (int i = sinkIds.Length; i >= 0; i--)
+                {
+                    string id = interfaceGuid.ToString().Replace("{", "").Replace("}", "");
+                    if (true == sinkIds[i - 1].Equals(id, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Marshal.ReleaseComObject(enumPoints);
+                        point = points[0];
+                        return id;
+                    }
+                }
+            }
+
+            Marshal.ReleaseComObject(enumPoints);
+            return null;
+        }
+
         #endregion
 
         #region Public Methods
@@ -77,6 +113,15 @@ namespace LateBindingApi.Core
             {
                 IConnectionPointContainer connectionPointContainer = (IConnectionPointContainer)_eventClass.UnderlyingObject;
                 connectionPointContainer.FindConnectionPoint(ref _interfaceId, out _connectionPoint);
+                _connectionPoint.Advise(this, out _connectionCookie);
+            }
+        }
+
+        public void SetupEventBinding(IConnectionPoint connectPoint)
+        {
+            if (true == Settings.EnableEvents)
+            {
+                _connectionPoint = connectPoint;
                 _connectionPoint.Advise(this, out _connectionCookie);
             }
         }

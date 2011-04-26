@@ -1,6 +1,7 @@
 ﻿		#region Fields
 		
-		static string _activeSinkId;
+		private NetRuntimeSystem.Runtime.InteropServices.ComTypes.IConnectionPoint _connectPoint = null;
+		private string _activeSinkId;
 %sinkHelperDefine%	
 		#endregion
 		
@@ -11,7 +12,6 @@
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		public %name%(COMObject parentObject, object comProxy) : base(parentObject, comProxy)
 		{
-			CreateEventBridge();
 		}
 		
 		/// <param name="parentObject">object there has created the proxy</param>
@@ -20,7 +20,6 @@
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		public %name%(COMObject parentObject, object comProxy, NetRuntimeSystem.Type comProxyType) : base(parentObject, comProxy, comProxyType)
 		{
-			CreateEventBridge();
 		}
 		
 		/// <param name="replacedObject">object to replaced. replacedObject are not usable after this action</param>
@@ -32,14 +31,12 @@
 		public %name%()
 		{
 			CreateFromProgId("%ProgId%");
-			CreateEventBridge();
 		}
 		
 		/// <param name="progId">progId</param>
 		public %name%(string progId)
 		{
 			CreateFromProgId(progId);
-			CreateEventBridge();
 		}
 
 		#endregion
@@ -53,16 +50,14 @@
         {
 			if(false == LateBindingApi.Core.Settings.EnableEvents)
 				return;
-            
+	
+			if (null != _connectPoint)
+				return;
+	
             if (null == _activeSinkId)
-            {
-                string[] eventInterfaceIds = SinkHelper.GetEventInterfaces(this);
-                foreach (string item in eventInterfaceIds)
-                {
-%CompareActiveId%
-                }
-            }
+				_activeSinkId = SinkHelper.GetConnectionPoint(this, ref _connectPoint, %CompareIds%);
+
 %SetActiveSink% 
         }
-
+		
 		#endregion

@@ -6,7 +6,7 @@
         {
             NetRuntimeSystem.Type thisType = this.GetType();
             MulticastDelegate eventDelegate = (MulticastDelegate)thisType.GetField(
-                                                eventName + "Event",
+                                                "_" + eventName + "Event",
                                                 NetRuntimeSystem.Reflection.BindingFlags.Instance |
                                                 NetRuntimeSystem.Reflection.BindingFlags.NonPublic).GetValue(this);
 

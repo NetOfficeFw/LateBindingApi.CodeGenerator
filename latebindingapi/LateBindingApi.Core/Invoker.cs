@@ -16,12 +16,23 @@ namespace LateBindingApi.Core
 
         public static void Method(COMObject comObject, string name)
         {
+            ValidateParam(comObject);
+            Method(comObject, name, null);
+        }
+
+        public static void Method(object comObject, string name)
+        {
             Method(comObject, name, null);
         }
 
         public static void Method(COMObject comObject, string name, object[] paramsArray)
         {
             comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
+        }
+
+        public static void Method(object comObject, string name, object[] paramsArray)
+        {
+            comObject.GetType().InvokeMember(name, BindingFlags.InvokeMethod, null, comObject, paramsArray, Settings.ThreadCulture);
         }
 
         public static void Method(COMObject comObject, string name, object[] paramsArray, ParameterModifier[] paramModifiers)
@@ -50,10 +61,22 @@ namespace LateBindingApi.Core
 
         #region Property
 
+        public static object PropertyGet(object comObject, string name)
+        {
+            object returnValue = comObject.GetType().InvokeMember(name, BindingFlags.GetProperty, null, comObject, null, Settings.ThreadCulture);
+            return returnValue;
+        }
+
         public static object PropertyGet(COMObject comObject, string name)
         {
             ValidateObject(comObject);
             object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, null, Settings.ThreadCulture);
+            return returnValue;
+        }
+
+        public static object PropertyGet(object comObject, string name, object[] paramsArray)
+        {
+            object returnValue = comObject.GetType().InvokeMember(name, BindingFlags.GetProperty, null, comObject, paramsArray, Settings.ThreadCulture);
             return returnValue;
         }
 

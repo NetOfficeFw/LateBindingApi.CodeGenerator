@@ -72,10 +72,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string sinkHelperDefine = GetSinkHelperDefine(projectNode, classNode);
             construct = construct.Replace("%sinkHelperDefine%", sinkHelperDefine);
 
-            string sinkHelperReserve = GetSinkHelperCompare(projectNode, classNode);
+            string sinkHelperIds = GetSinkHelperIds(projectNode, classNode);
             string sinkHelperSetActive = GetSinkHelperSetActiveSink(projectNode, classNode);
 
-            construct = construct.Replace("%CompareActiveId%", sinkHelperReserve);
+            construct = construct.Replace("%CompareIds%", sinkHelperIds);
             construct = construct.Replace("%SetActiveSink%", sinkHelperSetActive);
 
             string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value);
@@ -136,30 +136,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static string GetSinkHelperCompare(XElement projectNode, XElement faceNode)
+        private static string GetSinkHelperIds(XElement projectNode, XElement faceNode)
         {
             string result = "";
             foreach (var item in faceNode.Element("EventInterfaces").Elements("Ref"))
             {
                 XElement inInterface = GetItemByKey(projectNode, item);
-
-                string type = inInterface.Attribute("Name").Value + "_SinkHelper";
-                string name = "_" + type.Substring(0, 1).ToLower() + type.Substring(1);
-
-                string ifLine = "\t\t\t\t\t" + "if(true == " + type + ".Id.Equals(item, StringComparison.InvariantCultureIgnoreCase))\r\n";
-                ifLine += "\t\t\t\t\t{\r\n";
-                ifLine += "\t\t\t\t\t\t_activeSinkId = item;\r\n";
-                ifLine += "\t\t\t\t\t\tbreak;\r\n";
-                ifLine += "\t\t\t\t\t}\r\n";
-
-                result += ifLine;
+                string type = inInterface.Attribute("Name").Value + "_SinkHelper.Id,";
+                result += type;
             }
 
-            if("" != result)
+            if ("" != result)
             {
-                if ("\r\n" == result.Substring(result.Length - "\r\n".Length))
-                    result = result.Substring(0, result.Length - "\r\n".Length);
+                if ("," == result.Substring(result.Length - ",".Length))
+                    result = result.Substring(0, result.Length - ",".Length);
             }
+            else
+                result = "null";
 
             return result;
         }
@@ -176,7 +169,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string ifLine = "\r\n\t\t\t" + "if(" + type + ".Id.Equals(_activeSinkId, StringComparison.InvariantCultureIgnoreCase))\r\n";
                 ifLine += "\t\t\t{\r\n";
-                ifLine += "\t\t\t\t" + name + " = new " + type + "(this);\r\n";
+                ifLine += "\t\t\t\t" + name + " = new " + type + "(this, _connectPoint);\r\n";
                 ifLine += "\t\t\t\treturn;\r\n";
                 ifLine += "\t\t\t}\r\n";
 
@@ -324,8 +317,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 versionAttributeString = versionAttributeString.Substring(0, versionAttributeString.Length - 1);
 
+                line += "\t\tprivate event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value +
+                   "EventHandler _" + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
+ 
                 line += "\t\t[SupportByLibrary(" + versionAttributeString + ")]\r\n";
-                line += "\t\tpublic event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value + "EventHandler " + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
+
+                string field = itemNode.Attribute("Name").Value + "Event";
+
+                line += "\t\tpublic event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value + 
+                    "EventHandler " + itemNode.Attribute("Name").Value + "Event\r\n" + "\t\t{\r\n" +
+                    "\t\t\tadd\r\n\t\t\t{\r\n" + "\t\t\t\t" + "_" + field + " += value;" + "\r\n" + "\t\t\t\tCreateEventBridge();\r\n" + "\t\t\t}\r\n" + "\t\t\tremove\r\n" +
+                    "\t\t\t{\r\n\t\t\t\t" + "_" + field + " -= value;" + "\r\n\t\t\t}\r\n" +
+                    "\t\t}\r\n";
             }
             
             result += line;

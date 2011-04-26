@@ -171,7 +171,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #endregion
 
         #region Static Methods
-        
+
+        internal static string FirstCharLower(string expression)
+        {
+            if (null == expression)
+                return null;
+
+            return expression.Substring(0, 1).ToLower() + expression.Substring(1).ToLower();
+        }
+
         internal static string GetQualifiedType(Settings settings, XElement value)
         {
             if (true == settings.ConvertOptionalsToObject)
