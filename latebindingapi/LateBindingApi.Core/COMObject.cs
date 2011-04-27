@@ -13,33 +13,17 @@ namespace LateBindingApi.Core
     {
         #region Fields
 
-        protected internal bool             _isDisposed;
-        protected internal List<COMObject>  _listChildObjects  = new List<COMObject>();
-        protected internal List<COMVariant> _listChildVariants = new List<COMVariant>();
-
+        protected internal volatile bool        _isCurrentlyDisposing;
+        protected internal volatile bool        _isDisposed;
+        protected internal List<COMObject>      _listChildObjects    = new List<COMObject>();
+        protected internal List<COMVariant>     _listChildVariants   = new List<COMVariant>();
+       
         #endregion
 
         #region Construction
 
-        public COMObject(COMVariant replacedObject)
-        {
-            if (false == replacedObject.IsCOMProxy)
-                throw new ArgumentException("argument is not a com proxy");
-
-            // remove variant from parent and add himself
-            COMObject parent = replacedObject.ParentObject;
-            parent.RemoveChildObject(replacedObject);
-            parent.AddChildObject(this);
-
-            // store members
-            _parentObject     = parent;
-            _underlyingObject = replacedObject.UnderlyingObject;
-            _instanceType     = replacedObject.InstanceType;
-        }
-
         public COMObject(COMObject replacedObject)
         {
-          
             // copy proxy
             _underlyingObject = replacedObject.UnderlyingObject;
             _parentObject     = replacedObject.ParentObject;
@@ -57,15 +41,18 @@ namespace LateBindingApi.Core
                 
                 // add himself as child to parent object
                 parentObject.AddChildObject(this);
-
             }
 
+            Factory.RemoveObjectFromList(replacedObject);
+            Factory.AddObjectToList(this);
         }
-
+        
         public COMObject(object comProxy)
         {
             _underlyingObject = comProxy;
             _instanceType = comProxy.GetType();
+
+            Factory.AddObjectToList(this);
         }
 
         public COMObject(COMObject parentObject, object comProxy)
@@ -76,6 +63,8 @@ namespace LateBindingApi.Core
 
             if (null!= parentObject)
                 _parentObject.AddChildObject(this);
+
+            Factory.AddObjectToList(this);
         }
 
         public COMObject(COMObject parentObject, object comProxy, Type comProxyType)
@@ -86,11 +75,13 @@ namespace LateBindingApi.Core
 
             if(null!=parentObject)
                 _parentObject.AddChildObject(this);
+
+            Factory.AddObjectToList(this);
         }
 
         public COMObject()
         {
-
+            Factory.AddObjectToList(this);
         }
 
         #endregion
@@ -110,6 +101,9 @@ namespace LateBindingApi.Core
 
         #region COMObject Properties
 
+        /// <summary>
+        /// returns instance is diposed means unusable
+        /// </summary>
         public bool IsDisposed
         {
             get 
@@ -117,6 +111,62 @@ namespace LateBindingApi.Core
                 return _isDisposed;
             }
         }
+
+        /// <summary>
+        /// returns instance is currently in diposing progress
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public bool IsCurrentlyDisposing
+        {
+            get
+            {
+                return _isCurrentlyDisposing;
+            }
+        }
+        /// <summary>
+        /// returns instance export events
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public bool IsEventBind
+        {
+            get 
+            {
+                return (null != (this as IEventBinding));
+            }
+        }
+
+        /// <summary>
+        /// returns event bridge is advised
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public bool EventBridgeInitialized
+        {
+            get
+            {
+                IEventBinding bindInfo = this as IEventBinding;
+                if (null != bindInfo)
+                    return bindInfo.EventBridgeInitialized;
+                else
+                    return false;
+            }
+        }
+
+        /// <summary>
+        ///  retuns instance has one or more event recipients
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public bool HasEventRecipients
+        {
+            get
+            {
+                IEventBinding bindInfo = this as IEventBinding;
+                if(null!=bindInfo)
+                    return bindInfo.HasEventRecipients;
+                else
+                    return false;
+            }
+        }
+
         #endregion
 
         #region COMObject Methods
@@ -153,38 +203,7 @@ namespace LateBindingApi.Core
         {
            _listChildVariants.Add(childObject);
         }
-
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public void ReleaseCOMProxy()
-        {
-            IEventBinding typeEvent = this as IEventBinding;
-            if (null != typeEvent)
-                typeEvent.DisposeSinkHelper();
-
-            // remove himself from parent childlist
-            if (null != _parentObject)
-            {
-                _parentObject.RemoveChildObject(this);
-                _parentObject = null;
-            }
-
-            // finally release himself
-            if (null != _underlyingObject)
-            {
-                if (_underlyingObject is ICustomAdapter)
-                {
-                    // enumerator
-                    ICustomAdapter adapter = (ICustomAdapter)_underlyingObject;
-                    Marshal.ReleaseComObject(adapter.GetUnderlyingObject());
-                }
-                else
-                {
-                    Marshal.ReleaseComObject(_underlyingObject);
-                }
-                _underlyingObject = null;
-            }
-        }
-
+        
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public void RemoveChildObject(COMObject childObject)
         {
@@ -196,8 +215,29 @@ namespace LateBindingApi.Core
         {
             _listChildVariants.Remove(childObject);
         }
+ 
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public void ReleaseCOMProxy()
+        {
+            // release himself from COM Runtime System
+            if (null != _underlyingObject)
+            {
+                if (_underlyingObject is ICustomAdapter)
+                {
+                    // enumerator
+                    ICustomAdapter adapter = (ICustomAdapter)_underlyingObject;
+                    Marshal.ReleaseComObject(adapter.GetUnderlyingObject());
+                }
+                else
+                {
+                    Marshal.ReleaseComObject(_underlyingObject);
+                    Factory.RemoveObjectFromList(this);
+                }
+                _underlyingObject = null;
+            }
+        }
 
-        public void DisposeChildProxies()
+        public void DisposeChildInstances(bool disposeEventBinding)
         {
             // release all unkown childs and clear list
             foreach (COMVariant itemObject in _listChildVariants)
@@ -206,17 +246,29 @@ namespace LateBindingApi.Core
             }
             _listChildVariants.Clear();
 
-            // string name = TypeDescriptor.GetClassName(_underlyingObject);
- 
             // release all childs and clear list
             foreach (COMObject itemObject in _listChildObjects)
             {
-                //string childName = TypeDescriptor.GetClassName(itemObject.UnderlyingObject);
+                itemObject.ParentObject = null;
+                itemObject.Dispose(disposeEventBinding);
+            }
+            _listChildObjects.Clear();
+        }
 
+        public void DisposeChildInstances()
+        {
+            // release all unkown childs and clear list
+            foreach (COMVariant itemObject in _listChildVariants)
+            {
+                itemObject.Dispose();
+            }
+            _listChildVariants.Clear();
+
+            // release all childs and clear list
+            foreach (COMObject itemObject in _listChildObjects)
+            {
                 itemObject.ParentObject = null;
                 itemObject.Dispose();
-                //itemObject.RemoveChildObjects();
-                //itemObject.ReleaseCOMProxy();
             }
             _listChildObjects.Clear();
         }
@@ -225,17 +277,51 @@ namespace LateBindingApi.Core
 
         #region IDisposable Members
 
-        public new void Dispose()
+        /// <summary>
+        /// dispose instance and all child instances
+        /// </summary>
+        /// <param name="disposeEventProxies">dispose event exported proxies with one or more event recipients</param>
+        public void Dispose(bool disposeEventBinding)
         {
-            _isDisposed = true;
+            // set disposed flag
+            _isCurrentlyDisposing = true;
 
             // in case of object implements also event binding we dispose them
             IEventBinding eventBind = this as IEventBinding;
-            if (null != eventBind)
-                eventBind.DisposeSinkHelper();
+            if (disposeEventBinding)
+            {
+                if (null != eventBind)
+                    eventBind.DisposeSinkHelper();
+            }
+            else
+            {
+                if( (null != eventBind) && (!eventBind.EventBridgeInitialized) )
+                    eventBind.DisposeSinkHelper();
+            }
+ 
+            // child proxy dispose
+            DisposeChildInstances(disposeEventBinding);
+            
+            // remove himself from parent childlist
+            if (null != _parentObject)
+            {
+                _parentObject.RemoveChildObject(this);
+                _parentObject = null;
+            }
 
-            DisposeChildProxies();
+            // release proxy
             ReleaseCOMProxy();
+
+            _isDisposed = true;
+            _isCurrentlyDisposing = false;
+        }
+
+        /// <summary>
+        /// dispose instance and all child instances
+        /// </summary>
+        public new void Dispose()
+        {
+            Dispose(true);
         }
 
         #endregion

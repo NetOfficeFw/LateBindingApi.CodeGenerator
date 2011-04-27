@@ -326,7 +326,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 line += "\t\tpublic event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value + 
                     "EventHandler " + itemNode.Attribute("Name").Value + "Event\r\n" + "\t\t{\r\n" +
-                    "\t\t\tadd\r\n\t\t\t{\r\n" + "\t\t\t\t" + "_" + field + " += value;" + "\r\n" + "\t\t\t\tCreateEventBridge();\r\n" + "\t\t\t}\r\n" + "\t\t\tremove\r\n" +
+                    "\t\t\tadd\r\n\t\t\t{\r\n" + "\t\t\t\tCreateEventBridge();\r\n" + "\t\t\t\t" + "_" + field + " += value;" + "\r\n" + "\t\t\t}\r\n" + "\t\t\tremove\r\n" +
                     "\t\t\t{\r\n\t\t\t\t" + "_" + field + " -= value;" + "\r\n\t\t\t}\r\n" +
                     "\t\t}\r\n";
             }

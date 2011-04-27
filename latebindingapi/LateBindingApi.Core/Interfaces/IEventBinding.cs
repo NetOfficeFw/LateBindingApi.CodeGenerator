@@ -10,7 +10,17 @@ namespace LateBindingApi.Core
         /// <param name="name">name of event</param>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         Delegate[] GetEventRecipients(string eventName);
-        
+
+        /// <summary>
+        /// returns event bridge is advised
+        /// </summary>
+        bool EventBridgeInitialized { get; }
+
+        /// <summary>
+        /// retuns instance has one or more event recipients
+        /// </summary>
+        bool HasEventRecipients { get; }
+
         /// <summary>
         /// Dispose method
         /// </summary>

@@ -63,8 +63,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {                
                 methodResult += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemMethod) + "\r\n"; 
                 methodResult += "\t\t[PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime), DispId(" + itemMethod.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
-                methodResult += "\t\t" + GetEventMethodSignatur(itemMethod, false) + ";\r\n\r\n";
-                implementResult += "\t\t" + GetEventMethodSignatur(itemMethod, true) + "\r\n" + "\t\t{\r\n" + GetMethodImplementCode(itemMethod) + "\t\t}\r\n\r\n";
+                methodResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, false) + ";\r\n\r\n";
+                implementResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, true) + "\r\n" + "\t\t{\r\n" + GetMethodImplementCode(settings, itemMethod) + "\t\t}\r\n\r\n";
             }
             
             if("" !=methodResult)
@@ -74,8 +74,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result = result.Replace("%methodsImplement%", implementResult);
             return result;
         }
-        
-        internal static string GetEventMethodSignatur(XElement methodNode, bool withPublic)
+
+        internal static string GetEventMethodSignatur(Settings settings, XElement methodNode, bool withPublic)
         {
             string publicModifier ="";
             if (true == withPublic)
@@ -88,15 +88,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == itemParam.Attribute("IsRef").Value)
                     isRef = "ref ";
 
-                string par = "[In";
+                string par = "";
+                if ("true" == itemParam.Attribute("IsRef").Value)
+                    par = "[In] [Out";
+                else
+                    par = "[In";
+               
                 if (("true" == itemParam.Attribute("IsComProxy").Value)
                    || ("COMObject" == itemParam.Attribute("Type").Value) || ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
                 {
-                    par += ", MarshalAs(UnmanagedType.IDispatch)] object " + itemParam.Attribute("Name").Value;
+                    par += ", MarshalAs(UnmanagedType.IDispatch)] object " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
                 }
                 else
                 {
-                    par += "] " + isRef + "object " + itemParam.Attribute("Name").Value;
+                    par += "] " + isRef + "object " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
                 }
             
                 result += par +", ";
@@ -107,32 +112,39 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result+ ")";
         }
 
-        private static string GetMethodImplementCode(XElement methodNode)
+        private static string GetMethodImplementCode(Settings settings, XElement methodNode)
         {
             bool hasRefParams = ParameterApi.HasRefParams(methodNode.Element("Parameters"), true);
 
             string result = "";
             result += "\t\t\tDelegate[] recipients = _eventBinding.GetEventRecipients(\"" + methodNode.Attribute("Name").Value + "\");\r\n";
-            result += "\t\t\t" + "if( (true == _eventClass.IsDisposed) || (recipients.Length == 0) )\r\n";
+            result += "\t\t\t" + "if( (true == _eventClass.IsCurrentlyDisposing) || (recipients.Length == 0) )\r\n";
             result += "\t\t\t{\r\n";
-            result += "\t\t\t\tInvoker.ReleaseParamsArray(" + CreateParametersCallString(methodNode.Element("Parameters"), "") + ");\r\n";
+            result += "\t\t\t\tInvoker.ReleaseParamsArray(" + CreateParametersCallString(settings, methodNode.Element("Parameters"), "") + ");\r\n";
             result += "\t\t\t\treturn;\r\n";
             result += "\t\t\t}\r\n\r\n";
-            result += CreateConversionString(3, methodNode.Element("Parameters"));
-            result += CreateSetArrayString(3, methodNode.Element("Parameters"));
-            result += "\t\t\tforeach(Delegate item in recipients)\r\n";
-            result += "\t\t\t\titem.Method.Invoke(item.Target, paramArray);\r\n";
+            result += CreateConversionString(settings, 3, methodNode.Element("Parameters"));
+            result += CreateSetArrayString(settings, 3, methodNode.Element("Parameters"));
+            result += "\t\t\tforeach(Delegate delItem in recipients)\r\n";
+            result += "\t\t\t\tdelItem.Method.Invoke(delItem.Target, paramsArray);\r\n";
+
+            string modRefs = ParameterApi.CreateParametersToRefUpdateString(settings, 3, methodNode.Element("Parameters"), true);
+            if (modRefs != "")
+                modRefs = "\r\n" + modRefs;
+
+            result += modRefs;
+
             return result;
         }
 
-        private static string CreateParametersCallString(XElement parametersNode, string prefix)
+        private static string CreateParametersCallString(Settings settings, XElement parametersNode, string prefix)
         {
             string result = "";
             int paramsCount = ParameterApi.GetParamsCount(parametersNode, true);
             int i = 1;
             foreach (XElement itemParam in ParameterApi.GetParameter(parametersNode, true))
-            {
-                result += prefix + itemParam.Attribute("Name").Value;
+            {               
+                result += prefix + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
                 if(i<paramsCount)
                     result += ", ";                
                 i++;
@@ -159,30 +171,30 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static string CreateSetArrayString(int tabCount, XElement parametersNode)
+        private static string CreateSetArrayString(Settings settings, int tabCount, XElement parametersNode)
         {
             string tabSpace = CSharpGenerator.TabSpace(tabCount);
             int paramsCount = ParameterApi.GetParamsCount(parametersNode, true);
 
-            string result = tabSpace + "object[] paramArray = new object[" + paramsCount.ToString() + "];\r\n";
-
+            string result = tabSpace + "object[] paramsArray = new object[" + paramsCount.ToString() + "];\r\n";
+            
             int i = 0;
             foreach (XElement itemParam in ParameterApi.GetParameter(parametersNode, true))
             {
                 if ("true" == itemParam.Attribute("IsRef").Value)
                 {
-                    result += tabSpace + "paramArray.SetValue(" + itemParam.Attribute("Name").Value + ", " + i.ToString() + ");\r\n";
+                    result += tabSpace + "paramsArray.SetValue(" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ", " + i.ToString() + ");\r\n";
                 }
                 else
                 {
-                    result += tabSpace + "paramArray[" + i.ToString() + "] = " + "new" + itemParam.Attribute("Name").Value + ";\r\n";
+                    result += tabSpace + "paramsArray[" + i.ToString() + "] = " + "new" + itemParam.Attribute("Name").Value + ";\r\n";
                 }
                 i++;
             }
             return result;
         }
 
-        private static string CreateConversionString(int tabCount, XElement parametersNode)
+        private static string CreateConversionString(Settings settings, int tabCount, XElement parametersNode)
         {
             string tabSpace = CSharpGenerator.TabSpace(tabCount); 
             string result = "";
@@ -195,7 +207,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
                     result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
-                            " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(_eventClass, " + itemParam.Attribute("Name").Value + ") as " + qualifiedType + ";\r\n";
+                            " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(settings,itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
                 }
                 else
                 {
@@ -203,12 +215,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     {
                         string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
                         result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
-                           " = (" + qualifiedType + ")" + itemParam.Attribute("Name").Value + ";\r\n";
+                           " = (" + qualifiedType + ")" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ";\r\n";
+
                     }
                     else
                     {
                         result += tabSpace + itemParam.Attribute("Type").Value + " new" + itemParam.Attribute("Name").Value +
-                            " = (" + itemParam.Attribute("Type").Value + ")" + itemParam.Attribute("Name").Value + ";\r\n";
+                            " = (" + itemParam.Attribute("Type").Value + ")" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ";\r\n";
                     }
                 }
             } 

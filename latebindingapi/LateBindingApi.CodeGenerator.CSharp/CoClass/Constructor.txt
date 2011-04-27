@@ -1,7 +1,8 @@
 ﻿		#region Fields
 		
-		private NetRuntimeSystem.Runtime.InteropServices.ComTypes.IConnectionPoint _connectPoint = null;
+		private NetRuntimeSystem.Runtime.InteropServices.ComTypes.IConnectionPoint _connectPoint;
 		private string _activeSinkId;
+		private NetRuntimeSystem.Type _thisType;
 %sinkHelperDefine%	
 		#endregion
 		

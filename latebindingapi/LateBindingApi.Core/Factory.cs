@@ -27,6 +27,38 @@ namespace LateBindingApi.Core
 
     public static class Factory
     {
+        internal static void AddObjectToList(COMObject proxy)
+        {
+            COMObject parent = proxy._parentObject;
+
+            _globalObjectList.Add(proxy);
+
+            if (null!=ProxyCountChanged)
+                ProxyCountChanged(_globalObjectList.Count);
+        }
+
+        internal static void RemoveObjectFromList(COMObject proxy)
+        {
+            _globalObjectList.Remove(proxy);
+
+            if (null != ProxyCountChanged)
+                ProxyCountChanged(_globalObjectList.Count);
+        }
+
+        public delegate void ProxyCountChangedHandler(int proxyCount);
+
+        private static List<COMVariant> _globalObjectList = new List<COMVariant>();
+
+        public static event ProxyCountChangedHandler ProxyCountChanged; 
+
+        public static int ProxyCount
+        {
+            get             
+            {
+                return _globalObjectList.Count;
+            }            
+        }
+
         #region Fields
 
         private static List<IFactoryInfo>       _factoryList = new List<IFactoryInfo>();
@@ -55,12 +87,12 @@ namespace LateBindingApi.Core
             // create new classType
             Type comProxyType = comProxy.GetType();
             COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comProxy, comProxyType, className, fullClassName);
+            
             return newObject;
         }
 
         private static COMObject CreateObjectFromComProxy(IFactoryInfo factoryInfo, COMObject caller, object comProxy, Type comProxyType, string className, string fullClassName)
         {
-
             Type classType = null;
             if (true == _typeCache.TryGetValue(fullClassName, out classType))
             {
@@ -76,8 +108,8 @@ namespace LateBindingApi.Core
                     throw new ArgumentException("Class not exists: " + fullClassName);
 
                 _typeCache.Add(fullClassName, classType);
-                object newClass = Activator.CreateInstance(classType, new object[] { caller, comProxy, comProxyType });
-                return (COMObject)newClass;
+                COMObject newClass = (COMObject)Activator.CreateInstance(classType, new object[] { caller, comProxy, comProxyType });
+                return newClass;
             }
         }
         
