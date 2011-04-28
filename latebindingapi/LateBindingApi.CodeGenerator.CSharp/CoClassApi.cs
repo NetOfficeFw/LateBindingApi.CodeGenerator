@@ -233,6 +233,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string GetDelegateSignatur(string className, XElement methodNode)
         {
+            if (("SheetActivate" == methodNode.Attribute("Name").Value) && ("Application" == className) )
+            { 
+
+            }
+
             string result = "public delegate void " + className + "_" + methodNode.Attribute("Name").Value + "EventHandler" + "(";
             foreach (XElement itemParam in methodNode.Element("Parameters").Elements("Parameter"))
             {
@@ -242,7 +247,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string par = "";
                 if (("true" == itemParam.Attribute("IsComProxy").Value) &&
-                    ("object" == itemParam.Attribute("Name").Value))
+                    ("object" == itemParam.Attribute("Type").Value))
                 {
                     par = isRef + "COMObject" + " " + itemParam.Attribute("Name").Value;
                 }

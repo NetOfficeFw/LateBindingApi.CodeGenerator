@@ -148,13 +148,14 @@ namespace LateBindingApi.Core
         {
             if (null != isRef)
             {
-                int parramArrayCount = isRef.Length;
-                ParameterModifier newModifiers = new ParameterModifier(parramArrayCount);
-                
-                for (int i = 0; i < parramArrayCount; i++)
-                    newModifiers[i] = isRef[i];
+                ParameterModifier[] returnModifiers = new ParameterModifier[isRef.Length];
+                for (int i = 0; i < isRef.Length; i++)
+                {
+                    ParameterModifier newModifiers = new ParameterModifier(1);
+                    newModifiers[0] = isRef[i];
+                    returnModifiers[i] = newModifiers;                    
+                }
 
-                ParameterModifier[] returnModifiers = { newModifiers };
                 return returnModifiers;
             }
             else
