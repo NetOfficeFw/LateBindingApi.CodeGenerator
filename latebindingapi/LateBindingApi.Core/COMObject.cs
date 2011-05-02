@@ -91,20 +91,19 @@ namespace LateBindingApi.Core
 
         #region IObject Properties
 
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public List<COMObject> ListChildObjects
-        {
-            get
-            {
-                return _listChildObjects;
-            }
-        }
-
         public object UnderlyingObject
         {
             get
             {
                 return _underlyingObject;
+            }
+        }
+
+        public string UnderlyingTypeName
+        {
+            get
+            {
+                return TypeDescriptor.GetClassName(_underlyingObject);
             }
         }
 
@@ -156,6 +155,7 @@ namespace LateBindingApi.Core
                 return _isCurrentlyDisposing;
             }
         }
+        
         /// <summary>
         /// returns instance export events
         /// </summary>
@@ -199,7 +199,15 @@ namespace LateBindingApi.Core
                     return false;
             }
         }
-
+       
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        internal List<COMObject> ListChildObjects
+        {
+            get
+            {
+                return _listChildObjects;
+            }
+        }
         #endregion
 
         #region COMObject Methods

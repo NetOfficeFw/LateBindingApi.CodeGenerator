@@ -15,6 +15,11 @@ namespace LateBindingApi.Core
         object UnderlyingObject { get; }
 
         /// <summary>
+        /// Name of UnderlyingObject type
+        /// </summary>
+        string UnderlyingTypeName { get; }
+
+        /// <summary>
         /// Type info of UnderlyingObject
         /// </summary>
         Type InstanceType { get; }
