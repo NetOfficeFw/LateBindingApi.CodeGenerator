@@ -95,6 +95,16 @@ namespace LateBindingApi.Core
             return newObject;
         }
 
+        /// <summary>
+        /// creates a new COMObject from factoryInfo
+        /// </summary>
+        /// <param name="factoryInfo"></param>
+        /// <param name="caller"></param>
+        /// <param name="comProxy"></param>
+        /// <param name="comProxyType"></param>
+        /// <param name="className"></param>
+        /// <param name="fullClassName"></param>
+        /// <returns></returns>
         private static COMObject CreateObjectFromComProxy(IFactoryInfo factoryInfo, COMObject caller, object comProxy, Type comProxyType, string className, string fullClassName)
         {
             Type classType = null;
@@ -118,7 +128,7 @@ namespace LateBindingApi.Core
         }
         
         /// <summary>
-        ///  creates a new COMVariant array based on type of comVariant[]
+        ///  creates a new COMObject array
         /// </summary>
         /// <param name="caller"></param>
         /// <param name="comVariant"></param>

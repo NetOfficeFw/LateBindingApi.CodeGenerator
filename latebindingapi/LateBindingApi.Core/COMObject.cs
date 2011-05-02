@@ -258,8 +258,8 @@ namespace LateBindingApi.Core
                 else
                 {
                     Marshal.ReleaseComObject(_underlyingObject);
-                    Factory.RemoveObjectFromList(this);
                 }
+                Factory.RemoveObjectFromList(this);
                 _underlyingObject = null;
             }
         }
