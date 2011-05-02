@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using stdole;
 
+using LateBindingApi.Core;
 using xyz;
 namespace ClientApplication
 {
@@ -25,6 +26,28 @@ namespace ClientApplication
             // LateBindingApi.Core.Settings.EnableEvents = true;
             
             /*>> your testcode here <<*/
+            Word.Application wordApp = new Word.Application();
+            wordApp.Visible = true;
+            foreach (Office.COMAddIn item in wordApp.COMAddIns)
+                Console.WriteLine(item.Description);
+
+            wordApp.Quit();
+            wordApp.Dispose();
+
+            Excel.Application exApp = new LateBindingApi.ExcelApi.Application();
+            exApp.Visible = true;
+            foreach (Office.COMAddIn item in exApp.COMAddIns)
+                Console.WriteLine(item.Description);
+
+            Excel.Workbook book = (Excel.Workbook)exApp.Workbooks.Add();
+            foreach (Excel.Worksheet item in book.Worksheets)
+            {
+                Console.WriteLine(item.Name);
+                Excel.Range range = (Excel.Range)item.Cells[2, 2];
+            }
+
+            exApp.Quit();
+            exApp.Dispose();
         }
 
         /// <summary>

@@ -12,6 +12,7 @@
             {
                 object itemProxy = Invoker.PropertyGet(enumerator, "Current", null);
                 %Type% returnClass = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this, itemProxy);
+                isMoveNextTrue = (bool)Invoker.MethodReturn(enumerator, "MoveNext", null);
 				yield return returnClass;
             }
         }

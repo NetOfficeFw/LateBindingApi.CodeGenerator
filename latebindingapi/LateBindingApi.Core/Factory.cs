@@ -7,6 +7,8 @@ using COMTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace LateBindingApi.Core
 {
+    #region IDispatch
+
     [Guid("00020400-0000-0000-c000-000000000046"),
     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IDispatch
@@ -24,13 +26,18 @@ namespace LateBindingApi.Core
                                                         ref System.Runtime.InteropServices.ComTypes.EXCEPINFO pExcepInfo, 
                                                         [Out, MarshalAs(UnmanagedType.LPArray)] IntPtr[] pArgErr);
     }
+    
+    #endregion
 
     public static class Factory
     {
+        private static List<COMVariant> _globalObjectList = new List<COMVariant>();
+
+        public delegate void ProxyCountChangedHandler(int proxyCount);
+        public static event ProxyCountChangedHandler ProxyCountChanged; 
+
         internal static void AddObjectToList(COMObject proxy)
         {
-            COMObject parent = proxy._parentObject;
-
             _globalObjectList.Add(proxy);
 
             if (null!=ProxyCountChanged)
@@ -45,12 +52,9 @@ namespace LateBindingApi.Core
                 ProxyCountChanged(_globalObjectList.Count);
         }
 
-        public delegate void ProxyCountChangedHandler(int proxyCount);
-
-        private static List<COMVariant> _globalObjectList = new List<COMVariant>();
-
-        public static event ProxyCountChangedHandler ProxyCountChanged; 
-
+        /// <summary>
+        /// Returns count count of open proxies
+        /// </summary>
         public static int ProxyCount
         {
             get             

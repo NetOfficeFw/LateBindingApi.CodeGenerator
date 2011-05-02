@@ -280,9 +280,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     }
                     else if (typeName == "COMVariant")
                     {
-                        methodBody += tabSpace + "COMVariant" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateVariant" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
-                        methodBody += "%modifiers%";
-                        methodBody += tabSpace + "return newObject;\r\n";
+                        methodBody += tabSpace + "if(true == returnItem.GetType().IsCOMObject)\r\n" + tabSpace + "{\r\n";
+                        methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                        methodBody += "\t%modifiers%";
+                        methodBody += tabSpace + "\treturn newObject;\r\n";
+                        methodBody += tabSpace + "}\r\n";
+                        methodBody += tabSpace + "else" + "\r\n" + tabSpace + "{\r\n";
+                        methodBody += "\t%modifiers%";
+                        methodBody += tabSpace + "return " + objectArrayField + " returnItem;\r\n";
+                        methodBody += tabSpace + "}\r\n";
                     }
                     else
                     {

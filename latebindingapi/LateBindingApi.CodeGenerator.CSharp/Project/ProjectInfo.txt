@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using LateBindingApi.Core;
 
-namespace %AssemblyName%.Utils
+namespace %AssemblyName%Api.Utils
 {
     /// <summary>
     /// necessary factory info, used from LateBindingApi.Core.Factory while Initialize()

@@ -195,7 +195,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string GetQualifiedType(XElement value)
         {
-            string type = value.Attribute("Type").Value;            
+            string type = value.Attribute("Type").Value;
+            if ("COMVariant" == type)
+                return "object";
+
             string space = GetQualifiedNamespace(value);
             return space + type;
         }

@@ -34,8 +34,25 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newSettings.ConvertOptionalsToObject = checkBoxConvertOptionals.Checked;
                 newSettings.ConvertParamNamesToCamelCase = checkBoxConvertToCamel.Checked;
                 newSettings.RemoveRefAttribute = checkBoxRemoveRef.Checked;
-                newSettings.CreateXmlDocumentation = checkBoxCreateDocu.Checked;  
-                newSettings.Framework = comboBoxFramework.Text; 
+                newSettings.CreateXmlDocumentation = checkBoxCreateDocu.Checked;
+
+                string res = "";
+                switch (comboBoxFramework.SelectedIndex)
+                {
+                    case 0:
+                        res = "2.0";
+                        break;
+                    case 1:
+                        res = "3.0";
+                        break;
+                    case 2:
+                        res = "3.5";
+                        break;
+                    case 3:
+                        res = "4.0";
+                        break;
+                }
+                newSettings.Framework = res;
                 return newSettings;
             }
         }

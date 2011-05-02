@@ -560,7 +560,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("RefLibraries"),
                                new XElement("RefProjects"),
                                new XAttribute("Name",        item.Name),
-                               new XAttribute("Namespace", preNamespace + item.Name),
+                               new XAttribute("Namespace", preNamespace + item.Name + "Api"),
                                new XAttribute("Key",         Utils.NewEncodedGuid()),
                                new XAttribute("Description",        ""),
                                new XAttribute("Configuration", ""),

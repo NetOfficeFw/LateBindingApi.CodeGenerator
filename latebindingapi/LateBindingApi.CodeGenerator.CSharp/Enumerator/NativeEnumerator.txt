@@ -12,6 +12,7 @@
             {
                 object itemProxy = Invoker.PropertyGet(enumerator, "Current", null);
                 %Type% returnValue = (%Type%)itemProxy;
+                isMoveNextTrue = (bool)Invoker.MethodReturn(enumerator, "MoveNext", null);
 				yield return returnValue;
             }
         }

@@ -198,7 +198,8 @@
             this.comboBoxFramework.Items.AddRange(new object[] {
             ".NET Framework 2.0",
             ".NET Framework 3.0",
-            ".NET Framework 3.5"});
+            ".NET Framework 3.5",
+            ".NET Framework 4.0"});
             this.comboBoxFramework.Location = new System.Drawing.Point(53, 209);
             this.comboBoxFramework.Name = "comboBoxFramework";
             this.comboBoxFramework.Size = new System.Drawing.Size(176, 21);

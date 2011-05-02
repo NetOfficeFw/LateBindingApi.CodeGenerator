@@ -16,14 +16,7 @@ a lot of methods has parameters given by reference(ref in C#). This is a default
 #
 
 #Framework
-Why .NET 1.1 is missing?{nl}
-- the generator creates VS 2008 solutions and the lowest framework it will go is .NET 2.0{nl}{nl}
-
-Why .NET 4.0 is missing?{nl}
-- C# 4.0 has different languages entities and more features. will coming soon as fast as possible.{nl}{nl}
-
-Note:{nl}
-you can generate a solution in .NET 2.0 and then change the framework to NET 1.1 or NET 4.0 for example.
+The generator creates VS 2008 solutions in .NET 2.0, .NET 3.0, .NET 3.5 and VS2010 solution in .NET 4.0{nl}
 #
 
 #Docu

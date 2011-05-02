@@ -9,9 +9,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class ProjectApi
     {
-        private static readonly string _ProjectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%.csproj\">\r\n"
+        private static readonly string _projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.csproj\">\r\n"
                                                    + "      <Project>{%Key%}</Project>\r\n"
-                                                   + "      <Name>%Name%</Name>\r\n"
+                                                   + "      <Name>%Name%Api</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";
 
         internal static string ReplaceAssemblyAttributes(string assemblyInfo, XElement project, string typeDefsInclude)
@@ -62,8 +62,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                         string constIncludes, string faceIncludes, string dispatchIncludes, string classesIncludes, 
                                                          string eventIncludes, string modulesInclude, string recordsInclude, string factoryInclude)
         {
+
+            if("4.0" == settings.Framework)
+                projectFile = projectFile.Replace("%ToolsVersion%", "4.0");
+            else
+                projectFile = projectFile.Replace("%ToolsVersion%", "3.5");
+
             projectFile = projectFile.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
-            projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value);
+            projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value + "Api");
             projectFile = projectFile.Replace("%ConstInclude%", constIncludes);
             projectFile = projectFile.Replace("%EnumInclude%", enumIncludes);
             projectFile = projectFile.Replace("%FaceInclude%", faceIncludes);
@@ -73,7 +79,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%ModulesInclude%", modulesInclude);
             projectFile = projectFile.Replace("%EventInclude%", eventIncludes);
             projectFile = projectFile.Replace("%RecordsInclude%", recordsInclude);
-            
+
+            projectFile = projectFile.Replace("%Framework%", "v" +  settings.Framework);
+
             string refProjectInclude = "";
             if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
             {
@@ -88,7 +96,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     if ("true" == refProject.Attribute("Ignore").Value)
                         continue;
 
-                    string newRefProject = _ProjectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(refProject.Attribute("Key").Value));
+                    string newRefProject = _projectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(refProject.Attribute("Key").Value));
                     newRefProject = newRefProject.Replace("%Name%", refProject.Attribute("Name").Value);
                     refProjectInclude += newRefProject;
                     
@@ -137,7 +145,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string projectName = project.Attribute("Name").Value;
             string projectPath = System.IO.Path.Combine(path, projectName);
             PathApi.CreateFolder(projectPath);
-            string projectFilePath = System.IO.Path.Combine(projectPath, projectName + ".csproj");
+            string projectFilePath = System.IO.Path.Combine(projectPath, projectName + "Api.csproj");
             System.IO.File.WriteAllText(projectFilePath, projectFile, Encoding.UTF8);
         }
     }

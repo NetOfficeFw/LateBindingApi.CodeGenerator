@@ -9,7 +9,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class SolutionApi
     {
-        internal static readonly string _projectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\",\"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
+        internal static readonly string _projectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%Api\",\"%Name%\\%Name%Api.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
 
         internal static readonly string _buildConfig = "\t\t{%Key%}.Debug|Any CPU.ActiveCfg = Debug|Any CPU\r\n"
                                                      + "\t\t{%Key%}.Debug|Any CPU.Build.0 = Debug|Any CPU\r\n"
@@ -20,9 +20,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string projects = "";
             string configs = "";
 
+            if (settings.Framework == "4.0")
+            {
+                solutionFile = solutionFile.Replace("%FormatVersion%", "11.00");
+                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual C# Express 2010");
+            }
+            else
+            {
+                solutionFile = solutionFile.Replace("%FormatVersion%", "10.00");
+                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual Studio 2008");
+            }
+
             if (true == settings.AddTestApp)
             {
-                string newProjectLine = _projectLine.Replace("%Name%", "ClientApplication");
+                string testProjectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\",\"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
+                string newProjectLine = testProjectLine.Replace("%Name%", "ClientApplication");
                 newProjectLine = newProjectLine.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
 
                 string depends = "\tProjectSection(ProjectDependencies) = postProject\r\n";
@@ -78,7 +90,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static void SaveSolutionFile(Settings settings, string path, string solutionFile, XElement solution)
         {
             if (true == settings.AddTestApp)
-                SaveTestClient(solution, path);
+                SaveTestClient(settings, solution, path);
 
             string solutionName = solution.Attribute("Name").Value;
             PathApi.CreateFolder(path);
@@ -88,23 +100,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static void SaveApiBinary(Settings settings, string path)
         {
-            string framework = settings.Framework.Substring(settings.Framework.LastIndexOf(" ") + 1); 
-
             PathApi.CreateFolder(path);
             string binrayFilePath = System.IO.Path.Combine(path, "LateBindingApi.Core.dll");
-            byte[] ressourceDll = RessourceApi.ReadBinaryFromResource("Api.LateBindingApi.Core" + "_v" + framework + ".dll");
+            byte[] ressourceDll = RessourceApi.ReadBinaryFromResource("Api.LateBindingApi.Core" + "_v" + settings.Framework + ".dll");
             RessourceApi.WriteBinaryToFile(ressourceDll, binrayFilePath);
         }
 
-        internal static void SaveTestClient(XElement solution, string path)
+        internal static void SaveTestClient(Settings settings, XElement solution, string path)
         {
             string projectFile  = RessourceApi.ReadString("TestClient.ClientApplication.csproj");
             string programFile  = RessourceApi.ReadString("TestClient.Program.cs");
             string formFile     = RessourceApi.ReadString("TestClient.Form1.cs");
-            
-            string projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%.csproj\">\r\n"
+
+            string projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.csproj\">\r\n"
                                                    + "      <Project>{%Key%}</Project>\r\n"
-                                                   + "      <Name>%Name%</Name>\r\n"
+                                                   + "      <Name>%Name%Api</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";
 
             string formUsings = "";
@@ -118,7 +128,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newRefProject = newRefProject.Replace("%Name%", item.Attribute("Name").Value);
                 projectInclude += newRefProject;
 
-                string newUsing = "using " + item.Attribute("Name").Value + "Api = " + item.Attribute("Namespace").Value + ";\r\n";
+                string newUsing = "using " + item.Attribute("Name").Value + " = " + item.Attribute("Namespace").Value + ";\r\n";
                 formUsings += newUsing;
             }
 
@@ -126,6 +136,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string refProjectInclude = "  <ItemGroup>\r\n" + projectInclude + "  </ItemGroup>";
             projectFile = projectFile.Replace("%ProjectRefInclude%", refProjectInclude);
+
+            if ("4.0" == settings.Framework)
+                projectFile = projectFile.Replace("%ToolsVersion%", "4.0");
+            else
+                projectFile = projectFile.Replace("%ToolsVersion%", "3.5");
+
+            projectFile = projectFile.Replace("%Framework%", "v" + settings.Framework);
 
             string projectPath = System.IO.Path.Combine(path, "ClientApplication");
             PathApi.CreateFolder(projectPath); 
