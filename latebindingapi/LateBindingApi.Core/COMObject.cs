@@ -9,14 +9,17 @@ namespace LateBindingApi.Core
     /// <summary>
     /// Represents a managed COMProxy 
     /// </summary>
-    public class COMObject : COMVariant
+    public class COMObject
     {
         #region Fields
+
+        protected internal COMObject            _parentObject;
+        protected internal Type                 _instanceType;
+        protected internal object               _underlyingObject;
 
         protected internal volatile bool        _isCurrentlyDisposing;
         protected internal volatile bool        _isDisposed;
         protected internal List<COMObject>      _listChildObjects    = new List<COMObject>();
-        protected internal List<COMVariant>     _listChildVariants   = new List<COMVariant>();
        
         #endregion
 
@@ -94,6 +97,36 @@ namespace LateBindingApi.Core
             get
             {
                 return _listChildObjects;
+            }
+        }
+
+        public object UnderlyingObject
+        {
+            get
+            {
+                return _underlyingObject;
+            }
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public Type InstanceType
+        {
+            get
+            {
+                return _instanceType;
+            }
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public COMObject ParentObject
+        {
+            get
+            {
+                return _parentObject;
+            }
+            set
+            {
+                _parentObject = value;
             }
         }
 
@@ -186,8 +219,6 @@ namespace LateBindingApi.Core
         {
             if (childObject is COMObject)
                 _listChildObjects.Add((COMObject)childObject);
-            else if (childObject is COMVariant)
-                _listChildVariants.Add((COMVariant)childObject);
 
             throw new ArgumentException("childObject is an unkown type.");
         }
@@ -199,23 +230,11 @@ namespace LateBindingApi.Core
         }
 
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public void AddChildObject(COMVariant childObject)
-        {
-           _listChildVariants.Add(childObject);
-        }
-        
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public void RemoveChildObject(COMObject childObject)
         {
             _listChildObjects.Remove(childObject);
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public void RemoveChildObject(COMVariant childObject)
-        {
-            _listChildVariants.Remove(childObject);
-        }
- 
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public void ReleaseCOMProxy()
         {
@@ -239,13 +258,6 @@ namespace LateBindingApi.Core
 
         public void DisposeChildInstances(bool disposeEventBinding)
         {
-            // release all unkown childs and clear list
-            foreach (COMVariant itemObject in _listChildVariants)
-            {
-                itemObject.Dispose();
-            }
-            _listChildVariants.Clear();
-
             // release all childs and clear list
             foreach (COMObject itemObject in _listChildObjects)
             {
@@ -257,13 +269,6 @@ namespace LateBindingApi.Core
 
         public void DisposeChildInstances()
         {
-            // release all unkown childs and clear list
-            foreach (COMVariant itemObject in _listChildVariants)
-            {
-                itemObject.Dispose();
-            }
-            _listChildVariants.Clear();
-
             // release all childs and clear list
             foreach (COMObject itemObject in _listChildObjects)
             {
@@ -319,7 +324,7 @@ namespace LateBindingApi.Core
         /// <summary>
         /// dispose instance and all child instances
         /// </summary>
-        public new void Dispose()
+        public void Dispose()
         {
             Dispose(true);
         }

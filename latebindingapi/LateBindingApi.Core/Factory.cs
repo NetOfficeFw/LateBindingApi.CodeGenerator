@@ -31,7 +31,7 @@ namespace LateBindingApi.Core
 
     public static class Factory
     {
-        private static List<COMVariant> _globalObjectList = new List<COMVariant>();
+        private static List<COMObject> _globalObjectList = new List<COMObject>();
 
         public delegate void ProxyCountChangedHandler(int proxyCount);
         public static event ProxyCountChangedHandler ProxyCountChanged; 
@@ -139,68 +139,6 @@ namespace LateBindingApi.Core
                 newVariantArray[i] = CreateObjectFromComProxy(factoryInfo, caller, comProxyArray[i], comVariantType, className, fullClassName);
             }
             return newVariantArray;
-        }
-
-        #endregion
-
-        #region COMVariant
-
-        /// <summary>
-        ///  creates a new COMVariant based on type of comVariant 
-        /// </summary>
-        /// <param name="caller"></param>
-        /// <param name="comVariant"></param>
-        /// <returns></returns>
-        public static COMVariant CreateVariantFromComProxy(COMObject caller, object comVariant)
-        {
-            if (null == comVariant)
-                return null;
-            
-            Type comVariantType = comVariant.GetType();
-            if (false == comVariantType.IsCOMObject)
-            {
-                COMVariant newVariant = new COMVariant(caller, comVariant, comVariantType);
-                return newVariant;
-            }
-            else
-            {
-                IFactoryInfo factoryInfo = GetFactoryInfo(comVariant);
-                string className = TypeDescriptor.GetClassName(comVariant);
-                string fullClassName = factoryInfo.Namespace + "." + className;
-                COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comVariant, comVariantType, className, fullClassName);
-                return newObject;
-            }
-        }
-
-        /// <summary>
-        ///  creates a new COMVariant array based on type of comVariant[]
-        /// </summary>
-        /// <param name="caller"></param>
-        /// <param name="comVariant"></param>
-        /// <returns></returns>
-        public static COMVariant[] CreateVariantArrayFromComProxy(COMObject caller, object[] comVariantArray)
-        {
-            if (null == comVariantArray)
-                return null;
-
-            Type comVariantType = null;
-            COMVariant[] newVariantArray = new COMVariant[comVariantArray.Length];
-            for (int i = 0; i < comVariantArray.Length; i++)
-            {
-                comVariantType = comVariantArray[i].GetType();
-                if (false == comVariantType.IsCOMObject)
-                {
-                    newVariantArray[i] = new COMVariant(caller, comVariantArray[i], comVariantType);
-                }
-                else
-                {
-                    IFactoryInfo factoryInfo = GetFactoryInfo(comVariantArray[i]);
-                    string className = TypeDescriptor.GetClassName(comVariantArray[i]);
-                    string fullClassName = factoryInfo.Namespace + "." + className;
-                    newVariantArray[i] = CreateObjectFromComProxy(factoryInfo, caller, comVariantArray[i], comVariantType, className, fullClassName);
-                }                    
-             }
-             return newVariantArray;        
         }
 
         #endregion

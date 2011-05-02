@@ -132,13 +132,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             // get type and check array
             string type = returnType.Attribute("Type").Value;
+            if("COMVariant" == type)
+                type = "object";
+
             if ("true" == returnType.Attribute("IsArray").Value)
                 type += "[]";
 
             // get type qualifiers
             string qualifier = GetQualifier(faceNode, returnType);
             type = qualifier + type;
-
+ 
             enumString = enumString.Replace("%Type%", type);
 
             content += enumString;
