@@ -158,8 +158,7 @@ namespace LateBindingApi.Core
         /// Recieve FactoryInfos from all loaded LateBindingApi based Assemblies
         /// </summary>
         public static void Initialize()
-        {
-            _factoryList.Clear();
+        {          
             Assembly callingAssembly = System.Reflection.Assembly.GetCallingAssembly();
             foreach (AssemblyName item in callingAssembly.GetReferencedAssemblies())
             {
@@ -172,10 +171,26 @@ namespace LateBindingApi.Core
                     {
                         Type factoryInfoType = itemAssembly.GetType(item.Name + ".Utils.ProjectInfo");
                         IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as IFactoryInfo;
-                        _factoryList.Add(factoryInfo);
+
+                        bool exists = false;
+                        foreach (IFactoryInfo itemFactory in _factoryList)
+                        {
+                            if (itemFactory.Assembly.FullName == factoryInfo.Assembly.FullName)
+                            {
+                                exists = true;
+                                break;
+                            } 
+                        }
+                        if(!exists)
+                            _factoryList.Add(factoryInfo);
                     }
                 }
             }
+        }
+        
+        public static void Clear()
+        {
+            _factoryList.Clear();
         }
         
         /// <summary>

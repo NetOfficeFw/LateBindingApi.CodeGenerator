@@ -156,9 +156,12 @@ namespace LateBindingApi.Core
         {
             if (null != param)
             {
-                IObject comObject = param as IObject;
+                COMObject comObject = param as COMObject;
                 if (null != comObject)
                         param = comObject.UnderlyingObject;
+
+                if (param.GetType().IsEnum)
+                    param = Convert.ToInt32(param);
 
                 return param;
             }

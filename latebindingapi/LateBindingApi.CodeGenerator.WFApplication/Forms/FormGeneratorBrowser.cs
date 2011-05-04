@@ -74,7 +74,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             int i = 1;
             foreach (ICodeGenerator item in CodeGenerators)
             {
-                ListViewItem newRow =listViewGenerators.Items.Add(i.ToString());
+                ListViewItem newRow = listViewGenerators.Items.Add(i.ToString());
                 newRow.SubItems.Add(item.Name);
                 newRow.SubItems.Add(item.Version.ToString());
                 newRow.SubItems.Add(item.Description);
