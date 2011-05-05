@@ -125,10 +125,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     }
                     else if (typeName == "COMVariant")
                     {
-                        methodBody += tabSpace + "if(true == returnItem.GetType().IsCOMObject)\r\n" + tabSpace + "{\r\n";
-                        methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                        methodBody += tabSpace + "Type returnItemType = returnItem.GetType();\r\n";
+                        methodBody += tabSpace + "if(true == returnItemType.IsCOMObject)\r\n" + tabSpace + "{\r\n";
+                        if("" == objectArrayField)
+                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem, returnItemType);\r\n";
+                        else
+                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         methodBody += "\t%modifiers%";
-                        methodBody += tabSpace + "\treturn newObject;\r\n";
+                        methodBody += tabSpace + "return newObject;\r\n";
                         methodBody += tabSpace + "}\r\n";
                         methodBody += tabSpace + "else" + "\r\n" + tabSpace +"{\r\n";
                         methodBody += "\t%modifiers%";
@@ -140,7 +144,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         // library type
                         if ("true" == returnValue.Attribute("IsArray").Value)
                         {
-                            methodBody += tabSpace + "COMObject[] newObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "COMObject[] newObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                             methodBody += tabSpace + fullTypeName + " returnArray = new " + CSharpGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
                             methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
                             methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
@@ -149,7 +153,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         }
                         else
                         {
-                            methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                            methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this, " + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
                             methodBody += "%modifiers%";
                             methodBody += tabSpace + "return newObject;\r\n";
                         }

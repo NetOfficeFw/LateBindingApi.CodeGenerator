@@ -43,31 +43,47 @@ namespace LateBindingApi.Core
                 return null;
 
             IConnectionPointContainer connectionPointContainer = (IConnectionPointContainer)comProxy.UnderlyingObject;
-            IEnumConnectionPoints enumPoints = null;
-            connectionPointContainer.EnumConnectionPoints(out enumPoints);
             IConnectionPoint[] points = new IConnectionPoint[1];
-            while (enumPoints.Next(1, points, IntPtr.Zero) == 0) // S_OK = 0 , S_FALSE = 1
+            IEnumConnectionPoints enumPoints = null;
+
+            if (sinkIds.Length == 1)
             {
-                if (null == points[0])
-                    break;
-
-                Guid interfaceGuid;
-                points[0].GetConnectionInterface(out interfaceGuid);
-
-                for (int i = sinkIds.Length; i > 0; i--)
+                Guid refGuid = new Guid(sinkIds[0]);
+                IConnectionPoint refPoint = null;
+                connectionPointContainer.FindConnectionPoint(ref refGuid, out refPoint);
+                if (null != refPoint)
                 {
-                    string id = interfaceGuid.ToString().Replace("{", "").Replace("}", "");
-                    if (true == sinkIds[i - 1].Equals(id, StringComparison.InvariantCultureIgnoreCase))
+                    point = refPoint;
+                    return sinkIds[0];
+                }
+                return null;
+            }
+            else 
+            {
+                connectionPointContainer.EnumConnectionPoints(out enumPoints);
+                while (enumPoints.Next(1, points, IntPtr.Zero) == 0) // S_OK = 0 , S_FALSE = 1
+                {
+                    if (null == points[0])
+                        break;
+
+                    Guid interfaceGuid;
+                    points[0].GetConnectionInterface(out interfaceGuid);
+
+                    for (int i = sinkIds.Length; i > 0; i--)
                     {
-                        Marshal.ReleaseComObject(enumPoints);
-                        point = points[0];
-                        return id;
+                        string id = interfaceGuid.ToString().Replace("{", "").Replace("}", "");
+                        if (true == sinkIds[i - 1].Equals(id, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            Marshal.ReleaseComObject(enumPoints);
+                            point = points[0];
+                            return id;
+                        }
                     }
                 }
-            }
 
-            Marshal.ReleaseComObject(enumPoints);
-            return null;
+                Marshal.ReleaseComObject(enumPoints);
+                return null;
+            }
         }
 
         /// <summary>
