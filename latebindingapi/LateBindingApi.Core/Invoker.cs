@@ -41,7 +41,8 @@ namespace LateBindingApi.Core
 
         public static object MethodReturn(COMObject comObject, string name)
         {
-            return MethodReturn(comObject, name);
+            object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, null, Settings.ThreadCulture);
+            return returnValue;
         }
 
         public static object MethodReturn(COMObject comObject, string name, object[] paramsArray)
