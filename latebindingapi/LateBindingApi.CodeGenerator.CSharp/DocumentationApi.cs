@@ -20,7 +20,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
 
             string[] supportByLibrary = CSharpGenerator.GetSupportByLibraryArray(parametersNode);
-            string libs = "/// SupportByLibraryArray ";
+            string libs = "/// SupportByLibrary ";
             foreach (string lib in supportByLibrary)
             {
                 libs += lib + " ";
