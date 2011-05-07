@@ -48,7 +48,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string name = enumNode.Attribute("Name").Value;
             
             if(true == settings.CreateXmlDocumentation)
-                result += CSharpGenerator.GetSupportByLibrarySummary("\t", enumNode) + Environment.NewLine;
+                result += CSharpGenerator.GetSupportByLibrarySummary("\t", enumNode);
            
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\tpublic static class " + name + Environment.NewLine + "\t{" + Environment.NewLine;
@@ -71,7 +71,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
 
                 if (true == settings.CreateXmlDocumentation)
-                    result += CSharpGenerator.GetSupportByLibrarySummary("\t\t", itemMember) + Environment.NewLine;
+                    result += CSharpGenerator.GetSupportByLibrarySummary("\t\t", itemMember);
 
                 result += "\t\t" + memberAttribute + "\r\n";
                 result += "\t\t" + "public const " + memberType + " " + memberName + " = " + memberValue + ";";

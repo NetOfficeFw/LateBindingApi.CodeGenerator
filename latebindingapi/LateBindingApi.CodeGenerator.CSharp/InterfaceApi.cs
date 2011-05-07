@@ -37,7 +37,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertEarlyBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value).Replace("%enumerableSpace%", "");
-            string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value);
+            string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", faceNode));
 
             string version = CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
             header += "\t" + version + "\r\n";

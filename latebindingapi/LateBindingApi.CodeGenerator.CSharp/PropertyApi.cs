@@ -280,10 +280,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     }
                     else if (typeName == "COMVariant")
                     {
-                        methodBody += tabSpace + "if(true == returnItem.GetType().IsCOMObject)\r\n" + tabSpace + "{\r\n";
-                        methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                        methodBody += tabSpace + "Type returnItemType = returnItem.GetType();\r\n";
+                        methodBody += tabSpace + "if(true == returnItemType.IsCOMObject)\r\n" + tabSpace + "{\r\n";
+                        if ("" == objectArrayField)
+                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem, returnItemType);\r\n";
+                        else
+                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         methodBody += "\t%modifiers%";
-                        methodBody += tabSpace + "\treturn newObject;\r\n";
+                        methodBody += tabSpace + "return newObject;\r\n";
                         methodBody += tabSpace + "}\r\n";
                         methodBody += tabSpace + "else" + "\r\n" + tabSpace + "{\r\n";
                         methodBody += "\t%modifiers%";
