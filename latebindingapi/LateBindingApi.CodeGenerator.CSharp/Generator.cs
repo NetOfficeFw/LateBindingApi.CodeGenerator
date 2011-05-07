@@ -140,10 +140,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
-                
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
                 string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
-               
                 string eventIncludes = EventApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), project.Element("Interfaces"), _settings, solutionFolder);
                 string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
                 string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
@@ -311,6 +309,39 @@ namespace LateBindingApi.CodeGenerator.CSharp
                
             }
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// returns support libary versions for entityNode as string
+        /// </summary>
+        /// <param name="entityNode"></param>
+        /// <returns></returns>
+        internal static string GetSupportByLibrarySummary(string tabSpace, XElement entityNode)
+        {
+            string summary1 = tabSpace + " /// <summary>\r\n";
+            string between  = tabSpace + " /// SupportByLibrary ";
+            string summary2 = tabSpace + " /// </summary>\r\n";
+
+            string[] result = GetSupportByLibraryArray(entityNode);
+            foreach (string item in result)
+                between += item + " ";
+
+            return summary1 + between + "\r\n" + summary2;
+        }
+        
+        /// <summary>
+        /// returns support libary versions for entityNode as string
+        /// </summary>
+        /// <param name="entityNode"></param>
+        /// <returns></returns>
+        internal static string GetSupportByLibraryString(string tabSpace, XElement entityNode)
+        {
+            string res = "";
+            string[] result = GetSupportByLibraryArray(entityNode);
+            foreach (string item in result)
+                res += item + " ";
+
+            return tabSpace + "SupportByLibrary " + res;
         }
 
         /// <summary>

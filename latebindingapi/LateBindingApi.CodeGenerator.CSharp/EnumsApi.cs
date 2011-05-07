@@ -23,16 +23,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             
             string result = "";
             foreach (XElement enumNode in enumsNode.Elements("Enum"))
-                result += ConvertEnumToFile(projectNode, enumNode, enumFolder) + "\r\n";
+                result += ConvertEnumToFile(settings, projectNode, enumNode, enumFolder) + "\r\n";
 
             return result;
         }
 
-        private static string ConvertEnumToFile(XElement projectNode, XElement enumNode, string enumFolder)
+        private static string ConvertEnumToFile(Settings settings, XElement projectNode, XElement enumNode, string enumFolder)
         {
             string fileName = System.IO.Path.Combine(enumFolder, enumNode.Attribute("Name").Value + ".cs");
 
-            string newEnum = ConvertEnumToString(projectNode, enumNode);
+            string newEnum = ConvertEnumToString(settings, projectNode, enumNode);
             System.IO.File.AppendAllText(fileName, newEnum);
 
             int i = enumFolder.LastIndexOf("\\");
@@ -40,12 +40,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static string ConvertEnumToString(XElement projectNode, XElement enumNode)
+        private static string ConvertEnumToString(Settings settings, XElement projectNode, XElement enumNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value + ".Enums");
             string enumAttributes = CSharpGenerator.GetSupportByLibraryAttribute(enumNode);
 
             string name = enumNode.Attribute("Name").Value;
+
+            if(true == settings.CreateXmlDocumentation)
+                result += CSharpGenerator.GetSupportByLibrarySummary("\t", enumNode);
+
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\tpublic enum " + name + Environment.NewLine + "\t{" + Environment.NewLine;
             
@@ -56,6 +60,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string memberAttribute = CSharpGenerator.GetSupportByLibraryAttribute(itemMember);
                 string memberName = itemMember.Attribute("Name").Value;
                 string memberValue = itemMember.Attribute("Value").Value;
+                
+                if (true == settings.CreateXmlDocumentation)
+                    result += CSharpGenerator.GetSupportByLibrarySummary("\t\t", itemMember);
 
                 result += "\t\t" + memberAttribute + "\r\n";
                 result += "\t\t" + memberName + " = " + memberValue;

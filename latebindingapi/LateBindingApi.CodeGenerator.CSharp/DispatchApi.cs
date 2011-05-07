@@ -21,7 +21,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                       + "namespace %namespace%\r\n"
                                       + "{\r\n";
 
-        private static string _classDesc = "\t///<summary>\r\n\t/// DispatchInterface %name%\r\n\t///</summary>\r\n";
+        private static string _classDesc = "\t///<summary>\r\n\t/// DispatchInterface %name% %RefLibs%\r\n\t///</summary>\r\n";
 
         private static string _classHeader = "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
 
@@ -67,8 +67,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertEarlyBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value).Replace("%enumerableSpace%", "");
-            string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value);
-
+            string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", faceNode));
+              
+            result += "\t#pragma warning disable\r\n";
             string version = CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
             header += "\t" + version + "\r\n";
             string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
@@ -83,6 +84,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string properties = PropertyApi.ConvertPropertiesEarlyBindToString(settings, faceNode.Element("Properties"));
             result += properties;
 
+            result += "\t#pragma warning restore\r\n";
 
             result += "\t}\r\n}";
             return result;

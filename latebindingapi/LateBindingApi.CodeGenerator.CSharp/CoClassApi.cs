@@ -17,10 +17,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                       + "{\r\n";
 
         private static string _delegates = "\r\n\t#region Delegates\r\n\r\n" +
+                                            "\t#pragma warning disable\r\n" +
                                             "%delegates%" +
+                                            "\t#pragma warning restore\r\n" +
                                             "\r\n\t#endregion\r\n\r\n";
-        	
-        private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name%\r\n\t///</summary>\r\n";
+
+        private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t///</summary>\r\n";
 
         private static string _classHeader = "\tpublic class %name% : %inherited%, IEventBinding \r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n";
@@ -78,7 +80,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             construct = construct.Replace("%CompareIds%", sinkHelperIds);
             construct = construct.Replace("%SetActiveSink%", sinkHelperSetActive);
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value);
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", classNode));
 
             if (null == _classEventBinding)
                 _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
@@ -233,11 +235,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string GetDelegateSignatur(string className, XElement methodNode)
         {
-            if (("SheetActivate" == methodNode.Attribute("Name").Value) && ("Application" == className) )
-            { 
-
-            }
-
             string result = "public delegate void " + className + "_" + methodNode.Attribute("Name").Value + "EventHandler" + "(";
             foreach (XElement itemParam in methodNode.Element("Parameters").Elements("Parameter"))
             {
@@ -322,9 +319,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 versionAttributeString = versionAttributeString.Substring(0, versionAttributeString.Length - 1);
 
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + versionAttributeString.Replace(",", " ").Replace("\"", "") + "\r\n" + "\t\t/// </summary>\r\n";
                 line += "\t\tprivate event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value +
                    "EventHandler _" + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
- 
+
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + versionAttributeString.Replace(",", " ").Replace("\"", "") + "\r\n" + "\t\t/// </summary>\r\n";
+
                 line += "\t\t[SupportByLibrary(" + versionAttributeString + ")]\r\n";
 
                 string field = itemNode.Attribute("Name").Value + "Event";
@@ -333,11 +333,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     "EventHandler " + itemNode.Attribute("Name").Value + "Event\r\n" + "\t\t{\r\n" +
                     "\t\t\tadd\r\n\t\t\t{\r\n" + "\t\t\t\tCreateEventBridge();\r\n" + "\t\t\t\t" + "_" + field + " += value;" + "\r\n" + "\t\t\t}\r\n" + "\t\t\tremove\r\n" +
                     "\t\t\t{\r\n\t\t\t\t" + "_" + field + " -= value;" + "\r\n\t\t\t}\r\n" +
-                    "\t\t}\r\n";
+                    "\t\t}\r\n\r\n";
             }
             
             result += line;
-            result += "\r\n\t\t#endregion\r\n";
+            result += "\t\t#endregion\r\n";
             return result;
         }
 

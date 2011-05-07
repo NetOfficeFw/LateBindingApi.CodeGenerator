@@ -6,6 +6,8 @@ using LateBindingApi.Core;
 
 namespace %namespace%
 {	
+	#pragma warning disable
+	
 	#region SinkPoint Interface
 
 	%supportby%
@@ -51,4 +53,6 @@ namespace %namespace%
 	}
 	
 	#endregion
+	
+	#pragma warning restore
 }

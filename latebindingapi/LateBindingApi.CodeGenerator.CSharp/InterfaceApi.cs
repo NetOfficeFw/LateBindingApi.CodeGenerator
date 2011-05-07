@@ -19,8 +19,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                        + "using LateBindingApi.Core;\r\n"
                                        + "namespace %namespace%\r\n"
                                        + "{\r\n";
-        
-        private static string _classDesc = "\t///<summary>\r\n\t/// Interface %name%\r\n\t///</summary>\r\n";
+
+        private static string _classDesc = "\t///<summary>\r\n\t/// Interface %name% %RefLibs%\r\n\t///</summary>\r\n";
 
         private static string _classHeader = "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
 
@@ -68,7 +68,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value);
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", faceNode));
+            
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));
 

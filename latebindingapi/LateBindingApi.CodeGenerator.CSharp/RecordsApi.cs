@@ -25,16 +25,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string result = "";
             foreach (XElement enumNode in enumsNode.Elements("Record"))
-                result += ConvertRecordToFile(projectNode, enumNode, enumFolder) + "\r\n";
+                result += ConvertRecordToFile(settings, projectNode, enumNode, enumFolder) + "\r\n";
 
             return result;
         }
 
-        private static string ConvertRecordToFile(XElement projectNode, XElement enumNode, string enumFolder)
+        private static string ConvertRecordToFile(Settings settings, XElement projectNode, XElement enumNode, string enumFolder)
         {
             string fileName = System.IO.Path.Combine(enumFolder, enumNode.Attribute("Name").Value + ".cs");
 
-            string newEnum = ConvertRecordToString(projectNode, enumNode);
+            string newEnum = ConvertRecordToString(settings, projectNode, enumNode);
             System.IO.File.AppendAllText(fileName, newEnum);
 
             int i = enumFolder.LastIndexOf("\\");
@@ -42,7 +42,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static string ConvertRecordToString(XElement projectNode, XElement enumNode)
+        private static string ConvertRecordToString(Settings settings, XElement projectNode, XElement enumNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value );
             string enumAttributes = CSharpGenerator.GetSupportByLibraryAttribute(enumNode);
@@ -60,6 +60,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             comConversion += typeLibType;
            
             string name = enumNode.Attribute("Name").Value;
+
+            if(true == settings.CreateXmlDocumentation)
+                result += CSharpGenerator.GetSupportByLibrarySummary("\t", enumNode);
+
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\t" + comConversion + "\r\n";
             result += "\tpublic struct " + name + Environment.NewLine + "\t{" + Environment.NewLine;
@@ -82,7 +86,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 memberType = "public " + memberType;
 
                 string memberName = itemMember.Attribute("Name").Value;
-                
+
+                if (true == settings.CreateXmlDocumentation)
+                    result += CSharpGenerator.GetSupportByLibrarySummary("\t\t", itemMember);
                 result += "\t\t" + memberAttribute + "\r\n";
 
                 string marshalAs = itemMember.Attribute("MarshalAs").Value;
