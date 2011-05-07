@@ -71,7 +71,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 
                 method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
                 if (("_Default" == name) && (itemParams.Elements("Parameter").Count()>0))
-                    method = "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"IndexerItem\")]" + "\r\n";
+                    method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"IndexerItem\")]" + "\r\n";
                 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if ("true" == returnValue.Attribute("IsArray").Value)
@@ -152,7 +152,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (name != "this")
                     result += "\t\t{\r\n%propertyGetBody%\t\t}\r\n\r\n";
                 else
-                    result += "\t\t{\r\n\t\t\tget{\r\n%propertyGetBody%\t\t\t}\r\n\t\t}\r\n\r\n";
+                    result += "\t\t{\r\n\t\t\tget\r\n{\t\t\t\r\n%propertyGetBody%\t\t\t}\r\n\t\t}\r\n\r\n";
 
                 if (("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value) && ("_Default" != itemParams.Parent.Attribute("Name").Value))
                 {

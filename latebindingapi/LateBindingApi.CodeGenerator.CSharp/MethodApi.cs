@@ -59,7 +59,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
                 if("this" == name)
-                    method = "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"IndexerItem\")]" + "\r\n";
+                    method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"IndexerItem\")]" + "\r\n";
 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if ("true" == returnValue.Attribute("IsArray").Value)

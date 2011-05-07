@@ -32,7 +32,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.buttonReset = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.textBoxItem = new System.Windows.Forms.TextBox();
+            this.textBoxItem = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // textBoxSearch
@@ -84,12 +84,11 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxItem.HideSelection = false;
-            this.textBoxItem.Location = new System.Drawing.Point(3, 40);
-            this.textBoxItem.Multiline = true;
+            this.textBoxItem.Location = new System.Drawing.Point(0, 46);
             this.textBoxItem.Name = "textBoxItem";
-            this.textBoxItem.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxItem.Size = new System.Drawing.Size(612, 448);
-            this.textBoxItem.TabIndex = 27;
+            this.textBoxItem.Size = new System.Drawing.Size(612, 442);
+            this.textBoxItem.TabIndex = 28;
+            this.textBoxItem.Text = "";
             this.textBoxItem.WordWrap = false;
             this.textBoxItem.TextChanged += new System.EventHandler(this.textBoxItem_TextChanged);
             // 
@@ -115,6 +114,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Button buttonApply;
-        private System.Windows.Forms.TextBox textBoxItem;
+        private System.Windows.Forms.RichTextBox textBoxItem;
     }
 }
