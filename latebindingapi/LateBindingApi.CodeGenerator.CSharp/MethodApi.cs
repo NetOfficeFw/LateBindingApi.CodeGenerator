@@ -66,7 +66,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     valueReturn += "[]";
 
                 method += "\t\tpublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
-                string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true);
+                string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true);
                 method = method.Replace("%params%", parameters);
 
                 string methodBody ="";

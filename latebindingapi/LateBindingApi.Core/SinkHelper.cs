@@ -127,6 +127,7 @@ namespace LateBindingApi.Core
                 }
                 catch (System.Runtime.InteropServices.COMException loE)
                 {
+                    // 0x800706BA = RPC server is unavailable means dead
                     if ((uint)loE.ErrorCode != 0x800706BA)
                         throw (loE);
                 }

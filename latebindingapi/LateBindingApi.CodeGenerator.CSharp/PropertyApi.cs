@@ -144,7 +144,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             string result = "";
-            string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true);
+            string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, false);
             int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
             if ((paramsCountWithOptionals > 0) || (faceName == name))
             {

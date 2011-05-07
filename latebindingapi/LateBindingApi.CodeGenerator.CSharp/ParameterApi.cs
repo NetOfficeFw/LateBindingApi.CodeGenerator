@@ -286,11 +286,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="parametersNode"></param>
         /// <param name="withOptionals"></param>
         /// <returns></returns>
-        internal static string CreateParametersPrototypeString(Settings settings, XElement parametersNode, bool withOptionals)
+        internal static string CreateParametersPrototypeString(Settings settings, XElement parametersNode, bool withOptionals, bool convertOptionalsInNet4)
         {
             string parameters = "";
             int countOfParams = GetParamsCount(parametersNode, withOptionals);
             int i = 1;
+            
+            string optionalValue = "";
+
+            if( ("4.0" == settings.Framework) && (true == convertOptionalsInNet4) )
+                optionalValue = "=null";
 
             IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
             foreach (XElement itemParam in xParams)
@@ -305,6 +310,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string name = itemParam.Attribute("Name").Value;
                 name = ValidateParamName(settings, name);
+
+                if(("true" == itemParam.Attribute("IsOptional").Value) && (true == convertOptionalsInNet4))
+                    name += optionalValue;
 
                 parameter = type + " " + name;
                 if (i < countOfParams)

@@ -47,6 +47,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             return assemblyInfo;
         }
+        
+        internal static void RemoveRefAttributeInOptionals(XElement projectNode)
+        {
+            IEnumerable<XElement> paramNodes = (from a in projectNode.Descendants("Parameter")
+                                                where a.Attribute("IsRef").Value.Equals("true") &&
+                                                      a.Attribute("IsOptional").Value.Equals("true")
+                                                select a);
+
+            foreach (var item in paramNodes)
+                item.Attribute("IsRef").Value = "false";
+        }
 
         internal static void RemoveRefAttribute(XElement projectNode)
         {

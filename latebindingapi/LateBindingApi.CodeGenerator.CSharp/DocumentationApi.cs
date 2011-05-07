@@ -8,10 +8,27 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class DocumentationApi
     {
+        /// <summary>
+        /// SupportByLibraryArray 
+        /// </summary>
+        /// <param name="numberOfTabSpace"></param>
+        /// <param name="parametersNode"></param>
+        /// <returns></returns>
         internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode)
         {
-            string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
             string result = "";
+            string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
+
+            string[] supportByLibrary = CSharpGenerator.GetSupportByLibraryArray(parametersNode);
+            string libs = "/// SupportByLibraryArray ";
+            foreach (string lib in supportByLibrary)
+            {
+                libs += lib + " ";
+            }
+            string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n" +
+                                tabSpace + "/// </summary>\r\n";
+            result += summary;
+            
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
             {
                 string typeName = CSharpGenerator.GetQualifiedType(itemParameter);

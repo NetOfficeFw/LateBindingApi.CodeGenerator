@@ -131,7 +131,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
-
+                
+                if ("4.0" == _settings.Framework)
+                    ProjectApi.RemoveRefAttributeInOptionals(project);
+ 
                 DoUpdate("Create project " + project.Attribute("Name").Value);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
@@ -182,7 +185,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string GetQualifiedType(Settings settings, XElement value)
         {
-            if (true == settings.ConvertOptionalsToObject)
+            if( (true == settings.ConvertOptionalsToObject) || ("4.0" == settings.Framework) )
             {
                 if ((null != value.Attribute("IsOptional")) && ("true" == value.Attribute("IsOptional").Value))
                     return "object";
