@@ -167,7 +167,7 @@ namespace LateBindingApi.Core
                 return param;
             }
             else
-                return null;
+                return Type.Missing;
         }
 
         public static object[] ValidateParamsArray(params object[] paramsArray)
