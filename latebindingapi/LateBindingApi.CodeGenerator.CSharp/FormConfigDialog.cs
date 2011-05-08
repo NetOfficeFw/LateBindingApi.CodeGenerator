@@ -35,7 +35,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newSettings.ConvertParamNamesToCamelCase = checkBoxConvertToCamel.Checked;
                 newSettings.RemoveRefAttribute = checkBoxRemoveRef.Checked;
                 newSettings.CreateXmlDocumentation = checkBoxCreateDocu.Checked;
-
+                newSettings.UseApiAssembly = radioButtonUseCoreAssembly.Checked;
+ 
                 string res = "";
                 switch (comboBoxFramework.SelectedIndex)
                 {

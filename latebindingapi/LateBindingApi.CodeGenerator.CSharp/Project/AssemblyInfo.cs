@@ -22,6 +22,7 @@ using LateBindingApi.Core;
 [assembly: AssemblyCulture("%Culture%")]
 [assembly: AssemblyVersion("%Version%")]
 [assembly: AssemblyFileVersion("%FileVersion%")]
+[assembly: ComVisibleAttribute(false)]
 [assembly: LateBindingAttribute("1.0")]
 
 

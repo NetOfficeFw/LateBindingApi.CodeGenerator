@@ -14,6 +14,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         bool   _convertParamNamesToCamelCase;
         bool   _removeRefAttribute;
         bool   _createDocu;
+        bool   _useApiAssembly;
         string _framework;
         bool   _addTestApp;
         bool   _openFolder;
@@ -21,6 +22,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #endregion
 
         #region Properties
+
+        public bool UseApiAssembly
+        {
+            get
+            {
+                return _useApiAssembly;
+            }
+            internal set
+            {
+                _useApiAssembly = value;
+            }
+        }
 
         public bool AddTestApp
         {

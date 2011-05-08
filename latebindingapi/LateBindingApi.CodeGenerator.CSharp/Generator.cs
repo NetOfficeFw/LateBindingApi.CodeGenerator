@@ -163,13 +163,40 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);
             SolutionApi.SaveSolutionFile(_settings, solutionFolder, solutionFile, solution);
-            SolutionApi.SaveApiBinary(_settings, solutionFolder);
+            
+            if(_settings.UseApiAssembly)
+                SolutionApi.SaveApiBinary(_settings, solutionFolder);
+            else
+                SolutionApi.SaveApiProject(_settings, GetProjectApiPath(), solutionFolder);
 
             if (true == _settings.OpenFolder)
                 System.Diagnostics.Process.Start(solutionFolder);
         }
  
         #endregion
+
+        private static string GetProjectApiPath()
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                string projectPath = Application.StartupPath;
+                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("\\"));
+                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("\\"));
+                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("\\"));
+
+                projectPath = System.IO.Path.Combine(projectPath, "LateBindingApi.Core");
+                if (!System.IO.Directory.Exists(projectPath))
+                    throw (new System.IO.DirectoryNotFoundException(projectPath));
+                return projectPath;
+            }
+            else
+            {
+                string projectPath = System.IO.Path.Combine(Application.StartupPath, "LateBindingApi.Core");
+                if (!System.IO.Directory.Exists(projectPath))
+                    throw (new System.IO.DirectoryNotFoundException(projectPath));
+                return projectPath;
+            }
+        }
 
         #region Static Methods
 

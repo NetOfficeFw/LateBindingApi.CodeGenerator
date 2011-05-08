@@ -46,6 +46,8 @@
             this.buttonWhyDocu = new System.Windows.Forms.Button();
             this.checkBoxCreateDocu = new System.Windows.Forms.CheckBox();
             this.checkBoxAddTestApplication = new System.Windows.Forms.CheckBox();
+            this.radioButtonUseCoreAssembly = new System.Windows.Forms.RadioButton();
+            this.radioButtonUseCoreProject = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -261,12 +263,36 @@
             this.checkBoxAddTestApplication.Text = "add a Windows Forms Application as test client to solution";
             this.checkBoxAddTestApplication.UseVisualStyleBackColor = true;
             // 
+            // radioButtonUseCoreAssembly
+            // 
+            this.radioButtonUseCoreAssembly.AutoSize = true;
+            this.radioButtonUseCoreAssembly.Location = new System.Drawing.Point(333, 68);
+            this.radioButtonUseCoreAssembly.Name = "radioButtonUseCoreAssembly";
+            this.radioButtonUseCoreAssembly.Size = new System.Drawing.Size(134, 17);
+            this.radioButtonUseCoreAssembly.TabIndex = 41;
+            this.radioButtonUseCoreAssembly.Text = "LateBindingApi.Core.dll";
+            this.radioButtonUseCoreAssembly.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonUseCoreProject
+            // 
+            this.radioButtonUseCoreProject.AutoSize = true;
+            this.radioButtonUseCoreProject.Checked = true;
+            this.radioButtonUseCoreProject.Location = new System.Drawing.Point(333, 95);
+            this.radioButtonUseCoreProject.Name = "radioButtonUseCoreProject";
+            this.radioButtonUseCoreProject.Size = new System.Drawing.Size(157, 17);
+            this.radioButtonUseCoreProject.TabIndex = 42;
+            this.radioButtonUseCoreProject.TabStop = true;
+            this.radioButtonUseCoreProject.Text = "LateBindingApi.Core Project";
+            this.radioButtonUseCoreProject.UseVisualStyleBackColor = true;
+            // 
             // FormConfigDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(532, 336);
+            this.Controls.Add(this.radioButtonUseCoreProject);
+            this.Controls.Add(this.radioButtonUseCoreAssembly);
             this.Controls.Add(this.checkBoxAddTestApplication);
             this.Controls.Add(this.buttonWhyDocu);
             this.Controls.Add(this.checkBoxCreateDocu);
@@ -320,6 +346,8 @@
         private System.Windows.Forms.Button buttonWhyDocu;
         private System.Windows.Forms.CheckBox checkBoxCreateDocu;
         private System.Windows.Forms.CheckBox checkBoxAddTestApplication;
+        private System.Windows.Forms.RadioButton radioButtonUseCoreAssembly;
+        private System.Windows.Forms.RadioButton radioButtonUseCoreProject;
 
     }
 }

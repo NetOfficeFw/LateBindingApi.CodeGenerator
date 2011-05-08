@@ -71,7 +71,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
                     depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(projNode.Attribute("Key").Value));               
                 }
-                
+                 
                 if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
                     depends += "\tEndProjectSection\r\n";
 
@@ -81,7 +81,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string newConfig = _buildConfig.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
                 configs += newConfig; 
             }
- 
+
+            if (!settings.UseApiAssembly)
+            {
+                string newProjectLine = _projectLine.Replace("Api", "").Replace("%Name%", "LateBindingApi.Core").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F").Replace("%Depend%", "");
+                projects += newProjectLine;
+
+                string newConfig = _buildConfig.Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
+                configs += newConfig; 
+            }
+
             solutionFile = solutionFile.Replace("%Projects%", projects);
             solutionFile = solutionFile.Replace("%Config%", configs);
             return solutionFile;
@@ -96,6 +105,41 @@ namespace LateBindingApi.CodeGenerator.CSharp
             PathApi.CreateFolder(path);
             string solutionFilePath = System.IO.Path.Combine(path, solutionName + ".sln");
             System.IO.File.WriteAllText(solutionFilePath, solutionFile, Encoding.UTF8);
+        }
+
+        internal static void SaveApiProject(Settings settings, string projectApiPath, string path)
+        {
+            path = System.IO.Path.Combine(path, "LateBindingApi.Core");
+            if (!System.IO.Directory.Exists(path))
+                System.IO.Directory.CreateDirectory(path);
+
+            string[] files = System.IO.Directory.GetFiles(projectApiPath);
+            foreach (string file in files)
+            {
+                string fileName = System.IO.Path.GetFileName(file);
+                string newFilePath = System.IO.Path.Combine(path, fileName);
+                System.IO.File.Copy(file, newFilePath);
+            }
+
+            if (!System.IO.Directory.Exists(path + "\\Interfaces"))
+                System.IO.Directory.CreateDirectory(path + "\\Interfaces");
+            files = System.IO.Directory.GetFiles(projectApiPath + "\\Interfaces");
+            foreach (string file in files)
+            {
+                string fileName = System.IO.Path.GetFileName(file);
+                string newFilePath = System.IO.Path.Combine(path + "\\Interfaces", fileName);
+                System.IO.File.Copy(file, newFilePath);
+            }
+
+            if (!System.IO.Directory.Exists(path + "\\Properties"))
+                System.IO.Directory.CreateDirectory(path + "\\Properties");
+            files = System.IO.Directory.GetFiles(projectApiPath + "\\Properties");
+            foreach (string file in files)
+            {
+                string fileName = System.IO.Path.GetFileName(file);
+                string newFilePath = System.IO.Path.Combine(path + "\\Properties", fileName);
+                System.IO.File.Copy(file, newFilePath);
+            }
         }
 
         internal static void SaveApiBinary(Settings settings, string path)
@@ -130,6 +174,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string newUsing = "using " + item.Attribute("Name").Value + " = " + item.Attribute("Namespace").Value + ";\r\n";
                 formUsings += newUsing;
+            }
+
+            if (!settings.UseApiAssembly)
+            {
+                string newRefProject = projectRef.Replace("Api", "").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
+                newRefProject = newRefProject.Replace("%Name%", "LateBindingApi.Core");
+                projectInclude += newRefProject;
             }
 
             formFile = formFile.Replace("using xyz;", formUsings);

@@ -112,13 +112,33 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     refProjectInclude += newRefProject;
                     
                 }
+                if (!settings.UseApiAssembly)
+                {
+                    refProjectInclude += _projectRef.Replace("Api", "").Replace("%Name%", "LateBindingApi.Core").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
+                    projectFile = RemoveProjectRef(projectFile);
+                }
                 if("" != refProjectInclude)
                     refProjectInclude = "  <ItemGroup>\r\n" + refProjectInclude + "  </ItemGroup>";
             }
+
             projectFile = projectFile.Replace("%ProjectRefInclude%", refProjectInclude);
             return projectFile;
         }
-       
+
+        internal static string RemoveProjectRef(string projectFile)
+        { 
+                string begin = "<Reference Include=\"LateBindingApi.Core,";
+                string end = "</Reference>";
+
+                int start = projectFile.IndexOf(begin);
+                int lenght = projectFile.Substring(start).IndexOf(end);
+
+                string part1 = projectFile.Substring(0, start);
+                string part2 = projectFile.Substring(start + lenght + end.Length + "\r\n".Length);
+
+                return part1 + part2; 
+        }
+
         internal static string SaveFactoryFile(string path, XElement project)
         {
             string projectName = project.Attribute("Name").Value;
