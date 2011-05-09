@@ -58,7 +58,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="propertyNode"></param>
         /// <returns></returns>
         internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode)
-        {           
+        {
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
@@ -67,7 +67,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
-                    method = DocumentationApi.CreateParameterDocumentation(2, itemParams);
+                    method += DocumentationApi.CreateParameterDocumentation(2, itemParams);
                 
                 method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
                 if (("_Default" == name) && (itemParams.Elements("Parameter").Count()>0))
@@ -78,6 +78,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     valueReturn += "[]";
 
                 string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams);
+
+                string paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
+                string paramAttrib = "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams)+ "\r\n";
+                if (true == settings.CreateXmlDocumentation)
+                    paramAttrib = paramDoku + paramAttrib;
+                protoype = protoype.Replace("%setAttribute%", "\t\t" + paramAttrib);
+
                 protoype = protoype.Replace("%valueReturn%", valueReturn);
                 method += protoype;
  
@@ -160,6 +167,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     if ("" != parameters)
                         retValueType = ", " + retValueType;
 
+                    result += "%setAttribute%";
                     result += "\t\tpublic " + "void set_" + name + inParam + parameters + retValueType + " value" + outParam + "\r\n";
                     result += "\t\t{\r\n%propertySetBody%\t\t}\r\n\r\n";
                 }

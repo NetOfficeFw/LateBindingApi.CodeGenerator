@@ -181,6 +181,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string newRefProject = projectRef.Replace("Api", "").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
                 newRefProject = newRefProject.Replace("%Name%", "LateBindingApi.Core");
                 projectInclude += newRefProject;
+
+                projectFile = projectFile.Replace("%ApiRefDll%", "");
+            }
+            else
+            {
+                string apiRef = "\t<Reference Include=\"LateBindingApi.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL\">\r\n" +
+                                "\t\t<SpecificVersion>False</SpecificVersion>\r\n" +
+                                "t\t<HintPath>..\\LateBindingApi.Core.dll</HintPath>\r\n" +
+                                "\t</Reference>\r\n";
+
+                projectFile = projectFile.Replace("%ApiRefDll%", apiRef);
             }
 
             formFile = formFile.Replace("using xyz;", formUsings);
