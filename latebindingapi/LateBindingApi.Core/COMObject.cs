@@ -349,6 +349,10 @@ namespace LateBindingApi.Core
         /// <param name="disposeEventBinding">dispose event exported proxies with one or more event recipients</param>
         public void Dispose(bool disposeEventBinding)
         {
+            // in case object export events and 
+            // disposeEventBinding == true we dont remove the object from parents child list
+            bool removeFromParent = true;
+
             // set disposed flag
             _isCurrentlyDisposing = true;
 
@@ -361,15 +365,15 @@ namespace LateBindingApi.Core
             }
             else
             {
-                if( (null != eventBind) && (!eventBind.EventBridgeInitialized) )
-                    eventBind.DisposeSinkHelper();
+                if ((null != eventBind) && (eventBind.EventBridgeInitialized))
+                    removeFromParent = false;
             }
- 
+
             // child proxy dispose
             DisposeChildInstances(disposeEventBinding);
-            
+
             // remove himself from parent childlist
-            if (null != _parentObject)
+            if ((null != _parentObject) && (true == removeFromParent))
             {
                 _parentObject.RemoveChildObject(this);
                 _parentObject = null;

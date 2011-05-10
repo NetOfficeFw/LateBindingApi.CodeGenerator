@@ -67,6 +67,7 @@ namespace LateBindingApi.Core
         
         /// <summary>
         /// notify info the count of proxies there open are changed
+        /// in case of notify comes from event trigger created proxy the call comes from other thread
         /// </summary>
         public static event ProxyCountChangedHandler ProxyCountChanged;
 

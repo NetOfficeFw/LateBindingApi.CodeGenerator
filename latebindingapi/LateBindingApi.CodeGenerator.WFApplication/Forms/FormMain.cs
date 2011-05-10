@@ -12,6 +12,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 {
     public partial class FormMain : Form
     {
+
+
         #region Fields
 
         Analyzer       _comAnalyzer = new Analyzer();
