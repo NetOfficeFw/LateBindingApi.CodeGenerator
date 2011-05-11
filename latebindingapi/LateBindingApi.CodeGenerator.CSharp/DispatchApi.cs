@@ -23,7 +23,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _classDesc = "\t///<summary>\r\n\t/// DispatchInterface %name% %RefLibs%\r\n\t///</summary>\r\n";
 
-        private static string _classHeader = "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
+        private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsDispatchInterface)]\r\n" + "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
 
         private static string _classConstructor;
 

@@ -51,7 +51,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 result += CSharpGenerator.GetSupportByLibrarySummary("\t", enumNode);
            
             result += "\t" + enumAttributes + Environment.NewLine;
-            result += "\tpublic static class " + name + Environment.NewLine + "\t{" + Environment.NewLine;
+            result += "\t[EntityTypeAttribute(EntityType.IsConstants)]\r\n" + "\tpublic static class " + name + Environment.NewLine + "\t{" + Environment.NewLine;
 
             int countOfMembers = enumNode.Element("Members").Elements("Member").Count();
             int i = 1;

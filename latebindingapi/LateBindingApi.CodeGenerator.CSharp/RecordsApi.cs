@@ -66,7 +66,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\t" + comConversion + "\r\n";
-            result += "\tpublic struct " + name + Environment.NewLine + "\t{" + Environment.NewLine;
+            result += "\t[EntityTypeAttribute(EntityType.IsStruct)]\r\n" + "\tpublic struct " + name + Environment.NewLine + "\t{" + Environment.NewLine;
 
             int countOfMembers = enumNode.Element("Members").Elements("Member").Count();
             int i = 1;

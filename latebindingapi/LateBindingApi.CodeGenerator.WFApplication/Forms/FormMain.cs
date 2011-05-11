@@ -12,8 +12,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 {
     public partial class FormMain : Form
     {
-
-
         #region Fields
 
         Analyzer       _comAnalyzer = new Analyzer();
@@ -78,6 +76,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 formError.ShowDialog(this);
             }
         }
+       
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try

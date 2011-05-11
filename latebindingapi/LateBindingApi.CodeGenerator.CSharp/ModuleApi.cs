@@ -16,7 +16,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _classDesc = "\t///<summary>\r\n\t/// Module %name%\r\n\t///</summary>\r\n";
 
-        private static string _classHeader = "\tpublic class %name% : COMObject\r\n\t{";
+        private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsModule)]\r\n" + "\tpublic class %name% : COMObject\r\n\t{";
 
         internal static string ConvertModulesToFiles(XElement projectNode, XElement facesNode, Settings settings, string solutionFolder)
         {
