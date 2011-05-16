@@ -20,8 +20,34 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if ("_NewEnum" == methodNode.Attribute("Name").Value)
                     continue;
+
                 if ("_Default" == methodNode.Attribute("Name").Value)
-                    continue;
+                {
+                    bool hasParams = ParameterApi.HasParams(methodNode);
+                    bool hasItem = EnumerableApi.HasItem(enumeratorNode.Parent);
+                    if ((hasParams) && (!hasItem))
+                    {
+                        foreach (XElement itemParameters in methodNode.Elements("Parameters"))
+                            RemoveRefAttributes(itemParameters);
+                        
+                        methodNode.Add(new XAttribute("Underlying", methodNode.Attribute("Name").Value));
+                        methodNode.Attribute("Name").Value = "this";
+                        continue;
+                    }
+                }
+                else if ("Item" == methodNode.Attribute("Name").Value)
+                {
+                    bool hasParams = ParameterApi.HasParams(methodNode);
+                    if (hasParams)
+                    { 
+                        foreach (XElement itemParameters in methodNode.Elements("Parameters"))
+                            RemoveRefAttributes(itemParameters);
+
+                        methodNode.Add(new XAttribute("Underlying", methodNode.Attribute("Name").Value));
+                        methodNode.Attribute("Name").Value = "this";
+                        continue;
+                    }
+                }
 
                 ParameterApi.ValidateParameters(methodNode);
             }
@@ -102,6 +128,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             foreach (XElement item in deleteList)
                 item.Remove();
+        }
+
+        internal static void RemoveRefAttributes(XElement parametersNode)
+        {
+            foreach (XElement item in parametersNode.Elements("Parameter"))
+                item.Attribute("IsRef").Value = "false"; 
         }
 
         /// <summary>
@@ -260,6 +292,24 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         /// <summary>
+        /// returns entityNode node has params
+        /// </summary>
+        /// <param name="parametersNode"></param>
+        /// <returns></returns>
+        internal static bool HasParams(XElement entityNode)
+        {
+            foreach (var item in entityNode.Elements("Parameters"))
+            {
+                XElement paramNode = (from a in item.Elements("Parameter")
+                                      select a).FirstOrDefault();
+
+                if (paramNode != null)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// count of parameter in parametersNode
         /// </summary>
         /// <param name="parametersNode"></param>
@@ -288,6 +338,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string CreateParametersPrototypeString(Settings settings, XElement parametersNode, bool withOptionals, bool convertOptionalsInNet4)
         {
+            bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(parametersNode.Parent.Parent.Parent);
+            bool hasDefaultItem = EnumerableApi.HasDefaultItem(parametersNode.Parent.Parent.Parent);
+
             string parameters = "";
             int countOfParams = GetParamsCount(parametersNode, withOptionals);
             int i = 1;

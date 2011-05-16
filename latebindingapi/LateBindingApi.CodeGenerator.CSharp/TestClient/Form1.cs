@@ -21,9 +21,9 @@ namespace ClientApplication
         {
             InitializeComponent();
 
-            /*Initialize LateBindingApi*/
+            /*Initialize Api COMObject Support*/
             LateBindingApi.Core.Factory.Initialize();
-            // LateBindingApi.Core.Settings.EnableEvents = true;
+
             
             /*>> your testcode here <<*/
         }

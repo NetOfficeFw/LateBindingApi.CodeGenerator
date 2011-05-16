@@ -91,6 +91,64 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         /// <summary>
+        /// returns info interface has a _Default Item
+        /// </summary>
+        /// <param name="interfaceNode"></param>
+        /// <returns></returns>
+        internal static bool HasDefaultItem(XElement interfaceNode)
+        {
+            XElement enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
+                                       where a.Attribute("Name").Value.Equals("_Default")
+                                       select a).FirstOrDefault();
+            if (null == enumeratorNode)
+            {
+                enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
+                                  where a.Attribute("Name").Value.Equals("_Default")
+                                  select a).FirstOrDefault();
+                if (null == enumeratorNode)
+                    return false;
+                else
+                    return true;
+            }
+            else
+                return true;
+        }
+
+        /// <summary>
+        /// returns info interface has a Item or this
+        /// </summary>
+        /// <param name="interfaceNode"></param>
+        /// <returns></returns>
+        internal static bool HasItem(XElement interfaceNode)
+        {
+            XElement enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
+                                       where a.Attribute("Name").Value.Equals("Item")
+                                       select a).FirstOrDefault();
+            if (null != enumeratorNode)
+                return true;
+           
+            enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
+                              where a.Attribute("Name").Value.Equals("Item")
+                              select a).FirstOrDefault();
+            if (null != enumeratorNode)
+                return true;
+
+            enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
+                              where a.Attribute("Name").Value.Equals("this")
+                              select a).FirstOrDefault();
+            if (null != enumeratorNode)
+                return true;
+            
+            enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
+                              where a.Attribute("Name").Value.Equals("this")
+                              select a).FirstOrDefault();
+            if (null != enumeratorNode)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
         ///  add enumerator code
         /// </summary>
         /// <param name="faceNode"></param>
