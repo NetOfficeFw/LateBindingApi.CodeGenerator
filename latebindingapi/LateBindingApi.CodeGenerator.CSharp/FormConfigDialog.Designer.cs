@@ -180,17 +180,21 @@
             this.buttonWhyRef.TabIndex = 34;
             this.buttonWhyRef.Text = "Why?";
             this.buttonWhyRef.UseVisualStyleBackColor = true;
+            this.buttonWhyRef.Visible = false;
             this.buttonWhyRef.Click += new System.EventHandler(this.buttonWhyRef_Click);
             // 
             // checkBoxRemoveRef
             // 
             this.checkBoxRemoveRef.AutoSize = true;
+            this.checkBoxRemoveRef.Checked = true;
+            this.checkBoxRemoveRef.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxRemoveRef.Location = new System.Drawing.Point(53, 127);
             this.checkBoxRemoveRef.Name = "checkBoxRemoveRef";
             this.checkBoxRemoveRef.Size = new System.Drawing.Size(183, 17);
             this.checkBoxRemoveRef.TabIndex = 33;
             this.checkBoxRemoveRef.Text = "remove ref attribute in parameters";
             this.checkBoxRemoveRef.UseVisualStyleBackColor = true;
+            this.checkBoxRemoveRef.Visible = false;
             // 
             // comboBoxFramework
             // 

@@ -68,7 +68,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
 
                 result += "\t\t" + memberAttribute + "\r\n";
-                result += "\t\t" + memberName + " = " + memberValue;
+                result += "\t\t " + memberName + " = " + memberValue;
                 
                 if(i<countOfMembers)
                     result += ",\r\n\r\n";

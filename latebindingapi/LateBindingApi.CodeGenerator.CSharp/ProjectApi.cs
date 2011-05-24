@@ -66,7 +66,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                 select a);
 
             foreach (var item in paramNodes)
-                item.Attribute("IsRef").Value = "false";
+            {
+                XElement itemParent = item;
+                while( (itemParent != null) && (itemParent.Name.LocalName != "Interface") )
+                    itemParent = itemParent.Parent;
+
+                if( (null!=itemParent) && (itemParent.Attribute("IsEventInterface").Value != "true") ) 
+                    item.Attribute("IsRef").Value = "false";
+            }
         }
 
         internal static string ReplaceProjectAttributes(string projectFile, Settings settings, XElement project, string enumIncludes,
