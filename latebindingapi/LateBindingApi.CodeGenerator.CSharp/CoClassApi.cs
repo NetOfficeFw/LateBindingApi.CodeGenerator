@@ -320,13 +320,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 versionAttributeString = versionAttributeString.Substring(0, versionAttributeString.Length - 1);
 
-                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + versionAttributeString.Replace(",", " ").Replace("\"", "") + "\r\n" + "\t\t/// </summary>\r\n";
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + projectNode.Attribute("Name").Value + ", " + versionAttributeString.Replace("\"", "") + "\r\n" + "\t\t/// </summary>\r\n";
                 line += "\t\tprivate event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value +
                    "EventHandler _" + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
 
-                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + versionAttributeString.Replace(",", " ").Replace("\"", "") + "\r\n" + "\t\t/// </summary>\r\n";
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") + 
+                    "\r\n" + "\t\t/// </summary>\r\n";  
 
-                line += "\t\t[SupportByLibrary(" + versionAttributeString + ")]\r\n";
+
+                line += "\t\t[SupportByLibrary(" + "\"" + projectNode.Attribute("Name").Value + "\"" + ", " + versionAttributeString.Replace("\"", "") + ")]\r\n";
 
                 string field = itemNode.Attribute("Name").Value + "Event";
 

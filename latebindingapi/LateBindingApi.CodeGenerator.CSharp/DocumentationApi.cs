@@ -16,15 +16,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode)
         {
+            XElement parentNode = parametersNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
             string result = "";
             string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
 
             string[] supportByLibrary = CSharpGenerator.GetSupportByLibraryArray(parametersNode);
-            string libs = "/// SupportByLibrary ";
+            string libs = "/// SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
             foreach (string lib in supportByLibrary)
             {
-                libs += lib + " ";
+                libs += lib + ", ";
             }
+            libs = libs.Substring(0, libs.Length - 2);
+
             string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n" +
                                 tabSpace + "/// </summary>\r\n";
             result += summary;

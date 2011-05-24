@@ -298,6 +298,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string GetSupportByLibraryAttribute(XElement entityNode)
         {
+            XElement parentNode = entityNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
             string result = "";
             string versions = "";
 
@@ -309,10 +313,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                     where a.Attribute("Key").Value.Equals(key)
                                     select a).FirstOrDefault();
                 string versionAttribute = libNode.Attribute("Version").Value;
-                versions += "\"" + versionAttribute + "\",";
+                versions += versionAttribute + ",";
             }
-            versions = versions.Substring(0, versions.Length - 1);
-            result += "[SupportByLibrary(" + versions + ")]";
+            if (versions.Substring(versions.Length - 1) == ",")
+                versions = versions.Substring(0, versions.Length - 1);
+            
+            result += "[SupportByLibrary(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
 
@@ -345,13 +351,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string GetSupportByLibrarySummary(string tabSpace, XElement entityNode)
         {
+            XElement parentNode = entityNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
             string summary1 = tabSpace + " /// <summary>\r\n";
-            string between  = tabSpace + " /// SupportByLibrary ";
+            string between  = tabSpace + " /// SupportByLibrary " +  parentNode.Attribute("Name").Value + " ";
             string summary2 = tabSpace + " /// </summary>\r\n";
 
             string[] result = GetSupportByLibraryArray(entityNode);
             foreach (string item in result)
-                between += item + " ";
+                between += item + ", ";
 
             return summary1 + between + "\r\n" + summary2;
         }
@@ -363,12 +373,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string GetSupportByLibraryString(string tabSpace, XElement entityNode)
         {
+            XElement parentNode = entityNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
             string res = "";
             string[] result = GetSupportByLibraryArray(entityNode);
             foreach (string item in result)
-                res += item + " ";
+                res += item + ",";
 
-            return tabSpace + "SupportByLibrary " + res;
+            if (res.Substring(res.Length - 1) == ",")
+                res = res.Substring(0, res.Length - 1);
+
+            return tabSpace + "SupportByLibrary " + "" + parentNode.Attribute("Name").Value + ", " + res;
         }
 
         /// <summary>

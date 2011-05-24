@@ -60,9 +60,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string memberAttribute = CSharpGenerator.GetSupportByLibraryAttribute(itemMember);
                 string memberName = itemMember.Attribute("Name").Value;
                 string memberValue = itemMember.Attribute("Value").Value;
-                
+
                 if (true == settings.CreateXmlDocumentation)
+                { 
                     result += CSharpGenerator.GetSupportByLibrarySummary("\t\t", itemMember);
+                    result += "\t\t/// <remarks>" + memberValue + "</remarks>\r\n";
+                }
 
                 result += "\t\t" + memberAttribute + "\r\n";
                 result += "\t\t" + memberName + " = " + memberValue;

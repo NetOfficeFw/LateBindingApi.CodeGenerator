@@ -236,6 +236,7 @@
             this.buttonWhyDocu.TabIndex = 39;
             this.buttonWhyDocu.Text = "Why?";
             this.buttonWhyDocu.UseVisualStyleBackColor = true;
+            this.buttonWhyDocu.Visible = false;
             this.buttonWhyDocu.Click += new System.EventHandler(this.buttonWhyDocu_Click);
             // 
             // checkBoxCreateDocu
@@ -249,6 +250,7 @@
             this.checkBoxCreateDocu.TabIndex = 38;
             this.checkBoxCreateDocu.Text = "create xml  documentation";
             this.checkBoxCreateDocu.UseVisualStyleBackColor = true;
+            this.checkBoxCreateDocu.Visible = false;
             // 
             // checkBoxAddTestApplication
             // 
