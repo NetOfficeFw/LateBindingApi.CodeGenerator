@@ -14,7 +14,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// call ValidateParameters for all method nodes
         /// </summary>
         /// <param name="methodsNode"></param>
-        internal static void ValidateItems(XElement enumeratorNode, string itemName)
+        internal static void ValidateItems(XElement enumeratorNode, string itemName, Settings settings)
         {
             foreach (XElement methodNode in enumeratorNode.Elements(itemName))
             {
@@ -49,7 +49,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     }
                 }
 
-                ParameterApi.ValidateParameters(methodNode);
+               // if (settings.Framework != "4.0")
+               ParameterApi.ValidateParameters(methodNode);
             }
         }
 
@@ -340,16 +341,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(parametersNode.Parent.Parent.Parent);
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(parametersNode.Parent.Parent.Parent);
-
+    
             string parameters = "";
             int countOfParams = GetParamsCount(parametersNode, withOptionals);
             int i = 1;
             
-            string optionalValue = "";
+            //string optionalValue = "";
 
-            if( ("4.0" == settings.Framework) && (true == convertOptionalsInNet4) )
-                optionalValue = "=null";
-
+           // if (("4.0" == settings.Framework) && ((true == convertOptionalsInNet4) || ("INVOKE_PROPERTYGET" == parametersNode.Parent.Attribute("InvokeKind").Value)))
+            //    optionalValue = "=null";
+ 
             IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
             foreach (XElement itemParam in xParams)
             {               
@@ -364,8 +365,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string name = itemParam.Attribute("Name").Value;
                 name = ValidateParamName(settings, name);
 
-                if(("true" == itemParam.Attribute("IsOptional").Value) && (true == convertOptionalsInNet4))
-                    name += optionalValue;
+                //if (("true" == itemParam.Attribute("IsOptional").Value) && ("4.0" == settings.Framework))
+                //    name += optionalValue;
 
                 parameter = type + " " + name;
                 if (i < countOfParams)

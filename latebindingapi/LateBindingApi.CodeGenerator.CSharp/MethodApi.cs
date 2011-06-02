@@ -19,7 +19,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(methodsNode.Parent);
             bool hasItem = EnumerableApi.HasItem(methodsNode.Parent);
 
-            ParameterApi.ValidateItems(methodsNode, "Method");
+            ParameterApi.ValidateItems(methodsNode, "Method", settings);
 
             string result = "\r\n\t\t#region Methods\r\n\r\n";
             foreach (XElement methodNode in methodsNode.Elements("Method"))

@@ -20,7 +20,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(propertiesNode.Parent);
             bool hasItem = EnumerableApi.HasItem(propertiesNode.Parent);
 
-            ParameterApi.ValidateItems(propertiesNode, "Property");
+            ParameterApi.ValidateItems(propertiesNode, "Property", settings);
 
             string result = "\r\n\t\t#region Properties\r\n\r\n";
 
@@ -39,7 +39,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         
         internal static string ConvertPropertiesEarlyBindToString(Settings settings, XElement propertiesNode)
         {
-            ParameterApi.ValidateItems(propertiesNode, "Property");
+            ParameterApi.ValidateItems(propertiesNode, "Property", settings);
 
             string result = "\r\n\t\t#region Properties\r\n\r\n";
 

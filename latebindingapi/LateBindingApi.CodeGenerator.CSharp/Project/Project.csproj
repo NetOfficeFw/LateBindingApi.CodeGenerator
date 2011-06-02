@@ -8,7 +8,7 @@
     <ProjectGuid>{%Key%}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LateBindingApi.%Name%</RootNamespace>
+    <RootNamespace>NetOffice.%Name%</RootNamespace>
     <AssemblyName>%Name%</AssemblyName>
     <TargetFrameworkVersion>%Framework%</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
