@@ -95,7 +95,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
         {
             string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
-            string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
+            string methodBody = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName    = parametersNode.Parent.Attribute("Name").Value;
             string typeName      = returnValue.Attribute("Type").Value;
@@ -218,7 +218,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody = methodBody.Replace("%modifiers%", "");
                 }
             }
-
             return methodBody;
         }
 

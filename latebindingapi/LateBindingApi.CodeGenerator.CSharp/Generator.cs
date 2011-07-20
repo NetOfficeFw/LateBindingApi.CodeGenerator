@@ -150,15 +150,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
 
-                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(assemblyInfo, project, typeDefsInclude);
-                projectFile = ProjectApi.ReplaceProjectAttributes(projectFile, _settings, project, enumIncludes, constIncludes,
+                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
+                projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
                                         faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, 
                                         factoryInclude);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
             }
-
+            
             DoUpdate("Create Solution");
             string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);

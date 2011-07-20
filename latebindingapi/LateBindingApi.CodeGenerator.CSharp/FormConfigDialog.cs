@@ -36,6 +36,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newSettings.RemoveRefAttribute = checkBoxRemoveRef.Checked;
                 newSettings.CreateXmlDocumentation = checkBoxCreateDocu.Checked;
                 newSettings.UseApiAssembly = radioButtonUseCoreAssembly.Checked;
+                newSettings.UseSigning = checkBoxSignAssemblies.Checked;
+                newSettings.SignPath = textBoxKeyFiles.Text;
  
                 string res = "";
                 switch (comboBoxFramework.SelectedIndex)
@@ -110,5 +112,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         #endregion
+
+        private void buttonKeyFiles_Click(object sender, EventArgs e)
+        {            
+            FolderBrowserDialog folderDialog = new FolderBrowserDialog();
+            if (DialogResult.OK == folderDialog.ShowDialog(this))
+                textBoxKeyFiles.Text = folderDialog.SelectedPath;
+        }
     }
 }

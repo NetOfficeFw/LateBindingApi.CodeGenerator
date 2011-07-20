@@ -18,10 +18,35 @@ namespace LateBindingApi.CodeGenerator.CSharp
         string _framework;
         bool   _addTestApp;
         bool   _openFolder;
-        
+        bool _useSigning;
+        string _signPath;
+
         #endregion
 
         #region Properties
+
+        public string SignPath
+        {
+            get
+            {
+                return _signPath;
+            }
+            internal set
+            {
+                _signPath = value;
+            }
+        }
+        public bool UseSigning
+        {
+            get
+            {
+                return _useSigning;
+            }
+            internal set
+            {
+                _useSigning = value;
+            }
+        }
 
         public bool UseApiAssembly
         {

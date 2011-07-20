@@ -14,7 +14,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                    + "      <Name>%Name%Api</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";
 
-        internal static string ReplaceAssemblyAttributes(string assemblyInfo, XElement project, string typeDefsInclude)
+        internal static string ReplaceAssemblyAttributes(Settings settings, string solutionPath, string assemblyInfo, XElement project, string typeDefsInclude)
         {
             assemblyInfo = assemblyInfo.Replace("%Title%", project.Attribute("Name").Value);
             assemblyInfo = assemblyInfo.Replace("%Description%", project.Attribute("Description").Value);
@@ -44,7 +44,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 listAssemblies += libInfo; 
             }
             assemblyInfo = assemblyInfo.Replace("%List%", listAssemblies);
-
             return assemblyInfo;
         }
         
@@ -76,7 +75,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
-        internal static string ReplaceProjectAttributes(string projectFile, Settings settings, XElement project, string enumIncludes,
+        internal static string ReplaceProjectAttributes(string solutionPath, string projectFile, Settings settings, XElement project, string enumIncludes,
                                         string constIncludes, string faceIncludes, string dispatchIncludes, string classesIncludes, 
                                                          string eventIncludes, string modulesInclude, string recordsInclude, string factoryInclude)
         {
@@ -129,6 +128,29 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             projectFile = projectFile.Replace("%ProjectRefInclude%", refProjectInclude);
+
+            if (true == settings.UseSigning)
+            {
+                string projectName = project.Attribute("Name").Value;
+                string keyFile = System.IO.Path.Combine(settings.SignPath, settings.Framework + "\\" + projectName + "Api_v" + settings.Framework + ".snk");
+                if (System.IO.File.Exists(keyFile))
+                {
+                    string projectPath = System.IO.Path.Combine(solutionPath, projectName);
+                    string copyKeyFile = System.IO.Path.Combine(projectPath, projectName + "Api_v" + settings.Framework + ".snk");
+                    PathApi.CreateFolder(projectPath);
+                    System.IO.File.Copy(keyFile, copyKeyFile);
+                }
+            }
+            else
+            {
+                int firstPos = projectFile.IndexOf("<SignAssembly>");
+                int lastPos = projectFile.IndexOf("</AssemblyOriginatorKeyFile>");
+
+                string firstString = projectFile.Substring(0, firstPos);
+                string lastString = projectFile.Substring(lastPos + "</AssemblyOriginatorKeyFile>".Length);
+
+                projectFile = firstString + lastString;
+            }
             return projectFile;
         }
 

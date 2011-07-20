@@ -43,8 +43,6 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
-            this.statusStripMain = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.libraryTreeBrowser = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryTreeBrowser.LibraryTreeBrowserControl();
             this.recordGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid.RecordGridControl();
             this.aliasGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.AliasGrid.AliasGridControl();
@@ -56,6 +54,8 @@
             this.interfaceGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.InterfaceGridControl();
             this.projectGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid.ProjectGridControl();
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
+            this.statusStripMain = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -72,7 +72,7 @@
             this.toolStripHelp});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(1118, 24);
+            this.menuStripMain.Size = new System.Drawing.Size(804, 24);
             this.menuStripMain.TabIndex = 23;
             this.menuStripMain.Text = "Application Menu";
             // 
@@ -202,26 +202,10 @@
             this.splitContainerMain.Panel2.Controls.Add(this.interfaceGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.projectGrid);
             this.splitContainerMain.Panel2.Controls.Add(this.libraryGrid);
-            this.splitContainerMain.Size = new System.Drawing.Size(1118, 437);
-            this.splitContainerMain.SplitterDistance = 301;
+            this.splitContainerMain.Size = new System.Drawing.Size(804, 437);
+            this.splitContainerMain.SplitterDistance = 216;
             this.splitContainerMain.TabIndex = 25;
             this.splitContainerMain.Visible = false;
-            // 
-            // statusStripMain
-            // 
-            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
-            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
-            this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(1118, 22);
-            this.statusStripMain.TabIndex = 26;
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
-            this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
             // 
             // libraryTreeBrowser
             // 
@@ -229,7 +213,7 @@
             this.libraryTreeBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.libraryTreeBrowser.Location = new System.Drawing.Point(0, 0);
             this.libraryTreeBrowser.Name = "libraryTreeBrowser";
-            this.libraryTreeBrowser.Size = new System.Drawing.Size(301, 437);
+            this.libraryTreeBrowser.Size = new System.Drawing.Size(216, 437);
             this.libraryTreeBrowser.TabIndex = 0;
             this.libraryTreeBrowser.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.libraryTreeBrowser_AfterSelect);
             // 
@@ -312,12 +296,28 @@
             this.libraryGrid.TabIndex = 0;
             this.libraryGrid.Visible = false;
             // 
+            // statusStripMain
+            // 
+            this.statusStripMain.BackColor = System.Drawing.Color.DarkKhaki;
+            this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStripMain.Location = new System.Drawing.Point(0, 467);
+            this.statusStripMain.Name = "statusStripMain";
+            this.statusStripMain.Size = new System.Drawing.Size(804, 22);
+            this.statusStripMain.TabIndex = 26;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
+            this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DarkKhaki;
-            this.ClientSize = new System.Drawing.Size(1118, 489);
+            this.ClientSize = new System.Drawing.Size(804, 489);
             this.Controls.Add(this.statusStripMain);
             this.Controls.Add(this.menuStripMain);
             this.Controls.Add(this.splitContainerMain);

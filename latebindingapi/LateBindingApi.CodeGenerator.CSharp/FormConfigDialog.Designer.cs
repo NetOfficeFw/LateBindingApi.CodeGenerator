@@ -48,13 +48,17 @@
             this.checkBoxAddTestApplication = new System.Windows.Forms.CheckBox();
             this.radioButtonUseCoreAssembly = new System.Windows.Forms.RadioButton();
             this.radioButtonUseCoreProject = new System.Windows.Forms.RadioButton();
+            this.checkBoxSignAssemblies = new System.Windows.Forms.CheckBox();
+            this.buttonKeyFiles = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBoxKeyFiles = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(416, 302);
+            this.buttonCancel.Location = new System.Drawing.Point(416, 342);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(77, 22);
             this.buttonCancel.TabIndex = 21;
@@ -65,7 +69,7 @@
             // buttonOkay
             // 
             this.buttonOkay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOkay.Location = new System.Drawing.Point(333, 302);
+            this.buttonOkay.Location = new System.Drawing.Point(333, 342);
             this.buttonOkay.Name = "buttonOkay";
             this.buttonOkay.Size = new System.Drawing.Size(77, 22);
             this.buttonOkay.TabIndex = 20;
@@ -108,7 +112,7 @@
             this.labelNotes.AutoSize = true;
             this.labelNotes.BackColor = System.Drawing.SystemColors.Info;
             this.labelNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelNotes.Location = new System.Drawing.Point(53, 302);
+            this.labelNotes.Location = new System.Drawing.Point(53, 342);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(259, 15);
             this.labelNotes.TabIndex = 27;
@@ -120,7 +124,7 @@
             this.checkBoxOpenFolder.AutoSize = true;
             this.checkBoxOpenFolder.Checked = true;
             this.checkBoxOpenFolder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 273);
+            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 313);
             this.checkBoxOpenFolder.Name = "checkBoxOpenFolder";
             this.checkBoxOpenFolder.Size = new System.Drawing.Size(157, 17);
             this.checkBoxOpenFolder.TabIndex = 28;
@@ -130,7 +134,7 @@
             // checkBoxConvertOptionals
             // 
             this.checkBoxConvertOptionals.AutoSize = true;
-            this.checkBoxConvertOptionals.Location = new System.Drawing.Point(53, 62);
+            this.checkBoxConvertOptionals.Location = new System.Drawing.Point(53, 105);
             this.checkBoxConvertOptionals.Name = "checkBoxConvertOptionals";
             this.checkBoxConvertOptionals.Size = new System.Drawing.Size(183, 17);
             this.checkBoxConvertOptionals.TabIndex = 29;
@@ -142,7 +146,7 @@
             this.checkBoxConvertToCamel.AutoSize = true;
             this.checkBoxConvertToCamel.Checked = true;
             this.checkBoxConvertToCamel.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxConvertToCamel.Location = new System.Drawing.Point(53, 95);
+            this.checkBoxConvertToCamel.Location = new System.Drawing.Point(53, 138);
             this.checkBoxConvertToCamel.Name = "checkBoxConvertToCamel";
             this.checkBoxConvertToCamel.Size = new System.Drawing.Size(185, 17);
             this.checkBoxConvertToCamel.TabIndex = 30;
@@ -152,7 +156,7 @@
             // buttonWhyOptionals
             // 
             this.buttonWhyOptionals.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyOptionals.Location = new System.Drawing.Point(242, 60);
+            this.buttonWhyOptionals.Location = new System.Drawing.Point(242, 103);
             this.buttonWhyOptionals.Name = "buttonWhyOptionals";
             this.buttonWhyOptionals.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyOptionals.TabIndex = 31;
@@ -163,7 +167,7 @@
             // buttonWhyCamel
             // 
             this.buttonWhyCamel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyCamel.Location = new System.Drawing.Point(242, 91);
+            this.buttonWhyCamel.Location = new System.Drawing.Point(242, 134);
             this.buttonWhyCamel.Name = "buttonWhyCamel";
             this.buttonWhyCamel.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyCamel.TabIndex = 32;
@@ -174,7 +178,7 @@
             // buttonWhyRef
             // 
             this.buttonWhyRef.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyRef.Location = new System.Drawing.Point(242, 123);
+            this.buttonWhyRef.Location = new System.Drawing.Point(242, 166);
             this.buttonWhyRef.Name = "buttonWhyRef";
             this.buttonWhyRef.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyRef.TabIndex = 34;
@@ -188,7 +192,7 @@
             this.checkBoxRemoveRef.AutoSize = true;
             this.checkBoxRemoveRef.Checked = true;
             this.checkBoxRemoveRef.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxRemoveRef.Location = new System.Drawing.Point(53, 127);
+            this.checkBoxRemoveRef.Location = new System.Drawing.Point(53, 170);
             this.checkBoxRemoveRef.Name = "checkBoxRemoveRef";
             this.checkBoxRemoveRef.Size = new System.Drawing.Size(183, 17);
             this.checkBoxRemoveRef.TabIndex = 33;
@@ -206,7 +210,7 @@
             ".NET Framework 3.0",
             ".NET Framework 3.5",
             ".NET Framework 4.0"});
-            this.comboBoxFramework.Location = new System.Drawing.Point(53, 209);
+            this.comboBoxFramework.Location = new System.Drawing.Point(53, 252);
             this.comboBoxFramework.Name = "comboBoxFramework";
             this.comboBoxFramework.Size = new System.Drawing.Size(176, 21);
             this.comboBoxFramework.TabIndex = 35;
@@ -214,7 +218,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(50, 193);
+            this.label1.Location = new System.Drawing.Point(50, 236);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(201, 13);
             this.label1.TabIndex = 36;
@@ -223,7 +227,7 @@
             // buttonWhyFramework
             // 
             this.buttonWhyFramework.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 208);
+            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 251);
             this.buttonWhyFramework.Name = "buttonWhyFramework";
             this.buttonWhyFramework.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyFramework.TabIndex = 37;
@@ -234,7 +238,7 @@
             // buttonWhyDocu
             // 
             this.buttonWhyDocu.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyDocu.Location = new System.Drawing.Point(242, 155);
+            this.buttonWhyDocu.Location = new System.Drawing.Point(242, 198);
             this.buttonWhyDocu.Name = "buttonWhyDocu";
             this.buttonWhyDocu.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyDocu.TabIndex = 39;
@@ -248,7 +252,7 @@
             this.checkBoxCreateDocu.AutoSize = true;
             this.checkBoxCreateDocu.Checked = true;
             this.checkBoxCreateDocu.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateDocu.Location = new System.Drawing.Point(53, 159);
+            this.checkBoxCreateDocu.Location = new System.Drawing.Point(53, 202);
             this.checkBoxCreateDocu.Name = "checkBoxCreateDocu";
             this.checkBoxCreateDocu.Size = new System.Drawing.Size(150, 17);
             this.checkBoxCreateDocu.TabIndex = 38;
@@ -262,7 +266,7 @@
             this.checkBoxAddTestApplication.AutoSize = true;
             this.checkBoxAddTestApplication.Checked = true;
             this.checkBoxAddTestApplication.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(53, 250);
+            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(53, 290);
             this.checkBoxAddTestApplication.Name = "checkBoxAddTestApplication";
             this.checkBoxAddTestApplication.Size = new System.Drawing.Size(299, 17);
             this.checkBoxAddTestApplication.TabIndex = 40;
@@ -272,31 +276,79 @@
             // radioButtonUseCoreAssembly
             // 
             this.radioButtonUseCoreAssembly.AutoSize = true;
-            this.radioButtonUseCoreAssembly.Location = new System.Drawing.Point(333, 68);
+            this.radioButtonUseCoreAssembly.Location = new System.Drawing.Point(363, 292);
             this.radioButtonUseCoreAssembly.Name = "radioButtonUseCoreAssembly";
             this.radioButtonUseCoreAssembly.Size = new System.Drawing.Size(134, 17);
             this.radioButtonUseCoreAssembly.TabIndex = 41;
             this.radioButtonUseCoreAssembly.Text = "LateBindingApi.Core.dll";
             this.radioButtonUseCoreAssembly.UseVisualStyleBackColor = true;
+            this.radioButtonUseCoreAssembly.Visible = false;
             // 
             // radioButtonUseCoreProject
             // 
             this.radioButtonUseCoreProject.AutoSize = true;
             this.radioButtonUseCoreProject.Checked = true;
-            this.radioButtonUseCoreProject.Location = new System.Drawing.Point(333, 95);
+            this.radioButtonUseCoreProject.Location = new System.Drawing.Point(363, 319);
             this.radioButtonUseCoreProject.Name = "radioButtonUseCoreProject";
             this.radioButtonUseCoreProject.Size = new System.Drawing.Size(157, 17);
             this.radioButtonUseCoreProject.TabIndex = 42;
             this.radioButtonUseCoreProject.TabStop = true;
             this.radioButtonUseCoreProject.Text = "LateBindingApi.Core Project";
             this.radioButtonUseCoreProject.UseVisualStyleBackColor = true;
+            this.radioButtonUseCoreProject.Visible = false;
+            // 
+            // checkBoxSignAssemblies
+            // 
+            this.checkBoxSignAssemblies.AutoSize = true;
+            this.checkBoxSignAssemblies.Checked = true;
+            this.checkBoxSignAssemblies.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSignAssemblies.Location = new System.Drawing.Point(53, 47);
+            this.checkBoxSignAssemblies.Name = "checkBoxSignAssemblies";
+            this.checkBoxSignAssemblies.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxSignAssemblies.TabIndex = 43;
+            this.checkBoxSignAssemblies.Text = "Sign assemblies";
+            this.checkBoxSignAssemblies.UseVisualStyleBackColor = true;
+            // 
+            // buttonKeyFiles
+            // 
+            this.buttonKeyFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonKeyFiles.Location = new System.Drawing.Point(466, 64);
+            this.buttonKeyFiles.Name = "buttonKeyFiles";
+            this.buttonKeyFiles.Size = new System.Drawing.Size(45, 23);
+            this.buttonKeyFiles.TabIndex = 46;
+            this.buttonKeyFiles.Text = "...";
+            this.buttonKeyFiles.UseVisualStyleBackColor = true;
+            this.buttonKeyFiles.Click += new System.EventHandler(this.buttonKeyFiles_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(11, 70);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(36, 13);
+            this.label2.TabIndex = 45;
+            this.label2.Text = "Folder";
+            // 
+            // textBoxKeyFiles
+            // 
+            this.textBoxKeyFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxKeyFiles.Location = new System.Drawing.Point(53, 67);
+            this.textBoxKeyFiles.Name = "textBoxKeyFiles";
+            this.textBoxKeyFiles.Size = new System.Drawing.Size(407, 20);
+            this.textBoxKeyFiles.TabIndex = 44;
+            this.textBoxKeyFiles.Text = "D:\\Workbench\\Sebastian\\NetOffice\\KeyFiles";
             // 
             // FormConfigDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(532, 336);
+            this.ClientSize = new System.Drawing.Size(532, 389);
+            this.Controls.Add(this.buttonKeyFiles);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.textBoxKeyFiles);
+            this.Controls.Add(this.checkBoxSignAssemblies);
             this.Controls.Add(this.radioButtonUseCoreProject);
             this.Controls.Add(this.radioButtonUseCoreAssembly);
             this.Controls.Add(this.checkBoxAddTestApplication);
@@ -354,6 +406,10 @@
         private System.Windows.Forms.CheckBox checkBoxAddTestApplication;
         private System.Windows.Forms.RadioButton radioButtonUseCoreAssembly;
         private System.Windows.Forms.RadioButton radioButtonUseCoreProject;
+        private System.Windows.Forms.CheckBox checkBoxSignAssemblies;
+        private System.Windows.Forms.Button buttonKeyFiles;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBoxKeyFiles;
 
     }
 }

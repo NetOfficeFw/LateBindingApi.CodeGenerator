@@ -274,7 +274,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string CreatePropertyGetBodyCode(Settings settings, int numberOfRootTabs, XElement parametersNode)
         {
-            string tabSpace = CSharpGenerator.TabSpace(numberOfRootTabs);
+            string tabSpace = CSharpGenerator.TabSpace(numberOfRootTabs);           
             string methodBody = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName = parametersNode.Parent.Attribute("Name").Value;
