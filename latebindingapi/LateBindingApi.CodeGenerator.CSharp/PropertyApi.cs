@@ -315,10 +315,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     }
                     else if (typeName == "COMVariant")
                     {
-                        methodBody += tabSpace + "Type returnItemType = Invoker.GetObjectType(returnItem);\r\n";
-                        methodBody += tabSpace + "if ((null != returnItemType) && (true == returnItemType.IsCOMObject))\r\n" + tabSpace + "{\r\n";
+                        methodBody += tabSpace + "if((null != returnItem) && (returnItem is MarshalByRefObject))\r\n" + tabSpace + "{\r\n";
                         if ("" == objectArrayField)
-                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem, returnItemType);\r\n";
+                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         else
                             methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         methodBody += "\t%modifiers%";
@@ -344,8 +343,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         else
                         {
                             bool isFromIgnoreProject = CSharpGenerator.IsFromIgnoreProject(returnValue); 
-                            bool isDuplicated =  CSharpGenerator.IsDuplicatedReturnValue(returnValue);  
-                            if(true == isFromIgnoreProject)
+                            bool isDuplicated =  CSharpGenerator.IsDuplicatedReturnValue(returnValue);
+                            bool isDerived = CSharpGenerator.IsDerivedReturnValue(returnValue);  
+                            if((true == isFromIgnoreProject) && (false == isDuplicated) )
                             {
                                 methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
                                 methodBody += "%modifiers%";
@@ -353,18 +353,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
                             }
                             else
                             {
-                                if (isDuplicated)
+                                if( (isDerived) && (!isDuplicated))
+                                {
+                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                    methodBody += "%modifiers%";
+                                    methodBody += tabSpace + "return newObject;\r\n";  
+
+                                }
+                                else
                                 {
                                     string knownType = fullTypeName + ".LateBindingApiWrapperType";
                                     methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateKnownObjectFromComProxy(this," + objectArrayField + "returnItem," + knownType + ") as " + fullTypeName + ";\r\n";
                                     methodBody += "%modifiers%";
                                     methodBody += tabSpace + "return newObject;\r\n";
-                                }
-                                else
-                                {
-                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
-                                    methodBody += "%modifiers%";
-                                    methodBody += tabSpace + "return newObject;\r\n";
+
                                 }
                             }
                         }

@@ -18,6 +18,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         Settings _settings;
         static XDocument _document;
         static DubletteManager _dublettes;
+        static DerivedManager _derives;
         ThreadJob _job = new ThreadJob();
 
         #endregion
@@ -128,6 +129,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             _dublettes = new DubletteManager(this, solution.Document);
             _dublettes.ScanForDublettes();
 
+            DoUpdate("Scan for derived interfaces");
+            _derives = new DerivedManager(this, solution.Document);
+            _derives.ScanForDerived();
+
             DoUpdate("Create root folder");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
@@ -196,7 +201,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return _dublettes.IsDuplicated(id);   
         }
 
-        internal static XElement GetInterfaceFromKey(string key)
+        internal static bool IsDerivedReturnValue(XElement returnValue)
+        {
+            return _derives.IsDerivedReturnValue(returnValue);
+        }
+
+        internal static bool IsDerived(string id)
+        {
+            return _derives.IsDerived(id);
+        }
+
+        internal static XElement GetInterfaceOrClassFromKey(string key)
         {
             XElement node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("DispatchInterfaces").Elements("Interface")
                              where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)

@@ -9,7 +9,7 @@
 		#region Type Information
 
         private static Type _type;
-
+		
         public static Type LateBindingApiWrapperType
         {
             get
@@ -45,15 +45,19 @@
 		{
 		}
 		
-		public %name%()
+		/// <summary>
+        /// creates a new instance of %name% 
+        /// </summary>		
+		public %name%():base("%ProgId%")
 		{
-			CreateFromProgId("%ProgId%");
 		}
 		
-		/// <param name="progId">progId</param>
-		public %name%(string progId)
+		/// <summary>
+        /// creates a new instance of %name%
+        /// </summary>
+        /// <param name="progId">registered ProgID</param>
+		public %name%(string progId):base(progId)
 		{
-			CreateFromProgId(progId);
 		}
 
 		#endregion

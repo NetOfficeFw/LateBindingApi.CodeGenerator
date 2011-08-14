@@ -34,7 +34,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (string.IsNullOrEmpty(typeKey))
                 return false;
 
-            XElement interfaceNode = CSharpGenerator.GetInterfaceFromKey(typeKey); 
+            XElement interfaceNode = CSharpGenerator.GetInterfaceOrClassFromKey(typeKey); 
             XElement dispNode = interfaceNode.Element("DispIds").Elements("DispId").FirstOrDefault();
             string id = dispNode.Attribute("Id").Value;
 
@@ -62,11 +62,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                               Elements("DispatchInterfaces").Elements("Interface") select a);
         
             foreach (XElement itemFace in interfaces)
-            {
-                if (itemFace.Attribute("Name").Value == "LineFormat")
-                { 
-                }
-
+            {              
                 foreach(XElement itemId in itemFace.Element("DispIds").Elements("DispId"))
                 {
                     string id = itemId.Attribute("Id").Value;
@@ -132,6 +128,5 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             return result;
         }
-
     }
 }

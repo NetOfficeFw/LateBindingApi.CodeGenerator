@@ -39,7 +39,13 @@
 		}
 		
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-		public %name%()
+		public %name%() : base()
+		{
+		}
+		
+		/// <param name="progId">registered ProgID</param>
+		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+		public %name%(string progId) : base(progId)
 		{
 		}
 		
