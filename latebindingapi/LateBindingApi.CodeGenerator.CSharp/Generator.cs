@@ -16,13 +16,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         DateTime _startTimeOperation;
         Settings _settings;
-        XDocument _document;
+        static XDocument _document;
+        static DubletteManager _dublettes;
         ThreadJob _job = new ThreadJob();
 
         #endregion
 
+        #region Properties
+
+        #endregion
+
         #region Construction
-        
+
         public CSharpGenerator()
         {
             _job.DoWork += new System.Threading.ThreadStart(_job_DoWork);
@@ -118,11 +123,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             DoUpdate("Create Copy");
             XElement solution = CreateWorkingCopy().Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
-            
+
+            DoUpdate("Scan for duplicated interfaces");
+            _dublettes = new DubletteManager(this, solution.Document);
+            _dublettes.ScanForDublettes();
+
             DoUpdate("Create root folder");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
-            
+
             var projects = _document.Descendants("Project");
             foreach (var project in projects)
             {
@@ -174,8 +183,45 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
  
         #endregion
+    
+        #region Static Methods
+        
+        internal static bool IsDuplicatedReturnValue(XElement returnValue)
+        {
+            return _dublettes.IsDuplicatedReturnValue(returnValue);
+        }
 
-        private static string GetProjectApiPath()
+        internal static bool IsDuplicated(string id)
+        {
+            return _dublettes.IsDuplicated(id);   
+        }
+
+        internal static XElement GetInterfaceFromKey(string key)
+        {
+            XElement node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("DispatchInterfaces").Elements("Interface")
+                             where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("Interfaces").Elements("Interface")
+                    where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("CoClasses").Elements("CoClass")
+                    where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+            
+            throw new Exception("key not found " + key);
+        }
+        internal static string GetProjectApiPath()
         {
             if (System.Diagnostics.Debugger.IsAttached)
             {
@@ -198,8 +244,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
-        #region Static Methods
-
         internal static string FirstCharLower(string expression)
         {
             if (null == expression)
@@ -219,6 +263,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string type = value.Attribute("Type").Value;
             string space = GetQualifiedNamespace(value);
             return space + type;
+        }
+
+        internal static bool IsFromIgnoreProject(XElement node)
+        {
+
+            string refProjectKey = node.Attribute("ProjectKey").Value;
+            XElement projectNode = (from a in node.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
+                                    where a.Attribute("Key").Value.Equals(refProjectKey)
+                                    select a).FirstOrDefault();
+
+            if (null == projectNode)
+                return false;
+
+            if (true == projectNode.Attribute("Ignore").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                return true;
+            else
+                return false;
         }
 
         internal static string GetQualifiedType(XElement value)

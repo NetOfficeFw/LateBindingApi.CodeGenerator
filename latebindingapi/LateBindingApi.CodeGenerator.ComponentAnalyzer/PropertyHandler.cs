@@ -30,8 +30,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if (null == node)
             {
-               
- 
                 node = new XElement("Property",
                                new XElement("DispIds"),
                                new XElement("RefLibraries"),
@@ -91,11 +89,16 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 if (returnTypeName == "void")
                     returnTypeName = "object";
 
+                if ((returnTypeName == "LineFormat") && (libraryNode.Attribute("Name").Value == "Excel") )
+                {
+                    bool b = TypeDescriptor.IsExternal(returnTypeInfo);
+                }
+
                 parametersNode = new XElement("Parameters",
                                     new XElement("ReturnValue",
                                         new XAttribute("Type",       returnTypeName),
                                         new XAttribute("VarType",    returnTypeInfo.VarType),
-                                        new XAttribute("MarshalAs", TypeDescriptor.MarshalMemberAsAs(returnTypeInfo.VarType)),
+                                        new XAttribute("MarshalAs",  TypeDescriptor.MarshalMemberAsAs(returnTypeInfo.VarType)),
                                         new XAttribute("TypeKind",   TypeInfo(returnTypeInfo.TypeInfo)),
                                         new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(returnTypeInfo).ToString().ToLower()),
                                         new XAttribute("IsExternal", TypeDescriptor.IsExternal(returnTypeInfo).ToString().ToLower()),

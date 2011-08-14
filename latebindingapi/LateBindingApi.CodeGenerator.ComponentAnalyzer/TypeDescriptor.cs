@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Xml.Linq;
+using COMTypes = System.Runtime.InteropServices.ComTypes;
 using TLI;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
@@ -135,13 +136,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         internal static bool IsExternal(VarTypeInfo typeInfo)
         {
             return typeInfo.IsExternalType;
-            /*
-            // OLE Lib is not an external
-            if( (true == typeInfo.IsExternalType) && ("{00020430-0000-0000-C000-000000000046}" != typeInfo.TypeLibInfoExternal.GUID) )
-                return true;         
-            else
-                return false;     
-             */
         }
 
         /// <summary>
@@ -151,7 +145,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="typeInfo"></param>
         /// <returns></returns>
         internal static string GetTypeKey(XDocument document, VarTypeInfo typeInfo)
-        {
+        {          
             TypeLibInfo libInfo = null;
             if (true == TypeDescriptor.IsExternal(typeInfo))
                 libInfo = typeInfo.TypeLibInfoExternal;

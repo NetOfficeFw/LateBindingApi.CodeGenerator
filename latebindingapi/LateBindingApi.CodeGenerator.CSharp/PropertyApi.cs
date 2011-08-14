@@ -280,7 +280,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string methodName = parametersNode.Parent.Attribute("Name").Value;
             string typeName = returnValue.Attribute("Type").Value;
             string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
-
+           
             string objectArrayField = "";
             string arrayField = "";
             string arrayName = "";
@@ -343,9 +343,30 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         }
                         else
                         {
-                            methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
-                            methodBody += "%modifiers%";
-                            methodBody += tabSpace + "return newObject;\r\n";
+                            bool isFromIgnoreProject = CSharpGenerator.IsFromIgnoreProject(returnValue); 
+                            bool isDuplicated =  CSharpGenerator.IsDuplicatedReturnValue(returnValue);  
+                            if(true == isFromIgnoreProject)
+                            {
+                                methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                methodBody += "%modifiers%";
+                                methodBody += tabSpace + "return newObject;\r\n";
+                            }
+                            else
+                            {
+                                if (isDuplicated)
+                                {
+                                    string knownType = fullTypeName + ".LateBindingApiWrapperType";
+                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateKnownObjectFromComProxy(this," + objectArrayField + "returnItem," + knownType + ") as " + fullTypeName + ";\r\n";
+                                    methodBody += "%modifiers%";
+                                    methodBody += tabSpace + "return newObject;\r\n";
+                                }
+                                else
+                                {
+                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                    methodBody += "%modifiers%";
+                                    methodBody += tabSpace + "return newObject;\r\n";
+                                }
+                            }
                         }
                     }
                 }

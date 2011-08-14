@@ -150,22 +150,44 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         methodBody += tabSpace + "}\r\n";
                     }
                     else
-                    {
+                    {                        
                         // library type
                         if ("true" == returnValue.Attribute("IsArray").Value)
-                        {
-                            methodBody += tabSpace + "COMObject[] newObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(this, " + objectArrayField + "returnItem);\r\n";
-                            methodBody += tabSpace + fullTypeName + " returnArray = new " + CSharpGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
-                            methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
-                            methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
-                            methodBody += "%modifiers%";
-                            methodBody += tabSpace + "return returnArray;\r\n";
+                        {        
+                             methodBody += tabSpace + "COMObject[] newObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(this, " + objectArrayField + "returnItem);\r\n";
+                             methodBody += tabSpace + fullTypeName + " returnArray = new " + CSharpGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
+                             methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
+                             methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
+                             methodBody += "%modifiers%";
+                             methodBody += tabSpace + "return returnArray;\r\n";                            
                         }
                         else
                         {
-                            methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this, " + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
-                            methodBody += "%modifiers%";
-                            methodBody += tabSpace + "return newObject;\r\n";
+                            bool isFromIgnoreProject = CSharpGenerator.IsFromIgnoreProject(returnValue);
+                            bool isDuplicated = CSharpGenerator.IsDuplicatedReturnValue(returnValue);  
+
+                            if (true == isFromIgnoreProject)
+                            {
+                                methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this, " + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                methodBody += "%modifiers%";
+                                methodBody += tabSpace + "return newObject;\r\n";
+                            }
+                            else
+                            {
+                                if (isDuplicated)
+                                {
+                                    string knownType = fullTypeName + ".LateBindingApiWrapperType";
+                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateKnownObjectFromComProxy(this, " + objectArrayField + "returnItem," + knownType + ") as " + fullTypeName + ";\r\n";
+                                    methodBody += "%modifiers%";
+                                    methodBody += tabSpace + "return newObject;\r\n";
+                                }
+                                else
+                                {
+                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                    methodBody += "%modifiers%";
+                                    methodBody += tabSpace + "return newObject;\r\n";  
+                                }
+                            }
                         }
                     }
                 }

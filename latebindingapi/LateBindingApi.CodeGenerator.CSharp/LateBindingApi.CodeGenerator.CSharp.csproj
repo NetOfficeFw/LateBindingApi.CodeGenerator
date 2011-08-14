@@ -51,6 +51,7 @@
     <Compile Include="ConstantApi.cs" />
     <Compile Include="DispatchApi.cs" />
     <Compile Include="DocumentationApi.cs" />
+    <Compile Include="DubletteManager.cs" />
     <Compile Include="EnumerableApi.cs" />
     <EmbeddedResource Include="Enumerator\ProxyEnumerator.txt" />
     <Compile Include="EnumsApi.cs" />

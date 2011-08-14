@@ -246,7 +246,7 @@
     <xs:sequence>
       <xs:element name="RefLibraries" type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Id"           type="xs:integer" use="required" />  <!-- dispatch -->
+    <xs:attribute name="Id"           type="xs:string" use="required" />  <!-- dispatch -->
   </xs:complexType>
 
   <xs:complexType name="Enums">
