@@ -9,6 +9,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class PropertyApi
     {
+        private static string[] _Keywords;
+
         /// <summary>
         /// convert all properties to code as string
         /// </summary>
@@ -71,8 +73,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
+                { 
                     method += DocumentationApi.CreateParameterDocumentation(2, itemParams);
-                
+                   
+                }
+
                 method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
 
                 if("this" == name)
@@ -123,7 +128,30 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
 
         }
-    
+
+        internal static string ValidatePropertyName(string name)
+        {
+            if (null == _Keywords)
+            {
+                string res = RessourceApi.ReadString("Keywords.txt");
+                _Keywords = res.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            bool isInList = false;
+            foreach (string item in _Keywords)
+            {
+                if (item == name)
+                {
+                    isInList = true;
+                    break;
+                }
+            }
+            if (true == isInList)
+                name = "get_" + name;
+
+            return name;
+        }
+
         internal static string GetEarlyBindPropertySignatur(XElement paramsNode)
         {
             string dispId = paramsNode.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value;
@@ -186,7 +214,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             else
             {
-                result = "\t\tpublic " + "%valueReturn% " + name + "\r\n";
+                result = "\t\tpublic " + "%valueReturn% " + ValidatePropertyName(name) + "\r\n";
                 result += "\t\t{\r\n\t\t\tget\r\n\t\t\t{\r\n%propertyGetBody%\t\t\t}\r\n%%\t\t}\r\n\r\n";
                 if ("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value)
                 {

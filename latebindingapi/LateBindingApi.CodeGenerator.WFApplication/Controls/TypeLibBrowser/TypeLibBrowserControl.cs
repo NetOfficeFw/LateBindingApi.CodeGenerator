@@ -103,8 +103,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
                                     listItem.SubItems.Add(name);
                                     listItem.SubItems.Add(version);
                                     listItem.SubItems.Add(itemSubSubSubKey.Name);
-
-                                    listItem.SubItems.Add(itemSubSubSubKey.Entries[0].Value.ToString());
+                                    if (itemSubSubSubKey.Entries.Count > 0)
+                                        listItem.SubItems.Add(itemSubSubSubKey.Entries[0].Value.ToString());
+                                    else
+                                        listItem.SubItems.Add("<Empty>");
 
                                     i++;
                                 }

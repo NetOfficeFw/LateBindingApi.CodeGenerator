@@ -264,8 +264,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                    a.Attribute("Minor").Value.Equals(minor) &&
                                    a.Attribute("Description").Value.Equals(desc)
                                  select a).FirstOrDefault();
-            return dependLibNode;
 
+            if ((null == dependLibNode) && ("Office" == refDependLib.Attribute("Name").Value))
+            {
+                Console.WriteLine("Warning: Attempt Office Hotfix");
+                dependLibNode = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
+                                 where a.Attribute("Name").Value.Equals(name) &&
+                                   a.Attribute("GUID").Value.Equals(guid) &&
+                                   a.Attribute("Major").Value.Equals(major) &&
+                                   a.Attribute("Minor").Value.Equals(minor)
+                                 select a).FirstOrDefault();
+            }
+
+            return dependLibNode;
         }
 
         /// <summary>
@@ -421,7 +432,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                               a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
                               a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
                         select a).FirstOrDefault();
-              
+
+            if ((node == null) && ("Office" == libInfo.Name))
+            {
+                Console.WriteLine("Warning: Attempt Office Hotfix.");
+
+                node = (from a in _document.Descendants("Libraries").Elements("Library")
+                        where a.Attribute("GUID").Value.Equals(guid) &&
+                              a.Attribute("Name").Value.Equals(libInfo.Name) &&
+                              a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
+                              a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
+                        select a).FirstOrDefault();
+            }
+
             if (null == node)
             {
                 node = new XElement("Library",
@@ -867,6 +890,19 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                    a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
                                    a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
                              select a).FirstOrDefault();
+
+            if ((null == library) && ("Office" == libInfo.Name))
+            {
+                Console.WriteLine("Warning: Attempt Office Hotfix");
+                library = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Libraries").Elements("Library")
+                           where a.Attribute("GUID").Value.Equals(guid) &&
+                                 a.Attribute("Name").Value.Equals(libInfo.Name) &&
+                                 a.Attribute("Major").Value.Equals(libInfo.MajorVersion.ToString()) &&
+                                 a.Attribute("Minor").Value.Equals(libInfo.MinorVersion.ToString())
+                           select a).FirstOrDefault();
+            }
+
+
             return library;
         }
 

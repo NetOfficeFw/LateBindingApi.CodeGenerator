@@ -31,8 +31,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             libs = libs.Substring(0, libs.Length - 2);
 
-            string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n" +
-                                tabSpace + "/// </summary>\r\n";
+
+            string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
+            if ("Property" == parametersNode.Parent.Name)
+            {
+                if ("INVOKE_PROPERTYGET" == parametersNode.Parent.Attribute("InvokeKind").Value)
+                    summary += tabSpace + "/// Get\r\n";
+                else
+                    summary += tabSpace + "/// Get/Set\r\n";
+
+                summary += tabSpace + "/// </summary>\r\n";
+            }
+            else
+                summary += tabSpace + "/// </summary>\r\n";
+
             result += summary;
             
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
