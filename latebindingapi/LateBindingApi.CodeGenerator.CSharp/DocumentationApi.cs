@@ -31,7 +31,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             libs = libs.Substring(0, libs.Length - 2);
 
-
             string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
             if ("Property" == parametersNode.Parent.Name)
             {
