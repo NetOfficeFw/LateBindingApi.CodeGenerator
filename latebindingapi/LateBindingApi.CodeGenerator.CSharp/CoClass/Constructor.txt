@@ -10,6 +10,7 @@
 
         private static Type _type;
 		
+		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public static Type LateBindingApiWrapperType
         {
             get

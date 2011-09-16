@@ -29,6 +29,11 @@ namespace LateBindingApi.Core
         protected internal object               _underlyingObject;
         
         /// <summary>
+        /// returns instance is an enumerator
+        /// </summary>
+        protected internal bool                 _isEnumerator;        
+
+        /// <summary>
         /// returns instance is currently in diposing progress
         /// </summary>
         protected internal volatile bool        _isCurrentlyDisposing;
@@ -108,6 +113,27 @@ namespace LateBindingApi.Core
 
             Factory.AddObjectToList(this);
         }
+
+        /// <summary>
+        /// creates new instance with given proxy, parent info and info instance is an enumerator
+        /// </summary>
+        /// <param name="parentObject"></param>
+        /// <param name="comProxy"></param>
+        ///  <param name="isEnumerator"></param>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public COMObject(COMObject parentObject, object comProxy, bool isEnumerator)
+        {
+            _parentObject = parentObject;
+            _underlyingObject = comProxy;
+            _isEnumerator = isEnumerator;
+            _instanceType = comProxy.GetType();
+
+            if (null != parentObject)
+                _parentObject.AddChildObject(this);
+
+            Factory.AddObjectToList(this);
+        }
+
 
         /// <summary>
         /// creates new instance with given proxy, type info and parent info
@@ -342,10 +368,9 @@ namespace LateBindingApi.Core
             // release himself from COM Runtime System
             if (null != _underlyingObject)
             {
-                if (_underlyingObject is ICustomAdapter)
+                if (_isEnumerator) 
                 {
-                    // enumerator
-                    ICustomAdapter adapter = (ICustomAdapter)_underlyingObject;
+                    ICustomAdapter adapter = _underlyingObject as ICustomAdapter;
                     Marshal.ReleaseComObject(adapter.GetUnderlyingObject());
                 }
                 else

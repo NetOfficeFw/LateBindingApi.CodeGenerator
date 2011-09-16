@@ -161,7 +161,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                              methodBody += tabSpace + "return returnArray;\r\n";                            
                         }
                         else
-                        {
+                        {       
                             bool isFromIgnoreProject = CSharpGenerator.IsFromIgnoreProject(returnValue);
                             bool isDuplicated = CSharpGenerator.IsDuplicatedReturnValue(returnValue);
                             bool isDerived = CSharpGenerator.IsDerivedReturnValue(returnValue);

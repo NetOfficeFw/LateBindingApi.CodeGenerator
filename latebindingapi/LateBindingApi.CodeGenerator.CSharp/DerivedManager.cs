@@ -61,15 +61,71 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
+        private XElement GetTypeByName(XElement projectNode, string name)
+        {
+        
+            XElement node = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                             where a.Attribute("Name").Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            node = (from a in projectNode.Element("Interfaces").Elements("Interface")
+                    where a.Attribute("Name").Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            node = (from a in projectNode.Element("CoClasses").Elements("CoClass")
+                    where a.Attribute("Name").Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            throw new Exception("name not found " + name);           
+        }
+        private bool HasAttriute(XElement node, string attributeName)
+        {
+            foreach (XAttribute  item in node.Attributes())
+            {
+                if (item.Name == attributeName)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private XElement GetProjectNode(XElement returnValue)
+        {
+            XElement projectNode = returnValue.Parent;
+            while (projectNode.Name != "Project")            
+                projectNode = projectNode.Parent;            
+
+            return projectNode;
+        }
+
         public bool IsDerivedReturnValue(XElement returnValue)
         {
             string typeKey = returnValue.Attribute("TypeKey").Value;
             if (string.IsNullOrEmpty(typeKey))
-                return false;
+            {
+                if(returnValue.Attribute("IsExternal").Value.Equals("true",StringComparison.InvariantCultureIgnoreCase))
+                    return false;
 
-            XElement interfaceNode = CSharpGenerator.GetInterfaceOrClassFromKey(typeKey);
-            string id = interfaceNode.Attribute("Key").Value;
-            return IsDerived(id);
+                XElement projectNode = GetProjectNode(returnValue);
+                XElement interfaceNode = GetTypeByName(projectNode, returnValue.Attribute("Type").Value as string);
+                string id = interfaceNode.Attribute("Key").Value;
+                return IsDerived(id);                    
+            }
+            else
+            {
+                XElement interfaceNode = CSharpGenerator.GetInterfaceOrClassFromKey(typeKey);
+                string id = interfaceNode.Attribute("Key").Value;
+                return IsDerived(id);
+            }
         }
 
         public bool IsDerived(string id)

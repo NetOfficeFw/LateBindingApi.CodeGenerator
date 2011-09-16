@@ -5,7 +5,7 @@
 		public IEnumerator GetEnumerator()
 		{
 			object enumProxy = Invoker.%Call%(this, "_NewEnum");
-			COMObject enumerator = new COMObject(this, enumProxy);
+			COMObject enumerator = new COMObject(this, enumProxy, true);
 			Invoker.Method(enumerator, "Reset", null);
 			bool isMoveNextTrue = (bool)Invoker.MethodReturn(enumerator, "MoveNext", null);
             while (true == isMoveNextTrue)

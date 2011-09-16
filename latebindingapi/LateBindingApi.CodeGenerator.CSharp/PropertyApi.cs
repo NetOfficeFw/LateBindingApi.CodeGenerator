@@ -58,6 +58,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
+        private static bool IsKeyword(string text)
+        {
+            if (null == _Keywords)
+            {
+                string res = RessourceApi.ReadString("Keywords.txt");
+                _Keywords = res.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            foreach (string item in _Keywords)
+            {
+                if (item == text)
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// convert property to code as string
         /// </summary>
@@ -73,10 +90,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
-                { 
                     method += DocumentationApi.CreateParameterDocumentation(2, itemParams);
-                   
-                }
 
                 method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
 
@@ -99,8 +113,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 method += protoype;
  
                 int paramsCount = ParameterApi.GetParamsCount(itemParams, true);
-                string methodGetBody = CreatePropertyGetBody(settings, 3, itemParams, (paramsCount > 0));
-                string methodSetBody = CreatePropertySetBody(settings, 3, itemParams, (paramsCount > 0));
+                bool hasForbiddenName = IsKeyword(propertyNode.Attribute("Name").Value as string);
+                bool convertToMethod = ((paramsCount > 0) || (true ==hasForbiddenName));
+                string methodGetBody = CreatePropertyGetBody(settings, 3, itemParams, convertToMethod);
+                string methodSetBody = CreatePropertySetBody(settings, 3, itemParams, convertToMethod);
 
                 method = method.Replace("%propertyGetBody%", methodGetBody);
                 method = method.Replace("%propertySetBody%", methodSetBody);
@@ -129,7 +145,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         }
 
-        internal static string ValidatePropertyName(string name)
+        internal static string cValidatePropertyName(string name)
         {
             if (null == _Keywords)
             {
@@ -190,7 +206,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = "";
             string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, false);
             int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
-            if ((paramsCountWithOptionals > 0) || (faceName == name))
+            bool hasForbiddenName = IsKeyword(name);
+            if ((paramsCountWithOptionals > 0) || (faceName == name) || hasForbiddenName)
             {
                 result = "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
                 if (name != "this")
@@ -214,7 +231,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             else
             {
-                result = "\t\tpublic " + "%valueReturn% " + ValidatePropertyName(name) + "\r\n";
+                result = "\t\tpublic " + "%valueReturn% " + name + "\r\n";
                 result += "\t\t{\r\n\t\t\tget\r\n\t\t\t{\r\n%propertyGetBody%\t\t\t}\r\n%%\t\t}\r\n\r\n";
                 if ("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value)
                 {
