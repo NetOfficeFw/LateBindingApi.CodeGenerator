@@ -86,6 +86,8 @@ namespace LateBindingApi.Core
                 case ConsoleMode.MemoryList:
                     _messageList.Add(output);
                     break;
+		default:
+			throw new Exception("Unkown Log Mode.");
             }
         }
 
