@@ -280,6 +280,10 @@
       <Project>{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}</Project>
       <Name>LateBindingApi.CodeGenerator.CSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LateBindingApi.CodeGenerator.Documentation\LateBindingApi.CodeGenerator.Documentation.csproj">
+      <Project>{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}</Project>
+      <Name>LateBindingApi.CodeGenerator.Documentation</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />
