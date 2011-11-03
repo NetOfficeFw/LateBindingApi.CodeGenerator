@@ -1,7 +1,7 @@
 ﻿   
         #region IEnumerable Members
         
-        %version%
+		%version%
 		public IEnumerator GetEnumerator()
 		{
 			object enumProxy = Invoker.%Call%(this, "_NewEnum");

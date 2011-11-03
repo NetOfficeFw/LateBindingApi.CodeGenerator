@@ -19,8 +19,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
         static XDocument _document;
         static DubletteManager _dublettes;
         static DerivedManager _derives;
+        static FakedEnumeratorManager _enumerators;
         ThreadJob _job = new ThreadJob();
-
+         
         #endregion
 
         #region Properties
@@ -132,6 +133,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             DoUpdate("Scan for derived interfaces");
             _derives = new DerivedManager(this, solution.Document);
             _derives.ScanForDerived();
+
+            DoUpdate("Scan for missed enumerators");
+            _enumerators = new FakedEnumeratorManager(this, _document);
+            _enumerators.ScanForMissedEnumerators();
 
             DoUpdate("Create root folder");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
@@ -438,6 +443,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string[] result = GetSupportByLibraryArray(entityNode);
             foreach (string item in result)
                 between += item + ", ";
+
+            if (between.EndsWith(", "))
+                between = between.Substring(0, between.Length - 2);
 
             return summary1 + between + "\r\n" + summary2;
         }

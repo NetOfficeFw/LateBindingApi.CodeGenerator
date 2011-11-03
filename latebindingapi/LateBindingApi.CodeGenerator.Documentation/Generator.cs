@@ -62,11 +62,6 @@ namespace LateBindingApi.CodeGenerator.Documentation
 
         private void GenerateProperty(XElement itemMethod, XElement docuClassItem, string prefix)
         {
-            if( ("Range" == docuClassItem.Attribute("Name").Value) && ("Value" == itemMethod.Attribute("Name").Value))
-            { 
-            
-            }
-
             XElement newPropertyNode = null;
             newPropertyNode = (from a in docuClassItem.Element("Methods").Elements("Method")
                                where a.Attribute("Name").Value.Equals(itemMethod.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)

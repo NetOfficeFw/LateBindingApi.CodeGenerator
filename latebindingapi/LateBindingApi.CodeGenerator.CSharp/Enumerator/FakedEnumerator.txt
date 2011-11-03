@@ -1,0 +1,18 @@
+﻿   
+        #region IEnumerable Members
+		
+        %version%
+		[CustomEnumerator]
+		public IEnumerator GetEnumerator()
+        {
+			int count = Count;
+			%Type%[] enumeratorObjects = new %Type%[count];
+			for (int i = 1; i <= count; i++)
+				enumeratorObjects[i] = this[i];
+
+			foreach (%Type% item in enumeratorObjects)
+				yield return item;
+        }
+
+        #endregion
+        

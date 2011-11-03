@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomEnumeratorAttribute.cs" />
     <Compile Include="DebugConsole.cs" />
     <Compile Include="EntityTypeAttribute.cs" />
     <Compile Include="LateBindingApiException.cs" />

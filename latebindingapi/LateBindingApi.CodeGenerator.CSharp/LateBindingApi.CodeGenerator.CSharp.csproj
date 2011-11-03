@@ -57,6 +57,7 @@
     <EmbeddedResource Include="Enumerator\ProxyEnumerator.txt" />
     <Compile Include="EnumsApi.cs" />
     <Compile Include="EventApi.cs" />
+    <Compile Include="FakedEnumeratorManager.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="FormConfigDialog.cs">
       <SubType>Form</SubType>
@@ -135,6 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Api\LateBindingApi.Core_v4.0.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Enumerator\FakedEnumerator.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

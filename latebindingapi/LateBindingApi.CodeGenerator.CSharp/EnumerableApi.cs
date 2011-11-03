@@ -17,6 +17,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _ProxyEnumerator;
         private static string _NativeEnumerator;
+        private static string _FakedEnumerator;
 
         /// <summary>
         /// returns enumerator node
@@ -148,6 +149,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return false;
         }
 
+        internal static bool HasCustomAttribute(XElement enumNode)
+        {
+            foreach (XAttribute item in enumNode.Attributes())
+            {
+                if ((item.Name == "IsCustom") && (item.Value == "true"))
+                    return true;
+            }
+            return false;
+        }
+
         /// <summary>
         ///  add enumerator code
         /// </summary>
@@ -155,9 +166,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="content"></param>
         internal static void AddEnumerator(XElement faceNode, ref string content)
         {
-            XElement returnType = GetEnumNode(faceNode).Element("Parameters").Element("ReturnValue");
+            XElement enumNode = GetEnumNode(faceNode);
+            XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
 
-            string versionAttribute = CSharpGenerator.GetSupportByLibraryAttribute(faceNode); 
+            string versionSummary = CSharpGenerator.GetSupportByLibraryString("", enumNode);
+            string versionAttribute = CSharpGenerator.GetSupportByLibraryAttribute(enumNode); 
             content = content.Replace("%enumerableSpace%", "using System.Collections;\r\n");
             content = content.Replace("%enumerable%", " ,IEnumerable");
 
@@ -166,14 +179,28 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if (null == _NativeEnumerator)
                 _NativeEnumerator = RessourceApi.ReadString("Enumerator.NativeEnumerator.txt");
+            
+            if (null == _FakedEnumerator)
+                _FakedEnumerator = RessourceApi.ReadString("Enumerator.FakedEnumerator.txt");
+
+            if (faceNode.Attribute("Name").Value == "BuildingBlockTypes")
+            {
+            }
+
+            versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
+            if (HasCustomAttribute(enumNode))
+                versionSummary += "\t\t/// This is a custom enumerator from NetOffice\r\n";
+            versionSummary += "\t\t/// </summary>\r\n";
 
             // get enumerator
             string enumString = "";
-            if ("true" == returnType.Attribute("IsComProxy").Value)
-                enumString = _ProxyEnumerator.Replace("%version%", versionAttribute);
+            if(HasCustomAttribute(enumNode))
+                enumString = _FakedEnumerator.Replace("%version%",  versionSummary + "\t\t" + versionAttribute);
+            else if ("true" == returnType.Attribute("IsComProxy").Value)
+                enumString = _ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
             else
-                enumString = _NativeEnumerator.Replace("%version%", versionAttribute);
-          
+                enumString = _NativeEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+            
             // get call type
             EnumeratorType enumType = GetEnumType(faceNode);
             switch (enumType)
@@ -190,6 +217,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             // get type and check array
             string type = returnType.Attribute("Type").Value;
+           
+            if(returnType.Attribute("IsComProxy").Value == "true")
+                 type = "COMObject";
+
             if("COMVariant" == type)
                 type = "object";
 
@@ -197,9 +228,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 type += "[]";
 
             // get type qualifiers
-            string qualifier = GetQualifier(faceNode, returnType);
-            type = qualifier + type;
- 
+            if (type != "COMObject")
+            { 
+                string qualifier = GetQualifier(faceNode, returnType);
+                if(qualifier != "")
+                    type = qualifier  + type;
+            }
+
             enumString = enumString.Replace("%Type%", type);
 
             content += enumString;
