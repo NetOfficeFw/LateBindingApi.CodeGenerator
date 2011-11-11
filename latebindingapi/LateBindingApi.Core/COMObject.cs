@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Text;
+using COMTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace LateBindingApi.Core
 {
@@ -47,7 +48,12 @@ namespace LateBindingApi.Core
         ///  child instance List
         /// </summary>
         protected internal List<COMObject>      _listChildObjects    = new List<COMObject>();
-       
+
+        /// <summary>
+        /// list of runtime supported entities
+        /// </summary>
+        Dictionary<string, string>             _listSupportedEntities;
+
         #endregion
 
         #region Construction
@@ -181,6 +187,7 @@ namespace LateBindingApi.Core
         /// <summary>
         /// returns the native wrapped proxy
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public object UnderlyingObject
         {
             get
@@ -311,6 +318,46 @@ namespace LateBindingApi.Core
         #endregion
 
         #region COMObject Methods
+ 
+        /// <summary>
+        ///  returns information the proxy provides a method or property with given name at runtime
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool SupportEntity(string name)
+        {
+            string outValue = null;
+            bool result = _listSupportedEntities.TryGetValue("Property", out outValue);
+            if(result)
+                return true;
+
+            return _listSupportedEntities.TryGetValue("Method", out outValue);
+        }
+
+        /// <summary>
+        /// returns information the proxy provides a property with given name at runtime
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool SupportProperty(string name)
+        {
+            string outValue = null;
+            return _listSupportedEntities.TryGetValue("Property", out outValue);
+        }
+
+        /// <summary>
+        /// returns information the proxy provides a method with given name at runtime
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool SupportMethod(string name)
+        {
+            if (null == _listSupportedEntities)
+                _listSupportedEntities = GetSupportedEntities(_underlyingObject);
+
+            string outValue = null;
+            return _listSupportedEntities.TryGetValue("Method", out outValue);
+        }
 
         /// <summary>
         /// create object from progid
@@ -425,6 +472,13 @@ namespace LateBindingApi.Core
             // release proxy
             ReleaseCOMProxy();
 
+            // clear supportList
+            if (null != _listSupportedEntities)
+            { 
+                _listSupportedEntities.Clear();
+                _listSupportedEntities = null;
+            }
+
             _isDisposed = true;
             _isCurrentlyDisposing = false;
         }
@@ -464,6 +518,57 @@ namespace LateBindingApi.Core
                 itemObject.Dispose();
             }
             _listChildObjects.Clear();
+        }
+
+        #endregion
+
+        #region Static Methods
+
+        private static Dictionary<string, string> GetSupportedEntities(object comProxy)
+        {
+            Dictionary<string, string> supportList = new Dictionary<string, string>();
+            IDispatch dispatch = comProxy as IDispatch;
+            if (null == dispatch)
+                throw new COMException("Unable to cast underlying proxy to IDispatch.");
+
+            COMTypes.ITypeInfo typeInfo = dispatch.GetTypeInfo(0, 0);
+            if(null == typeInfo)
+                throw new COMException("GetTypeInfo returns null.");
+
+            IntPtr typeAttrPointer = IntPtr.Zero;
+            typeInfo.GetTypeAttr(out typeAttrPointer);
+
+            COMTypes.TYPEATTR typeAttr = (COMTypes.TYPEATTR)Marshal.PtrToStructure(typeAttrPointer, typeof(COMTypes.TYPEATTR));
+            for (int i = 0; i < typeAttr.cFuncs; i++)
+            {
+                string strName, strDocString, strHelpFile;
+                int dwHelpContext;
+                IntPtr funcDescPointer = IntPtr.Zero;
+                System.Runtime.InteropServices.ComTypes.FUNCDESC funcDesc;
+                typeInfo.GetFuncDesc(i, out funcDescPointer);
+                funcDesc = (COMTypes.FUNCDESC)Marshal.PtrToStructure(funcDescPointer, typeof(System.Runtime.InteropServices.ComTypes.FUNCDESC));
+
+                switch (funcDesc.invkind)
+                {
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYGET:
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT:
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUTREF:
+                        typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
+                        supportList.Add("Property", strName);
+                        break;
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_FUNC:
+                        typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
+                        supportList.Add("Method", strName);
+                        break;
+                }
+
+                typeInfo.ReleaseFuncDesc(funcDescPointer);
+            }
+
+            typeInfo.ReleaseTypeAttr(typeAttrPointer);
+            Marshal.ReleaseComObject(typeInfo);
+
+            return supportList;
         }
 
         #endregion

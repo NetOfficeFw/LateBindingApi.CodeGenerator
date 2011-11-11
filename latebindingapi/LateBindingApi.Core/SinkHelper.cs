@@ -164,12 +164,20 @@ namespace LateBindingApi.Core
         /// <param name="connectPoint"></param>
         public void SetupEventBinding(IConnectionPoint connectPoint)
         {
-            if (true == Settings.EnableEvents)
+            try
             {
-                connectPoint.GetConnectionInterface(out _interfaceId);
-                _connectionPoint = connectPoint;
-                _connectionPoint.Advise(this, out _connectionCookie);
-                _pointList.Add(this);
+                if (true == Settings.EnableEvents)
+                {
+                    connectPoint.GetConnectionInterface(out _interfaceId);
+                    _connectionPoint = connectPoint;
+                    _connectionPoint.Advise(this, out _connectionCookie);
+                    _pointList.Add(this);
+                }
+            }
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw (throwedException);
             }
         }
 
