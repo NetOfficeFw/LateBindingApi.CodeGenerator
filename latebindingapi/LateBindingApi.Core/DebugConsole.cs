@@ -40,7 +40,7 @@ namespace LateBindingApi.Core
         /// <summary>
         /// append current time information in WriteLine and WriteException method
         /// </summary>
-        public static bool TimeEnabled { get; set; }
+        public static bool AppendTimeInfoEnabled { get; set; }
 
         /// <summary>
         /// operation mode
@@ -72,7 +72,7 @@ namespace LateBindingApi.Core
         internal static void WriteLine(string message)
         {
             string output = message;
-            if (TimeEnabled)
+            if (AppendTimeInfoEnabled)
                 output = DateTime.Now.ToLongTimeString() + message;
 
             switch (Mode)
@@ -86,8 +86,11 @@ namespace LateBindingApi.Core
                 case ConsoleMode.MemoryList:
                     _messageList.Add(output);
                     break;
-		default:
-			throw new Exception("Unkown Log Mode.");
+                case ConsoleMode.None:
+                    // do nothing
+                    break;
+		        default:
+			        throw new ArgumentOutOfRangeException("Unkown Log Mode.");
             }
         }
 
@@ -107,6 +110,9 @@ namespace LateBindingApi.Core
         /// <param name="message"></param>
         private static void AppendToLogFile(string message)
         {
+            if (null == FileName)
+                throw new LateBindingApiException("FileName not set.");
+
             System.IO.File.AppendAllText(FileName, message + Environment.NewLine, Encoding.UTF8);
         }
 

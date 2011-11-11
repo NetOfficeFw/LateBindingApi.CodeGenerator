@@ -96,32 +96,42 @@ namespace LateBindingApi.Core
         /// </summary>
         public static void Initialize()
         {
-            Assembly callingAssembly = System.Reflection.Assembly.GetCallingAssembly();
-            foreach (AssemblyName item in callingAssembly.GetReferencedAssemblies())
+            try
             {
-                Assembly itemAssembly = Assembly.Load(item);
-                object[] attributes = itemAssembly.GetCustomAttributes(true);
-                foreach (object itemAttribute in attributes)
-                {
-                    string fullnameAttribute = itemAttribute.GetType().FullName;
-                    if (fullnameAttribute == "LateBindingApi.Core.LateBindingAttribute")
-                    {
-                        Type factoryInfoType = itemAssembly.GetType(item.Name + ".Utils.ProjectInfo");
-                        IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as IFactoryInfo;
+                DebugConsole.WriteLine("LateBindingApi.Core.Factory.Initialized()");
 
-                        bool exists = false;
-                        foreach (IFactoryInfo itemFactory in _factoryList)
+                Assembly callingAssembly = System.Reflection.Assembly.GetCallingAssembly();
+                foreach (AssemblyName item in callingAssembly.GetReferencedAssemblies())
+                {
+                    Assembly itemAssembly = Assembly.Load(item);
+                    object[] attributes = itemAssembly.GetCustomAttributes(true);
+                    foreach (object itemAttribute in attributes)
+                    {
+                        string fullnameAttribute = itemAttribute.GetType().FullName;
+                        if (fullnameAttribute == "LateBindingApi.Core.LateBindingAttribute")
                         {
-                            if (itemFactory.Assembly.FullName == factoryInfo.Assembly.FullName)
+                            Type factoryInfoType = itemAssembly.GetType(item.Name + ".Utils.ProjectInfo");
+                            IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as IFactoryInfo;
+
+                            bool exists = false;
+                            foreach (IFactoryInfo itemFactory in _factoryList)
                             {
-                                exists = true;
-                                break;
+                                if (itemFactory.Assembly.FullName == factoryInfo.Assembly.FullName)
+                                {
+                                    exists = true;
+                                    break;
+                                }
                             }
+                            if (!exists)
+                                _factoryList.Add(factoryInfo);
                         }
-                        if (!exists)
-                            _factoryList.Add(factoryInfo);
                     }
                 }
+            }
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw (throwedException);
             }
         }
 
@@ -146,19 +156,27 @@ namespace LateBindingApi.Core
         /// <returns></returns>
         public static COMObject CreateKnownObjectFromComProxy(COMObject caller, object comProxy, Type wrapperClassType)
         {
-            if (null == comProxy)
-                return null;
-
-            // create new proxyType
-            Type comProxyType = null;
-            if (false == _proxyTypeCache.TryGetValue(wrapperClassType.FullName, out comProxyType))
+            try
             {
-                comProxyType = comProxy.GetType();
-                _proxyTypeCache.Add(wrapperClassType.FullName, comProxyType);
-            }
+                if (null == comProxy)
+                    return null;
 
-            COMObject newClass = Activator.CreateInstance(wrapperClassType, new object[] { caller, comProxy, comProxyType }) as COMObject;
-            return newClass;
+                // create new proxyType
+                Type comProxyType = null;
+                if (false == _proxyTypeCache.TryGetValue(wrapperClassType.FullName, out comProxyType))
+                {
+                    comProxyType = comProxy.GetType();
+                    _proxyTypeCache.Add(wrapperClassType.FullName, comProxyType);
+                }
+
+                COMObject newClass = Activator.CreateInstance(wrapperClassType, new object[] { caller, comProxy, comProxyType }) as COMObject;
+                return newClass;
+            }
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw throwedException;
+            }
         }
 
         /// <summary>
@@ -170,15 +188,23 @@ namespace LateBindingApi.Core
         /// <returns></returns>
         public static COMObject[] CreateKnownObjectArrayFromComProxy(COMObject caller, object[] comProxyArray, Type wrapperClassType)
         {
-            if (null == comProxyArray)
-                return null;
+            try
+            {
+                if (null == comProxyArray)
+                    return null;
 
-            Type comVariantType = null;
-            COMObject[] newVariantArray = new COMObject[comProxyArray.Length];
-            for (int i = 0; i < comProxyArray.Length; i++)
-                newVariantArray[i] = Activator.CreateInstance(wrapperClassType, new object[] { caller, comProxyArray[i], comVariantType }) as COMObject;
+                Type comVariantType = null;
+                COMObject[] newVariantArray = new COMObject[comProxyArray.Length];
+                for (int i = 0; i < comProxyArray.Length; i++)
+                    newVariantArray[i] = Activator.CreateInstance(wrapperClassType, new object[] { caller, comProxyArray[i], comVariantType }) as COMObject;
 
-            return newVariantArray;
+                return newVariantArray;
+            }
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw throwedException;
+            }
         }
 
         /// <summary>
@@ -188,25 +214,33 @@ namespace LateBindingApi.Core
         /// <param name="comProxy">new created proxy</param>
         /// <returns>corresponding Wrapper class Instance or plain COMObject</returns>
         public static COMObject CreateObjectFromComProxy(COMObject caller, object comProxy)
-        { 
-            if (null == comProxy)
-                return null;
-           
-            IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
-           
-            string className = TypeDescriptor.GetClassName(comProxy);
-            string fullClassName = factoryInfo.Namespace + "." + className;
-
-            // create new proxyType
-            Type comProxyType = null;
-            if (false == _proxyTypeCache.TryGetValue(fullClassName, out comProxyType))
+        {
+            try
             {
-                comProxyType = comProxy.GetType();
-                _proxyTypeCache.Add(fullClassName, comProxyType); 
-            }
+                if (null == comProxy)
+                    return null;
 
-            COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comProxy, comProxyType, className, fullClassName);            
-            return newObject;
+                IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
+
+                string className = TypeDescriptor.GetClassName(comProxy);
+                string fullClassName = factoryInfo.Namespace + "." + className;
+
+                // create new proxyType
+                Type comProxyType = null;
+                if (false == _proxyTypeCache.TryGetValue(fullClassName, out comProxyType))
+                {
+                    comProxyType = comProxy.GetType();
+                    _proxyTypeCache.Add(fullClassName, comProxyType);
+                }
+
+                COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comProxy, comProxyType, className, fullClassName);
+                return newObject;
+            }
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw throwedException;
+            }
         }
 
         /// <summary>
@@ -218,17 +252,25 @@ namespace LateBindingApi.Core
         /// <returns>corresponding Wrapper class Instance or plain COMObject</returns>
         public static COMObject CreateObjectFromComProxy(COMObject caller, object comProxy, Type comProxyType)
         {
-            if (null == comProxy)
-                return null;
+            try
+            {
+                if (null == comProxy)
+                    return null;
 
-            IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
+                IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
 
-            string className = TypeDescriptor.GetClassName(comProxy);
-            string fullClassName = factoryInfo.Namespace + "." + className;
+                string className = TypeDescriptor.GetClassName(comProxy);
+                string fullClassName = factoryInfo.Namespace + "." + className;
 
-            // create new classType
-            COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comProxy, comProxyType, className, fullClassName);
-            return newObject;
+                // create new classType
+                COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comProxy, comProxyType, className, fullClassName);
+                return newObject;
+            }
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw throwedException;
+            }
         }
 
         /// <summary>
@@ -243,23 +285,31 @@ namespace LateBindingApi.Core
         /// <returns>corresponding Wrapper class Instance or plain COMObject</returns>
         public static COMObject CreateObjectFromComProxy(IFactoryInfo factoryInfo, COMObject caller, object comProxy, Type comProxyType, string className, string fullClassName)
         {
-            Type classType = null;
-            if (true == _wrapperTypeCache.TryGetValue(fullClassName, out classType))
+            try
             {
-                // cached classType
-                object newClass = Activator.CreateInstance(classType, new object[] { caller, comProxy });
-                return newClass as COMObject;
-            }
-            else
-            {
-                // create new classType
-                classType = factoryInfo.Assembly.GetType(fullClassName);
-                if (null == classType)
-                    throw new ArgumentException("Class not exists: " + fullClassName);
+                Type classType = null;
+                if (true == _wrapperTypeCache.TryGetValue(fullClassName, out classType))
+                {
+                    // cached classType
+                    object newClass = Activator.CreateInstance(classType, new object[] { caller, comProxy });
+                    return newClass as COMObject;
+                }
+                else
+                {
+                    // create new classType
+                    classType = factoryInfo.Assembly.GetType(fullClassName);
+                    if (null == classType)
+                        throw new ArgumentException("Class not exists: " + fullClassName);
 
-                _wrapperTypeCache.Add(fullClassName, classType);
-                COMObject newClass = Activator.CreateInstance(classType, new object[] { caller, comProxy, comProxyType }) as COMObject;
-                return newClass;
+                    _wrapperTypeCache.Add(fullClassName, classType);
+                    COMObject newClass = Activator.CreateInstance(classType, new object[] { caller, comProxy, comProxyType }) as COMObject;
+                    return newClass;
+                }
+            }
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw throwedException;
             }
         }
         
@@ -271,20 +321,28 @@ namespace LateBindingApi.Core
         /// <returns>corresponding Wrapper class Instance array or plain COMObject array</returns>
         public static COMObject[] CreateObjectArrayFromComProxy(COMObject caller, object[] comProxyArray)
         {
-            if (null == comProxyArray)
-                return null;
-
-            Type comVariantType = null;
-            COMObject[] newVariantArray = new COMObject[comProxyArray.Length];
-            for (int i = 0; i < comProxyArray.Length; i++)
+            try
             {
-                comVariantType = comProxyArray[i].GetType();
-                IFactoryInfo factoryInfo = GetFactoryInfo(comProxyArray[i]);
-                string className = TypeDescriptor.GetClassName(comProxyArray[i]);
-                string fullClassName = factoryInfo.Namespace + "." + className;
-                newVariantArray[i] = CreateObjectFromComProxy(factoryInfo, caller, comProxyArray[i], comVariantType, className, fullClassName);
+                if (null == comProxyArray)
+                    return null;
+
+                Type comVariantType = null;
+                COMObject[] newVariantArray = new COMObject[comProxyArray.Length];
+                for (int i = 0; i < comProxyArray.Length; i++)
+                {
+                    comVariantType = comProxyArray[i].GetType();
+                    IFactoryInfo factoryInfo = GetFactoryInfo(comProxyArray[i]);
+                    string className = TypeDescriptor.GetClassName(comProxyArray[i]);
+                    string fullClassName = factoryInfo.Namespace + "." + className;
+                    newVariantArray[i] = CreateObjectFromComProxy(factoryInfo, caller, comProxyArray[i], comVariantType, className, fullClassName);
+                }
+                return newVariantArray;
             }
-            return newVariantArray;
+            catch (Exception throwedException)
+            {
+                DebugConsole.WriteException(throwedException);
+                throw throwedException;
+            }
         }
  
         #endregion
