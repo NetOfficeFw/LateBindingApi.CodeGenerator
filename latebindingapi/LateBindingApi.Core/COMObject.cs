@@ -327,36 +327,36 @@ namespace LateBindingApi.Core
         public bool SupportEntity(string name)
         {
             string outValue = null;
-            bool result = _listSupportedEntities.TryGetValue("Property", out outValue);
+            bool result = _listSupportedEntities.TryGetValue("Property-" +name, out outValue);
             if(result)
                 return true;
 
-            return _listSupportedEntities.TryGetValue("Method", out outValue);
+            return _listSupportedEntities.TryGetValue("Method-" + name, out outValue);
         }
 
         /// <summary>
         /// returns information the proxy provides a property with given name at runtime
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="propertyName"></param>
         /// <returns></returns>
-        public bool SupportProperty(string name)
+        public bool SupportProperty(string propertyName)
         {
             string outValue = null;
-            return _listSupportedEntities.TryGetValue("Property", out outValue);
+            return _listSupportedEntities.TryGetValue("Property-" + propertyName, out outValue);
         }
 
         /// <summary>
         /// returns information the proxy provides a method with given name at runtime
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="methodName"></param>
         /// <returns></returns>
-        public bool SupportMethod(string name)
+        public bool SupportMethod(string methodName)
         {
             if (null == _listSupportedEntities)
                 _listSupportedEntities = GetSupportedEntities(_underlyingObject);
 
             string outValue = null;
-            return _listSupportedEntities.TryGetValue("Method", out outValue);
+            return _listSupportedEntities.TryGetValue("Method-" + methodName, out outValue);
         }
 
         /// <summary>
@@ -554,11 +554,11 @@ namespace LateBindingApi.Core
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT:
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUTREF:
                         typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
-                        supportList.Add("Property", strName);
+                        supportList.Add("Property-" + strName, strDocString);
                         break;
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_FUNC:
                         typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
-                        supportList.Add("Method", strName);
+                        supportList.Add("Method-" + strName, strDocString);
                         break;
                 }
 
