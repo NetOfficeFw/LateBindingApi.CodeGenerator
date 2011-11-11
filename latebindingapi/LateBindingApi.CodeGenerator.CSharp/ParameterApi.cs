@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
-    internal static class ParameterApi
+    public static class ParameterApi
     {
         private static string[] _Keywords;
         
@@ -14,7 +14,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// call ValidateParameters for all method nodes
         /// </summary>
         /// <param name="methodsNode"></param>
-        internal static void ValidateItems(XElement enumeratorNode, string itemName, Settings settings)
+        public static void ValidateItems(XElement enumeratorNode, string itemName, Settings settings)
         {
             foreach (XElement methodNode in enumeratorNode.Elements(itemName))
             {
@@ -49,8 +49,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     }
                 }
 
-               // if (settings.Framework != "4.0")
-               ParameterApi.ValidateParameters(methodNode);
+                if (itemName == "Property")
+                    ParameterApi.xValidateParameters(methodNode);
             }
         }
 
@@ -85,7 +85,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// remove doublettes and copy version attributes reflibs etc. from delete doublette to origin
         /// </summary>
         /// <param name="methodsNode"></param>
-        internal static void ValidateParameters(XElement methodNode)
+        internal static void xValidateParameters(XElement methodNode)
         {
             // create overloads
             List<XElement> addList = new List<XElement>();

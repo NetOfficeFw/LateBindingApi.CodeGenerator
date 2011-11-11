@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
-    internal static class MethodApi
+    public static class MethodApi
     {
         /// <summary>
         /// convert all methods to code as string
@@ -35,6 +35,49 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         /// <summary>
+        /// returns overloads with the 
+        /// </summary>
+        /// <returns></returns>
+        public static List<XElement> GetOverloadsWithMoreParameters(XElement parametersNode, IEnumerable<XElement> parameters)
+        {
+            int paramCount = parametersNode.Elements("Parameter").Count();
+            List<XElement> listMethods = new List<XElement>();
+           
+            foreach (XElement item in parameters)
+            {
+                IEnumerable<XElement> otherParameters = item.Elements("Parameter");
+                List<XElement> listOtherParameters = new List<XElement>();
+                foreach (XElement itemOther in otherParameters)
+                    listOtherParameters.Add(itemOther);
+
+                int otherParametersCount = otherParameters.Count();
+                if (otherParametersCount > paramCount) 
+                {
+                    bool allOptionals = true;
+                    for (int i = paramCount; i < otherParametersCount; i++)
+                    {
+                        XElement other = listOtherParameters[i];
+                        if (other.Attribute("IsOptional").Value == "false")
+                        {
+                            allOptionals = false;
+                            break;
+                        }
+                    }
+
+                    if (allOptionals)
+                        listMethods.Add(item);
+                }
+            }
+
+            return listMethods;
+        }
+
+        private static bool HasCustomAttribute(XElement paramsNode)
+        {
+            return (paramsNode.Attribute("IsCustom") != null);
+        }
+
+        /// <summary>
         /// convert method to code as string
         /// </summary>
         /// <param name="methodNode"></param>
@@ -56,13 +99,26 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
 
                 XElement returnValue = itemParams.Element("ReturnValue");
+
+                string[] supportDocuArray = CSharpGenerator.GetSupportByLibraryArray(itemParams);
+
+                // gibt es andere überladungen mit mehr parametern als dieser überladung und sind die überzählen alle optional?
+                // dann füge deren supportbylibray überladungen an
+                List<XElement> otherOverloads = GetOverloadsWithMoreParameters(itemParams, methodNode.Elements("Parameters"));
+                foreach (XElement other in otherOverloads)
+                    supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
                 
+                string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
+                string supportAttribute = CSharpGenerator.GetSupportByLibraryAttribute(supportDocuArray, itemParams);
+                 
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
-                    method = DocumentationApi.CreateParameterDocumentation(2, itemParams);
+                    method = supportDocu;
 
-                method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
-                if("this" == name)
+                if (HasCustomAttribute(itemParams))
+                    method += "\t\t" + "[CustomMethodAttribute]" + "\r\n";
+                method += "\t\t" + supportAttribute + "\r\n";
+                if ("this" == name)
                     method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);

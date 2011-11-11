@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using System.Text;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
+using LateBindingApi.CodeGenerator.CSharp;
 
 namespace LateBindingApi.CodeGenerator.Documentation
 {
@@ -16,7 +17,11 @@ namespace LateBindingApi.CodeGenerator.Documentation
         DateTime _startTimeOperation;
         Settings _settings;
         ThreadJob _job = new ThreadJob();
-        XDocument _document;
+        static FakedEnumeratorManager _enumerators;
+        static CustomMethodManager _customMethods;
+        static CustomPropertyManager _customProperties;
+
+        static XDocument _document;
 
         #endregion
 
@@ -48,7 +53,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
             XElement node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
                              where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
                              select a).FirstOrDefault();
-
+            
             return node.Attribute("Version").Value;
         }
 
@@ -63,19 +68,21 @@ namespace LateBindingApi.CodeGenerator.Documentation
         private void GenerateProperty(XElement itemMethod, XElement docuClassItem, string prefix)
         {
             XElement newPropertyNode = null;
-            newPropertyNode = (from a in docuClassItem.Element("Methods").Elements("Method")
-                               where a.Attribute("Name").Value.Equals(itemMethod.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
-                               select a).FirstOrDefault();
-
-            if (null == newPropertyNode)
-            { 
-                newPropertyNode = new XElement("Method", new XElement("Parameters", new XElement("SupportByLibrary", "")), new XAttribute("Name", prefix + itemMethod.Attribute("Name").Value));
-                docuClassItem.Element("Methods").Add(newPropertyNode);
-            }
+            List<XElement> newNodes = new List<XElement>();
 
             // version support
             foreach (XElement itemParameters in itemMethod.Elements("Parameters"))
             {
+                string propName = itemMethod.Attribute("Name").Value;
+                if (propName == "_NewEnum")
+                    propName = "GetEnumerator";
+                else
+                    propName = prefix + propName;
+
+                newPropertyNode = new XElement("Method", new XElement("Parameters", new XElement("SupportByLibrary", "")), new XAttribute("Name", propName));
+                docuClassItem.Element("Methods").Add(newPropertyNode);
+                newNodes.Add(newPropertyNode);
+
                 foreach (XElement itemRefLib in itemParameters.Element("RefLibraries").Elements("Ref"))
                 {
                     string key = itemRefLib.Attribute("Key").Value;
@@ -88,38 +95,41 @@ namespace LateBindingApi.CodeGenerator.Documentation
                         versionNode = new XElement("Version", version);
                         newPropertyNode.Element("Parameters").Element("SupportByLibrary").Add(versionNode);
                     }
-                }            
+                }           
+ 
             }
 
-
-            foreach (XElement itemParam in itemMethod.Elements("Parameters").Elements("Parameter"))
+            int i = 0;
+            foreach (XElement itemParams in itemMethod.Elements("Parameters"))
             {
-                string paramName = itemParam.Attribute("Name").Value;
-                string paramType = itemParam.Attribute("Type").Value;
-                string paramIsOptional = itemParam.Attribute("IsOptional").Value;
-
-                XElement newParam = null;
-
-                if (("set_" == prefix) && (itemParam.Parent.Elements("Parameter").Count() == 0))
+                foreach (XElement itemParam in itemParams.Elements("Parameter"))
                 {
-                    newParam = new XElement("Parameter",
-                                      new XAttribute("Name", "value"),
-                                      new XAttribute("Type", itemParam.Parent.Element("ReturnValue").Attribute("Type").Value),
-                                      new XAttribute("IsOptional", "false"));
-                }
-                else
-                {
-                    newParam = new XElement("Parameter",
-                                    new XAttribute("Name", paramName),
-                                    new XAttribute("Type", paramType),
-                                    new XAttribute("IsOptional", paramIsOptional));
-                }
+                    string paramName = itemParam.Attribute("Name").Value;
+                    string paramType = itemParam.Attribute("Type").Value;
+                    string paramIsOptional = itemParam.Attribute("IsOptional").Value;
 
-                newPropertyNode.Element("Parameters").Add(newParam);
+                    XElement newParam = null;
+
+                    if (("set_" == prefix) && (itemParam.Parent.Elements("Parameter").Count() == 0))
+                    {
+                        newParam = new XElement("Parameter",
+                                          new XAttribute("Name", "value"),
+                                          new XAttribute("Type", itemParam.Parent.Element("ReturnValue").Attribute("Type").Value),
+                                          new XAttribute("IsOptional", "false"));
+                    }
+                    else
+                    {
+                        newParam = new XElement("Parameter",
+                                        new XAttribute("Name", paramName),
+                                        new XAttribute("Type", paramType),
+                                        new XAttribute("IsOptional", paramIsOptional));
+                    }
+                    newNodes[i].Element("Parameters").Add(newParam);
+                }
+                i++;
             }
            
         }
-
 
         private void GenerateProperties(XElement itemClass, XElement docuClassItem)
         {
@@ -143,7 +153,13 @@ namespace LateBindingApi.CodeGenerator.Documentation
             {
                 foreach (XElement itemParameters in itemMethod.Elements("Parameters"))
                 {
-                    XElement newMethodNode = new XElement("Method", new XElement("Parameters"), new XAttribute("Name", itemMethod.Attribute("Name").Value));
+                    string methodName = itemMethod.Attribute("Name").Value;
+                    if (methodName == "_NewEnum")
+                        methodName = "GetEnumerator";   
+                    else if (methodName == "Item")
+                        methodName = "get_Item";
+
+                    XElement newMethodNode = new XElement("Method", new XElement("Parameters"), new XAttribute("Name", methodName));
 
                     foreach (XElement itemParam in itemParameters.Elements("Parameter"))
                     {
@@ -160,23 +176,47 @@ namespace LateBindingApi.CodeGenerator.Documentation
                     }
 
                     XElement supportNode = new XElement("SupportByLibrary");
-                    foreach (XElement itemRefLib in itemParameters.Element("RefLibraries").Elements("Ref"))
-                    {
-                        string key = itemRefLib.Attribute("Key").Value;
-                        string version = GetLibraryVersion(key);
-                        supportNode.Add(new XElement("Version", version));
-                    }
-                    newMethodNode.Element("Parameters").Add(supportNode);
+                    string[] supportDocuArray = CSharpGenerator.GetSupportByLibraryArray(itemParameters);
 
+                    List<XElement> otherOverloads = MethodApi.GetOverloadsWithMoreParameters(itemParameters, itemMethod.Elements("Parameters"));
+                    foreach (XElement other in otherOverloads)
+                        supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
+
+                    foreach (string item in supportDocuArray)
+                        supportNode.Add(new XElement("Version", item));
+
+                    newMethodNode.Element("Parameters").Add(supportNode);
                     docuClassItem.Element("Methods").Add(newMethodNode);
                 }
             }
         }
+      
+        private XDocument CreateWorkingCopy()
+        {
+            XDocument document = new XDocument(_document);
+            return document;
+        }
+
 
         void _job_DoWork()
         {
             DoUpdate("Create root folder");
             PathApi.ClearCreateFolder(_settings.Folder);
+          
+            DoUpdate("Create Copy");
+            _document = CreateWorkingCopy();
+
+            DoUpdate("Scan for missed enumerators");
+            _enumerators = new FakedEnumeratorManager(this, _document);
+            _enumerators.ScanForMissedEnumerators();
+
+            DoUpdate("Scan for optional parameter methods");
+            _customMethods = new CustomMethodManager(this, _document);
+            _customMethods.ScanForOptionalMethods();
+
+             DoUpdate("Scan for optional parameter properties");
+             _customProperties = new CustomPropertyManager(this, _document);
+             _customProperties.ScanForOptionalProperties();
 
             foreach (XElement projectItem in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project"))
             {
@@ -236,7 +276,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                     }
 
                 }
-                
+               
                 DoUpdate("Create Interface Docu");
                 List<XElement> listElements = new List<XElement>();
                 foreach (XElement itemInterface in projectItem.Element("DispatchInterfaces").Elements("Interface"))
@@ -256,7 +296,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                         supportNode.Add(new XElement("Version", version));
                     }
                     newInterfaceNode.Add(supportNode);
-
+ 
                     GenerateProperties(itemInterface, newInterfaceNode);
                     GenerateMethods(itemInterface, newInterfaceNode);
 
@@ -370,6 +410,32 @@ namespace LateBindingApi.CodeGenerator.Documentation
             _document = document;
             _job.Start();
             _startTimeOperation = DateTime.Now;
+        }
+
+        internal static XElement GetInterfaceOrClassFromKey(string key)
+        {
+            XElement node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("DispatchInterfaces").Elements("Interface")
+                             where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("Interfaces").Elements("Interface")
+                    where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("CoClasses").Elements("CoClass")
+                    where a.Attribute("Key").Value.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+
+            if (null != node)
+                return node;
+
+            throw new Exception("key not found " + key);
         }
 
         public event ICodeGeneratorProgressHandler Progress;

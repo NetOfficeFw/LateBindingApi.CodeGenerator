@@ -20,6 +20,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         static DubletteManager _dublettes;
         static DerivedManager _derives;
         static FakedEnumeratorManager _enumerators;
+        static CustomMethodManager _customMethods;
         ThreadJob _job = new ThreadJob();
          
         #endregion
@@ -137,6 +138,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             DoUpdate("Scan for missed enumerators");
             _enumerators = new FakedEnumeratorManager(this, _document);
             _enumerators.ScanForMissedEnumerators();
+            
+            DoUpdate("Scan for optional parameter methods");
+            _customMethods = new CustomMethodManager(this, _document);
+            _customMethods.ScanForOptionalMethods();
 
             DoUpdate("Create root folder");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
@@ -241,6 +246,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             
             throw new Exception("key not found " + key);
         }
+ 
         internal static string GetProjectApiPath()
         {
             if (System.Diagnostics.Debugger.IsAttached)
@@ -377,6 +383,32 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
+        internal static string GetSupportByLibraryAttribute(string[] array, XElement entityNode)
+        {
+            XElement parentNode = entityNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
+            string result = "";
+            string versions = "";
+
+            foreach (string  item in array)
+            {
+                versions += item + ",";
+            }
+
+            if (versions.Substring(versions.Length - 1) == ",")
+                versions = versions.Substring(0, versions.Length - 1);
+
+            result += "[SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            return result;
+        }
+
+        /// <summary>
+        /// returns support libary versions for entityNode
+        /// </summary>
+        /// <param name="entityNode"></param>
+        /// <returns></returns>
         internal static string GetSupportByLibraryAttribute(XElement entityNode)
         {
             XElement parentNode = entityNode;
@@ -399,7 +431,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
             
-            result += "[SupportByLibrary(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            result += "[SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
 
@@ -408,7 +440,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string[] GetSupportByLibraryArray(XElement entityNode)
+        public static string[] GetSupportByLibraryArray(XElement entityNode)
         {
             List<string> result = new List<string>();
             XElement refLibs = entityNode.Element("RefLibraries");
@@ -469,7 +501,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
-            return tabSpace + "SupportByLibrary " + "" + parentNode.Attribute("Name").Value + ", " + res;
+            return tabSpace + "SupportByLibraryAttribute " + "" + parentNode.Attribute("Name").Value + ", " + res;
         }
 
         /// <summary>

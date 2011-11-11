@@ -49,6 +49,7 @@
     <EmbeddedResource Include="CoClass\EventHelper.txt" />
     <EmbeddedResource Include="Event\Interface.txt" />
     <Compile Include="ConstantApi.cs" />
+    <Compile Include="CustomMethodManager.cs" />
     <Compile Include="DerivedManager.cs" />
     <Compile Include="DispatchApi.cs" />
     <Compile Include="DocumentationApi.cs" />

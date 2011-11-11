@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
-    internal class Settings
+    public class Settings
     {
         #region Fields
 

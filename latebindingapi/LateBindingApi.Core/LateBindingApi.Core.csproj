@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomEnumeratorAttribute.cs" />
+    <Compile Include="CustomMethodAttribute.cs" />
     <Compile Include="DebugConsole.cs" />
     <Compile Include="EntityTypeAttribute.cs" />
     <Compile Include="LateBindingApiException.cs" />
