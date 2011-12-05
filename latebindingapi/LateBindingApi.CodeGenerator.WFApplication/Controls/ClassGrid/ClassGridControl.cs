@@ -17,6 +17,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid
         #region Fields
 
         bool _isInitialized;    // stores control was initalized with Initialize() method
+        XElement _node;
 
         #endregion
 
@@ -37,9 +38,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid
                 throw (new NotSupportedException("ClassGridControl is not initialized."));
 
             Clear();
-
+            _node = node;
             sourceEditControl.Show(node);
             inheritedControl.Show(node);
+            checkBoxCallQuit.Checked = Convert.ToBoolean(node.Attribute("AutomaticQuit").Value);
         }
 
         public void Clear()
@@ -55,5 +57,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ClassGrid
         }
 
         #endregion
+
+        private void checkBoxCallQuit_CheckedChanged(object sender, EventArgs e)
+        {
+            _node.Attribute("AutomaticQuit").Value = checkBoxCallQuit.Checked.ToString();
+        }
     }
 }

@@ -7,6 +7,8 @@ using COMTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace LateBindingApi.Core
 {
+    #region IDispatch
+
     [Guid("00020400-0000-0000-c000-000000000046"),
     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IDispatch
@@ -14,40 +16,15 @@ namespace LateBindingApi.Core
         [PreserveSig]
         int GetTypeInfoCount();
 
+        System.Runtime.InteropServices.ComTypes.ITypeInfo GetTypeInfo([MarshalAs(UnmanagedType.U4)] int iTInfo, [MarshalAs(UnmanagedType.U4)] int lcid);
+
         [PreserveSig]
-        System.Runtime.InteropServices.ComTypes.ITypeInfo GetTypeInfo([MarshalAs(UnmanagedType.U4)] int iTInfo,[MarshalAs(UnmanagedType.U4)] int lcid);
-        
-        [PreserveSig]
-        int GetIDsOfNames(ref Guid riid,[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPWStr)] string[] rgsNames, int cNames, int lcid,[MarshalAs(UnmanagedType.LPArray)] int[] rgDispId);
+        int GetIDsOfNames(ref Guid riid, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPWStr)] string[] rgsNames, int cNames, int lcid, [MarshalAs(UnmanagedType.LPArray)] int[] rgDispId);
 
         [PreserveSig]
         int Invoke(int dispIdMember, ref Guid riid, [MarshalAs(UnmanagedType.U4)] int lcid, [MarshalAs(UnmanagedType.U4)] int dwFlags, ref System.Runtime.InteropServices.ComTypes.DISPPARAMS pDispParams, [Out, MarshalAs(UnmanagedType.LPArray)] object[] pVarResult, ref System.Runtime.InteropServices.ComTypes.EXCEPINFO pExcepInfo, [Out, MarshalAs(UnmanagedType.LPArray)] IntPtr[] pArgErr);
     }
 
-
-    #region IDispatch
-    /*
-    [Guid("00020400-0000-0000-c000-000000000046"),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IDispatch
-    {
-        [PreserveSig]
-        int GetTypeInfoCount(out int Count);
-
-        [PreserveSig]
-        int GetTypeInfo([MarshalAs(UnmanagedType.U4)] int iTInfo,[MarshalAs(UnmanagedType.U4)] int lcid, out System.Runtime.InteropServices.ComTypes.ITypeInfo typeInfo);
-
-        [PreserveSig]
-        int GetIDsOfNames(ref Guid riid, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPWStr)] string[] rgsNames, int cNames, int lcid, [MarshalAs(UnmanagedType.LPArray)] int[] rgDispId);
-        
-        [PreserveSig]
-        int Invoke(int dispIdMember, ref Guid riid, [MarshalAs(UnmanagedType.U4)] int lcid, [MarshalAs(UnmanagedType.U4)]  
-                                                        int dwFlags, ref System.Runtime.InteropServices.ComTypes.DISPPARAMS pDispParams, 
-                                                        [Out, MarshalAs(UnmanagedType.LPArray)] object[] pVarResult, 
-                                                        ref System.Runtime.InteropServices.ComTypes.EXCEPINFO pExcepInfo, 
-                                                        [Out, MarshalAs(UnmanagedType.LPArray)] IntPtr[] pArgErr);
-    }
-    */
     #endregion
 
     /// <summary>
@@ -56,7 +33,7 @@ namespace LateBindingApi.Core
     public static class Factory
     {
         #region Fields
-        
+
         private static List<COMObject> _globalObjectList = new List<COMObject>();
         private static List<IFactoryInfo> _factoryList = new List<IFactoryInfo>();
         private static Dictionary<string, Type> _proxyTypeCache = new Dictionary<string, Type>();
@@ -66,13 +43,13 @@ namespace LateBindingApi.Core
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         /// returns an array about currently loaded LateBindingApi assemblies
         /// </summary>
         public static IFactoryInfo[] Assemblies
         {
-            get 
+            get
             {
                 return _factoryList.ToArray();
             }
@@ -98,7 +75,7 @@ namespace LateBindingApi.Core
         /// </summary>
         /// <param name="proxyCount"></param>
         public delegate void ProxyCountChangedHandler(int proxyCount);
-        
+
         /// <summary>
         /// notify info the count of proxies there open are changed
         /// in case of notify comes from event trigger created proxy the call comes from other thread
@@ -117,35 +94,62 @@ namespace LateBindingApi.Core
         {
             try
             {
-                DebugConsole.WriteLine("LateBindingApi.Core.Factory.Initialized()");
+                DebugConsole.WriteLine("LateBindingApi.Core.Factory.Initialize()");
 
+                List<string> dependAssemblies = new List<string>();
                 Assembly callingAssembly = System.Reflection.Assembly.GetCallingAssembly();
                 foreach (AssemblyName item in callingAssembly.GetReferencedAssemblies())
                 {
-                    Assembly itemAssembly = Assembly.Load(item);
-                    object[] attributes = itemAssembly.GetCustomAttributes(true);
-                    foreach (object itemAttribute in attributes)
-                    {
-                        string fullnameAttribute = itemAttribute.GetType().FullName;
-                        if (fullnameAttribute == "LateBindingApi.Core.LateBindingAttribute")
-                        {
-                            Type factoryInfoType = itemAssembly.GetType(item.Name + ".Utils.ProjectInfo");
-                            IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as IFactoryInfo;
+                    DebugConsole.WriteLine(string.Format("Load assembly {0}.", item.Name));
 
-                            bool exists = false;
-                            foreach (IFactoryInfo itemFactory in _factoryList)
+                    Assembly itemAssembly = Assembly.Load(item);
+                    string[] depends = AddAssembly(item.Name, itemAssembly);
+                    foreach (string depend in depends)
+                    {
+                        bool found = false;
+                        foreach (string itemExistingDependency in dependAssemblies)
+                        {
+                            if (depend == itemExistingDependency)
                             {
-                                if (itemFactory.Assembly.FullName == factoryInfo.Assembly.FullName)
-                                {
-                                    exists = true;
-                                    break;
-                                }
+                                found = true;
+                                break;
                             }
-                            if (!exists)
-                                _factoryList.Add(factoryInfo);
+                        }
+                        if (!found)
+                            dependAssemblies.Add(depend);
+                    }
+                }
+                
+                // try load non loaded dependent assemblies
+                if (Settings.EnableAdHocLoading)
+                { 
+                    foreach (string itemAssemblyName in dependAssemblies)
+                    {
+                        DebugConsole.WriteLine(string.Format("Try to load dependent assembly {0}.", itemAssemblyName));
+
+                        string fileName = callingAssembly.CodeBase.Substring(0, callingAssembly.CodeBase.LastIndexOf("/"))+ "/" + itemAssemblyName;
+                        fileName = fileName.Replace("/", "\\").Substring(8);
+
+                        if (System.IO.File.Exists(fileName))
+                        {
+                            try
+                            {
+                                Assembly dependAssembly = Assembly.LoadFile(fileName);
+                                AddAssembly(dependAssembly.GetName().Name, dependAssembly);
+                            }
+                            catch (Exception exception)
+                            {
+                                DebugConsole.WriteException(exception);
+                            }
+                        }
+                        else
+                        {
+                            DebugConsole.WriteLine(string.Format("Assembly {0} not found.", itemAssemblyName));
                         }
                     }
                 }
+
+                DebugConsole.WriteLine("LateBindingApi.Core.Factory.Initialize() passed");
             }
             catch (Exception throwedException)
             {
@@ -160,6 +164,68 @@ namespace LateBindingApi.Core
         public static void Clear()
         {
             _factoryList.Clear();
+        }
+
+        /// <summary>
+        /// creates an entity support list for a proxy
+        /// </summary>
+        /// <param name="comProxy"></param>
+        /// <returns></returns>
+        internal static Dictionary<string, string> GetSupportedEntities(object comProxy)
+        {
+            Dictionary<string, string> supportList = new Dictionary<string, string>();
+            IDispatch dispatch = comProxy as IDispatch;
+            if (null == dispatch)
+                throw new COMException("Unable to cast underlying proxy to IDispatch.");
+
+            COMTypes.ITypeInfo typeInfo = dispatch.GetTypeInfo(0, 0);
+            if (null == typeInfo)
+                throw new COMException("GetTypeInfo returns null.");
+
+            IntPtr typeAttrPointer = IntPtr.Zero;
+            typeInfo.GetTypeAttr(out typeAttrPointer);
+
+            COMTypes.TYPEATTR typeAttr = (COMTypes.TYPEATTR)Marshal.PtrToStructure(typeAttrPointer, typeof(COMTypes.TYPEATTR));
+            for (int i = 0; i < typeAttr.cFuncs; i++)
+            {
+                string strName, strDocString, strHelpFile;
+                int dwHelpContext;
+                IntPtr funcDescPointer = IntPtr.Zero;
+                System.Runtime.InteropServices.ComTypes.FUNCDESC funcDesc;
+                typeInfo.GetFuncDesc(i, out funcDescPointer);
+                funcDesc = (COMTypes.FUNCDESC)Marshal.PtrToStructure(funcDescPointer, typeof(System.Runtime.InteropServices.ComTypes.FUNCDESC));
+
+                switch (funcDesc.invkind)
+                {
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYGET:
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT:
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUTREF:
+                        {
+                            typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
+                            string outValue = "";
+                            bool exists = supportList.TryGetValue("Property-" + strName, out outValue);
+                            if (!exists)
+                                supportList.Add("Property-" + strName, strDocString);
+                            break;
+                        }
+                    case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_FUNC:
+                        {
+                            typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
+                            string outValue = "";
+                            bool exists = supportList.TryGetValue("Method-" + strName, out outValue);
+                            if (!exists)
+                                supportList.Add("Method-" + strName, strDocString);
+                            break;
+                        }
+                }
+
+                typeInfo.ReleaseFuncDesc(funcDescPointer);
+            }
+
+            typeInfo.ReleaseTypeAttr(typeAttrPointer);
+            Marshal.ReleaseComObject(typeInfo);
+
+            return supportList;
         }
 
         #endregion
@@ -331,7 +397,7 @@ namespace LateBindingApi.Core
                 throw throwedException;
             }
         }
-        
+
         /// <summary>
         ///  creates a new COMObject array
         /// </summary>
@@ -363,9 +429,9 @@ namespace LateBindingApi.Core
                 throw throwedException;
             }
         }
- 
+
         #endregion
-        
+
         #region Object List Methods
 
         /// <summary>
@@ -404,6 +470,56 @@ namespace LateBindingApi.Core
         #endregion
 
         #region Private Methods
+        
+        /// <summary>
+        /// add assembly to list
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="itemAssembly"></param>
+        /// <returns>list of dependend assemblies</returns>
+        private static string[] AddAssembly(string name, Assembly itemAssembly)
+        {
+            List<string> dependAssemblies = new List<string>();
+            object[] attributes = itemAssembly.GetCustomAttributes(true);
+            foreach (object itemAttribute in attributes)
+            {
+                string fullnameAttribute = itemAttribute.GetType().FullName;
+                if (fullnameAttribute == "LateBindingApi.Core.LateBindingAttribute")
+                {
+                    Type factoryInfoType = itemAssembly.GetType(name + ".Utils.ProjectInfo");
+                    IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as IFactoryInfo;
+
+                    bool exists = false;
+                    foreach (IFactoryInfo itemFactory in _factoryList)
+                    {
+                        if (itemFactory.Assembly.FullName == factoryInfo.Assembly.FullName)
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists)
+                        _factoryList.Add(factoryInfo);
+
+                    foreach (string itemDependency in factoryInfo.Dependencies)
+                    {
+                        bool found = false;
+                        foreach (string itemExistingDependency in dependAssemblies)
+                        {
+                            if (itemDependency == itemExistingDependency)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                            dependAssemblies.Add(itemDependency);
+                    }
+                }
+            }
+
+            return dependAssemblies.ToArray();
+        }
 
         /// <summary>
         /// returns id of an interface
@@ -426,7 +542,7 @@ namespace LateBindingApi.Core
         /// <param name="comProxy"></param>
         /// <returns></returns>
         private static Guid GetParentLibraryGuid(object comProxy)
-        {             
+        {
             IDispatch dispatcher = comProxy as IDispatch;
             COMTypes.ITypeInfo typeInfo = dispatcher.GetTypeInfo(0, 0);
             COMTypes.ITypeLib parentTypeLib = null;
@@ -447,14 +563,14 @@ namespace LateBindingApi.Core
                 parentTypeLib.ReleaseTLibAttr(attributesPointer);
                 Marshal.ReleaseComObject(parentTypeLib);
 
-                _hostCache.Add(typeGuid, parentGuid); 
+                _hostCache.Add(typeGuid, parentGuid);
             }
 
             Marshal.ReleaseComObject(typeInfo);
 
             return parentGuid;
         }
-        
+
         /// <summary>
         /// get wrapper class factory info 
         /// </summary>
@@ -470,10 +586,10 @@ namespace LateBindingApi.Core
             }
 
             string className = TypeDescriptor.GetClassName(comProxy);
-            Guid hostGuid  = GetParentLibraryGuid(comProxy);
-        
+            Guid hostGuid = GetParentLibraryGuid(comProxy);
+
             foreach (IFactoryInfo item in _factoryList)
-            {              
+            {
                 if (true == hostGuid.Equals(item.ComponentGuid))
                     return item;
             }
@@ -481,7 +597,7 @@ namespace LateBindingApi.Core
             // failback
             foreach (IFactoryInfo item in _factoryList)
             {
-                if(item.Contains(className))
+                if (item.Contains(className))
                     return item;
             }
 

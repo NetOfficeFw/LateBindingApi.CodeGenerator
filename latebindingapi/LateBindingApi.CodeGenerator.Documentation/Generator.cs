@@ -70,6 +70,11 @@ namespace LateBindingApi.CodeGenerator.Documentation
             XElement newPropertyNode = null;
             List<XElement> newNodes = new List<XElement>();
 
+
+            if (("set_" == prefix)&& (itemMethod.Attribute("Name").Value == "DisplayAlerts"))
+            {
+            }
+
             // version support
             foreach (XElement itemParameters in itemMethod.Elements("Parameters"))
             {
@@ -98,35 +103,37 @@ namespace LateBindingApi.CodeGenerator.Documentation
                 }           
  
             }
-
-            int i = 0;
+           
             foreach (XElement itemParams in itemMethod.Elements("Parameters"))
             {
-                foreach (XElement itemParam in itemParams.Elements("Parameter"))
+                XElement newParam = null;
+
+                if (("set_" == prefix) && (itemParams.Elements("Parameter").Count() == 0))
                 {
-                    string paramName = itemParam.Attribute("Name").Value;
-                    string paramType = itemParam.Attribute("Type").Value;
-                    string paramIsOptional = itemParam.Attribute("IsOptional").Value;
-
-                    XElement newParam = null;
-
-                    if (("set_" == prefix) && (itemParam.Parent.Elements("Parameter").Count() == 0))
-                    {
-                        newParam = new XElement("Parameter",
-                                          new XAttribute("Name", "value"),
-                                          new XAttribute("Type", itemParam.Parent.Element("ReturnValue").Attribute("Type").Value),
-                                          new XAttribute("IsOptional", "false"));
-                    }
-                    else
-                    {
-                        newParam = new XElement("Parameter",
-                                        new XAttribute("Name", paramName),
-                                        new XAttribute("Type", paramType),
-                                        new XAttribute("IsOptional", paramIsOptional));
-                    }
-                    newNodes[i].Element("Parameters").Add(newParam);
+                    newParam = new XElement("Parameter",
+                                         new XAttribute("Name", "value"),
+                                         new XAttribute("Type", itemParams.Element("ReturnValue").Attribute("Type").Value),
+                                         new XAttribute("IsOptional", "false"));
+                    newNodes[0].Element("Parameters").Add(newParam);
                 }
-                i++;
+                else
+                {
+                    int i = 0;
+                    foreach (XElement itemParam in itemParams.Elements("Parameter"))
+                    {
+                        string paramName = itemParam.Attribute("Name").Value;
+                        string paramType = itemParam.Attribute("Type").Value;
+                        string paramIsOptional = itemParam.Attribute("IsOptional").Value;
+
+                        newParam = new XElement("Parameter",
+                                            new XAttribute("Name", paramName),
+                                            new XAttribute("Type", paramType),
+                                            new XAttribute("IsOptional", paramIsOptional));
+
+                        newNodes[i].Element("Parameters").Add(newParam);
+                    }
+                    i++;
+                }
             }
            
         }

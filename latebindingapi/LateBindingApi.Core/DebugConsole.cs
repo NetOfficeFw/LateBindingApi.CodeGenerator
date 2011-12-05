@@ -38,7 +38,7 @@ namespace LateBindingApi.Core
         private static List<string> _messageList = new List<string>();
 
         /// <summary>
-        /// append current time information in WriteLine and WriteException method
+        /// append current time information in messages
         /// </summary>
         public static bool AppendTimeInfoEnabled { get; set; }
 
@@ -89,8 +89,8 @@ namespace LateBindingApi.Core
                 case ConsoleMode.None:
                     // do nothing
                     break;
-		        default:
-			        throw new ArgumentOutOfRangeException("Unkown Log Mode.");
+                default:
+                    throw new ArgumentOutOfRangeException("Unkown Log Mode.");
             }
         }
 
@@ -127,10 +127,20 @@ namespace LateBindingApi.Core
             Exception ex = exception;
             while (ex != null)
             {
-                result += "Type:" + ex.GetType().Name + Environment.NewLine;
-                result += "Message:" + ex.Message + Environment.NewLine;
-                result += "Target:" + ex.TargetSite.ToString() + Environment.NewLine;
-                result += "Stack:" + ex.StackTrace + Environment.NewLine;
+                string type = ex.GetType().Name;
+                string message = ex.Message;
+                string target = "<Empty>";
+                if (null != ex.TargetSite)
+                    target = ex.TargetSite.ToString();
+                string trace = "<Empty>";
+                if (null != ex.StackTrace)
+                    trace = ex.StackTrace.ToString();
+
+                result += "Type:" + type + Environment.NewLine;
+                result += "Message:" + message + Environment.NewLine;
+                result += "Target:" + target + Environment.NewLine;
+                result += "Stack:" + trace + Environment.NewLine;
+
                 result += Environment.NewLine;
                 ex = ex.InnerException;
             }

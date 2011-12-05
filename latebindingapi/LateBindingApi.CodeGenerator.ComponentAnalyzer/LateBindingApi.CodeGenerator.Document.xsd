@@ -234,6 +234,7 @@
     </xs:sequence>
     <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name: readonly -->
     <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+    <xs:attribute name="AutomaticQuit"        type="xs:string"  use="required" /> <!-- call quit while dispose -->
   </xs:complexType>
   
   <xs:complexType name="DispIds">

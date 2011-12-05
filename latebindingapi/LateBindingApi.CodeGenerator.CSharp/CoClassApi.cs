@@ -91,6 +91,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string events = GetEvents(projectNode, classNode);
             construct += events;
 
+            if (classNode.Attribute("AutomaticQuit").Value.Equals("TRUE", StringComparison.InvariantCultureIgnoreCase))
+                construct = construct.Replace("%callQuitInDispose%", "_callQuitInDispose = true;");
+            else
+                construct = construct.Replace("%callQuitInDispose%", "");
+
             result += classDesc;
             result += attributes + "\r\n";
             result += header;

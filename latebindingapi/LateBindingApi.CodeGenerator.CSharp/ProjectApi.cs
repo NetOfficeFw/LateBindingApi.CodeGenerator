@@ -168,6 +168,25 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return part1 + part2; 
         }
 
+        internal static string[] GetRefProjects(XElement project)
+        {
+             List<string> refsList = new List<string>();
+             XElement projects = project.Parent;
+             foreach (XElement item in project.Element("RefProjects").Elements("RefProject"))
+             {
+                 XElement refProject = (from a in projects.Elements("Project")
+                                        where a.Attribute("Key").Value.Equals(item.Attribute("Key").Value)
+                                        select a).FirstOrDefault();
+
+                 if ("true" == refProject.Attribute("Ignore").Value)
+                     continue;
+                 else
+                     refsList.Add(refProject.Attribute("Name").Value);
+             }
+
+             return refsList.ToArray();
+        }
+
         internal static string SaveFactoryFile(string path, XElement project)
         {
             string projectName = project.Attribute("Name").Value;
@@ -176,11 +195,26 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                 where a.Attribute("Key").Value.Equals(project.Element("RefLibraries").Element("Ref").Attribute("Key").Value)
                                 select a).FirstOrDefault();
             string guidString = XmlConvert.DecodeName(libNode.Attribute("GUID").Value);
-             
+
+            string dependent = "";
+            string[] depenents = GetRefProjects(project);
+            if (depenents.Length > 0)
+            {
+                dependent = "[]{";
+                foreach (string item in depenents)
+                    dependent += "\"" + item + "Api.dll\",";
+                dependent = dependent.Substring(0, dependent.Length - 1) +"}";
+            }
+            else
+            {
+                dependent = "[0]";
+            }
+
             string factoryFile = RessourceApi.ReadString("Project.ProjectInfo.txt");
             factoryFile = factoryFile.Replace("%AssemblyName%", projectName);
             factoryFile = factoryFile.Replace("%Namespace%", namespaceString);
             factoryFile = factoryFile.Replace("%GUID%", guidString);
+            factoryFile = factoryFile.Replace("%dependencies%", dependent);
 
             string fileName = "ProjectInfo.cs";
             string projectPath = System.IO.Path.Combine(path, project.Attribute("Name").Value +"\\Utils");

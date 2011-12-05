@@ -40,8 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomEnumeratorAttribute.cs" />
@@ -53,13 +51,13 @@
     <Compile Include="COMObject.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Interfaces\IFactoryInfo.cs" />
-    <Compile Include="Interfaces\IObject.cs" />
     <Compile Include="Invoker.cs" />
     <Compile Include="LateBindingAttribute.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SinkHelper.cs" />
     <Compile Include="SupportByLibraryAttribute.cs" />
     <Compile Include="Interfaces\IEventBinding.cs" />
+    <Compile Include="SupportEntityType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

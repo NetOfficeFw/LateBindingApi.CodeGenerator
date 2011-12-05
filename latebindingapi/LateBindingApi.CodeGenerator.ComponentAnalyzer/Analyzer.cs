@@ -227,6 +227,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         public void LoadProject(string fileName)
         {
             _document = XDocument.Load(fileName);
+          
             ValidateSchema();
         }
 
@@ -1166,6 +1167,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("Inherited"),
                                new XElement("DispIds"),
                                new XAttribute("Name", itemClass.Name),
+                               new XAttribute("AutomaticQuit", "false"),
                                new XAttribute("Key", Utils.NewEncodedGuid()));
 
                 classes.Add(classNode);

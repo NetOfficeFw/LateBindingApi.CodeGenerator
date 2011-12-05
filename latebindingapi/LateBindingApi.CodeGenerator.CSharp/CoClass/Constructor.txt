@@ -30,6 +30,7 @@
         /// <param name="comProxy">inner wrapped COM proxy</param>
 		public %name%(COMObject parentObject, object comProxy) : base(parentObject, comProxy)
 		{
+			%callQuitInDispose%
 		}
 		
 		/// <param name="parentObject">object there has created the proxy</param>
@@ -38,12 +39,14 @@
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		public %name%(COMObject parentObject, object comProxy, NetRuntimeSystem.Type comProxyType) : base(parentObject, comProxy, comProxyType)
 		{
+			%callQuitInDispose%
 		}
 		
 		/// <param name="replacedObject">object to replaced. replacedObject are not usable after this action</param>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		public %name%(COMObject replacedObject) : base(replacedObject)
 		{
+			%callQuitInDispose%
 		}
 		
 		/// <summary>
@@ -51,6 +54,7 @@
         /// </summary>		
 		public %name%():base("%ProgId%")
 		{
+			%callQuitInDispose%
 		}
 		
 		/// <summary>
@@ -59,6 +63,7 @@
         /// <param name="progId">registered ProgID</param>
 		public %name%(string progId):base(progId)
 		{
+			%callQuitInDispose%
 		}
 
 		#endregion
