@@ -79,6 +79,24 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     return false;
             }
         }
+        
+        internal static bool IsRef(ParameterInfo paramInfo)
+        {
+            bool isRef = IsRef(paramInfo.VarTypeInfo);
+            if (isRef)
+            {
+                return true;
+            }
+            else
+            {
+                return (paramInfo.Flags == ParamFlags.PARAMFLAG_FOUT);
+            }           
+        }
+
+        internal static bool IsOut(ParameterInfo paramInfo)
+        {
+            return (paramInfo.Flags == ParamFlags.PARAMFLAG_FOUT);
+        }
 
         /// <summary>
         /// returns typeInfo is Array or not

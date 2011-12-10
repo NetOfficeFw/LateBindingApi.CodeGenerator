@@ -151,11 +151,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
         {
             string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
-            string methodBody = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
+            string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName    = parametersNode.Parent.Attribute("Name").Value;
             string typeName      = returnValue.Attribute("Type").Value;
-            string fullTypeName  = CSharpGenerator.GetQualifiedType(returnValue);
+            string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
 
             string objectArrayField = "";
             string arrayField = "";
@@ -169,9 +169,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             string modifiers = "";
-            if(true == ParameterApi.HasRefParams(parametersNode ,true))
+            if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 modifiers = ", modifiers";
-
+  
             if (typeName != "void") 
             {
                 if ("true" == returnValue.Attribute("IsComProxy").Value)
@@ -264,7 +264,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
                 }
 
-                if (true == ParameterApi.HasRefParams(parametersNode, true))
+                if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 {
                     string modRefs = ParameterApi.CreateParametersToRefUpdateString(settings, numberOfRootTabs, parametersNode, true); 
                     methodBody = methodBody.Replace("%modifiers%", modRefs);
@@ -285,7 +285,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 methodBody += tabSpace + "Invoker.Method(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
                 methodBody += "%modifiers%";
 
-                if (true == ParameterApi.HasRefParams(parametersNode, true))
+                if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 {
                     string modRefs = ParameterApi.CreateParametersToRefUpdateString(settings, numberOfRootTabs, parametersNode, true);
                     methodBody = methodBody.Replace("%modifiers%", modRefs);

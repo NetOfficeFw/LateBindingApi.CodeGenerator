@@ -226,8 +226,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="fileName"></param>
         public void LoadProject(string fileName)
         {
-            _document = XDocument.Load(fileName);
-          
+            _document = XDocument.Load(fileName);          
             ValidateSchema();
         }
 
@@ -743,6 +742,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         {
                             if (true == TypeDescriptor.IsInterfaceMethod(itemMember, item.Name))
                             {
+                                if (itemMember.Name == "GetPoint")
+                                {
+                                    
+                                }
+
                                 var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
                                 AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
                                 var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();

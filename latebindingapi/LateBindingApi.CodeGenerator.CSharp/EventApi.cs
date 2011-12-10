@@ -114,7 +114,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string GetMethodImplementCode(Settings settings, XElement methodNode)
         {
-            bool hasRefParams = ParameterApi.HasRefParams(methodNode.Element("Parameters"), true);
+            bool hasRefParams = ParameterApi.HasRefOrOutParamsParams(methodNode.Element("Parameters"), true);
 
             string result = "";
             result += "\t\t\tDelegate[] recipients = _eventBinding.GetEventRecipients(\"" + methodNode.Attribute("Name").Value + "\");\r\n";

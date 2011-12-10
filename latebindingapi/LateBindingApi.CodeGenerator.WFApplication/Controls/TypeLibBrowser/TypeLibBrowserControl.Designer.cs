@@ -146,7 +146,6 @@
             this.buttonLoadSelection.Size = new System.Drawing.Size(39, 24);
             this.buttonLoadSelection.TabIndex = 27;
             this.buttonLoadSelection.UseVisualStyleBackColor = true;
-            this.buttonLoadSelection.Visible = false;
             this.buttonLoadSelection.Click += new System.EventHandler(this.buttonLoadSelection_Click);
             // 
             // buttonSaveSelection
@@ -157,7 +156,6 @@
             this.buttonSaveSelection.Size = new System.Drawing.Size(39, 24);
             this.buttonSaveSelection.TabIndex = 28;
             this.buttonSaveSelection.UseVisualStyleBackColor = true;
-            this.buttonSaveSelection.Visible = false;
             this.buttonSaveSelection.Click += new System.EventHandler(this.buttonSaveSelection_Click);
             // 
             // TypeLibBrowserControl

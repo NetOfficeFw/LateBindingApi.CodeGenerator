@@ -258,21 +258,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static bool HasRefParams(XElement parametersNode, bool withOptionals)
+        internal static bool HasRefOrOutParamsParams(XElement parametersNode, bool withOptionals)
         {
             IEnumerable<XElement> xParams =null;
             if (true == withOptionals)
             {
 
                 xParams = (from a in parametersNode.Elements("Parameter")
-                           where a.Attribute("IsRef").Value.Equals("true")
+                           where a.Attribute("IsRef").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) || a.Attribute("IsOut").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
                            select a);
             }
             else
             {
                xParams = (from a in parametersNode.Elements("Parameter")
-                           where a.Attribute("IsRef").Value.Equals("true") &&
-                                 a.Attribute("IsOptional").Value.Equals("false")
+                          where a.Attribute("IsRef").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) || a.Attribute("IsOut").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) &&
+                                 a.Attribute("IsOptional").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase)
                            select a);
             }
             return (xParams.Count() > 0);
@@ -359,14 +359,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == itemParam.Attribute("IsArray").Value)
                     type += "[]";
 
-                if ("true" == itemParam.Attribute("IsRef").Value)
+                if ("true" == itemParam.Attribute("IsOut").Value)
+                    type = "out " + type;
+                else if ("true" == itemParam.Attribute("IsRef").Value)
                     type = "ref " + type;
 
                 string name = itemParam.Attribute("Name").Value;
                 name = ValidateParamName(settings, name);
-
-                //if (("true" == itemParam.Attribute("IsOptional").Value) && ("4.0" == settings.Framework))
-                //    name += optionalValue;
 
                 parameter = type + " " + name;
                 if (i < countOfParams)
@@ -389,7 +388,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string CreateParametersSetArrayString(Settings settings, int numberOfTabSpaces, XElement parametersNode, bool withOptionals)
         {
-            bool hasRefParams = HasRefParams(parametersNode, withOptionals);
+            bool hasRefParams = HasRefOrOutParamsParams(parametersNode, withOptionals);
             if (true == hasRefParams)
                 return ConvertParametersToSetArrayWithRef(settings, numberOfTabSpaces, parametersNode, withOptionals);
             else
@@ -408,7 +407,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
             foreach (XElement item in xParams)
             {
-                if ("true" == item.Attribute("IsRef").Value)
+                if( ("true" == item.Attribute("IsRef").Value) || ("true" == item.Attribute("IsOut").Value))
                     stringReturn += "true";
                 else
                     stringReturn += "false";
@@ -450,7 +449,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string paramName = itemParam.Attribute("Name").Value;
                 paramName = ValidateParamName(settings, paramName);
 
-                if ("true" == itemParam.Attribute("IsRef").Value)
+                if (("true" == itemParam.Attribute("IsRef").Value) || ("true" == itemParam.Attribute("IsOut").Value))
                     result += tabSpace + paramName + 
                         " = (" + CSharpGenerator.GetQualifiedType(itemParam) +  isArray + 
                         ")paramsArray[" + i.ToString() + "];\r\n";
@@ -461,19 +460,57 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
+        private static string CreateParameterClearString(Settings settings, IEnumerable<XElement> xParams, string tabSpace)
+        {
+            string result = "";
+            foreach (XElement itemParam in xParams)
+            {
+                if ("true" == itemParam.Attribute("IsOut").Value)
+                {
+                    string paramName = itemParam.Attribute("Name").Value;
+                    paramName = ValidateParamName(settings, paramName);
+                    if(itemParam.Attribute("Type").Value.Equals("String",StringComparison.InvariantCultureIgnoreCase))
+                    {
+                       if (itemParam.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = null;" + Environment.NewLine;
+                       else
+                        result += tabSpace + paramName + " = string.Empty;" + Environment.NewLine;
+                    }                      
+                    else if (itemParam.Attribute("Type").Value.Equals("Object", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = null;" + Environment.NewLine;
+                    else if (itemParam.Attribute("Type").Value.Equals("UIntPtr", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = UIntPtr.Zero;" + Environment.NewLine;
+                    else if (itemParam.Attribute("Type").Value.Equals("Bool", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = false;" + Environment.NewLine;
+                    else
+                    {
+                        if (itemParam.Attribute("IsComProxy").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                            result += tabSpace + paramName + " = null;" + Environment.NewLine;
+                        else
+                            result += tabSpace + paramName + " = 0;" + Environment.NewLine;                  
+                    }
+                }
+            }
+            return result;
+        }
+
         private static string ConvertParametersToSetArrayWithRef(Settings settings, int numberOfTabSpaces, XElement parametersNode, bool withOptionals)
         {
+            IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
+
             string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpaces);
 
             if (0 == parametersNode.Elements("Parameter").Count())
                 return tabSpace + "object[] paramsArray = null;\r\n";
 
             string result = tabSpace + "ParameterModifier[] modifiers = Invoker.CreateParamModifiers(" + CreateParametersModifiersString(parametersNode, withOptionals) + ");\r\n";
+            result += CreateParameterClearString(settings, xParams, tabSpace);
+            
             result += tabSpace + "object[] paramsArray = Invoker.ValidateParamsArray(";
             int countOfParams = GetParamsCount(parametersNode, withOptionals);
             int i = 1;
 
-            IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
+           
             foreach (XElement itemParam in xParams)
             {
                 if ("true" == itemParam.Attribute("IsArray").Value)

@@ -276,7 +276,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string CreatePropertySetBodyCode(Settings settings, int numberOfRootTabs, XElement parametersNode)
         {
             string modifiers = "";
-            if (true == ParameterApi.HasRefParams(parametersNode, true))
+            if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 modifiers = ", modifiers";
 
             string result = "";
@@ -304,7 +304,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 result = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
                 result += tabSpace + "Invoker.PropertySet(this, \"" + invokeTarget + "\", paramsArray, value" + modifiers + ");\r\n";
-                if(true == ParameterApi.HasRefParams(parametersNode,true))
+                if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                     result += ParameterApi.CreateParametersToRefUpdateString(settings, numberOfRootTabs,parametersNode,true);
             }
                         
@@ -338,7 +338,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             string modifiers = "";
-            if (true == ParameterApi.HasRefParams(parametersNode, true))
+            if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 modifiers = ", modifiers";
 
             if (typeName != "void")
@@ -435,7 +435,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
                 }
 
-                if (true == ParameterApi.HasRefParams(parametersNode, true))
+                if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 {
                     string modRefs = ParameterApi.CreateParametersToRefUpdateString(settings, numberOfRootTabs, parametersNode, true);
                     methodBody = methodBody.Replace("%modifiers%", modRefs);

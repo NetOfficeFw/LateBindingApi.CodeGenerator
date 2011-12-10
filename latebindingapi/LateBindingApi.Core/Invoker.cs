@@ -411,14 +411,11 @@ namespace LateBindingApi.Core
         {
             if (null != isRef)
             {
-                ParameterModifier[] returnModifiers = new ParameterModifier[isRef.Length];
+                ParameterModifier arrPmods = new ParameterModifier(isRef.Length);
                 for (int i = 0; i < isRef.Length; i++)
-                {
-                    ParameterModifier newModifiers = new ParameterModifier(1);
-                    newModifiers[0] = isRef[i];
-                    returnModifiers[i] = newModifiers;                    
-                }
+                    arrPmods[i] = isRef[i];
 
+                ParameterModifier[] returnModifiers = { arrPmods };
                 return returnModifiers;
             }
             else
@@ -437,8 +434,7 @@ namespace LateBindingApi.Core
                 COMObject comObject = param as COMObject;
                 if (null != comObject)
                         param = comObject.UnderlyingObject;
-
-                if (param.GetType().IsEnum)
+                else if (param.GetType().IsEnum)
                     param = Convert.ToInt32(param);
 
                 return param;
@@ -475,14 +471,9 @@ namespace LateBindingApi.Core
                 {
                     COMObject comObject = param as COMObject;
                     if (null != comObject)
-                    {
                         comObject.Dispose();
-                    }
-                    else
-                    {
-                        if (param is MarshalByRefObject)
-                            Marshal.ReleaseComObject(param);
-                    }
+                    else if (param is MarshalByRefObject)
+                        Marshal.ReleaseComObject(param);
                 }
             }
             catch (Exception throwedException)
