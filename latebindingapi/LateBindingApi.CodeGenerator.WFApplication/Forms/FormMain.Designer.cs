@@ -56,6 +56,7 @@
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.menuItemStatistics = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -119,7 +120,8 @@
             // toolStripTypeLibraries
             // 
             this.toolStripTypeLibraries.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemLoadTypeLibrary});
+            this.menuItemLoadTypeLibrary,
+            this.menuItemStatistics});
             this.toolStripTypeLibraries.Name = "toolStripTypeLibraries";
             this.toolStripTypeLibraries.Size = new System.Drawing.Size(83, 20);
             this.toolStripTypeLibraries.Text = "TypeLibraries";
@@ -312,6 +314,14 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
             this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
             // 
+            // menuItemStatistics
+            // 
+            this.menuItemStatistics.Name = "menuItemStatistics";
+            this.menuItemStatistics.ShortcutKeys = System.Windows.Forms.Keys.F9;
+            this.menuItemStatistics.Size = new System.Drawing.Size(202, 22);
+            this.menuItemStatistics.Text = "Statistik";
+            this.menuItemStatistics.Click += new System.EventHandler(this.menuItemStatistics_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -366,6 +376,7 @@
         private LateBindingApi.CodeGenerator.WFApplication.Controls.ModulGrid.ModulGridControl modulGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.AliasGrid.AliasGridControl aliasGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid.RecordGridControl recordGrid;
+        private System.Windows.Forms.ToolStripMenuItem menuItemStatistics;
     }
 }
 

@@ -742,11 +742,15 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         {
                             if (true == TypeDescriptor.IsInterfaceMethod(itemMember, item.Name))
                             {
-                                if (itemMember.Name == "GetPoint")
-                                {
-                                    
-                                }
-
+                                foreach (ParameterInfo itemx in itemMember.Parameters)
+	                            {
+                                    if (itemx.Flags == ParamFlags.PARAMFLAG_FOUT)
+                                    {
+                                        Console.WriteLine(item.Name + " " + itemInterface.Name + " " + itemMember.Name);
+                                        break;
+                                    }
+	                            }
+                                
                                 var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
                                 AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
                                 var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();

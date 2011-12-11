@@ -384,7 +384,16 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 formError.ShowDialog(this);
             }
         }
- 
+
+        private void menuItemStatistics_Click(object sender, EventArgs e)
+        {
+            if (null != _comAnalyzer.Document)
+            { 
+                FormStatistics form = new FormStatistics(_comAnalyzer.Document);
+                form.ShowDialog(this);
+            }
+        }
+
         #endregion
      }
 }

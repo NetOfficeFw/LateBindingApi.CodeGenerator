@@ -277,7 +277,27 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             return (xParams.Count() > 0);
         }
-        
+
+        internal static bool HasOutParamsParams(XElement parametersNode, bool withOptionals)
+        {
+            IEnumerable<XElement> xParams = null;
+            if (true == withOptionals)
+            {
+
+                xParams = (from a in parametersNode.Elements("Parameter")
+                           where  a.Attribute("IsOut").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                           select a);
+            }
+            else
+            {
+                xParams = (from a in parametersNode.Elements("Parameter")
+                           where a.Attribute("IsOut").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) &&
+                                  a.Attribute("IsOptional").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase)
+                           select a);
+            }
+            return (xParams.Count() > 0);
+        }
+
         /// <summary>
         /// returns parameters node has optional params
         /// </summary>
@@ -460,6 +480,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
+        private static bool IsRecord(XElement itemParam)
+        {
+            XElement project = itemParam.Parent;
+            while (project.Name != "Project")
+                project = project.Parent;
+
+            XElement recordNode = (from a in project.Element("Records").Elements("Record") select a).FirstOrDefault();
+            return (null != recordNode);
+        }
+
         private static string CreateParameterClearString(Settings settings, IEnumerable<XElement> xParams, string tabSpace)
         {
             string result = "";
@@ -469,26 +499,36 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     string paramName = itemParam.Attribute("Name").Value;
                     paramName = ValidateParamName(settings, paramName);
-                    if(itemParam.Attribute("Type").Value.Equals("String",StringComparison.InvariantCultureIgnoreCase))
-                    {
-                       if (itemParam.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = null;" + Environment.NewLine;
-                       else
-                        result += tabSpace + paramName + " = string.Empty;" + Environment.NewLine;
-                    }                      
+
+                    if (itemParam.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                           result += tabSpace + paramName + " = null;" + Environment.NewLine;
+                    else if(itemParam.Attribute("Type").Value.Equals("String",StringComparison.InvariantCultureIgnoreCase))
+                          result += tabSpace + paramName + " = string.Empty;" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("Object", StringComparison.InvariantCultureIgnoreCase))
                         result += tabSpace + paramName + " = null;" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("UIntPtr", StringComparison.InvariantCultureIgnoreCase))
                         result += tabSpace + paramName + " = UIntPtr.Zero;" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("Bool", StringComparison.InvariantCultureIgnoreCase))
                         result += tabSpace + paramName + " = false;" + Environment.NewLine;
-                    else
-                    {
-                        if (itemParam.Attribute("IsComProxy").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                    else if (itemParam.Attribute("Type").Value.Equals("Int32", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;
+                    else if (itemParam.Attribute("Type").Value.Equals("Int16", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;
+                    else if (itemParam.Attribute("Type").Value.Equals("Guid", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = Guid.Empty;" + Environment.NewLine;                    
+                    else if (itemParam.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;
+                    else if (itemParam.Attribute("IsComProxy").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                             result += tabSpace + paramName + " = null;" + Environment.NewLine;
-                        else
-                            result += tabSpace + paramName + " = 0;" + Environment.NewLine;                  
+                    else if (IsRecord(itemParam))
+                    {
+                        XElement project = itemParam.Parent;
+                        while (project.Name != "Project")
+                            project = project.Parent;
+                        result += tabSpace + paramName + " = new " + project.Attribute("Namespace").Value + "." + itemParam.Attribute("Type").Value + "();" + Environment.NewLine;
                     }
+                    else
+                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;             
                 }
             }
             return result;

@@ -372,6 +372,8 @@
     <xs:attribute name="IsEnum"     type="xs:boolean" /> <!-- param is an enum -->
     <xs:attribute name="IsOptional" type="xs:boolean" /> <!-- param is an optional -->
     <xs:attribute name="IsRef"      type="xs:boolean" /> <!-- param is given byRef -->
+    <xs:attribute name="IsOut"      type="xs:boolean" /> <!-- param is out -->
+    <xs:attribute name="ParamFlags" type="xs:string" /> <!-- param flags -->    
     <xs:attribute name="IsArray"    type="xs:boolean" /> <!-- param is an array -->
     <xs:attribute name="IsNative"   type="xs:boolean" /> <!-- param type is sclar -->
     <xs:attribute name="TypeKey"    type="xs:string"  /> <!-- key from defined param type  -->

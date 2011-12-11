@@ -177,6 +177,12 @@
     <Compile Include="Forms\FormShowError.designer.cs">
       <DependentUpon>FormShowError.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormStatistics.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormStatistics.Designer.cs">
+      <DependentUpon>FormStatistics.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormTypeLibBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -247,6 +253,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormShowError.resx">
       <DependentUpon>FormShowError.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormStatistics.resx">
+      <DependentUpon>FormStatistics.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormTypeLibBrowser.resx">
       <DependentUpon>FormTypeLibBrowser.cs</DependentUpon>
