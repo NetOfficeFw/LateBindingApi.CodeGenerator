@@ -60,10 +60,13 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Prop
                     foreach (var attribute in item.Attributes())
                     {
                         string columnName = attribute.Name.LocalName;
-                        DataGridViewCell cell = newRow.Cells[columnName];
-                        cell.Value = attribute.Value;       
-                        cell.Style.BackColor = GetCellColor(columnName);
-                        cell.Tag = attribute;
+                        if ("Underlying" != columnName)
+                        { 
+                            DataGridViewCell cell = newRow.Cells[columnName];
+                            cell.Value = attribute.Value;       
+                            cell.Style.BackColor = GetCellColor(columnName);
+                            cell.Tag = attribute;
+                        }
                     }
                     
                     newRow.Cells["ReturnType"].Value = itemParameters.Element("ReturnValue").Attribute("Type").Value;

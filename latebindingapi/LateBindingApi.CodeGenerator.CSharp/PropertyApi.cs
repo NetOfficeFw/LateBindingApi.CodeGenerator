@@ -86,6 +86,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string name = propertyNode.Attribute("Name").Value;
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {
+                string interfaceName = itemParams.Parent.Parent.Parent.Attribute("Name").Value;
+                if (("this" == name) && itemParams.Elements("Parameter").Count() == 0)
+                {
+                    continue;                
+                }
+
                 XElement returnValue = itemParams.Element("ReturnValue");
 
                 string method = "";

@@ -89,6 +89,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
  
             foreach (XElement itemParams in methodNode.Elements("Parameters"))
             {
+                if (("this" == name) && itemParams.HasAttributes)
+                    continue;
+
                 string inParam = "(";
                 string outParam = ")";
 
