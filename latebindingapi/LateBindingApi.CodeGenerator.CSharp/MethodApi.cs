@@ -86,7 +86,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             string result = "";
             string name = methodNode.Attribute("Name").Value;
- 
+            bool analyzeReturn = Convert.ToBoolean(methodNode.Attribute("AnalyzeReturn").Value);
             foreach (XElement itemParams in methodNode.Elements("Parameters"))
             {
                 if (("this" == name) && itemParams.HasAttributes)
@@ -127,6 +127,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
+                if (!analyzeReturn)
+                    valueReturn = "object";
 
                 method += "\t\tpublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
                 string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true);
@@ -134,9 +136,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string methodBody ="";
                 if ("this" == name)
-                    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateLateBindMethodBody(settings, 4, itemParams) + "\t\t\t}\r\n";
+                    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateLateBindMethodBody(settings, 4, itemParams, analyzeReturn) + "\t\t\t}\r\n";
                 else
-                    methodBody = CreateLateBindMethodBody(settings, 3, itemParams);
+                    methodBody = CreateLateBindMethodBody(settings, 3, itemParams, analyzeReturn);
                 
                 method = method.Replace("%methodbody%", methodBody);
                 result += method + "\r\n";
@@ -151,7 +153,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="numberOfRootTabs"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode)
+        internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode, bool analyzeReturn)
         {
             string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
             string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
@@ -174,8 +176,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string modifiers = "";
             if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 modifiers = ", modifiers";
-  
-            if (typeName != "void") 
+            if (!analyzeReturn)
+            {
+                string invokeTarget = "";
+                if ("this" == parametersNode.Parent.Attribute("Name").Value)
+                    invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;
+                else
+                    invokeTarget = methodName;
+
+                methodBody += tabSpace + "object returnItem = Invoker.MethodReturn(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
+                methodBody += tabSpace + "return returnItem;\r\n";
+            }
+            else if (typeName != "void") 
             {
                 if ("true" == returnValue.Attribute("IsComProxy").Value)
                 {

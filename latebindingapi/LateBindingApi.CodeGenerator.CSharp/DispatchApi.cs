@@ -16,6 +16,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                       + "using System.Runtime.CompilerServices;\r\n"
                                       + "using System.ComponentModel;\r\n"
                                       + "using System.Reflection;\r\n"
+                                      + "using System.Collections.Generic;\r\n"
                                       + "%enumerableSpace%"
                                       + "using LateBindingApi.Core;\r\n"
                                       + "namespace %namespace%\r\n"

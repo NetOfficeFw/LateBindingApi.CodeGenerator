@@ -106,6 +106,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.InterfaceGrid.Meth
                 newColumn.ReadOnly = true;
                 newColumn.Width = 150;
             }
+            
+            gridMethods.Columns["AnalyzeReturn"].ReadOnly = false;
 
             gridMethods.Columns.Add("Versions", "Versions");
             DataGridViewColumn newColumnVersions = gridMethods.Columns[gridMethods.Columns.Count - 1];

@@ -2,7 +2,7 @@
 		#region IEnumerable Members
         
         %version%
-		public IEnumerator GetEnumerator()
+		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
 		{
 			object enumProxy = Invoker.%Call%(this, "_NewEnum");
 			COMObject enumerator = new COMObject(this, enumProxy, true);

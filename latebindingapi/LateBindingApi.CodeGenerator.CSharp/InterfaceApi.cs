@@ -15,11 +15,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                        + "using System.ComponentModel;\r\n"
                                        + "using System.Runtime.CompilerServices;\r\n"
                                        + "using System.Reflection;\r\n"
+                                       + "using System.Collections.Generic;\r\n"
                                        + "%enumerableSpace%"
                                        + "using LateBindingApi.Core;\r\n"
                                        + "namespace %namespace%\r\n"
                                        + "{\r\n";
-
+        
         private static string _classDesc = "\t///<summary>\r\n\t/// Interface %name% %RefLibs%\r\n\t///</summary>\r\n";
 
         private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsInterface)]\r\n" + "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";

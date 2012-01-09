@@ -35,6 +35,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("RefLibraries"),
                                new XAttribute("Name", itemMember.Name),
                                new XAttribute("InvokeKind", ""),
+                               new XAttribute("AnalyzeReturn", "true"),
                                new XAttribute("Key", Utils.NewEncodedGuid()));
 
                 propertiesNode.Add(node);

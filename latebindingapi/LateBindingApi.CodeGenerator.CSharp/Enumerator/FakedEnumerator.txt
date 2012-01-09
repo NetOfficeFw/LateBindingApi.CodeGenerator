@@ -3,7 +3,7 @@
 		
         %version%
 		[CustomEnumerator]
-		public IEnumerator GetEnumerator()
+		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
         {
 			int count = Count;
 			%Type%[] enumeratorObjects = new %Type%[count];

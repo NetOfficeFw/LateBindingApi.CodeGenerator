@@ -15,10 +15,73 @@ namespace LateBindingApi.CodeGenerator.CSharp
             MethodEnum=2
         }
 
-        private static string _ProxyEnumerator;
-        private static string _NativeEnumerator;
-        private static string _FakedEnumerator;
+        private static string _proxyEnumerator;
+        private static string _nativeEnumerator;
+        private static string _fakedEnumerator;
 
+        private static string _proxyEnumeratorT;
+        private static string _nativeEnumeratorT;
+        private static string _fakedEnumeratorT;
+
+        private static string ProxyEnumerator
+        {
+            get
+            {
+                if(null == _proxyEnumerator)
+                    _proxyEnumerator = RessourceApi.ReadString("Enumerator.ProxyEnumerator.txt");
+                return _proxyEnumerator;
+            }
+        }
+
+        private static string NativeEnumerator
+        {
+            get
+            {
+                if (null == _nativeEnumerator)
+                    _nativeEnumerator = RessourceApi.ReadString("Enumerator.NativeEnumerator.txt");
+                return _nativeEnumerator;
+            }
+        }
+
+        private static string FakedEnumerator
+        {
+            get
+            {
+                if (null == _fakedEnumerator)
+                    _fakedEnumerator = RessourceApi.ReadString("Enumerator.FakedEnumerator.txt");
+                return _fakedEnumerator;
+            }
+        }
+        
+        private static string ProxyEnumeratorT
+        {
+            get
+            {
+                if (null == _proxyEnumeratorT)
+                    _proxyEnumeratorT = RessourceApi.ReadString("Enumerator.ProxyEnumeratorT.txt");
+                return _proxyEnumeratorT;
+            }
+        }
+
+        private static string NativeEnumeratorT
+        {
+            get
+            {
+                if (null == _nativeEnumeratorT)
+                    _nativeEnumeratorT = RessourceApi.ReadString("Enumerator.NativeEnumeratorT.txt");
+                return _nativeEnumeratorT;
+            }
+        }
+
+        private static string FakedEnumeratorT
+        {
+            get
+            {
+                if (null == _fakedEnumeratorT)
+                    _fakedEnumeratorT = RessourceApi.ReadString("Enumerator.FakedEnumeratorT.txt");
+                return _fakedEnumeratorT;
+            }
+        }
         /// <summary>
         /// returns enumerator node
         /// </summary>
@@ -159,6 +222,24 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return false;
         }
 
+        private static string GetThisReturnType(XElement faceNode, string defaultValue)
+        {
+            XElement thisNode = (from a in faceNode.Element("Properties").Elements("Property") where a.Attribute("Name").Value == "this" select a).FirstOrDefault();
+            if(null == thisNode)
+                thisNode = (from a in faceNode.Element("Methods").Elements("Method") where a.Attribute("Name").Value == "this" select a).FirstOrDefault();
+            if (null == thisNode)
+                return defaultValue;
+
+            if ("COMVariant" == thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value)
+                return "object";
+
+            string qualifier = GetQualifier(faceNode, thisNode.Element("Parameters").Element("ReturnValue"));
+            if (qualifier != "")
+                return qualifier + "." + thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value;
+            else
+                return thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value;
+        }
+
         /// <summary>
         ///  add enumerator code
         /// </summary>
@@ -168,24 +249,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             XElement enumNode = GetEnumNode(faceNode);
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
-
+            string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);
             string versionSummary = CSharpGenerator.GetSupportByLibraryString("", enumNode);
             string versionAttribute = CSharpGenerator.GetSupportByLibraryAttribute(enumNode); 
             content = content.Replace("%enumerableSpace%", "using System.Collections;\r\n");
-            content = content.Replace("%enumerable%", " ,IEnumerable");
-
-            if (null == _ProxyEnumerator)
-                _ProxyEnumerator = RessourceApi.ReadString("Enumerator.ProxyEnumerator.txt");
-
-            if (null == _NativeEnumerator)
-                _NativeEnumerator = RessourceApi.ReadString("Enumerator.NativeEnumerator.txt");
-            
-            if (null == _FakedEnumerator)
-                _FakedEnumerator = RessourceApi.ReadString("Enumerator.FakedEnumerator.txt");
-
-            if (faceNode.Attribute("Name").Value == "BuildingBlockTypes")
-            {
-            }
+            content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
 
             versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
             if (HasCustomAttribute(enumNode))
@@ -194,13 +262,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             // get enumerator
             string enumString = "";
-            if(HasCustomAttribute(enumNode))
-                enumString = _FakedEnumerator.Replace("%version%",  versionSummary + "\t\t" + versionAttribute);
+            if (HasCustomAttribute(enumNode))
+            {
+                enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
+                enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+            }
             else if ("true" == returnType.Attribute("IsComProxy").Value)
-                enumString = _ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+            {
+                enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
+                enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+            }
             else
-                enumString = _NativeEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
-            
+            {
+                enumString = NativeEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
+                enumString += NativeEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+            }
+
             // get call type
             EnumeratorType enumType = GetEnumType(faceNode);
             switch (enumType)
@@ -271,12 +348,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         XElement projectNode = (from a in returnType.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
                                               where a.Attribute("Key").Value.Equals(refProjectKey)
                                               select a).FirstOrDefault();
-                        return projectNode.Attribute("Namespace").Value + ".enums.";
+                        return projectNode.Attribute("Namespace").Value + ".Enums";
                     }
                 }
                 else
                 {
-                    return faceNode.Parent.Parent.Attribute("Namespace").Value + ".Enums." ;
+                    return faceNode.Parent.Parent.Attribute("Namespace").Value + ".Enums";
                 }
             }
             else if ("true" == returnType.Attribute("IsComProxy").Value)
@@ -289,7 +366,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         XElement projectNode = (from a in returnType.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
                                                 where a.Attribute("Key").Value.Equals(refProjectKey)
                                                 select a).FirstOrDefault();
-                        return projectNode.Attribute("Namespace").Value + ".";
+                        return projectNode.Attribute("Namespace").Value;
                     }
                 }
                 else

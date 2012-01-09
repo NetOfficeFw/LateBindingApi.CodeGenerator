@@ -84,13 +84,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
+            bool analyzeReturn = Convert.ToBoolean(propertyNode.Attribute("AnalyzeReturn").Value);
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {
                 string interfaceName = itemParams.Parent.Parent.Parent.Attribute("Name").Value;
                 if (("this" == name) && itemParams.Elements("Parameter").Count() == 0)
-                {
                     continue;                
-                }
 
                 XElement returnValue = itemParams.Element("ReturnValue");
 
@@ -114,14 +113,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (true == settings.CreateXmlDocumentation)
                     paramAttrib = paramDoku + paramAttrib;
                 protoype = protoype.Replace("%setAttribute%", "\t\t" + paramAttrib);
-
-                protoype = protoype.Replace("%valueReturn%", valueReturn);
+                if(analyzeReturn)
+                    protoype = protoype.Replace("%valueReturn%", valueReturn);
+                else
+                    protoype = protoype.Replace("%valueReturn%", "object");
+                
                 method += protoype;
  
                 int paramsCount = ParameterApi.GetParamsCount(itemParams, true);
                 bool hasForbiddenName = IsKeyword(propertyNode.Attribute("Name").Value as string);
                 bool convertToMethod = ((paramsCount > 0) || (true ==hasForbiddenName));
-                string methodGetBody = CreatePropertyGetBody(settings, 3, itemParams, convertToMethod);
+                string methodGetBody = CreatePropertyGetBody(settings, 3, itemParams, convertToMethod, analyzeReturn);
                 string methodSetBody = CreatePropertySetBody(settings, 3, itemParams, convertToMethod);
 
                 method = method.Replace("%propertyGetBody%", methodGetBody);
@@ -257,13 +259,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="numberOfRootTabs"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        private static string CreatePropertyGetBody(Settings settings, int numberOfRootTabs, XElement parametersNode, bool convertToMethod)
+        private static string CreatePropertyGetBody(Settings settings, int numberOfRootTabs, XElement parametersNode, bool convertToMethod, bool analyzeMethod)
         {
             string result = "";
             if (true == convertToMethod)
-                result = CreatePropertyGetBodyCode(settings, 3, parametersNode);
+                result = CreatePropertyGetBodyCode(settings, 3, parametersNode, analyzeMethod);
             else
-                result = CreatePropertyGetBodyCode(settings, 4, parametersNode);
+                result = CreatePropertyGetBodyCode(settings, 4, parametersNode, analyzeMethod);
             
             return result;           
         }
@@ -323,7 +325,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="numberOfRootTabs"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreatePropertyGetBodyCode(Settings settings, int numberOfRootTabs, XElement parametersNode)
+        internal static string CreatePropertyGetBodyCode(Settings settings, int numberOfRootTabs, XElement parametersNode, bool analyzeReturn)
         {
             string tabSpace = CSharpGenerator.TabSpace(numberOfRootTabs);           
             string methodBody = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
@@ -347,7 +349,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
                 modifiers = ", modifiers";
 
-            if (typeName != "void")
+            if (!analyzeReturn)
+            {
+                string invokeTarget = "";
+                if ("this" == parametersNode.Parent.Attribute("Name").Value)
+                    invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;
+                else
+                    invokeTarget = methodName;
+
+                methodBody += tabSpace + "object returnItem = Invoker.PropertyGet(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
+                methodBody += tabSpace + "return returnItem;\r\n";
+            }
+            else if (typeName != "void")
             {
                 if ("true" == returnValue.Attribute("IsComProxy").Value)
                 {
