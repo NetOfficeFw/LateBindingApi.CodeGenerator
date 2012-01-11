@@ -99,6 +99,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
 
+                if (propertyNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                    method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+
                 if("this" == name)
                     method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
 
@@ -107,9 +110,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     valueReturn += "[]";
 
                 string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem, hasItem);
-
                 string paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
                 string paramAttrib = "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams)+ "\r\n";
+                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams));
+
                 if (true == settings.CreateXmlDocumentation)
                     paramAttrib = paramDoku + paramAttrib;
                 protoype = protoype.Replace("%setAttribute%", "\t\t" + paramAttrib);
@@ -210,10 +214,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 outParam = "]";
                 getter = "";
             }
-             
+
             string result = "";
             string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, false);
+            string parametersCall = ParameterApi.CreateParametersCallString(settings, itemParams, true, false);
             int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
+            int paramsCountWithOutOptionals = ParameterApi.GetParamsCount(itemParams, false);
             bool hasForbiddenName = IsKeyword(name);
             if ((paramsCountWithOptionals > 0) || (faceName == name) || hasForbiddenName)
             {
@@ -247,6 +253,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 else
                     result = result.Replace("%%", "");
+            }
+
+            if ((paramsCountWithOptionals > 0) && (paramsCountWithOutOptionals > 0) && ("this" != name) && ("_Default" != name) && (!faceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                result += "\t\t%paramDocu%\r\n" + "\t\tpublic %valueReturn% " + name + "(" + parameters + ")" + "\r\n\t\t{\r\n\t\t\t" +
+                    "return get_" + name + "(" + parametersCall + ");" +
+                    "\r\n\t\t}\r\n\r\n";
             }
 
             return result;

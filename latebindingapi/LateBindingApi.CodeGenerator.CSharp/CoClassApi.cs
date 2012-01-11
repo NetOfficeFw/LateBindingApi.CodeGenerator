@@ -81,7 +81,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             construct = construct.Replace("%CompareIds%", sinkHelperIds);
             construct = construct.Replace("%SetActiveSink%", sinkHelperSetActive);
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", classNode));
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// "+ CSharpGenerator.GetSupportByLibrary("", classNode));
 
             if (null == _classEventBinding)
                 _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");

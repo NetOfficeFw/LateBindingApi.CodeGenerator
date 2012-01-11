@@ -35,6 +35,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("RefLibraries"),
                                new XAttribute("Name", itemMember.Name),
                                new XAttribute("AnalyzeReturn", "true"),
+                               new XAttribute("Hidden", TypeDescriptor.IsHidden(itemMember)),
                                new XAttribute("Key", Utils.NewEncodedGuid()));
 
                 methodsNode.Add(node);
@@ -100,7 +101,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                     new XAttribute("MarshalAs",  TypeDescriptor.MarshalMemberAsAs(paramTypeInfo.VarType)),
                                     new XAttribute("IsExternal", TypeDescriptor.IsExternal(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsComProxy", TypeDescriptor.IsCOMProxy(paramTypeInfo).ToString().ToLower()),
-                                    new XAttribute("IsOptional", paramInfo.Optional.ToString().ToLower()),
+                                    new XAttribute("IsOptional", TypeDescriptor.IsOptional(paramInfo).ToString().ToLower()),
+                                    new XAttribute("HasDefaultValue", paramInfo.Default.ToString().ToLower()),
+                                    new XAttribute("DefaultValue", TypeDescriptor.GetDefaultValue(paramInfo)),                
                                     new XAttribute("IsEnum",     TypeDescriptor.IsEnum(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsRef",      TypeDescriptor.IsRef(paramInfo).ToString().ToLower()),
                                     new XAttribute("IsOut",      TypeDescriptor.IsOut(paramInfo).ToString().ToLower()),

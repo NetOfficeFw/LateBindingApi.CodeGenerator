@@ -352,6 +352,49 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         /// <summary>
+        /// convert parameters node to function call parameter string
+        /// </summary>
+        /// <param name="parametersNode"></param>
+        /// <param name="withOptionals"></param>
+        /// <returns></returns>
+        internal static string CreateParametersCallString(Settings settings, XElement parametersNode, bool withOptionals, bool convertOptionalsInNet4)
+        {
+            bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(parametersNode.Parent.Parent.Parent);
+            bool hasDefaultItem = EnumerableApi.HasDefaultItem(parametersNode.Parent.Parent.Parent);
+
+            string parameters = "";
+            int countOfParams = GetParamsCount(parametersNode, withOptionals);
+            int i = 1;
+
+            IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
+            foreach (XElement itemParam in xParams)
+            {
+                string parameter = "";
+                string type = CSharpGenerator.GetQualifiedType(settings, itemParam);
+                if ("true" == itemParam.Attribute("IsArray").Value)
+                    type += "[]";
+
+                string name = itemParam.Attribute("Name").Value;
+                name = ValidateParamName(settings, name);
+                
+                if ("true" == itemParam.Attribute("IsOut").Value)
+                    name = "out " + name;
+                else if ("true" == itemParam.Attribute("IsRef").Value)
+                    name = "ref " + name;
+
+                parameter = name;
+                if (i < countOfParams)
+                    parameter += ", ";
+
+                parameters += parameter;
+                i++;
+                if (i > countOfParams)
+                    break;
+            }
+            return parameters;
+        }
+
+        /// <summary>
         /// convert parameters node to function prototype parameter string
         /// </summary>
         /// <param name="parametersNode"></param>

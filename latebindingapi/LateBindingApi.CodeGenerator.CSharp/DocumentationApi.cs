@@ -75,11 +75,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     typeName += "[]";
 
                 typeName += " " + itemParameter.Attribute("Name").Value;
-
-                string line = tabSpace + "/// <param name=\"" + itemParameter.Attribute("Name").Value + "\">" + typeName + "</param>\r\n";
+                string defaultInfo = "";
+                
+                if (itemParameter.Attribute("HasDefaultValue").Value == "true")
+                {
+                    defaultInfo = " = " + itemParameter.Attribute("DefaultValue").Value;
+                }
+                string line = tabSpace + "/// <param name=\"" + ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + defaultInfo + "</param>\r\n";
                 result += line;
             }
             return result;
+        }
+
+        private static string ValidateParamName(string name)
+        {
+            return name.Substring(0, 1).ToLower() + name.Substring(1);
         }
 
         /// <summary>
@@ -89,6 +99,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="parametersNode"></param>
         /// <returns></returns>
         internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode)
+        {
+            return CreateParameterDocumentation(numberOfTabSpace, parametersNode, true, "");
+        }
+
+        /// <summary>
+        /// SupportByLibraryArray 
+        /// </summary>
+        /// <param name="numberOfTabSpace"></param>
+        /// <param name="parametersNode"></param>
+        /// <returns></returns>
+        internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode, bool generateGetSet, string additional)
         {
             XElement parentNode = parametersNode;
             while (parentNode.Name != "Project")
@@ -108,22 +129,27 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
             if ("Property" == parametersNode.Parent.Name)
             {
-                if ("INVOKE_PROPERTYGET" == parametersNode.Parent.Attribute("InvokeKind").Value)
-                    summary += tabSpace + "/// Get\r\n";
-                else
-                    summary += tabSpace + "/// Get/Set\r\n";
-
+                if (generateGetSet)
+                {
+                    if ("INVOKE_PROPERTYGET" == parametersNode.Parent.Attribute("InvokeKind").Value)
+                        summary += tabSpace + "/// Get\r\n";
+                    else
+                        summary += tabSpace + "/// Get/Set\r\n";
+                }
+                summary += additional;
                 summary += tabSpace + "/// </summary>\r\n";
             }
             else
+            {
+                summary += additional;
                 summary += tabSpace + "/// </summary>\r\n";
-
+            }
             result += summary;
-            
+
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
             {
                 string typeName = CSharpGenerator.GetQualifiedType(itemParameter);
-                
+
                 if ("true" == itemParameter.Attribute("IsOptional").Value)
                     typeName = "optional " + typeName;
 
@@ -140,5 +166,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             return result;
         }
+
     }
 }

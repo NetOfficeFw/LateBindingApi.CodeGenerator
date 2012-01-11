@@ -124,7 +124,7 @@ namespace LateBindingApi.Core
 
             Factory.AddObjectToList(this);
         }
-
+ 
         /// <summary>
         /// creates new instance with given proxy, parent info and info instance is an enumerator
         /// </summary>
@@ -542,6 +542,40 @@ namespace LateBindingApi.Core
                 itemObject.Dispose();
             }
             _listChildObjects.Clear();
+        }
+
+        #endregion
+
+        #region object overrides
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+
+        /// <summary>
+        /// Determines whether two Object instances are equal.
+        /// </summary>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public override bool Equals(Object obj)
+        {
+            return base.Equals(obj);
         }
 
         #endregion

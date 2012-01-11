@@ -13,6 +13,20 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     internal static class TypeDescriptor
     {
         /// <summary>
+        /// returns member is hidden
+        /// </summary>
+        /// <param name="typeInfo"></param>
+        /// <returns></returns>
+        internal static bool IsHidden(MemberInfo member)
+        {
+            if (member.AttributeMask == 64)
+                return true;
+            else
+                return false;
+        }
+
+
+        /// <summary>
         /// returns typeInfo is COMProxy or not
         /// </summary>
         /// <param name="typeInfo"></param>
@@ -39,6 +53,39 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             {
                 return false;
             }  
+        }
+        
+        /// <summary>
+        /// returns typeInfo is optional or not
+        /// </summary>
+        /// <param name="typeInfo"></param>
+        /// <returns></returns>
+        internal static bool IsOptional(ParameterInfo paramInfo)
+        {
+            if (paramInfo.Optional)
+                return true;
+            if (paramInfo.Default)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// returns default value if available
+        /// </summary>
+        /// <param name="typeInfo"></param>
+        /// <returns></returns>
+        internal static object GetDefaultValue(ParameterInfo paramInfo)
+        {
+            if (paramInfo.Default)
+            {
+                if (null != paramInfo.DefaultValue)
+                    return paramInfo.DefaultValue;
+                else
+                    return "null (Nothing in visual basic)";
+            }
+            else
+                return "";
         }
 
         /// <summary>

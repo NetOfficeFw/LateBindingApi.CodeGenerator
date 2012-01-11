@@ -118,6 +118,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (true == settings.CreateXmlDocumentation)
                     method = supportDocu;
 
+                if(methodNode.Attribute("Hidden").Value.Equals("true",StringComparison.InvariantCultureIgnoreCase))
+                    method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+
                 if (HasCustomAttribute(itemParams))
                     method += "\t\t" + "[CustomMethodAttribute]" + "\r\n";
                 method += "\t\t" + supportAttribute + "\r\n";

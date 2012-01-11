@@ -250,10 +250,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement enumNode = GetEnumNode(faceNode);
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
             string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);
+
             string versionSummary = CSharpGenerator.GetSupportByLibraryString("", enumNode);
             string versionAttribute = CSharpGenerator.GetSupportByLibraryAttribute(enumNode); 
             content = content.Replace("%enumerableSpace%", "using System.Collections;\r\n");
-            content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
+
+            if (targetReturnType == "COMObject")            
+                content = content.Replace("%enumerable%", " ,IEnumerable<" + "object" + ">");
+            else
+                content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
 
             versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
             if (HasCustomAttribute(enumNode))
@@ -264,13 +269,29 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string enumString = "";
             if (HasCustomAttribute(enumNode))
             {
-                enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
-                enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
+                    enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                }
+                else
+                {
+                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
+                    enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                }
             }
-            else if ("true" == returnType.Attribute("IsComProxy").Value)
+            else if( (targetReturnType != "object") && ("true" == returnType.Attribute("IsComProxy").Value))
             {
-                enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
-                enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
+                    enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                }
+                else
+                {
+                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
+                    enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                }
             }
             else
             {
@@ -300,7 +321,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if("COMVariant" == type)
                 type = "object";
-
+        
             if ("true" == returnType.Attribute("IsArray").Value)
                 type += "[]";
 
@@ -311,7 +332,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if(qualifier != "")
                     type = qualifier  + type;
             }
-
+            /*
+            if(targetReturnType == "object")
+                enumString = enumString.Replace("%Type%", targetReturnType);
+            else
+            */
             enumString = enumString.Replace("%Type%", type);
 
             content += enumString;

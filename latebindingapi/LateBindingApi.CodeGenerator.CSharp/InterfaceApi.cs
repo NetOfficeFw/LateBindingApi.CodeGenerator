@@ -69,8 +69,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", faceNode));
-            
+            //string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", faceNode));
+
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByLibrary("", faceNode));
+
+
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));
 

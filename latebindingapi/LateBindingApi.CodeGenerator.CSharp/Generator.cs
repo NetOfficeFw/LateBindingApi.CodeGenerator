@@ -124,6 +124,86 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         void _job_DoWork()
         {
+            /*
+            foreach (XElement item in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project"))
+            {
+                System.IO.File.AppendAllText("C:\\log.txt", item.Attribute("Name").Value + "\r\n");
+                foreach (XElement face in item.Element("DispatchInterfaces").Elements("Interface"))
+                {
+                    foreach (XElement method in face.Element("Methods").Elements("Method"))
+                    {
+                        bool found = false;
+                        foreach (XElement param in method.Element("Parameters").Elements("Parameter"))
+                        {
+                            if (param.Attribute("HasDefaultValue").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            break;
+                    }
+                }
+
+                foreach (XElement face in item.Element("Interfaces").Elements("Interface"))
+                {
+                    foreach (XElement method in face.Element("Methods").Elements("Method"))
+                    {
+                        bool found = false;
+                        foreach (XElement param in method.Element("Parameters").Elements("Parameter"))
+                        {
+                            if (param.Attribute("HasDefaultValue").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            break;
+                    }
+                }
+            }
+            return;
+            */
+            /*
+            foreach (XElement item in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project"))
+            {
+                System.IO.File.AppendAllText("C:\\log.txt", item.Attribute("Name").Value + "\r\n");
+                foreach (XElement face in item.Element("DispatchInterfaces").Elements("Interface"))
+                {
+                    foreach (XElement method in face.Element("Properties").Elements("Property"))
+                    {
+                        int countWithoutOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), false);
+                        int countWithOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), true);
+                        if ((countWithoutOptionals > 0) && (!method.Attribute("Name").Value.Equals(face.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
+                        }
+                    }
+                }
+            }
+
+            foreach (XElement item in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project"))
+            {
+                System.IO.File.AppendAllText("C:\\log.txt", item.Attribute("Name").Value + "\r\n");
+                foreach (XElement face in item.Element("Interfaces").Elements("Interface"))
+                {
+                    foreach (XElement method in face.Element("Properties").Elements("Property"))
+                    {
+                        int countWithoutOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), false);
+                        int countWithOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), true);
+                        if ((countWithoutOptionals > 0) && (!method.Attribute("Name").Value.Equals(face.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
+                        }
+                    }
+                }
+            }
+            return;
+            */
             DoUpdate("Create Copy");
             XElement solution = CreateWorkingCopy().Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
 
@@ -481,7 +561,29 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             return summary1 + between + "\r\n" + summary2;
         }
-        
+
+        /// <summary>
+        /// returns support libary versions for entityNode as string
+        /// </summary>
+        /// <param name="entityNode"></param>
+        /// <returns></returns>
+        internal static string GetSupportByLibrary(string tabSpace, XElement entityNode)
+        {
+            XElement parentNode = entityNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
+            string res = "";
+            string[] result = GetSupportByLibraryArray(entityNode);
+            foreach (string item in result)
+                res += item + ",";
+
+            if (res.Substring(res.Length - 1) == ",")
+                res = res.Substring(0, res.Length - 1);
+
+            return tabSpace + "SupportByLibrary " + "" + parentNode.Attribute("Name").Value + ", " + res;
+        }
+
         /// <summary>
         /// returns support libary versions for entityNode as string
         /// </summary>

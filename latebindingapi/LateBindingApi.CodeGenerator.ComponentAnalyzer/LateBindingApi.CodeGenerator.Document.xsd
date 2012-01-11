@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema
-    targetNamespace="http://latebindingapi.codeplex.com/XMLSchema.xsd" elementFormDefault="qualified" 
+    targetNamespace="http://latebindingapi.codeplex.com/XMLSchema.xsd" elementFormDefault="qualified"
     xmlns="http://latebindingapi.codeplex.com/XMLSchema.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
 
@@ -13,13 +13,13 @@
       <xs:attribute name="Version" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
-  
+
   <xs:complexType name="RefLibraries">
     <xs:sequence>
       <xs:element name="RefLibrary" type="Ref" minOccurs ="0" maxOccurs ="unbounded"/>
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Ref">
     <xs:sequence>
       <xs:element name="RefLibraries" type="RefLibraries" />
@@ -32,37 +32,49 @@
     <xs:attribute name="GUID" type="xs:string" use="required" />
     <xs:attribute name="Major" type="xs:string" use="required" />
     <xs:attribute name="Minor" type="xs:string" use="required" />
-    <xs:attribute name="Description" type="xs:string" use="required" />    
+    <xs:attribute name="Description" type="xs:string" use="required" />
   </xs:complexType>
-  
+
   <xs:complexType name="Libraries">
     <xs:sequence>
       <xs:element name="Library" type="Library" minOccurs ="0" maxOccurs ="unbounded"/>
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Library">
     <xs:sequence>
       <xs:element name="DependLib"      type="DependLib" minOccurs ="0" maxOccurs ="unbounded"/>
     </xs:sequence>
-    <xs:attribute name="Name"           type="xs:string" />       <!-- Library Name -->
-    <xs:attribute name="File"           type="xs:string"/>        <!-- Assembly Path -->
-    <xs:attribute name="Key"            type="xs:string" />       <!-- Generated unique Key for the Component -->
-    <xs:attribute name="GUID"           type="xs:string" />       <!-- Component GUID -->
-    <xs:attribute name="HelpFile"       type="xs:string"/>        <!-- Helpfile Path -->
-    <xs:attribute name="Major"          type="xs:unsignedByte" /> <!-- TypeLib MajorVersion -->
-    <xs:attribute name="Minor"          type="xs:unsignedByte" /> <!-- TypeLib MinorVersion -->
-    <xs:attribute name="LCID"           type="xs:unsignedByte" /> <!-- TypeLib LCID -->
-    <xs:attribute name="Description"    type="xs:string" />       <!-- Description of TypeLib -->
-    <xs:attribute name="Version"        type="xs:string" />       <!-- SupportByLibrary Value -->
-    <xs:attribute name="SysKind"        type="xs:unsignedByte" /> <!-- WIN16 WIN32 or Mac -->
+    <xs:attribute name="Name"           type="xs:string" />
+    <!-- Library Name -->
+    <xs:attribute name="File"           type="xs:string"/>
+    <!-- Assembly Path -->
+    <xs:attribute name="Key"            type="xs:string" />
+    <!-- Generated unique Key for the Component -->
+    <xs:attribute name="GUID"           type="xs:string" />
+    <!-- Component GUID -->
+    <xs:attribute name="HelpFile"       type="xs:string"/>
+    <!-- Helpfile Path -->
+    <xs:attribute name="Major"          type="xs:unsignedByte" />
+    <!-- TypeLib MajorVersion -->
+    <xs:attribute name="Minor"          type="xs:unsignedByte" />
+    <!-- TypeLib MinorVersion -->
+    <xs:attribute name="LCID"           type="xs:unsignedByte" />
+    <!-- TypeLib LCID -->
+    <xs:attribute name="Description"    type="xs:string" />
+    <!-- Description of TypeLib -->
+    <xs:attribute name="Version"        type="xs:string" />
+    <!-- SupportByLibrary Value -->
+    <xs:attribute name="SysKind"        type="xs:unsignedByte" />
+    <!-- WIN16 WIN32 or Mac -->
   </xs:complexType>
-  
+
   <xs:complexType name="Solution">
     <xs:sequence>
       <xs:element name="Projects" type="Projects" />
     </xs:sequence>
-    <xs:attribute name="Name" type="xs:string" use="required" /> <!-- name of solution.sln -->
+    <xs:attribute name="Name" type="xs:string" use="required" />
+    <!-- name of solution.sln -->
   </xs:complexType>
 
   <xs:complexType name="RefProjects">
@@ -76,13 +88,13 @@
       <xs:element name="Key" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Projects">
     <xs:sequence>
       <xs:element name="Project" type="Project" minOccurs ="0" maxOccurs ="unbounded"/>
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Project">
     <xs:sequence>
       <xs:element name="Constants"          type="Constants"/>
@@ -96,19 +108,32 @@
       <xs:element name="RefLibraries"       type="RefLibraries" />
       <xs:element name="RefProjects"        type="RefProjects" />
     </xs:sequence>
-    <xs:attribute name="Name"           type="xs:string" use="required" /> <!-- name and AssemblyTitle of project -->
-    <xs:attribute name="Namespace"      type="xs:string" use="required" /> <!-- namespace of project -->
-    <xs:attribute name="Key"            type="xs:string" use="required" /> <!-- unique key of project -->
-    <xs:attribute name="Description"    type="xs:string" use="required" /> <!-- AssemblyDescription -->
-    <xs:attribute name="Configuration"  type="xs:string" use="required" /> <!-- AssemblyConfiguration -->
-    <xs:attribute name="Company"        type="xs:string" use="required" /> <!-- AssemblyCompany -->
-    <xs:attribute name="Product"        type="xs:string" use="required" /> <!-- AssemblyProduct -->
-    <xs:attribute name="Copyright"      type="xs:string" use="required" /> <!-- AssemblyCopyright -->
-    <xs:attribute name="Trademark"      type="xs:string" use="required" /> <!-- AssemblyTrademark -->
-    <xs:attribute name="Culture"        type="xs:string" use="required" /> <!-- AssemblyCulture -->
-    <xs:attribute name="Version"        type="xs:string" use="required" /> <!-- AssemblyVersion -->
-    <xs:attribute name="FileVersion"    type="xs:string" use="required" /> <!-- AssemblyFileVersion -->
-    <xs:attribute name="Ignore"         type="xs:string" use="required" /> <!-- dont generate, use only as placeholder -->
+    <xs:attribute name="Name"           type="xs:string" use="required" />
+    <!-- name and AssemblyTitle of project -->
+    <xs:attribute name="Namespace"      type="xs:string" use="required" />
+    <!-- namespace of project -->
+    <xs:attribute name="Key"            type="xs:string" use="required" />
+    <!-- unique key of project -->
+    <xs:attribute name="Description"    type="xs:string" use="required" />
+    <!-- AssemblyDescription -->
+    <xs:attribute name="Configuration"  type="xs:string" use="required" />
+    <!-- AssemblyConfiguration -->
+    <xs:attribute name="Company"        type="xs:string" use="required" />
+    <!-- AssemblyCompany -->
+    <xs:attribute name="Product"        type="xs:string" use="required" />
+    <!-- AssemblyProduct -->
+    <xs:attribute name="Copyright"      type="xs:string" use="required" />
+    <!-- AssemblyCopyright -->
+    <xs:attribute name="Trademark"      type="xs:string" use="required" />
+    <!-- AssemblyTrademark -->
+    <xs:attribute name="Culture"        type="xs:string" use="required" />
+    <!-- AssemblyCulture -->
+    <xs:attribute name="Version"        type="xs:string" use="required" />
+    <!-- AssemblyVersion -->
+    <xs:attribute name="FileVersion"    type="xs:string" use="required" />
+    <!-- AssemblyFileVersion -->
+    <xs:attribute name="Ignore"         type="xs:string" use="required" />
+    <!-- dont generate, use only as placeholder -->
   </xs:complexType>
 
   <xs:complexType name="RefInterfaces">
@@ -131,11 +156,16 @@
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="Inherited"            type="RefInterfaces" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name -->
-    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
-    <xs:attribute name="IsEventInterface"     type="xs:string"  use="required" /> <!-- is an event interface -->
-    <xs:attribute name="IsEarlyBind"          type="xs:string"  use="required" /> <!-- generate as earlybind Interface equals as interop  -->
-    <xs:attribute name="TypeLibType"          type="xs:string"  use="required" /> <!-- TypeLibTypeAttribute -->
+    <xs:attribute name="Name"                 type="xs:string"  use="required" />
+    <!-- interface name -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" />
+    <!-- unique key -->
+    <xs:attribute name="IsEventInterface"     type="xs:string"  use="required" />
+    <!-- is an event interface -->
+    <xs:attribute name="IsEarlyBind"          type="xs:string"  use="required" />
+    <!-- generate as earlybind Interface equals as interop  -->
+    <xs:attribute name="TypeLibType"          type="xs:string"  use="required" />
+    <!-- TypeLibTypeAttribute -->
   </xs:complexType>
 
   <xs:complexType name="DispatchInterfaces">
@@ -149,23 +179,35 @@
       <xs:element name="Member"         type="RecordMember" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="RecordMember">
     <xs:sequence>
       <xs:element name="RefLibraries"  type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Name"           type="xs:string"  /> <!-- member name -->
-    <xs:attribute name="Type"           type="xs:string"  /> <!-- member type -->
-    <xs:attribute name="TypeKind"       type="xs:string"  /> <!-- return value typekind -->
-    <xs:attribute name="IsComProxy"     type="xs:boolean" /> <!-- return value is a com object -->
-    <xs:attribute name="IsEnum"         type="xs:boolean" /> <!-- return value is an enum -->
-    <xs:attribute name="IsExternal"     type="xs:boolean" /> <!-- return value type is defined in external library -->
-    <xs:attribute name="IsArray"        type="xs:boolean" /> <!-- return value is an array -->
-    <xs:attribute name="IsNative"       type="xs:boolean" /> <!-- return value is sclar -->
-    <xs:attribute name="MarshalAs"      type="xs:string" />  <!-- MarshalAs Attribute -->
-    <xs:attribute name="TypeKey"        type="xs:string"  /> <!-- key from defined return type  -->
-    <xs:attribute name="ProjectKey"     type="xs:string"  /> <!-- project key there is the return type defined -->
-    <xs:attribute name="LibraryKey"     type="xs:string"  /> <!-- library key there is the return type defined -->
+    <xs:attribute name="Name"           type="xs:string"  />
+    <!-- member name -->
+    <xs:attribute name="Type"           type="xs:string"  />
+    <!-- member type -->
+    <xs:attribute name="TypeKind"       type="xs:string"  />
+    <!-- return value typekind -->
+    <xs:attribute name="IsComProxy"     type="xs:boolean" />
+    <!-- return value is a com object -->
+    <xs:attribute name="IsEnum"         type="xs:boolean" />
+    <!-- return value is an enum -->
+    <xs:attribute name="IsExternal"     type="xs:boolean" />
+    <!-- return value type is defined in external library -->
+    <xs:attribute name="IsArray"        type="xs:boolean" />
+    <!-- return value is an array -->
+    <xs:attribute name="IsNative"       type="xs:boolean" />
+    <!-- return value is sclar -->
+    <xs:attribute name="MarshalAs"      type="xs:string" />
+    <!-- MarshalAs Attribute -->
+    <xs:attribute name="TypeKey"        type="xs:string"  />
+    <!-- key from defined return type  -->
+    <xs:attribute name="ProjectKey"     type="xs:string"  />
+    <!-- project key there is the return type defined -->
+    <xs:attribute name="LibraryKey"     type="xs:string"  />
+    <!-- library key there is the return type defined -->
   </xs:complexType>
 
   <xs:complexType name="Record">
@@ -174,12 +216,16 @@
       <xs:element name="DispIds"              type="DispIds" />
       <xs:element name="Members"              type="RecordMembers" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- Record name: readonly -->
-    <xs:attribute name="GUID"                 type="xs:string"  use="required" /> <!-- Record GUID -->
-    <xs:attribute name="TypeLibType"          type="xs:string"  use="required" /> <!-- TypeLibTypeAttribute -->
-    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+    <xs:attribute name="Name"                 type="xs:string"  use="required" />
+    <!-- Record name: readonly -->
+    <xs:attribute name="GUID"                 type="xs:string"  use="required" />
+    <!-- Record GUID -->
+    <xs:attribute name="TypeLibType"          type="xs:string"  use="required" />
+    <!-- TypeLibTypeAttribute -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" />
+    <!-- unique key -->
   </xs:complexType>
-  
+
   <xs:complexType name="Records">
     <xs:sequence>
       <xs:element name="Record"               type="Record" minOccurs="0" maxOccurs="unbounded" />
@@ -191,31 +237,36 @@
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="DispIds"              type="DispIds" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- Alias name: readonly -->
-    <xs:attribute name="Intrinsic"            type="xs:string"  use="required" /> <!-- alies value -->
-    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+    <xs:attribute name="Name"                 type="xs:string"  use="required" />
+    <!-- Alias name: readonly -->
+    <xs:attribute name="Intrinsic"            type="xs:string"  use="required" />
+    <!-- alies value -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" />
+    <!-- unique key -->
   </xs:complexType>
-  
+
   <xs:complexType name="TypeDefs">
     <xs:sequence>
       <xs:element name="Alias" type="Alias" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Modules">
     <xs:sequence>
       <xs:element name="Modul" type="Modul" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Modul">
     <xs:sequence>
       <xs:element name="Methods"              type="Methods" />
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="DispIds"              type="DispIds" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name: readonly -->
-    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+    <xs:attribute name="Name"                 type="xs:string"  use="required" />
+    <!-- interface name: readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" />
+    <!-- unique key -->
   </xs:complexType>
 
   <xs:complexType name="CoClasses">
@@ -232,11 +283,14 @@
       <xs:element name="Inherited"            type="RefInterfaces" />
       <xs:element name="DispIds"              type="DispIds" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name: readonly -->
-    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
-    <xs:attribute name="AutomaticQuit"        type="xs:string"  use="required" /> <!-- call quit while dispose -->
+    <xs:attribute name="Name"                 type="xs:string"  use="required" />
+    <!-- interface name: readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" />
+    <!-- unique key -->
+    <xs:attribute name="AutomaticQuit"        type="xs:string"  use="required" />
+    <!-- call quit while dispose -->
   </xs:complexType>
-  
+
   <xs:complexType name="DispIds">
     <xs:sequence>
       <xs:element name="DispId" type="DispId" minOccurs="0" maxOccurs="unbounded" />
@@ -247,7 +301,8 @@
     <xs:sequence>
       <xs:element name="RefLibraries" type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Id"           type="xs:string" use="required" />  <!-- dispatch -->
+    <xs:attribute name="Id"           type="xs:string" use="required" />
+    <!-- dispatch -->
   </xs:complexType>
 
   <xs:complexType name="Enums">
@@ -255,44 +310,51 @@
       <xs:element name="Enum" type="Enum" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Constants">
     <xs:sequence>
       <xs:element name="Constant" type="Constant" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Constant">
     <xs:sequence>
       <xs:element name="Members"       type="ConstantMembers" />
       <xs:element name="RefLibraries"  type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Name"          type="xs:string"  /> <!-- constant name -->
-    <xs:attribute name="Key"           type="xs:string"  /> <!-- unique key -->
+    <xs:attribute name="Name"          type="xs:string"  />
+    <!-- constant name -->
+    <xs:attribute name="Key"           type="xs:string"  />
+    <!-- unique key -->
   </xs:complexType>
-  
+
   <xs:complexType name="ConstantMembers">
     <xs:sequence>
       <xs:element name="Member" type="ConstantMember" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="ConstantMember">
     <xs:sequence>
       <xs:element name="RefLibraries"  type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Name"          type="xs:string"  /> <!-- member name -->
-    <xs:attribute name="Type"          type="xs:string"  /> <!-- member type -->
-    <xs:attribute name="Value"         type="xs:string" />  <!-- member value -->
+    <xs:attribute name="Name"          type="xs:string"  />
+    <!-- member name -->
+    <xs:attribute name="Type"          type="xs:string"  />
+    <!-- member type -->
+    <xs:attribute name="Value"         type="xs:string" />
+    <!-- member value -->
   </xs:complexType>
-  
+
   <xs:complexType name="Enum">
     <xs:sequence>
       <xs:element name="Members"       type="EnumMembers" />
       <xs:element name="RefLibraries"  type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Name"          type="xs:string"  /> <!-- enum name -->
-    <xs:attribute name="Key"           type="xs:string"  /> <!-- unique key -->
+    <xs:attribute name="Name"          type="xs:string"  />
+    <!-- enum name -->
+    <xs:attribute name="Key"           type="xs:string"  />
+    <!-- unique key -->
   </xs:complexType>
 
   <xs:complexType name="EnumMembers">
@@ -305,54 +367,77 @@
     <xs:sequence>
       <xs:element name="RefLibraries"  type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Name"          type="xs:string"  />   <!-- member name -->
-    <xs:attribute name="Value"         type="xs:integer" />   <!-- member value -->
+    <xs:attribute name="Name"          type="xs:string"  />
+    <!-- member name -->
+    <xs:attribute name="Value"         type="xs:integer" />
+    <!-- member value -->
   </xs:complexType>
- 
+
   <xs:complexType name="Property">
     <xs:sequence>
       <xs:element name="DispIds"              type="DispIds" />
       <xs:element name="RefLibraries"         type="RefLibraries" />
-      <xs:element name="Parameters"           type="Parameters" minOccurs="0" maxOccurs="unbounded" /> 
+      <xs:element name="Parameters"           type="Parameters" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  /> <!-- property name :Readonly -->
-    <xs:attribute name="Key"                  type="xs:string"  /> <!-- unique key -->
-    <xs:attribute name="InvokeKind"           type="xs:string"  /> <!-- GET PUT or PUTREF -->
-    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" /> <!-- analyze return value -->
+    <xs:attribute name="Name"                 type="xs:string"  />
+    <!-- property name :Readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  />
+    <!-- unique key -->
+    <xs:attribute name="InvokeKind"           type="xs:string"  />
+    <!-- GET PUT or PUTREF -->
+    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" />
+    <!-- analyze return value -->
+    <xs:attribute name="Hidden"               type="xs:boolean"  />
   </xs:complexType>
-  
+
   <xs:complexType name="Properties">
     <xs:sequence>
       <xs:element name="Property" type="Property" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="Method">
     <xs:sequence>
       <xs:element name="DispIds"              type="DispIds" />
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="Parameters"           type="Parameters" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  /> <!-- method name :Readonly -->
-    <xs:attribute name="Key"                  type="xs:string"  /> <!-- unique key -->
-    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" /> <!-- analyze return value -->
+    <xs:attribute name="Name"                 type="xs:string"  />
+    <!-- method name :Readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  />
+    <!-- unique key -->
+    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" />
+    <!-- analyze return value -->
+    <xs:attribute name="Hidden"               type="xs:boolean"  />
   </xs:complexType>
 
   <xs:complexType name="ReturnValue">
     <xs:sequence>
     </xs:sequence>
-    <xs:attribute name="Type"           type="xs:string"  /> <!-- return value type -->
-    <xs:attribute name="TypeKind"       type="xs:string"  /> <!-- return value typekind -->
-    <xs:attribute name="VarType"        type="xs:string"  /> <!-- VarType structure number -->
-    <xs:attribute name="MarshalAs"      type="xs:string"  /> <!-- marshal attribute info -->
-    <xs:attribute name="IsComProxy"     type="xs:boolean" /> <!-- return value is a com object -->
-    <xs:attribute name="IsEnum"         type="xs:boolean" /> <!-- return value is an enum -->
-    <xs:attribute name="IsExternal"     type="xs:boolean" /> <!-- return value type is defined in external library-->
-    <xs:attribute name="IsArray"        type="xs:boolean" /> <!-- return value is an array -->
-    <xs:attribute name="IsNative"       type="xs:boolean"/>  <!-- return value is sclar -->
-    <xs:attribute name="TypeKey"        type="xs:string"  /> <!-- key from defined return type  -->
-    <xs:attribute name="ProjectKey"     type="xs:string"  /> <!-- project key there is the return type defined -->
-    <xs:attribute name="LibraryKey"     type="xs:string"  /> <!-- library key there is the return type defined -->
+    <xs:attribute name="Type"           type="xs:string"  />
+    <!-- return value type -->
+    <xs:attribute name="TypeKind"       type="xs:string"  />
+    <!-- return value typekind -->
+    <xs:attribute name="VarType"        type="xs:string"  />
+    <!-- VarType structure number -->
+    <xs:attribute name="MarshalAs"      type="xs:string"  />
+    <!-- marshal attribute info -->
+    <xs:attribute name="IsComProxy"     type="xs:boolean" />
+    <!-- return value is a com object -->
+    <xs:attribute name="IsEnum"         type="xs:boolean" />
+    <!-- return value is an enum -->
+    <xs:attribute name="IsExternal"     type="xs:boolean" />
+    <!-- return value type is defined in external library-->
+    <xs:attribute name="IsArray"        type="xs:boolean" />
+    <!-- return value is an array -->
+    <xs:attribute name="IsNative"       type="xs:boolean"/>
+    <!-- return value is sclar -->
+    <xs:attribute name="TypeKey"        type="xs:string"  />
+    <!-- key from defined return type  -->
+    <xs:attribute name="ProjectKey"     type="xs:string"  />
+    <!-- project key there is the return type defined -->
+    <xs:attribute name="LibraryKey"     type="xs:string"  />
+    <!-- library key there is the return type defined -->
   </xs:complexType>
 
   <xs:complexType name="Methods">
@@ -364,30 +449,51 @@
   <xs:complexType name="Parameter">
     <xs:sequence>
     </xs:sequence>
-    <xs:attribute name="Name"       type="xs:string"  /> <!-- param name -->
-    <xs:attribute name="Type"       type="xs:string"  /> <!-- param type -->
-    <xs:attribute name="TypeKind"   type="xs:string"  /> <!-- param typekind -->
-    <xs:attribute name="VarType"    type="xs:string"  /> <!-- VarType structure number -->
-    <xs:attribute name="MarshalAs"  type="xs:string"  /> <!-- marshal attribute info -->
-    <xs:attribute name="IsExternal" type="xs:boolean" /> <!-- param type is defined in external library -->
-    <xs:attribute name="IsComProxy" type="xs:boolean" /> <!-- param is a com object  -->
-    <xs:attribute name="IsEnum"     type="xs:boolean" /> <!-- param is an enum -->
-    <xs:attribute name="IsOptional" type="xs:boolean" /> <!-- param is an optional -->
-    <xs:attribute name="IsRef"      type="xs:boolean" /> <!-- param is given byRef -->
-    <xs:attribute name="IsOut"      type="xs:boolean" /> <!-- param is out -->
-    <xs:attribute name="ParamFlags" type="xs:string" /> <!-- param flags -->    
-    <xs:attribute name="IsArray"    type="xs:boolean" /> <!-- param is an array -->
-    <xs:attribute name="IsNative"   type="xs:boolean" /> <!-- param type is sclar -->
-    <xs:attribute name="TypeKey"    type="xs:string"  /> <!-- key from defined param type  -->
-    <xs:attribute name="ProjectKey" type="xs:string"  /> <!-- project key there is the param type defined -->
-    <xs:attribute name="LibraryKey" type="xs:string"  /> <!-- library key there is the param type defined -->
+    <xs:attribute name="Name"       type="xs:string"  />
+    <!-- param name -->
+    <xs:attribute name="Type"       type="xs:string"  />
+    <!-- param type -->
+    <xs:attribute name="TypeKind"   type="xs:string"  />
+    <!-- param typekind -->
+    <xs:attribute name="VarType"    type="xs:string"  />
+    <!-- VarType structure number -->
+    <xs:attribute name="MarshalAs"  type="xs:string"  />
+    <!-- marshal attribute info -->
+    <xs:attribute name="IsExternal" type="xs:boolean" />
+    <!-- param type is defined in external library -->
+    <xs:attribute name="IsComProxy" type="xs:boolean" />
+    <!-- param is a com object  -->
+    <xs:attribute name="IsEnum"     type="xs:boolean" />
+    <!-- param is an enum -->
+    <xs:attribute name="IsOptional" type="xs:boolean" />
+    <!-- param is an optional -->
+    <xs:attribute name="HasDefaultValue" type="xs:boolean" />
+    <!-- param has default value -->
+    <xs:attribute name="DefaultValue" type="xs:string" />
+    <!--the default value -->
+    <xs:attribute name="IsRef"      type="xs:boolean" />
+    <!-- param is given byRef -->
+    <xs:attribute name="IsOut"      type="xs:boolean" />
+    <!-- param is out -->
+    <xs:attribute name="ParamFlags" type="xs:string" />
+    <!-- param flags -->
+    <xs:attribute name="IsArray"    type="xs:boolean" />
+    <!-- param is an array -->
+    <xs:attribute name="IsNative"   type="xs:boolean" />
+    <!-- param type is sclar -->
+    <xs:attribute name="TypeKey"    type="xs:string"  />
+    <!-- key from defined param type  -->
+    <xs:attribute name="ProjectKey" type="xs:string"  />
+    <!-- project key there is the param type defined -->
+    <xs:attribute name="LibraryKey" type="xs:string"  />
+    <!-- library key there is the param type defined -->
   </xs:complexType>
 
   <xs:complexType name="Parameters">
     <xs:sequence>
       <xs:element name="Parameter"    type="Parameter" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="ReturnValue"  type="ReturnValue" />
-      <xs:element name="RefLibraries" type="RefLibraries" />      
+      <xs:element name="RefLibraries" type="RefLibraries" />
     </xs:sequence>
   </xs:complexType>
 
