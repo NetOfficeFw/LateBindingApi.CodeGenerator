@@ -280,7 +280,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
                 }
             }
-            else if( (targetReturnType != "object") && ("true" == returnType.Attribute("IsComProxy").Value))
+            else if("true" == returnType.Attribute("IsComProxy").Value)
             {
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {

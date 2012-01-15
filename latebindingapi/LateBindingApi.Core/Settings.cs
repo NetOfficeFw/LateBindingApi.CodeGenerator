@@ -35,7 +35,8 @@ namespace LateBindingApi.Core
         private static IntPtr      _messageFilter;
         private static bool        _enableAutomaticQuit;
         private static bool        _enableAdHocLoading = true;
-       
+        private static bool        _enableDebugOutput = true;
+
         #endregion
 
         #region Properties
@@ -142,6 +143,20 @@ namespace LateBindingApi.Core
             }
         }
 
+        /// <summary>
+        /// Get or set additonal debug output is enabled for trouble shooting 
+        /// </summary>
+        public static bool EnableDebugOutput
+        {
+            get
+            {
+                return _enableDebugOutput;
+            }
+            set
+            {
+                _enableDebugOutput = value;
+            }
+        }
         #endregion
     }
 }

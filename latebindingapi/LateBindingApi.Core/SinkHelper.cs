@@ -130,13 +130,32 @@ namespace LateBindingApi.Core
         public static string GetConnectionPoint(COMObject comProxy, ref IConnectionPoint point, params string[] sinkIds)
         {
             if (null == sinkIds)
-                return null;
+                return null;            
 
             IConnectionPointContainer connectionPointContainer = (IConnectionPointContainer)comProxy.UnderlyingObject;
 
-            string id = id = EnumConnectionPoint(connectionPointContainer, ref point, sinkIds);
-            if(null == id)
-                id = FindConnectionPoint(connectionPointContainer, ref point, sinkIds);
+            if (Settings.EnableDebugOutput)
+                DebugConsole.WriteLine(comProxy.UnderlyingTypeName + ".GetConnectionPoint");
+
+            if (Settings.EnableDebugOutput)
+                DebugConsole.WriteLine(comProxy.UnderlyingTypeName + ".FindConnectionPoint");
+           
+            string id = FindConnectionPoint(connectionPointContainer, ref point, sinkIds);
+
+            if (Settings.EnableDebugOutput)
+                DebugConsole.WriteLine(comProxy.UnderlyingTypeName + ".FindConnectionPoint sucseed");
+
+            if (null == id)
+            {
+                if (Settings.EnableDebugOutput)
+                    DebugConsole.WriteLine(comProxy.UnderlyingTypeName + ".EnumConnectionPoint");
+                id = EnumConnectionPoint(connectionPointContainer, ref point, sinkIds);
+                if (Settings.EnableDebugOutput)
+                    DebugConsole.WriteLine(comProxy.UnderlyingTypeName + ".EnumConnectionPoint sucseed");
+            }
+
+            if (Settings.EnableDebugOutput)
+                DebugConsole.WriteLine(comProxy.UnderlyingTypeName + ".GetConnectionPoint passed.");
 
             if (null != id)
                 return id;

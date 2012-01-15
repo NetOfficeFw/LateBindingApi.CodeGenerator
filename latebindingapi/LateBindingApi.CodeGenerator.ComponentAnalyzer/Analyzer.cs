@@ -152,7 +152,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                 DoUpdate("Scan Default Interfaces");
                 AddDefaultCoClassInfo(types);
-                
+               
                 DoUpdate("Scan Inherited CoClasses");
                 AddInheritedCoClassInfo(types);
 
@@ -585,15 +585,15 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XAttribute("Name",        item.Name),
                                new XAttribute("Namespace", preNamespace + item.Name + "Api"),
                                new XAttribute("Key",         Utils.NewEncodedGuid()),
-                               new XAttribute("Description",        ""),
+                               new XAttribute("Description", "NetOffice " + item.Name + " Api"),
                                new XAttribute("Configuration", ""),
-                               new XAttribute("Company", ""),
-                               new XAttribute("Product", ""),
-                               new XAttribute("Copyright", ""),
+                               new XAttribute("Company", "netoffice.codeplex.com"),
+                               new XAttribute("Product", "NetOffice"),
+                               new XAttribute("Copyright", "Sebastian Lange"),
                                new XAttribute("Trademark", ""),
                                new XAttribute("Culture", ""),
-                               new XAttribute("Version", "1.0.0.0"),
-                               new XAttribute("FileVersion", "1.0.0.0"),
+                               new XAttribute("Version", "1.4.0.0"),
+                               new XAttribute("FileVersion", "1.4.0.0"),
                                new XAttribute("Ignore", ignore)                               
                                );
 

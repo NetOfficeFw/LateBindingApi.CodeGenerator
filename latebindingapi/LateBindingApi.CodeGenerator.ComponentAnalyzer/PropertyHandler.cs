@@ -82,6 +82,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="withOptionalParameters"></param>
         internal static void AddParametersToPropertyNode(XElement libraryNode, XElement methodNode, TLI.MemberInfo itemMember)
         {
+            if (itemMember.Name == "Address")
+            {
+ 
+            }
+
             // check defintion exists
             XElement parametersNode = GetParametersNode(methodNode, itemMember);
             if (null == parametersNode)
@@ -127,9 +132,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                     new XAttribute("MarshalAs",     TypeDescriptor.MarshalMemberAsAs(paramTypeInfo.VarType)),
                                     new XAttribute("IsExternal",    TypeDescriptor.IsExternal(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsComProxy",    TypeDescriptor.IsCOMProxy(paramTypeInfo).ToString().ToLower()),
-                                    new XAttribute("IsOptional", TypeDescriptor.IsOptional(paramInfo).ToString().ToLower()),
-                                    new XAttribute("HasDefaultValue", paramInfo.Default.ToString().ToLower()),
-                                    new XAttribute("DefaultValue", TypeDescriptor.GetDefaultValue(paramInfo)),                
+                                    new XAttribute("IsOptional",    TypeDescriptor.IsOptional(paramInfo).ToString().ToLower()),
+                                    new XAttribute("HasDefaultValue",paramInfo.Default.ToString().ToLower()),
+                                    new XAttribute("DefaultValue",  TypeDescriptor.GetDefaultValue(paramInfo)),                
                                     new XAttribute("IsEnum",        TypeDescriptor.IsEnum(paramTypeInfo).ToString().ToLower()),
                                     new XAttribute("IsRef",         TypeDescriptor.IsRef(paramInfo).ToString().ToLower()),
                                     new XAttribute("IsOut",         TypeDescriptor.IsOut(paramInfo).ToString().ToLower()),
