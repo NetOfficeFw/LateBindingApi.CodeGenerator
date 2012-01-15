@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.Documentation", "LateBindingApi.CodeGenerator.Documentation\LateBindingApi.CodeGenerator.Documentation.csproj", "{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.VB", "LateBindingApi.CodeGenerator.VB\LateBindingApi.CodeGenerator.VB.csproj", "{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}.Release|Any CPU.Build.0 = Release|Any CPU
+		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,62 @@
+﻿
+        #region IEventBinding Member
+        
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public bool EventBridgeInitialized
+        {
+            get 
+            {
+                return (null != _connectPoint);
+            }
+        }
+        
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public bool HasEventRecipients       
+        {
+			get
+			{
+				if(null == _thisType)
+					_thisType = this.GetType();
+					
+				foreach (NetRuntimeSystem.Reflection.EventInfo item in _thisType.GetEvents())
+				{
+					MulticastDelegate eventDelegate = (MulticastDelegate) _thisType.GetType().GetField(item.Name, 
+																			NetRuntimeSystem.Reflection.BindingFlags.NonPublic |
+																			NetRuntimeSystem.Reflection.BindingFlags.Instance).GetValue(this);
+					
+					if( (null != eventDelegate) && (eventDelegate.GetInvocationList().Length > 0) )
+						return false;
+				}
+				
+				return false;
+			}
+        }
+        
+		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public Delegate[] GetEventRecipients(string eventName)
+        {
+			if(null == _thisType)
+				_thisType = this.GetType();
+             
+            MulticastDelegate eventDelegate = (MulticastDelegate)_thisType.GetField(
+                                                "_" + eventName + "Event",
+                                                NetRuntimeSystem.Reflection.BindingFlags.Instance |
+                                                NetRuntimeSystem.Reflection.BindingFlags.NonPublic).GetValue(this);
+
+            if (null != eventDelegate)
+            {
+                Delegate[] delegates = eventDelegate.GetInvocationList();
+                return delegates;
+            }
+            else
+                return new Delegate[0];
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public void DisposeSinkHelper()
+        {
+%sinkHelperDispose%
+			_connectPoint = null;
+		}
+        
+        #endregion

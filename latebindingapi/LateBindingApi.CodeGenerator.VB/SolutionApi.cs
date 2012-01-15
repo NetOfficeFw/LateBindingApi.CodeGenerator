@@ -9,7 +9,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class SolutionApi
     {
-        internal static readonly string _projectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%Api\",\"%Name%\\%Name%Api.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
+        internal static readonly string _coreLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%Api\",\"%Name%\\%Name%Api.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
+
+        internal static readonly string _projectLine = "Project(\"{F184B08F-C81C-45F6-A57F-5ABD9991F28F}\") = \"%Name%Api\",\"%Name%\\%Name%Api.vbproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
 
         internal static readonly string _buildConfig = "\t\t{%Key%}.Debug|Any CPU.ActiveCfg = Debug|Any CPU\r\n"
                                                      + "\t\t{%Key%}.Debug|Any CPU.Build.0 = Debug|Any CPU\r\n"
@@ -23,7 +25,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (settings.Framework == "4.0")
             {
                 solutionFile = solutionFile.Replace("%FormatVersion%", "11.00");
-                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual C# Express 2010");
+                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual Basic Express 2010");
             }
             else
             {
@@ -79,15 +81,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 projects += newProjectLine;
                
                 string newConfig = _buildConfig.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
-                configs += newConfig;
-            } 
+                configs += newConfig; 
+            }
 
-            string newProjectLine2 = _projectLine.Replace("Api", "").Replace("%Name%", "LateBindingApi.Core").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F").Replace("%Depend%", "");
+            string newProjectLine2 = _coreLine.Replace("Api", "").Replace("%Name%", "LateBindingApi.Core").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F").Replace("%Depend%", "");
             projects += newProjectLine2;
 
             string newConfig2 = _buildConfig.Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
             configs += newConfig2;
-            
+
             solutionFile = solutionFile.Replace("%Projects%", projects);
             solutionFile = solutionFile.Replace("%Config%", configs);
             return solutionFile;
@@ -139,13 +141,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
+        internal static void SaveApiBinary(Settings settings, string path)
+        {
+            PathApi.CreateFolder(path);
+            string binrayFilePath = System.IO.Path.Combine(path, "LateBindingApi.Core.dll");
+            byte[] ressourceDll = RessourceApi.ReadBinaryFromResource("Api.LateBindingApi.Core" + "_v" + settings.Framework + ".dll");
+            RessourceApi.WriteBinaryToFile(ressourceDll, binrayFilePath);
+        }
+
         internal static void SaveTestClient(Settings settings, XElement solution, string path)
         {
             string projectFile  = RessourceApi.ReadString("TestClient.ClientApplication.csproj");
             string programFile  = RessourceApi.ReadString("TestClient.Program.cs");
             string formFile     = RessourceApi.ReadString("TestClient.Form1.cs");
 
-            string projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.csproj\">\r\n"
+            string projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.vbproj\">\r\n"
                                                    + "      <Project>{%Key%}</Project>\r\n"
                                                    + "      <Name>%Name%Api</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";

@@ -1,0 +1,26 @@
+﻿#Optionals
+for strong typed optional parameters you can't given System.Reflection.Missing.Value use 
+ this option to set all optionals as object. the generated xml documentation header for the property
+ or function tolds you the origin type. in .NET 4 all optional paramters will be convert to object by default and 
+ remove the ref qualifier.
+#
+
+#Camel
+most common old COM Servers doesn't use camel casing. converting the first char to lower of parameter 
+ name looks like more as a .NET application.
+#
+
+#Ref
+a lot of methods has parameters given by reference(ref in C#). This is a default setting in visual basic6 
+ for example, but in most cases it is not necesary. if you know you dont need ref, you can remove the attribute and
+ the calling code looks more beautiful. the ref attribute in event parameters will not be removed.
+#
+
+#Framework
+The generator creates VS 2008 solutions in .NET 2.0, .NET 3.0, .NET 3.5 and VS2010 solution in .NET 4.0{nl}
+#
+
+#Docu
+generates a xml documentation header for any method and property with original type lib info and SupportByLibrary information{nl}
+if you have convert optional parameters to object, its helpful for example.
+#

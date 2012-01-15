@@ -293,6 +293,10 @@
       <Project>{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}</Project>
       <Name>LateBindingApi.CodeGenerator.Documentation</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LateBindingApi.CodeGenerator.VB\LateBindingApi.CodeGenerator.VB.csproj">
+      <Project>{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}</Project>
+      <Name>LateBindingApi.CodeGenerator.VB</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />

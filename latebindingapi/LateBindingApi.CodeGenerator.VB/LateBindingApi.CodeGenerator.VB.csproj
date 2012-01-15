@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}</ProjectGuid>
+    <ProjectGuid>{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LateBindingApi.CodeGenerator.CSharp</RootNamespace>
-    <AssemblyName>LateBindingApi.CodeGenerator.CSharp</AssemblyName>
+    <RootNamespace>LateBindingApi.CodeGenerator.VB</RootNamespace>
+    <AssemblyName>LateBindingApi.CodeGenerator.VB</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -66,7 +66,7 @@
     <Compile Include="FormConfigDialog.Designer.cs">
       <DependentUpon>FormConfigDialog.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Project\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Project\AssemblyInfo.vb" />
     <Compile Include="HelpBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -104,7 +104,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Project\Project.csproj" />
+    <EmbeddedResource Include="Project\Project.vbproj" />
     <EmbeddedResource Include="Solution\Solution.sln" />
   </ItemGroup>
   <ItemGroup>

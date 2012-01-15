@@ -308,7 +308,7 @@ namespace LateBindingApi.Core
                 IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
 
                 string className = TypeDescriptor.GetClassName(comProxy);
-                string fullClassName = factoryInfo.Namespace + "." + className;
+                string fullClassName = factoryInfo.AssemblyNamespace + "." + className;
 
                 // create new proxyType
                 Type comProxyType = null;
@@ -345,7 +345,7 @@ namespace LateBindingApi.Core
                 IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
 
                 string className = TypeDescriptor.GetClassName(comProxy);
-                string fullClassName = factoryInfo.Namespace + "." + className;
+                string fullClassName = factoryInfo.AssemblyNamespace + "." + className;
 
                 // create new classType
                 COMObject newObject = CreateObjectFromComProxy(factoryInfo, caller, comProxy, comProxyType, className, fullClassName);
@@ -418,7 +418,7 @@ namespace LateBindingApi.Core
                     comVariantType = comProxyArray[i].GetType();
                     IFactoryInfo factoryInfo = GetFactoryInfo(comProxyArray[i]);
                     string className = TypeDescriptor.GetClassName(comProxyArray[i]);
-                    string fullClassName = factoryInfo.Namespace + "." + className;
+                    string fullClassName = factoryInfo.AssemblyNamespace + "." + className;
                     newVariantArray[i] = CreateObjectFromComProxy(factoryInfo, caller, comProxyArray[i], comVariantType, className, fullClassName);
                 }
                 return newVariantArray;
@@ -627,7 +627,7 @@ namespace LateBindingApi.Core
             {
                 IFactoryInfo factoryInfo = GetFactoryInfo(comProxy);
                 string className = TypeDescriptor.GetClassName(comProxy);
-                string fullClassName = factoryInfo.Namespace + "." + className;
+                string fullClassName = factoryInfo.AssemblyNamespace + "." + className;
                 Type proxyType = null;
                 if (!_proxyTypeCache.TryGetValue(fullClassName, out proxyType))
                 {

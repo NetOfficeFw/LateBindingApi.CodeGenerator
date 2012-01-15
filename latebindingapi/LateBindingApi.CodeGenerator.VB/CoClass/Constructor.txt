@@ -1,0 +1,89 @@
+﻿#Region "Fields"
+
+    Private _connectPoint As NetRuntimeSystem.Runtime.InteropServices.ComTypes.IConnectionPoint
+    Private _activeSinkId As String
+    Private _thisType As NetRuntimeSystem.Type
+%sinkHelperDefine%	
+#End Region
+
+#Region "Type Information"
+
+    Private Static _type As Type
+
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>
+    Public Static ReadOnly Property LateBindingApiWrapperType() As Type
+
+            Get
+            If (IsNothing(_type)) Then
+                    _type = typeof(%name%)
+            End If
+
+            Return _type
+        End Get
+    End Property
+
+#End Region
+
+#Region "Construction"
+
+    ''' <param name="parentObject">object there has created the proxy</param>
+    ''' <param name="comProxy">inner wrapped COM proxy</param>
+	Public Sub New( parentObject As COMObject, comProxy As object) : MyBase(parentObject, comProxy)
+			%callQuitInDispose%
+	End Sub
+
+    ''' <param name="parentObject">object there has created the proxy</param>
+    ''' <param name="comProxy">inner wrapped COM proxy</param>
+    ''' <param name="comProxyType">Type of inner wrapped COM proxy"</param>
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>
+	Public Sub New( parentObject As COMObject,  comProxy As object, comProxyType As NetRuntimeSystem.Type) : base(parentObject, comProxy, comProxyType)
+			%callQuitInDispose%
+	End Sub
+
+
+    ''' <param name="replacedObject">object to replaced. replacedObject are not usable after this action</param>
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>
+	Public Sub New(replacedObject As COMObject) : MyBase(replacedObject)
+			%callQuitInDispose%
+	End Sub
+
+    ''' <summary>
+    ''' creates a new instance of %name% 
+    ''' </summary>		
+	Public Sub New():base("%ProgId%")
+			%callQuitInDispose%
+	End Sub
+
+    ''' <summary>
+    ''' creates a new instance of %name%
+    ''' </summary>
+    ''' <param name="progId">registered ProgID</param>
+	Public Sub New( progId as String):base(progId)
+			%callQuitInDispose%
+	End Sub
+
+#End Region
+
+#Region "Private Methods"
+
+    ''' <summary>
+    ''' creates active sink helper
+    ''' </summary>
+    Private Sub CreateEventBridge()
+
+        If (False = LateBindingApi.Core.Settings.EnableEvents) Then
+            Return
+        End If
+
+        If (False = IsNothing(_connectPoint)) Then
+            Return
+        End If
+
+        If (False = IsNothing(_activeSinkId)) Then
+				_activeSinkId = SinkHelper.GetConnectionPoint(Me, ref _connectPoint, %CompareIds%)
+        End If
+
+%SetActiveSink% 
+    End Sub
+
+#End Region

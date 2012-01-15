@@ -14,7 +14,7 @@ namespace LateBindingApi.Core
         /// <summary>
         /// namespace of assembly
         /// </summary>
-        string Namespace { get; }
+        string AssemblyNamespace { get; }
 
         /// <summary>
         /// guid of component there represents the lateBinding assembly

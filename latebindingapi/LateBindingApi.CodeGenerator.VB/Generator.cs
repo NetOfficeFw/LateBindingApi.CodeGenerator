@@ -71,7 +71,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             get 
             {
-                return "C#";
+                return "VB";
             }
         }
 
@@ -79,7 +79,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             get
             {
-                return "Creates a VS 2008 Solution with C# Projects (.csproj)";
+                return "Creates a VS 2008 Solution with VB Projects (.vbproj)";
             }
         }
 
@@ -124,86 +124,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         void _job_DoWork()
         {
-            /*
-            foreach (XElement item in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project"))
-            {
-                System.IO.File.AppendAllText("C:\\log.txt", item.Attribute("Name").Value + "\r\n");
-                foreach (XElement face in item.Element("DispatchInterfaces").Elements("Interface"))
-                {
-                    foreach (XElement method in face.Element("Methods").Elements("Method"))
-                    {
-                        bool found = false;
-                        foreach (XElement param in method.Element("Parameters").Elements("Parameter"))
-                        {
-                            if (param.Attribute("HasDefaultValue").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                            break;
-                    }
-                }
-
-                foreach (XElement face in item.Element("Interfaces").Elements("Interface"))
-                {
-                    foreach (XElement method in face.Element("Methods").Elements("Method"))
-                    {
-                        bool found = false;
-                        foreach (XElement param in method.Element("Parameters").Elements("Parameter"))
-                        {
-                            if (param.Attribute("HasDefaultValue").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                            break;
-                    }
-                }
-            }
-            return;
-            */
-            /*
-            foreach (XElement item in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project"))
-            {
-                System.IO.File.AppendAllText("C:\\log.txt", item.Attribute("Name").Value + "\r\n");
-                foreach (XElement face in item.Element("DispatchInterfaces").Elements("Interface"))
-                {
-                    foreach (XElement method in face.Element("Properties").Elements("Property"))
-                    {
-                        int countWithoutOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), false);
-                        int countWithOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), true);
-                        if ((countWithoutOptionals > 0) && (!method.Attribute("Name").Value.Equals(face.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)))
-                        {
-                            System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
-                        }
-                    }
-                }
-            }
-
-            foreach (XElement item in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project"))
-            {
-                System.IO.File.AppendAllText("C:\\log.txt", item.Attribute("Name").Value + "\r\n");
-                foreach (XElement face in item.Element("Interfaces").Elements("Interface"))
-                {
-                    foreach (XElement method in face.Element("Properties").Elements("Property"))
-                    {
-                        int countWithoutOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), false);
-                        int countWithOptionals = ParameterApi.GetParamsCount(method.Element("Parameters"), true);
-                        if ((countWithoutOptionals > 0) && (!method.Attribute("Name").Value.Equals(face.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)))
-                        {
-                            System.IO.File.AppendAllText("C:\\log.txt", "\t" + face.Attribute("Name").Value + "  =>  " + method.Attribute("Name").Value + "\r\n");
-                        }
-                    }
-                }
-            }
-            return;
-            */
             DoUpdate("Create Copy");
             XElement solution = CreateWorkingCopy().Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
 
@@ -236,12 +156,31 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
                 
-                if ("4.0" == _settings.Framework)
-                    ProjectApi.RemoveRefAttributeInOptionals(project);
- 
                 DoUpdate("Create project " + project.Attribute("Name").Value);
-                string projectFile = RessourceApi.ReadString("Project.Project.csproj");
-                string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
+                string projectFile = RessourceApi.ReadString("Project.Project.vbproj");
+                string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.vb");
+
+                string constIncludes = "";
+                string enumIncludes = "";
+                string faceIncludes = "";
+                string dispatchIncludes = "";
+                string eventIncludes =   "";
+                string typeDefsInclude = "";
+                string modulesInclude = "";
+                string recordsInclude = "";
+                string classesIncludes = "";
+
+                string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
+
+                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
+                projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
+                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude,
+                                        factoryInclude);
+
+                ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
+                ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
+
+                /*
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
@@ -261,6 +200,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
+                 *   */
             }
             
             DoUpdate("Create Solution");

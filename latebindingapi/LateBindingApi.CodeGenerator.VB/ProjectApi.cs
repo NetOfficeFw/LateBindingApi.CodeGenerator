@@ -9,7 +9,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class ProjectApi
     {
-        private static readonly string _projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.csproj\">\r\n"
+        private static readonly string _projectCoreRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.csproj\">\r\n"
+                                                      + "      <Project>{%Key%}</Project>\r\n"
+                                                      + "      <Name>%Name%Api</Name>\r\n"
+
+                                                      + "    </ProjectReference>\r\n";
+        private static readonly string _projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.vbproj\">\r\n"
                                                    + "      <Project>{%Key%}</Project>\r\n"
                                                    + "      <Name>%Name%Api</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";
@@ -36,7 +41,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                           where a.Attribute("Key").Value.Equals(item.Attribute("Key").Value)
                                           select a).FirstOrDefault();
 
-                string libInfo = "\t" + libNode.Attribute("Name").Value + " - " +
+                string libInfo = "'\t" + libNode.Attribute("Name").Value + " - " +
                                  libNode.Attribute("Description").Value + " - " + 
                                  libNode.Attribute("Version").Value +                    
                                 "\r\n";
@@ -119,7 +124,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     
                 }
 
-                refProjectInclude += _projectRef.Replace("Api", "").Replace("%Name%", "LateBindingApi.Core").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
+                refProjectInclude += _projectCoreRef.Replace("Api", "").Replace("%Name%", "LateBindingApi.Core").Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
 
                 if("" != refProjectInclude)
                     refProjectInclude = "  <ItemGroup>\r\n" + refProjectInclude + "  </ItemGroup>";
@@ -198,14 +203,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string[] depenents = GetRefProjects(project);
             if (depenents.Length > 0)
             {
-                dependent = "[]{";
+                dependent = "{";
                 foreach (string item in depenents)
                     dependent += "\"" + item + "Api.dll\",";
                 dependent = dependent.Substring(0, dependent.Length - 1) +"}";
             }
             else
             {
-                dependent = "[0]";
+                dependent = "{Nothing}";
             }
 
             string factoryFile = RessourceApi.ReadString("Project.ProjectInfo.txt");
@@ -214,7 +219,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             factoryFile = factoryFile.Replace("%GUID%", guidString);
             factoryFile = factoryFile.Replace("%dependencies%", dependent);
 
-            string fileName = "ProjectInfo.cs";
+            string fileName = "ProjectInfo.vb";
             string projectPath = System.IO.Path.Combine(path, project.Attribute("Name").Value +"\\Utils");
             PathApi.CreateFolder(projectPath);
             string assemblyFilePath = System.IO.Path.Combine(projectPath, fileName);
@@ -225,8 +230,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static void SaveAssemblyInfoFile(string path, string assemblyFile, XElement project)
         {
-            string fileName = "AssemblyInfo.cs";
-            string projectPath = System.IO.Path.Combine(path, project.Attribute("Name").Value);
+            string fileName = "AssemblyInfo.vb";
+            string projectPath = System.IO.Path.Combine(path, project.Attribute("Name").Value + "\\Properties");
             PathApi.CreateFolder(projectPath);
             string assemblyFilePath = System.IO.Path.Combine(projectPath, fileName);
             System.IO.File.WriteAllText(assemblyFilePath, assemblyFile, Encoding.UTF8);
@@ -237,7 +242,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string projectName = project.Attribute("Name").Value;
             string projectPath = System.IO.Path.Combine(path, projectName);
             PathApi.CreateFolder(projectPath);
-            string projectFilePath = System.IO.Path.Combine(projectPath, projectName + "Api.csproj");
+            string projectFilePath = System.IO.Path.Combine(projectPath, projectName + "Api.vbproj");
             System.IO.File.WriteAllText(projectFilePath, projectFile, Encoding.UTF8);
         }
     }

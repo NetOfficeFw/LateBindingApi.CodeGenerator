@@ -1,0 +1,58 @@
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using LateBindingApi.Core;
+
+namespace %namespace%
+{	
+	#pragma warning disable
+	
+	#region SinkPoint Interface
+
+	%supportby%
+	[ComImport, Guid("%guid%"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch), TypeLibType((short)0x1010)]
+	public interface %name%
+	{
+%methods%	}
+	
+	#endregion
+	
+	#region SinkHelper
+	
+	[ComVisible(true), ClassInterface(ClassInterfaceType.None), TypeLibType(TypeLibTypeFlags.FHidden)]
+	public class %name%_SinkHelper : SinkHelper, %name%
+	{
+		#region Static
+		
+		public static readonly string Id = "%guid%";
+		
+		#endregion
+	
+		#region Fields
+
+		private IEventBinding	_eventBinding;
+        private COMObject		_eventClass;
+        
+		#endregion
+		
+		#region Construction
+
+		public %name%_SinkHelper(COMObject eventClass, IConnectionPoint connectPoint): base(eventClass)
+		{
+			_eventClass = eventClass;
+			_eventBinding = (IEventBinding)eventClass;
+			SetupEventBinding(connectPoint);
+		}
+		
+		#endregion
+		
+		#region %name% Members
+		
+%methodsImplement%		#endregion
+	}
+	
+	#endregion
+	
+	#pragma warning restore
+}

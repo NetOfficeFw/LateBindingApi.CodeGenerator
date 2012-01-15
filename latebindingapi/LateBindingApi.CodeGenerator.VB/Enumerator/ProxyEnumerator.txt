@@ -1,0 +1,20 @@
+﻿   
+        #region IEnumerable Members
+        
+		%version%
+		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
+		{
+			object enumProxy = Invoker.%Call%(this, "_NewEnum");
+			COMObject enumerator = new COMObject(this, enumProxy, true);
+			Invoker.Method(enumerator, "Reset", null);
+			bool isMoveNextTrue = (bool)Invoker.MethodReturn(enumerator, "MoveNext", null);
+            while (true == isMoveNextTrue)
+            {
+                object itemProxy = Invoker.PropertyGet(enumerator, "Current", null);
+                %Type% returnClass = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this, itemProxy);
+                isMoveNextTrue = (bool)Invoker.MethodReturn(enumerator, "MoveNext", null);
+				yield return returnClass;
+            }
+        }
+
+        #endregion
