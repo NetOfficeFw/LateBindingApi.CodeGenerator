@@ -6,15 +6,15 @@ using System.Xml;
 using System.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     class CustomMethodManager
-    {    
-        CSharpGenerator _parent;
+    {
+        VBGenerator _parent;
         XDocument _document;
         XDocument _derived;
 
-        internal CustomMethodManager(CSharpGenerator parent, XDocument document)
+        internal CustomMethodManager(VBGenerator parent, XDocument document)
         {
             _parent = parent;
             _document = document;
@@ -258,7 +258,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             else
             {
-                XElement interfaceNode = CSharpGenerator.GetInterfaceOrClassFromKey(typeKey);
+                XElement interfaceNode = VBGenerator.GetInterfaceOrClassFromKey(typeKey);
                 string id = interfaceNode.Attribute("Key").Value;
                 return IsDerived(id);
             }

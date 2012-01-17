@@ -8,9 +8,9 @@ using System.Linq;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
-    public class CSharpGenerator : ICodeGenerator
+    public class VBGenerator : ICodeGenerator
     {
         #region Fields
 
@@ -31,7 +31,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #region Construction
 
-        public CSharpGenerator()
+        public VBGenerator()
         {
             _job.DoWork += new System.Threading.ThreadStart(_job_DoWork);
             _job.RunWorkerCompleted += new ThreadCompletedEventHandler(_job_RunWorkerCompleted);
@@ -160,14 +160,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string projectFile = RessourceApi.ReadString("Project.Project.vbproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.vb");
 
-                string constIncludes = "";
-                string enumIncludes = "";
-                string faceIncludes = "";
-                string dispatchIncludes = "";
+                string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
+                string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
+
+                string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
+                string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
                 string eventIncludes =   "";
-                string typeDefsInclude = "";
-                string modulesInclude = "";
-                string recordsInclude = "";
+                string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
+                string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
+                string recordsInclude = RecordsApi.ConvertRecordsToFiles(project, project.Element("Records"), _settings, solutionFolder);
                 string classesIncludes = "";
 
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
@@ -181,14 +182,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
 
                 /*
-                string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
-                string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
-                string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
-                string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
-                string eventIncludes = EventApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), project.Element("Interfaces"), _settings, solutionFolder);
-                string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
-                string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
-                string recordsInclude = RecordsApi.ConvertRecordsToFiles(project, project.Element("Records"), _settings, solutionFolder);
+                     string eventIncludes = EventApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), project.Element("Interfaces"), _settings, solutionFolder);
                  
                 string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
@@ -417,7 +411,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
 
-            result += "[SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            result += "<SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")> _";
             return result;
         }
 
@@ -448,7 +442,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
             
-            result += "[SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            result += "<SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")> _";
             return result;
         }
 
@@ -485,9 +479,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
-            string summary1 = tabSpace + " /// <summary>\r\n";
-            string between  = tabSpace + " /// SupportByLibrary " +  parentNode.Attribute("Name").Value + " ";
-            string summary2 = tabSpace + " /// </summary>\r\n";
+            string summary1 = tabSpace + " ''' <summary>\r\n";
+            string between = tabSpace + " ''' SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
+            string summary2 = tabSpace + " ''' </summary>\r\n";
 
             string[] result = GetSupportByLibraryArray(entityNode);
             foreach (string item in result)

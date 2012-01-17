@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     public static class DocumentationApi
     {
@@ -12,7 +12,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         public static string[] AddParameterDocumentation(string[] supportDocuArray, XElement other)
         {
             List<string> list = new List<string>();
-            string[] otherSupport = CSharpGenerator.GetSupportByLibraryArray(other);
+            string[] otherSupport = VBGenerator.GetSupportByLibraryArray(other);
             foreach (string item in supportDocuArray)
                 list.Add(item);
 
@@ -47,23 +47,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 parentNode = parentNode.Parent;
 
             string result = "";
-            string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
+            string tabSpace = VBGenerator.TabSpace(numberOfTabSpace);
 
-            string libs = "/// SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
+            string libs = "''' SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
             foreach (string lib in supportByLibrary)
             {
                 libs += lib + ", ";
             }
             libs = libs.Substring(0, libs.Length - 2);
 
-            string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
-            summary += tabSpace + "/// </summary>\r\n";
+            string summary = tabSpace + "''' <summary>\r\n" + tabSpace + libs + "\r\n";
+            summary += tabSpace + "''' </summary>\r\n";
 
             result += summary;
 
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
             {
-                string typeName = CSharpGenerator.GetQualifiedType(itemParameter);
+                string typeName = VBGenerator.GetQualifiedType(itemParameter);
 
                 if ("true" == itemParameter.Attribute("IsOptional").Value)
                     typeName = "optional " + typeName;
@@ -81,7 +81,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     defaultInfo = " = " + itemParameter.Attribute("DefaultValue").Value;
                 }
-                string line = tabSpace + "/// <param name=\"" + ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + defaultInfo + "</param>\r\n";
+                string line = tabSpace + "''' <param name=\"" + ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + defaultInfo + "</param>\r\n";
                 result += line;
             }
             return result;
@@ -116,39 +116,39 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 parentNode = parentNode.Parent;
 
             string result = "";
-            string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
+            string tabSpace = VBGenerator.TabSpace(numberOfTabSpace);
 
-            string[] supportByLibrary = CSharpGenerator.GetSupportByLibraryArray(parametersNode);
-            string libs = "/// SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
+            string[] supportByLibrary = VBGenerator.GetSupportByLibraryArray(parametersNode);
+            string libs = "''' SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
             foreach (string lib in supportByLibrary)
             {
                 libs += lib + ", ";
             }
             libs = libs.Substring(0, libs.Length - 2);
 
-            string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
+            string summary = tabSpace + "''' <summary>\r\n" + tabSpace + libs + "\r\n";
             if ("Property" == parametersNode.Parent.Name)
             {
                 if (generateGetSet)
                 {
                     if ("INVOKE_PROPERTYGET" == parametersNode.Parent.Attribute("InvokeKind").Value)
-                        summary += tabSpace + "/// Get\r\n";
+                        summary += tabSpace + "''' Get\r\n";
                     else
-                        summary += tabSpace + "/// Get/Set\r\n";
+                        summary += tabSpace + "''' Get/Set\r\n";
                 }
                 summary += additional;
-                summary += tabSpace + "/// </summary>\r\n";
+                summary += tabSpace + "''' </summary>\r\n";
             }
             else
             {
                 summary += additional;
-                summary += tabSpace + "/// </summary>\r\n";
+                summary += tabSpace + "''' </summary>\r\n";
             }
             result += summary;
 
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
             {
-                string typeName = CSharpGenerator.GetQualifiedType(itemParameter);
+                string typeName = VBGenerator.GetQualifiedType(itemParameter);
 
                 if ("true" == itemParameter.Attribute("IsOptional").Value)
                     typeName = "optional " + typeName;
@@ -161,7 +161,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 typeName += " " + itemParameter.Attribute("Name").Value;
 
-                string line = tabSpace + "/// <param name=\"" + itemParameter.Attribute("Name").Value + "\">" + typeName + "</param>\r\n";
+                string line = tabSpace + "''' <param name=\"" + itemParameter.Attribute("Name").Value + "\">" + typeName + "</param>\r\n";
                 result += line;
             }
             return result;

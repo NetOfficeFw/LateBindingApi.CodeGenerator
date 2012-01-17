@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal static class PropertyApi
     {
@@ -97,7 +97,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (true == settings.CreateXmlDocumentation)
                     method += DocumentationApi.CreateParameterDocumentation(2, itemParams);
 
-                method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                method += "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
 
                 if (propertyNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
@@ -105,14 +105,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if("this" == name)
                     method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
 
-                string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
+                string valueReturn = VBGenerator.GetQualifiedType(returnValue);
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
 
                 string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem, hasItem);
                 string paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
-                string paramAttrib = "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams)+ "\r\n";
-                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams));
+                string paramAttrib = "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams));
 
                 if (true == settings.CreateXmlDocumentation)
                     paramAttrib = paramDoku + paramAttrib;
@@ -144,7 +144,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string name = propertyNode.Attribute("Name").Value;
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {
-                string method = "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                string method = "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
                 method += "\t\t" + "[DispId(" + itemParams.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
 
                 XElement returnValue = itemParams.Element("ReturnValue");
@@ -231,7 +231,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 if ((("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value) && ("this" != name)))
                 {
-                    string retValueType = CSharpGenerator.GetQualifiedType(itemParams.Element("ReturnValue"));
+                    string retValueType = VBGenerator.GetQualifiedType(itemParams.Element("ReturnValue"));
                     if ("" != parameters)
                         retValueType = ", " + retValueType;
 
@@ -301,7 +301,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 modifiers = ", modifiers";
 
             string result = "";
-            string tabSpace = CSharpGenerator.TabSpace(numberOfRootTabs);
+            string tabSpace = VBGenerator.TabSpace(numberOfRootTabs);
             int countOfParams = ParameterApi.GetParamsCount(parametersNode, true);
             if (0 == countOfParams)
             {
@@ -340,12 +340,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string CreatePropertyGetBodyCode(Settings settings, int numberOfRootTabs, XElement parametersNode, bool analyzeReturn)
         {
-            string tabSpace = CSharpGenerator.TabSpace(numberOfRootTabs);           
+            string tabSpace = VBGenerator.TabSpace(numberOfRootTabs);           
             string methodBody = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName = parametersNode.Parent.Attribute("Name").Value;
             string typeName = returnValue.Attribute("Type").Value;
-            string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
+            string fullTypeName = VBGenerator.GetQualifiedType(returnValue);
            
             string objectArrayField = "";
             string arrayField = "";
@@ -411,17 +411,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         if ("true" == returnValue.Attribute("IsArray").Value)
                         {
                             methodBody += tabSpace + "COMObject[] newObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(this," + objectArrayField + "returnItem);\r\n";
-                            methodBody += tabSpace + fullTypeName + " returnArray = new " + CSharpGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
+                            methodBody += tabSpace + fullTypeName + " returnArray = new " + VBGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
                             methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
-                            methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
+                            methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + VBGenerator.GetQualifiedType(returnValue) + ";\r\n";
                             methodBody += "%modifiers%";
                             methodBody += tabSpace + "return returnArray;\r\n";
                         }
                         else
                         {
-                            bool isFromIgnoreProject = CSharpGenerator.IsFromIgnoreProject(returnValue); 
-                            bool isDuplicated =  CSharpGenerator.IsDuplicatedReturnValue(returnValue);
-                            bool isDerived = CSharpGenerator.IsDerivedReturnValue(returnValue);  
+                            bool isFromIgnoreProject = VBGenerator.IsFromIgnoreProject(returnValue);
+                            bool isDuplicated = VBGenerator.IsDuplicatedReturnValue(returnValue);
+                            bool isDerived = VBGenerator.IsDerivedReturnValue(returnValue);  
                             if((true == isFromIgnoreProject) && (false == isDuplicated) )
                             {
                                 methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";

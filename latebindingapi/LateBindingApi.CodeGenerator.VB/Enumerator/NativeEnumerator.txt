@@ -1,21 +1,26 @@
 ﻿		
-		#region IEnumerable Members
+	#region "IEnumerable Members"
         
-        %version%
-		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
-		{
-			object enumProxy = Invoker.%Call%(this, "_NewEnum");
-			COMObject enumerator = new COMObject(this, enumProxy, true);
-			Invoker.Method(enumerator, "Reset", null);
-			bool isMoveNextTrue = (bool)Invoker.MethodReturn(enumerator, "MoveNext", null);
-            while (true == isMoveNextTrue)
-            {
-                object itemProxy = Invoker.PropertyGet(enumerator, "Current", null);
-                %Type% returnValue = (%Type%)itemProxy;
-                isMoveNextTrue = (bool)Invoker.MethodReturn(enumerator, "MoveNext", null);
-				yield return returnValue;
-            }
-        }
+    %version%
+    Private Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
 
-        #endregion
-   
+        Dim enumProxy As Object = Invoker.%Call%(Me, "_NewEnum")
+        Dim enumerator As COMObject = New COMObject(Me, enumProxy, True)
+        Invoker.Method(enumerator, "Reset", Nothing)
+        Dim isMoveNextTrue As Boolean = Invoker.MethodReturn(enumerator, "MoveNext", Nothing)
+
+        Do While (True = isMoveNextTrue)
+
+            Dim itemProxy As Object = Invoker.PropertyGet(enumerator, "Current", Nothing)
+            Dim returnValue As %Type% = itemProxy
+            isMoveNextTrue = Invoker.MethodReturn(enumerator, "MoveNext", Nothing)
+            Return returnValue
+
+        Loop
+
+        Return Nothing
+
+    End Function
+
+    #End Region
+        

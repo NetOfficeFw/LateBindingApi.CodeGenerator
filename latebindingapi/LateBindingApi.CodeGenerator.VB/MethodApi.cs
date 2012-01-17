@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     public static class MethodApi
     {
@@ -21,7 +21,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             ParameterApi.ValidateItems(methodsNode, "Method", settings);
 
-            string result = "\r\n\t\t#region Methods\r\n\r\n";
+            string result = "\r\n\t\t#Region \"Methods\"\r\n\r\n";
             foreach (XElement methodNode in methodsNode.Elements("Method"))
             {
                 if("_NewEnum" == methodNode.Attribute("Name").Value)
@@ -30,7 +30,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem, hasItem);
                 result += method;
             }
-            result += "\t\t#endregion\r\n";
+            result += "\t\t#End Region\r\n";
             return result;
         }
 
@@ -85,7 +85,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem, bool hasItem)
         {
             string result = "";
-            string name = methodNode.Attribute("Name").Value;
+            string name = ParameterApi.ValidateName(methodNode.Attribute("Name").Value);
             bool analyzeReturn = Convert.ToBoolean(methodNode.Attribute("AnalyzeReturn").Value);
             foreach (XElement itemParams in methodNode.Elements("Parameters"))
             {
@@ -103,7 +103,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 XElement returnValue = itemParams.Element("ReturnValue");
 
-                string[] supportDocuArray = CSharpGenerator.GetSupportByLibraryArray(itemParams);
+                string[] supportDocuArray = VBGenerator.GetSupportByLibraryArray(itemParams);
 
                 // gibt es andere überladungen mit mehr parametern als dieser überladung und sind die überzählen alle optional?
                 // dann füge deren supportbylibray überladungen an
@@ -112,34 +112,46 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
                 
                 string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
-                string supportAttribute = CSharpGenerator.GetSupportByLibraryAttribute(supportDocuArray, itemParams);
+                string supportAttribute = VBGenerator.GetSupportByLibraryAttribute(supportDocuArray, itemParams);
                  
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
                     method = supportDocu;
 
                 if(methodNode.Attribute("Hidden").Value.Equals("true",StringComparison.InvariantCultureIgnoreCase))
-                    method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+                    method += "\t\t" + "<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _" + "\r\n";
 
                 if (HasCustomAttribute(itemParams))
-                    method += "\t\t" + "[CustomMethodAttribute]" + "\r\n";
+                    method += "\t\t" + "<CustomMethodAttribute> _" + "\r\n";
                 method += "\t\t" + supportAttribute + "\r\n";
                 if ("this" == name)
-                    method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
+                    method += "\t\t" + "<NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")> _" + "\r\n";
 
-                string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
+                string valueReturn = VBGenerator.GetQualifiedType(returnValue);
                 if ("true" == returnValue.Attribute("IsArray").Value)
-                    valueReturn += "[]";
+                    valueReturn += "()";
                 if (!analyzeReturn)
                     valueReturn = "object";
 
-                method += "\t\tpublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
+                string methodType = "Function";
+                if ("void" == valueReturn)
+                    methodType = "Sub";
+
+                string valReturnEnd = "";
+                if ("void" != valueReturn)
+                    valReturnEnd = " As " + valueReturn;
+
+                method += "\t\tPublic " + methodType + " " + name + "(" + "%params%" + ")" + valReturnEnd + "\r\n\t\t\r\n%methodbody%\t\tEnd " + methodType + "\r\n";
+
+               // method += "\t\tPublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
                 string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true);
                 method = method.Replace("%params%", parameters);
 
                 string methodBody ="";
                 if ("this" == name)
-                    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateLateBindMethodBody(settings, 4, itemParams, analyzeReturn) + "\t\t\t}\r\n";
+                {
+                //    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateLateBindMethodBody(settings, 4, itemParams, analyzeReturn) + "\t\t\t}\r\n";
+                }
                 else
                     methodBody = CreateLateBindMethodBody(settings, 3, itemParams, analyzeReturn);
                 
@@ -158,22 +170,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode, bool analyzeReturn)
         {
-            string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
+            string tabSpace = VBGenerator.TabSpace(numberOfRootTabs);
             string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
             XElement returnValue = parametersNode.Element("ReturnValue");
-            string methodName    = parametersNode.Parent.Attribute("Name").Value;
+            string methodName    = parametersNode.Parent.Attribute("Name").Value;            
             string typeName      = returnValue.Attribute("Type").Value;
-            string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
+            string fullTypeName = VBGenerator.GetQualifiedType(returnValue);
 
             string objectArrayField = "";
             string arrayField = "";
             string arrayName = "";
             if ("true" == returnValue.Attribute("IsArray").Value)
             {
-                arrayField = "[]";
+                arrayField = "()";
                 arrayName = "Array";
-                fullTypeName += "[]";
-                objectArrayField = "(object[])";
+                fullTypeName += "()";
+                objectArrayField = "(object())";
             }
 
             string modifiers = "";
@@ -187,8 +199,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 else
                     invokeTarget = methodName;
 
-                methodBody += tabSpace + "object returnItem = Invoker.MethodReturn(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
-                methodBody += tabSpace + "return returnItem;\r\n";
+                methodBody += tabSpace + "Dim returnItem As Object = Invoker.MethodReturn(Me, \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
+                methodBody += tabSpace + "Return returnItem\r\n";
             }
             else if (typeName != "void") 
             {
@@ -200,65 +212,67 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     else
                         invokeTarget = methodName;
 
-                    methodBody += tabSpace + "object returnItem = Invoker.MethodReturn(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
+                    methodBody += tabSpace + "Dim returnItem As Object = Invoker.MethodReturn(Me, \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
                     if (typeName == "COMObject")
                     {
-                        methodBody += tabSpace + "COMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                        methodBody += tabSpace + "Dim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(Me," + objectArrayField + "returnItem)\r\n";
                         methodBody += "%modifiers%";
-                        methodBody += tabSpace + "return newObject;\r\n";
+                        methodBody += tabSpace + "Return newObject\r\n";
                     }
                     else if (typeName == "COMVariant")
                     {
-                        methodBody += tabSpace + "if((null != returnItem) && (returnItem is MarshalByRefObject))\r\n" + tabSpace + "{\r\n";
+
+                        methodBody += tabSpace + "If (Not IsNothing(returnItem)) And (TypeOf returnItem Is MarshalByRefObject)\r\n" + tabSpace + "\r\n";
                         if("" == objectArrayField)
-                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "\tDim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
                         else
-                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "\ttDim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
                         methodBody += "\t%modifiers%";
-                        methodBody += tabSpace + "return newObject;\r\n";
-                        methodBody += tabSpace + "}\r\n";
-                        methodBody += tabSpace + "else" + "\r\n" + tabSpace +"{\r\n";
+                        methodBody += tabSpace + "Return newObject\r\n";
+                        methodBody += tabSpace + "\r\n";
+                        methodBody += tabSpace + "Else" + "\r\n" + tabSpace +"\r\n";
                         methodBody += "\t%modifiers%";
-                        methodBody += tabSpace + "return " + objectArrayField + " returnItem;\r\n";
-                        methodBody += tabSpace + "}\r\n";
+                        methodBody += tabSpace + "Return " + objectArrayField + " returnItem\r\n";
+                        methodBody += tabSpace + " End If\r\n";
                     }
                     else
                     {                        
                         // library type
                         if ("true" == returnValue.Attribute("IsArray").Value)
-                        {        
-                             methodBody += tabSpace + "COMObject[] newObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(this, " + objectArrayField + "returnItem);\r\n";
-                             methodBody += tabSpace + fullTypeName + " returnArray = new " + CSharpGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
-                             methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
-                             methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
+                        {
+                             methodBody += tabSpace + "Dim newObject() As COMObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
+                             methodBody += tabSpace + fullTypeName + " returnArray = new " + VBGenerator.GetQualifiedType(returnValue) + "(newObject.Length)\r\n";
+                             methodBody += tabSpace + "For i As Integer = 0 To newObject.Length\r\n";
+                             methodBody += tabSpace + "\treturnArray(i) = newObject(i) as " + VBGenerator.GetQualifiedType(returnValue) + "\r\n";
+                             methodBody += tabSpace + "Next" + "\r\n";
                              methodBody += "%modifiers%";
-                             methodBody += tabSpace + "return returnArray;\r\n";                            
+                             methodBody += tabSpace + "Return returnArray\r\n";                            
                         }
                         else
-                        {       
-                            bool isFromIgnoreProject = CSharpGenerator.IsFromIgnoreProject(returnValue);
-                            bool isDuplicated = CSharpGenerator.IsDuplicatedReturnValue(returnValue);
-                            bool isDerived = CSharpGenerator.IsDerivedReturnValue(returnValue);
+                        {
+                            bool isFromIgnoreProject = VBGenerator.IsFromIgnoreProject(returnValue);
+                            bool isDuplicated = VBGenerator.IsDuplicatedReturnValue(returnValue);
+                            bool isDerived = VBGenerator.IsDerivedReturnValue(returnValue);
                             if ((true == isFromIgnoreProject) && (false == isDuplicated))
                             {
-                                methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this, " + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(Me, " + objectArrayField + "returnItem) as " + fullTypeName + "\r\n";
                                 methodBody += "%modifiers%";
-                                methodBody += tabSpace + "return newObject;\r\n";
+                                methodBody += tabSpace + "Return newObject\r\n";
                             }
                             else
                             {
                                 if ((isDerived) && (!isDuplicated))
                                 {
-                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                    methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(Me," + objectArrayField + "returnItem)" + "\r\n";
                                     methodBody += "%modifiers%";
-                                    methodBody += tabSpace + "return newObject;\r\n";  
+                                    methodBody += tabSpace + "Return newObject\r\n";  
                                 }
                                 else
                                 {
                                     string knownType = fullTypeName + ".LateBindingApiWrapperType";
-                                    methodBody += tabSpace + fullTypeName + " newObject = LateBindingApi.Core.Factory.CreateKnownObjectFromComProxy(this, " + objectArrayField + "returnItem," + knownType + ") as " + fullTypeName + ";\r\n";
+                                    methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateKnownObjectFromComProxy(Me, " + objectArrayField + "returnItem," + knownType + ")" + "\r\n";
                                     methodBody += "%modifiers%";
-                                    methodBody += tabSpace + "return newObject;\r\n";
+                                    methodBody += tabSpace + "Return newObject\r\n";
                                 }
                             }
                         }
@@ -277,9 +291,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     else
                         invokeTarget = methodName;
 
-                    methodBody += tabSpace + "object" + " returnItem = " + objectString + "Invoker.MethodReturn" + "(this, \"" + invokeTarget + "\", paramsArray);\r\n";
+                    methodBody += tabSpace +  "Dim returnItem As Object = " + "Invoker.MethodReturn" + "(Me, \"" + invokeTarget + "\", paramsArray)\r\n";
                     methodBody += "%modifiers%";
-                    methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
+                    methodBody += tabSpace + "return returnItem\r\n";
                 }
 
                 if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
@@ -300,7 +314,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 else
                     invokeTarget = methodName;
 
-                methodBody += tabSpace + "Invoker.Method(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
+                methodBody += tabSpace + "Invoker.Method(Me, \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
                 methodBody += "%modifiers%";
 
                 if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
@@ -325,7 +339,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 XElement returnValue = itemParams.Element("ReturnValue");
 
                 string method = "";
-                method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                method += "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
 
                 string marshalReturnAs = returnValue.Attribute("MarshalAs").Value;
                 if ("" != marshalReturnAs)

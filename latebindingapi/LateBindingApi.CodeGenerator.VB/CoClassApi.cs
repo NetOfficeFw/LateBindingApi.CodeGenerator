@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     
     internal static class CoClassApi
@@ -64,7 +64,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string delegates = _delegates.Replace("%delegates%", GetDelegates(projectNode, classNode));
             result += delegates;
 
-            string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(classNode);
+            string attributes = "\t" + VBGenerator.GetSupportByLibraryAttribute(classNode);
             string header = _classHeader.Replace("%name%", classNode.Attribute("Name").Value);
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
             if (null == _classConstructor)
@@ -81,7 +81,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             construct = construct.Replace("%CompareIds%", sinkHelperIds);
             construct = construct.Replace("%SetActiveSink%", sinkHelperSetActive);
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// "+ CSharpGenerator.GetSupportByLibrary("", classNode));
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + VBGenerator.GetSupportByLibrary("", classNode));
 
             if (null == _classEventBinding)
                 _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
@@ -256,7 +256,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 else
                 {
-                    par = isRef + CSharpGenerator.GetQualifiedType(itemParam) + " " + itemParam.Attribute("Name").Value;
+                    par = isRef + VBGenerator.GetQualifiedType(itemParam) + " " + itemParam.Attribute("Name").Value;
                 }
 
 
@@ -290,7 +290,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         doc.Element("Methods").Add(methodNode);
                     }
 
-                    string[] versions = CSharpGenerator.GetSupportByLibraryArray(itemMethod);
+                    string[] versions = VBGenerator.GetSupportByLibraryArray(itemMethod);
                     foreach (string version in versions)
                     {
                         XElement attribute = (from a in methodNode.Elements("Version")

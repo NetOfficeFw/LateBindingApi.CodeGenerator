@@ -1,4 +1,4 @@
-﻿namespace LateBindingApi.CodeGenerator.CSharp
+﻿namespace LateBindingApi.CodeGenerator.VB
 {
     partial class FormConfigDialog
     {

@@ -247,6 +247,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="content"></param>
         internal static void AddEnumerator(XElement faceNode, ref string content)
         {
+            string faceName = faceNode.Attribute("Name").Value;
+            if (faceName.Equals("COMAddins", StringComparison.InvariantCultureIgnoreCase))
+            {
+            }
+
             XElement enumNode = GetEnumNode(faceNode);
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
             string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);

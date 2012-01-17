@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal static class AliasApi
     {
@@ -21,12 +21,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string ConvertAliasToString(XElement projectNode, XElement aliasNode)
         {
-            string version = CSharpGenerator.GetSupportByLibraryAttribute(aliasNode) + "\r\n";
+            string version = "' " + VBGenerator.GetSupportByLibraryAttribute(aliasNode) + "\r\n";
             string name = aliasNode.Attribute("Name").Value;
             string intrinsic = aliasNode.Attribute("Intrinsic").Value;
-            string line = name + " as " + intrinsic + "\r\n\r\n";
+            string line = "' " + name + " as " + intrinsic + "\r\n\r\n";
             return version + line;
         }
-
     }
 }

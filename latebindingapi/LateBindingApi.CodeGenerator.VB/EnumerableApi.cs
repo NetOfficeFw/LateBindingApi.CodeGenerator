@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal static class EnumerableApi
     {
@@ -231,7 +231,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return defaultValue;
 
             if ("COMVariant" == thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value)
-                return "object";
+                return "Object";
 
             string qualifier = GetQualifier(faceNode, thisNode.Element("Parameters").Element("ReturnValue"));
             if (qualifier != "")
@@ -247,23 +247,28 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="content"></param>
         internal static void AddEnumerator(XElement faceNode, ref string content)
         {
+            string faceName = faceNode.Attribute("Name").Value;
+            if (faceName.Equals("COMAddins",StringComparison.InvariantCultureIgnoreCase))
+            { 
+            }
+
             XElement enumNode = GetEnumNode(faceNode);
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
             string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);
 
-            string versionSummary = CSharpGenerator.GetSupportByLibraryString("", enumNode);
-            string versionAttribute = CSharpGenerator.GetSupportByLibraryAttribute(enumNode); 
-            content = content.Replace("%enumerableSpace%", "using System.Collections;\r\n");
+            string versionSummary = VBGenerator.GetSupportByLibraryString("", enumNode);
+            string versionAttribute = VBGenerator.GetSupportByLibraryAttribute(enumNode); 
+            content = content.Replace("%enumerableSpace%", "Imports System.Collections\r\n");
 
-            if (targetReturnType == "COMObject")            
-                content = content.Replace("%enumerable%", " ,IEnumerable<" + "object" + ">");
+            if (targetReturnType == "COMObject")
+                content = content.Replace("%enumerable%", " \r\n Implements IEnumerable(" + "Of Object" + ")");
             else
-                content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
+                content = content.Replace("%enumerable%", " \r\n Implements IEnumerable(Of " + targetReturnType + ")");
 
-            versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
+            versionSummary = "''' <summary>\r\n" + "\t\t" + "''' " + versionSummary + "\r\n";
             if (HasCustomAttribute(enumNode))
-                versionSummary += "\t\t/// This is a custom enumerator from NetOffice\r\n";
-            versionSummary += "\t\t/// </summary>\r\n";
+                versionSummary += "\t\t''' This is a custom enumerator from NetOffice\r\n";
+            versionSummary += "\t\t''' </summary>\r\n";
 
             // get enumerator
             string enumString = "";
@@ -323,7 +328,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 type = "object";
         
             if ("true" == returnType.Attribute("IsArray").Value)
-                type += "[]";
+                type += "()";
 
             // get type qualifiers
             if (type != "COMObject")

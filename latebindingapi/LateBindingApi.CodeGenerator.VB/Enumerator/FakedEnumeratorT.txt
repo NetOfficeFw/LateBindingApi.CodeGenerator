@@ -1,14 +1,14 @@
 ﻿
-        #region IEnumerable<%Type%> Member
+        #region "IEnumerable<%Type%> Member"
 		
 		%version%
-		[CustomEnumerator]
-        public IEnumerator<%Type%> GetEnumerator()  
-        {
-            NetRuntimeSystem.Collections.IEnumerable innerEnumerator = (this as NetRuntimeSystem.Collections.IEnumerable);
-            foreach (%Type% item in innerEnumerator)
-                yield return item;
-        }
+	<CustomEnumerator> _
+    Public Function GetEnumerator() As IEnumerator(Of %Type%) Implements IEnumerable(Of %Type%).GetEnumerator
 
-        #endregion
+        Dim innerEnumerator As IEnumerable = Me
+        Return innerEnumerator.GetEnumerator()
+
+    End Function
+    
+        #End Region
         

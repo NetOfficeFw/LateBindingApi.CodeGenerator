@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal static class SolutionApi
     {
@@ -43,7 +43,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 foreach (var item in solution.Element("Projects").Elements("Project"))                
                 {
                     string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
-                    depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(item.Attribute("Key").Value));
+                    depends += line.Replace("%Key%", VBGenerator.ValidateGuid(item.Attribute("Key").Value));
                 }
                 depends += "\tEndProjectSection\r\n";
                 newProjectLine = newProjectLine.Replace("%Depend%", depends);
@@ -59,7 +59,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     continue;
 
                 string newProjectLine = _projectLine.Replace("%Name%", project.Attribute("Name").Value);
-                newProjectLine = newProjectLine.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
+                newProjectLine = newProjectLine.Replace("%Key%", VBGenerator.ValidateGuid(project.Attribute("Key").Value));
                 string depends = "";
                 if(project.Element("RefProjects").Elements("RefProject").Count() > 0)
                     depends += "\tProjectSection(ProjectDependencies) = postProject\r\n";
@@ -71,7 +71,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                         where a.Attribute("Key").Value.Equals(projKey)
                                         select a).FirstOrDefault();
                     string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
-                    depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(projNode.Attribute("Key").Value));               
+                    depends += line.Replace("%Key%", VBGenerator.ValidateGuid(projNode.Attribute("Key").Value));               
                 }
                  
                 if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
@@ -79,8 +79,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 newProjectLine = newProjectLine.Replace("%Depend%", depends);
                 projects += newProjectLine;
-               
-                string newConfig = _buildConfig.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
+
+                string newConfig = _buildConfig.Replace("%Key%", VBGenerator.ValidateGuid(project.Attribute("Key").Value));
                 configs += newConfig; 
             }
 
@@ -167,7 +167,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == item.Attribute("Ignore").Value)
                     continue;
 
-                string newRefProject = projectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(item.Attribute("Key").Value));
+                string newRefProject = projectRef.Replace("%Key%", VBGenerator.ValidateGuid(item.Attribute("Key").Value));
                 newRefProject = newRefProject.Replace("%Name%", item.Attribute("Name").Value);
                 projectInclude += newRefProject;
 

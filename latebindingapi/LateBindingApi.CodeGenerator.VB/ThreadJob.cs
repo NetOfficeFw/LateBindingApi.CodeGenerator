@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal delegate void ThreadCompletedEventHandler();
 

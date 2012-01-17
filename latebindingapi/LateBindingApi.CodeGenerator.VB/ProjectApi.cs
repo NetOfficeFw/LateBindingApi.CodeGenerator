@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal static class ProjectApi
     {
@@ -90,7 +90,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             else
                 projectFile = projectFile.Replace("%ToolsVersion%", "3.5");
 
-            projectFile = projectFile.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
+            projectFile = projectFile.Replace("%Key%", VBGenerator.ValidateGuid(project.Attribute("Key").Value));
             projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value + "Api");
             projectFile = projectFile.Replace("%ConstInclude%", constIncludes);
             projectFile = projectFile.Replace("%EnumInclude%", enumIncludes);
@@ -118,7 +118,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     if ("true" == refProject.Attribute("Ignore").Value)
                         continue;
 
-                    string newRefProject = _projectRef.Replace("%Key%", CSharpGenerator.ValidateGuid(refProject.Attribute("Key").Value));
+                    string newRefProject = _projectRef.Replace("%Key%", VBGenerator.ValidateGuid(refProject.Attribute("Key").Value));
                     newRefProject = newRefProject.Replace("%Name%", refProject.Attribute("Name").Value);
                     refProjectInclude += newRefProject;
                     

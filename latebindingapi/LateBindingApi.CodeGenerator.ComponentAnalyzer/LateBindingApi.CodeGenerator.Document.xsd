@@ -379,14 +379,10 @@
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="Parameters"           type="Parameters" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  />
-    <!-- property name :Readonly -->
-    <xs:attribute name="Key"                  type="xs:string"  />
-    <!-- unique key -->
-    <xs:attribute name="InvokeKind"           type="xs:string"  />
-    <!-- GET PUT or PUTREF -->
-    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" />
-    <!-- analyze return value -->
+    <xs:attribute name="Name"                 type="xs:string"  /><!-- property name :Readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  /><!-- unique key -->
+    <xs:attribute name="InvokeKind"           type="xs:string"  /><!-- GET PUT or PUTREF -->
+    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" /><!-- analyze return value -->
     <xs:attribute name="Hidden"               type="xs:boolean"  />
   </xs:complexType>
 
@@ -402,12 +398,9 @@
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="Parameters"           type="Parameters" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  />
-    <!-- method name :Readonly -->
-    <xs:attribute name="Key"                  type="xs:string"  />
-    <!-- unique key -->
-    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" />
-    <!-- analyze return value -->
+    <xs:attribute name="Name"                 type="xs:string"  /><!-- method name :Readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  /><!-- unique key -->
+    <xs:attribute name="AnalyzeReturn"        type="xs:boolean" /><!-- analyze return value -->
     <xs:attribute name="Hidden"               type="xs:boolean"  />
   </xs:complexType>
 

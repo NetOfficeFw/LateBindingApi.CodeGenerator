@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal static class EventApi
     {
@@ -53,15 +53,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {            
             string result = _interfaceFile.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            result = result.Replace("%supportby%", CSharpGenerator.GetSupportByLibraryAttribute(faceNode));
+            result = result.Replace("%supportby%", VBGenerator.GetSupportByLibraryAttribute(faceNode));
             result = result.Replace("%name%", faceNode.Attribute("Name").Value);
             result = result.Replace("%guid%", XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value));
             
             string methodResult = "";
             string implementResult = "";
             foreach (XElement itemMethod in faceNode.Element("Methods").Elements("Method"))
-            {                
-                methodResult += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemMethod) + "\r\n"; 
+            {
+                methodResult += "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemMethod) + "\r\n"; 
                 methodResult += "\t\t[PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime), DispId(" + itemMethod.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
                 methodResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, false) + ";\r\n\r\n";
                 implementResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, true) + "\r\n" + "\t\t{\r\n" + GetMethodImplementCode(settings, itemMethod) + "\t\t}\r\n\r\n";
@@ -154,7 +154,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         
         private static string CreateModifiersString(int tabCount, XElement parametersNode)
         {
-            string tabSpace = CSharpGenerator.TabSpace(tabCount);
+            string tabSpace = VBGenerator.TabSpace(tabCount);
             string result = tabSpace + "bool[] modifiers = new bool[]{%values%};\r\n";
             string arrays = "";
             foreach (XElement itemParam in ParameterApi.GetParameter(parametersNode, true))
@@ -173,7 +173,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string CreateSetArrayString(Settings settings, int tabCount, XElement parametersNode)
         {
-            string tabSpace = CSharpGenerator.TabSpace(tabCount);
+            string tabSpace = VBGenerator.TabSpace(tabCount);
             int paramsCount = ParameterApi.GetParamsCount(parametersNode, true);
 
             string result = tabSpace + "object[] paramsArray = new object[" + paramsCount.ToString() + "];\r\n";
@@ -196,7 +196,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string CreateConversionString(Settings settings, int tabCount, XElement parametersNode)
         {
-            string tabSpace = CSharpGenerator.TabSpace(tabCount); 
+            string tabSpace = VBGenerator.TabSpace(tabCount); 
             string result = "";
             foreach (XElement itemParam in ParameterApi.GetParameter(parametersNode, true))
             {
@@ -205,7 +205,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 if ("true" == itemParam.Attribute("IsComProxy").Value)
                 {
-                    string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
+                    string qualifiedType = VBGenerator.GetQualifiedType(itemParam);
                     result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
                             " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(settings,itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
                 }
@@ -213,7 +213,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     if ("true" == itemParam.Attribute("IsEnum").Value)
                     {
-                        string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
+                        string qualifiedType = VBGenerator.GetQualifiedType(itemParam);
                         result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
                            " = (" + qualifiedType + ")" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ";\r\n";
 

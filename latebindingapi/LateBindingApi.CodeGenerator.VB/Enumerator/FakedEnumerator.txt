@@ -1,20 +1,24 @@
 ﻿   
-        #region IEnumerable Members
+        #region "IEnumerable Members"
 		
         %version%
-		[CustomEnumerator]
-		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
-        {
-			int count = Count;
-			%Type%[] enumeratorObjects = new %Type%[count];
-			for (int i = 0; i < count; i++)
-				enumeratorObjects[i] = this[i+1];
-
-			foreach (%Type% item in enumeratorObjects)
-				yield return item;
-        }
-
-        #endregion
+		<CustomEnumerator> _
+		Private Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
+		
+			Dim count As Integer = Me.Count
+			Dim enumeratorObjects(count) As %Type%
+	
+	        For i As Integer = 0 To count-1
+				enumeratorObjects(i) = Me(i+1)
+		    Next
+			
+			For Each item as %Type% in enumeratorObjects
+				return item
+			Next
+			
+			Return Nothing	
         
+		End Function
 
-
+        #End Region
+        

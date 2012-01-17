@@ -6,11 +6,11 @@ using System.Xml;
 using System.Linq;
 using System.Text;
 
-namespace LateBindingApi.CodeGenerator.CSharp
+namespace LateBindingApi.CodeGenerator.VB
 {
     internal class DubletteManager
     {
-        CSharpGenerator _parent;
+        VBGenerator _parent;
         XDocument _document;
         XDocument _dublettes;
 
@@ -22,7 +22,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
-        internal DubletteManager(CSharpGenerator parent, XDocument document)
+        internal DubletteManager(VBGenerator parent, XDocument document)
         {
             _parent = parent;
             _document = document;   
@@ -34,7 +34,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (string.IsNullOrEmpty(typeKey))
                 return false;
 
-            XElement interfaceNode = CSharpGenerator.GetInterfaceOrClassFromKey(typeKey); 
+            XElement interfaceNode = VBGenerator.GetInterfaceOrClassFromKey(typeKey); 
             XElement dispNode = interfaceNode.Element("DispIds").Elements("DispId").FirstOrDefault();
             string id = dispNode.Attribute("Id").Value;
 

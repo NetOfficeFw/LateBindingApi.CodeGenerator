@@ -10,12 +10,12 @@
 
     Private Static _type As Type
 
-	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
     Public Static ReadOnly Property LateBindingApiWrapperType() As Type
 
             Get
             If (IsNothing(_type)) Then
-                    _type = typeof(%name%)
+                    _type = GetType(%name%)
             End If
 
             Return _type
@@ -28,29 +28,33 @@
 
     ''' <param name="parentObject">object there has created the proxy</param>
     ''' <param name="comProxy">inner wrapped COM proxy</param>
-	Public Sub New( parentObject As COMObject, comProxy As object) : MyBase(parentObject, comProxy)
+	Public Sub New( parentObject As COMObject, comProxy As object) 
+		MyBase.New(parentObject, comProxy)
 			%callQuitInDispose%
 	End Sub
 
     ''' <param name="parentObject">object there has created the proxy</param>
     ''' <param name="comProxy">inner wrapped COM proxy</param>
     ''' <param name="comProxyType">Type of inner wrapped COM proxy"</param>
-	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>
-	Public Sub New( parentObject As COMObject,  comProxy As object, comProxyType As NetRuntimeSystem.Type) : base(parentObject, comProxy, comProxyType)
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>_
+	Public Sub New( parentObject As COMObject,  comProxy As object, comProxyType As NetRuntimeSystem.Type) 
+		MyBase.New(parentObject, comProxy, comProxyType)
 			%callQuitInDispose%
 	End Sub
 
 
     ''' <param name="replacedObject">object to replaced. replacedObject are not usable after this action</param>
-	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>
-	Public Sub New(replacedObject As COMObject) : MyBase(replacedObject)
-			%callQuitInDispose%
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+	Public Sub New(replacedObject As COMObject)
+		MyBase.New(replacedObject)
+		%callQuitInDispose%
 	End Sub
 
     ''' <summary>
     ''' creates a new instance of %name% 
     ''' </summary>		
-	Public Sub New():base("%ProgId%")
+	Public Sub New()
+		MyBase.New("%ProgId%")
 			%callQuitInDispose%
 	End Sub
 
@@ -58,7 +62,8 @@
     ''' creates a new instance of %name%
     ''' </summary>
     ''' <param name="progId">registered ProgID</param>
-	Public Sub New( progId as String):base(progId)
+	Public Sub New(progId as String)
+		MyBase.New(progId)
 			%callQuitInDispose%
 	End Sub
 
@@ -80,7 +85,7 @@
         End If
 
         If (False = IsNothing(_activeSinkId)) Then
-				_activeSinkId = SinkHelper.GetConnectionPoint(Me, ref _connectPoint, %CompareIds%)
+				_activeSinkId = SinkHelper.GetConnectionPoint(Me, _connectPoint, %CompareIds%)
         End If
 
 %SetActiveSink% 
