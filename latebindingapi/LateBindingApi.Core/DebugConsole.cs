@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.ComponentModel;
 
 namespace LateBindingApi.Core
 {
@@ -69,11 +70,12 @@ namespace LateBindingApi.Core
         /// write log message
         /// </summary>
         /// <param name="message"></param>
-        internal static void WriteLine(string message)
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public static void WriteLine(string message)
         {
             string output = message;
             if (AppendTimeInfoEnabled)
-                output = DateTime.Now.ToLongTimeString() + message;
+                output = DateTime.Now.ToLongTimeString() + " - " + message;
 
             switch (Mode)
             {
@@ -98,7 +100,8 @@ namespace LateBindingApi.Core
         /// write exception log message
         /// </summary>
         /// <param name="exception"></param>
-        internal static void WriteException(Exception exception)
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public static void WriteException(Exception exception)
         {
             string message = CreateExecptionLog(exception);
             WriteLine(message);

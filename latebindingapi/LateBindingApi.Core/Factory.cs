@@ -382,7 +382,7 @@ namespace LateBindingApi.Core
                 else
                 {
                     // create new classType
-                    classType = factoryInfo.Assembly.GetType(fullClassName);
+                    classType = factoryInfo.Assembly.GetType(fullClassName,false,true);
                     if (null == classType)
                         throw new ArgumentException("Class not exists: " + fullClassName);
 

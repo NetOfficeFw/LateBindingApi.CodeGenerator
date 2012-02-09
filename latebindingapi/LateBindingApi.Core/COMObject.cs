@@ -553,7 +553,7 @@ namespace LateBindingApi.Core
         /// </summary>
         /// <returns></returns>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public override int GetHashCode()
+        public new int GetHashCode()
         {
             return base.GetHashCode();
         }
@@ -563,7 +563,7 @@ namespace LateBindingApi.Core
         /// </summary>
         /// <returns></returns>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public override string ToString()
+        public new string ToString()
         {
             return base.ToString();
         }
@@ -573,9 +573,19 @@ namespace LateBindingApi.Core
         /// </summary>
         /// <returns></returns>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public override bool Equals(Object obj)
+        public new bool Equals(Object obj)
         {
             return base.Equals(obj);
+        }
+
+        /// <summary>
+        /// Gets a Type object that represents the specified type.
+        /// </summary>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public new Type GetType()
+        {
+            return base.GetType();
         }
 
         #endregion
