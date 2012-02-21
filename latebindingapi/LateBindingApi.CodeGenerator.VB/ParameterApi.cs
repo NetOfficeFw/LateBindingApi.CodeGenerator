@@ -54,6 +54,23 @@ namespace LateBindingApi.CodeGenerator.VB
             }
         }
 
+        public static string ValidateNameWithoutVarType(string expression)
+        {
+            if (null == _Keywords)
+            {
+                string res = RessourceApi.ReadString("Keywords.txt");
+                _Keywords = res.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            foreach (string item in _Keywords)
+            {
+                if (item.Trim().Equals(expression, StringComparison.InvariantCultureIgnoreCase))
+                    return "[" + item.Trim() + "]";
+            }
+
+            return expression;
+        }
+
         public static string ValidateName(string expression)
         {
             if (null == _Keywords)
@@ -64,11 +81,11 @@ namespace LateBindingApi.CodeGenerator.VB
 
             foreach (string item in _Keywords)
             {
-                if (item.Equals(expression,StringComparison.InvariantCultureIgnoreCase))
-                    return "_" + item;
+                if (item.Trim().Equals(expression, StringComparison.InvariantCultureIgnoreCase))
+                    return "[" + item.Trim() + "]";
             }
 
-            return expression;
+            return ValidateVarTypeVB(expression);
         }
 
         internal static string ValidateVarTypeVB(string expression)
@@ -95,14 +112,14 @@ namespace LateBindingApi.CodeGenerator.VB
             bool isInList = false;
             foreach (string item in _Keywords)
             {
-                if (item == name)
+                if (item.Trim().Equals(name,StringComparison.InvariantCultureIgnoreCase))
                 {
                     isInList = true;
                     break;
                 }
             }
             if (true == isInList)
-                name = "_" + name;
+                name = "[" + name.Trim() + "]";
 
             return name;
         }
@@ -427,7 +444,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// <param name="parametersNode"></param>
         /// <param name="withOptionals"></param>
         /// <returns></returns>
-        internal static string CreateParametersPrototypeString(Settings settings, XElement parametersNode, bool withOptionals, bool convertOptionalsInNet4)
+        internal static string CreateParametersPrototypeString(Settings settings, XElement parametersNode, bool withOptionals, bool convertOptionalsInNet4, bool isProperty)
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(parametersNode.Parent.Parent.Parent);
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(parametersNode.Parent.Parent.Parent);
@@ -438,21 +455,28 @@ namespace LateBindingApi.CodeGenerator.VB
             
             IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
             foreach (XElement itemParam in xParams)
-            {               
+            {
+                string name = itemParam.Attribute("Name").Value;
+                name = ValidateParamName(settings, name);
+
                 string parameter = "";
                 string type = VBGenerator.GetQualifiedType(settings, itemParam);
                 if ("true" == itemParam.Attribute("IsArray").Value)
-                    type += "[]";
+                    name += "()";
 
-                string name = itemParam.Attribute("Name").Value;
-                name = ValidateParamName(settings, name);
-                
-                if ("true" == itemParam.Attribute("IsOut").Value)
-                    name = "ByRef " + name;
-                else if ("true" == itemParam.Attribute("IsRef").Value)
-                    name = "ByRef " + name;
+                if (!isProperty)
+                {
+                    if ("true" == itemParam.Attribute("IsOut").Value)
+                        name = "ByRef " + name;
+                    else if ("true" == itemParam.Attribute("IsRef").Value)
+                        name = "ByRef " + name;
+                    else
+                        name = "ByVal " + name;
+                }
                 else
+                {
                     name = "ByVal " + name;
+                }
 
                 parameter = name + " As " + type;
                 if (i < countOfParams)
@@ -529,17 +553,12 @@ namespace LateBindingApi.CodeGenerator.VB
             IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
             foreach (XElement itemParam in xParams)
             {
-                string isArray = "";
-                if ("true" == itemParam.Attribute("IsArray").Value)
-                    isArray = "()";
-               
                 string paramName = itemParam.Attribute("Name").Value;
                 paramName = ValidateParamName(settings, paramName);
 
                 if (("true" == itemParam.Attribute("IsRef").Value) || ("true" == itemParam.Attribute("IsOut").Value))
                     result += tabSpace + paramName +
-                        " = (" + VBGenerator.GetQualifiedType(itemParam) + isArray + 
-                        ")paramsArray(" + i.ToString() + ")\r\n";
+                        " = " + "paramsArray(" + i.ToString() + ")\r\n";
                 
                 i++;
             }
@@ -568,34 +587,34 @@ namespace LateBindingApi.CodeGenerator.VB
                     paramName = ValidateParamName(settings, paramName);
 
                     if (itemParam.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                           result += tabSpace + paramName + " = null;" + Environment.NewLine;
+                           result += tabSpace + paramName + " = Nothing" + Environment.NewLine;
                     else if(itemParam.Attribute("Type").Value.Equals("String",StringComparison.InvariantCultureIgnoreCase))
-                          result += tabSpace + paramName + " = string.Empty;" + Environment.NewLine;
+                          result += tabSpace + paramName + " = string.Empty" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("Object", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = null;" + Environment.NewLine;
+                        result += tabSpace + paramName + " = Nothing" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("UIntPtr", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = UIntPtr.Zero;" + Environment.NewLine;
+                        result += tabSpace + paramName + " = UIntPtr.Zero" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("Bool", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = false;" + Environment.NewLine;
+                        result += tabSpace + paramName + " = false" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("Int32", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;
+                        result += tabSpace + paramName + " = 0" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("Int16", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;
+                        result += tabSpace + paramName + " = 0" + Environment.NewLine;
                     else if (itemParam.Attribute("Type").Value.Equals("Guid", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = Guid.Empty;" + Environment.NewLine;                    
+                        result += tabSpace + paramName + " = Guid.Empty" + Environment.NewLine;                    
                     else if (itemParam.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;
+                        result += tabSpace + paramName + " = 0" + Environment.NewLine;
                     else if (itemParam.Attribute("IsComProxy").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                            result += tabSpace + paramName + " = null;" + Environment.NewLine;
+                            result += tabSpace + paramName + " = Nothing" + Environment.NewLine;
                     else if (IsRecord(itemParam))
                     {
                         XElement project = itemParam.Parent;
                         while (project.Name != "Project")
                             project = project.Parent;
-                        result += tabSpace + paramName + " = new " + project.Attribute("Namespace").Value + "." + itemParam.Attribute("Type").Value + "();" + Environment.NewLine;
+                        result += tabSpace + paramName + " = new " + project.Attribute("Namespace").Value + "." + itemParam.Attribute("Type").Value + "()" + Environment.NewLine;
                     }
                     else
-                        result += tabSpace + paramName + " = 0;" + Environment.NewLine;             
+                        result += tabSpace + paramName + " = 0" + Environment.NewLine;             
                 }
             }
             return result;
@@ -610,19 +629,15 @@ namespace LateBindingApi.CodeGenerator.VB
             if (0 == parametersNode.Elements("Parameter").Count())
                 return tabSpace + "Dim paramsArray() As Object = Nothing\r\n";
 
-            string result = tabSpace + "ParameterModifier[] modifiers = Invoker.CreateParamModifiers(" + CreateParametersModifiersString(parametersNode, withOptionals) + ")\r\n";
+            string result = tabSpace + "Dim modifiers() As ParameterModifier = Invoker.CreateParamModifiers(" + CreateParametersModifiersString(parametersNode, withOptionals) + ")\r\n";
             result += CreateParameterClearString(settings, xParams, tabSpace);
             
             result += tabSpace + "Dim paramsArray() As Object = Invoker.ValidateParamsArray(";
             int countOfParams = GetParamsCount(parametersNode, withOptionals);
             int i = 1;
 
-           
             foreach (XElement itemParam in xParams)
             {
-                if ("true" == itemParam.Attribute("IsArray").Value)
-                    result += "(object)";
-
                 string paramName = itemParam.Attribute("Name").Value;
                 paramName = ValidateParamName(settings, paramName);
  
@@ -652,9 +667,6 @@ namespace LateBindingApi.CodeGenerator.VB
             IEnumerable<XElement> xParams = GetParameter(parametersNode, withOptionals);
             foreach (XElement itemParam in xParams)
             {
-                if ("true" == itemParam.Attribute("IsArray").Value)
-                    result += "(object)";
-
                 string paramName = itemParam.Attribute("Name").Value;
                 paramName = ValidateParamName(settings, paramName);
 

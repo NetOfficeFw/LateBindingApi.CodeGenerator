@@ -49,14 +49,8 @@ namespace LateBindingApi.CodeGenerator.VB
             
             string comConversion = "<StructLayout(LayoutKind.Sequential), ";
             string typeLibType = enumNode.Attribute("TypeLibType").Value;
-            if ("0" != typeLibType)
-            {
-                typeLibType = "ComConversionLoss, TypeLibType((short) " + typeLibType + ")> _";
-            }
-            else
-            {
-                typeLibType = "Guid(\"" + XmlConvert.DecodeName(enumNode.Attribute("GUID").Value) + "\")> _";
-            }
+            typeLibType = "ComConversionLoss, TypeLibType(" + typeLibType + ")> _"; //(short) 
+
             comConversion += typeLibType;
            
             string name = enumNode.Attribute("Name").Value;

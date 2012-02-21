@@ -1,62 +1,67 @@
 ﻿
-        #region IEventBinding Member
+        #region "IEventBinding Member"
         
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public bool EventBridgeInitialized
-        {
-            get 
-            {
-                return (null != _connectPoint);
-            }
-        }
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+        Public ReadOnly Property EventBridgeInitialized As Boolean
+
+            Get 
+            
+                return LateBindingApi.Core.Utils.IsNothing(_connectPoint)
+            
+            End Get
+            
+		End Property
         
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public bool HasEventRecipients       
-        {
-			get
-			{
-				if(null == _thisType)
-					_thisType = this.GetType();
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+        Public ReadOnly Property HasEventRecipients As Boolean
+			
+			Get
+						
+				If LateBindingApi.Core.Utils.IsNothing(_thisType)
+					_thisType = Me.GetType()
+				End If
 					
-				foreach (NetRuntimeSystem.Reflection.EventInfo item in _thisType.GetEvents())
-				{
-					MulticastDelegate eventDelegate = (MulticastDelegate) _thisType.GetType().GetField(item.Name, 
-																			NetRuntimeSystem.Reflection.BindingFlags.NonPublic |
-																			NetRuntimeSystem.Reflection.BindingFlags.Instance).GetValue(this);
+				For Each item As NetRuntimeSystem.Reflection.EventInfo In _thisType.GetEvents()
+
+					Dim eventDelegate As MulticastDelegate = _thisType.GetType().GetField(item.Name, NetRuntimeSystem.Reflection.BindingFlags.NonPublic Or NetRuntimeSystem.Reflection.BindingFlags.Instance).GetValue(Me)
 					
-					if( (null != eventDelegate) && (eventDelegate.GetInvocationList().Length > 0) )
-						return false;
-				}
-				
-				return false;
-			}
-        }
+					If LateBindingApi.Core.Utils.IsNothing(eventDelegate) And eventDelegate.GetInvocationList().Length > 0
+						return false
+					End If		
+					
+                Next
+                				
+				return true
+			
+			End Get
+			
+        End Property
         
-		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public Delegate[] GetEventRecipients(string eventName)
-        {
-			if(null == _thisType)
-				_thisType = this.GetType();
+		<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+        public Function GetEventRecipients(eventName As String) As Delegate() 
+        
+			If LateBindingApi.Core.Utils.IsNothing(_thisType)
+					_thisType = Me.GetType()
+				End If
              
-            MulticastDelegate eventDelegate = (MulticastDelegate)_thisType.GetField(
-                                                "_" + eventName + "Event",
-                                                NetRuntimeSystem.Reflection.BindingFlags.Instance |
-                                                NetRuntimeSystem.Reflection.BindingFlags.NonPublic).GetValue(this);
+            Dim eventDelegate As MulticastDelegate = _thisType.GetField("_" + eventName + "Event", NetRuntimeSystem.Reflection.BindingFlags.Instance Or NetRuntimeSystem.Reflection.BindingFlags.NonPublic).GetValue(Me)
 
-            if (null != eventDelegate)
-            {
-                Delegate[] delegates = eventDelegate.GetInvocationList();
-                return delegates;
-            }
-            else
-                return new Delegate[0];
-        }
+			If Not LateBindingApi.Core.Utils.IsNothing(eventDelegate)
+            
+                Dim delegates() As Delegate = eventDelegate.GetInvocationList()
+                return delegates
+            
+            Else
+                return new Delegate(0)
+            End If
+                
+        End Function
 
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-        public void DisposeSinkHelper()
-        {
-%sinkHelperDispose%
-			_connectPoint = null;
-		}
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+        Public Sub DisposeSinkHelper()
         
-        #endregion
+%sinkHelperDispose%
+			_connectPoint = Nothing
+		End Sub
+        
+        #End Region

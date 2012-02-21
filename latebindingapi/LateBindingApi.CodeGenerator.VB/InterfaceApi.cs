@@ -14,6 +14,7 @@ namespace LateBindingApi.CodeGenerator.VB
                                        + "Imports NetRuntimeSystem = System\r\n"
                                        + "Imports System.ComponentModel\r\n"
                                        + "Imports System.Runtime.CompilerServices\r\n"
+                                       + "Imports System.Runtime.InteropServices\r\n"
                                        + "Imports System.Reflection\r\n"
                                        + "Imports System.Collections.Generic\r\n"
                                        + "%enumerableSpace%"
@@ -43,9 +44,9 @@ namespace LateBindingApi.CodeGenerator.VB
             string version = VBGenerator.GetSupportByLibraryAttribute(faceNode);
             header += "\t" + version + "\r\n";
             string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
-            header += "\t<ComImport, Guid(\"" + guid + "\"), TypeLibType((short) " + faceNode.Attribute("TypeLibType").Value + ")> _\r\n";
+            header += "\t<ComImport, Guid(\"" + guid + "\"), TypeLibType(CShort(" + faceNode.Attribute("TypeLibType").Value + "))> _\r\n";
             header += _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
-            header = header.Replace("class", "interface").Replace(" : %inherited%", "").Replace("%enumerable%", "");
+            header = header.Replace("Class", "interface").Replace(" : %inherited%", "").Replace("%enumerable%", "");
             result += header;
 
             string methods = MethodApi.ConvertMethodsEarlyBindToString(settings, faceNode.Element("Methods"));
@@ -54,7 +55,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string properties = PropertyApi.ConvertPropertiesEarlyBindToString(settings, faceNode.Element("Properties"));
             result += properties;
 
-            result += "\tEnd Class\r\nEnd Namespace";
+            result += "\tEnd Interface\r\nEnd Namespace";
             return result;
         }
 
@@ -63,12 +64,11 @@ namespace LateBindingApi.CodeGenerator.VB
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
             string attributes = "\t" + VBGenerator.GetSupportByLibraryAttribute(faceNode);
             string header = _classHeader.Replace("%name%", ParameterApi.ValidateName(faceNode.Attribute("Name").Value));
-            header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
-       
+            
+            header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));     
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
-            string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-
+            string construct = _classConstructor.Replace("%name%", ParameterApi.ValidateName(faceNode.Attribute("Name").Value));
             string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t''' " + VBGenerator.GetSupportByLibrary("", faceNode));
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
@@ -78,11 +78,12 @@ namespace LateBindingApi.CodeGenerator.VB
             result += attributes + "\r\n";
             result += header;
             result += construct;
-            //result += properties;
-            //result += methods;
+            result += properties;
+            result += methods;
 
             ScanEnumerable(faceNode, ref result);
-            result += "End Class\r\nEnd Namespace";
+
+            result += "\tEnd Class\r\nEnd Namespace";
             return result;
         }
 
@@ -95,7 +96,7 @@ namespace LateBindingApi.CodeGenerator.VB
 
             string result = "";
             foreach (XElement faceNode in facesNode.Elements("Interface"))
-            {
+            { 
                 if("false" == faceNode.Attribute("IsEventInterface").Value)
                     result += ConvertInterfaceToFile(settings, projectNode, faceNode, faceFolder) + "\r\n";
             }

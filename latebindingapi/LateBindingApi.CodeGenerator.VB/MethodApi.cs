@@ -89,18 +89,6 @@ namespace LateBindingApi.CodeGenerator.VB
             bool analyzeReturn = Convert.ToBoolean(methodNode.Attribute("AnalyzeReturn").Value);
             foreach (XElement itemParams in methodNode.Elements("Parameters"))
             {
-                if (("this" == name) && itemParams.HasAttributes)
-                    continue;
-
-                string inParam = "(";
-                string outParam = ")";
-
-                if("this" == name)
-                {
-                    inParam = "[";
-                    outParam = "]";
-                }
-
                 XElement returnValue = itemParams.Element("ReturnValue");
 
                 string[] supportDocuArray = VBGenerator.GetSupportByLibraryArray(itemParams);
@@ -139,22 +127,25 @@ namespace LateBindingApi.CodeGenerator.VB
 
                 string valReturnEnd = "";
                 if ("void" != valueReturn)
-                    valReturnEnd = " As " + valueReturn;
+                    valReturnEnd = " As " + ParameterApi.ValidateVarTypeVB(valueReturn);
 
-                method += "\t\tPublic " + methodType + " " + name + "(" + "%params%" + ")" + valReturnEnd + "\r\n\t\t\r\n%methodbody%\t\tEnd " + methodType + "\r\n";
-
-               // method += "\t\tPublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
-                string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true);
-                method = method.Replace("%params%", parameters);
-
-                string methodBody ="";
-                if ("this" == name)
+                string thisPrefix = "";
+                if(name =="this")
                 {
-                //    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateLateBindMethodBody(settings, 4, itemParams, analyzeReturn) + "\t\t\t}\r\n";
+                    thisPrefix = "Default Public ReadOnly Property";
+                    methodType = "Property";
                 }
                 else
-                    methodBody = CreateLateBindMethodBody(settings, 3, itemParams, analyzeReturn);
-                
+                    thisPrefix = "Public " + methodType;
+
+                method += "\t\t" + thisPrefix + " " + name + "(" + "%params%" + ")" + valReturnEnd + "\r\n\t\t\r\n%methodbody%\t\tEnd " + methodType + "\r\n";
+
+               // method += "\t\tPublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
+                string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true,false);
+                method = method.Replace("%params%", parameters);
+
+                string methodBody = CreateLateBindMethodBody(settings, 3, itemParams, analyzeReturn);
+                 
                 method = method.Replace("%methodbody%", methodBody);
                 result += method + "\r\n";
             }
@@ -185,8 +176,11 @@ namespace LateBindingApi.CodeGenerator.VB
                 arrayField = "()";
                 arrayName = "Array";
                 fullTypeName += "()";
-                objectArrayField = "(object())";
+                objectArrayField = "";
             }
+
+            if (methodName == "this")
+                methodBody = "Get\r\n" + methodBody;
 
             string modifiers = "";
             if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
@@ -222,7 +216,7 @@ namespace LateBindingApi.CodeGenerator.VB
                     else if (typeName == "COMVariant")
                     {
 
-                        methodBody += tabSpace + "If (Not IsNothing(returnItem)) And (TypeOf returnItem Is MarshalByRefObject)\r\n" + tabSpace + "\r\n";
+                        methodBody += tabSpace + "If (Not LateBindingApi.Core.Utils.IsNothing(returnItem)) And (TypeOf returnItem Is MarshalByRefObject)\r\n" + tabSpace + "\r\n";
                         if("" == objectArrayField)
                             methodBody += tabSpace + "\tDim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
                         else
@@ -255,7 +249,7 @@ namespace LateBindingApi.CodeGenerator.VB
                             bool isDerived = VBGenerator.IsDerivedReturnValue(returnValue);
                             if ((true == isFromIgnoreProject) && (false == isDuplicated))
                             {
-                                methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(Me, " + objectArrayField + "returnItem) as " + fullTypeName + "\r\n";
+                                methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
                                 methodBody += "%modifiers%";
                                 methodBody += tabSpace + "Return newObject\r\n";
                             }
@@ -280,11 +274,6 @@ namespace LateBindingApi.CodeGenerator.VB
                 }
                 else
                 {
-                    // native type
-                    string objectString = "";
-                    if ("true" == returnValue.Attribute("IsArray").Value)
-                        objectString = "(object)";
-
                     string invokeTarget = "";
                     if ("this" == parametersNode.Parent.Attribute("Name").Value)
                         invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;
@@ -327,26 +316,28 @@ namespace LateBindingApi.CodeGenerator.VB
                     methodBody = methodBody.Replace("%modifiers%", "");
                 }
             }
+            if (methodName == "this")
+                methodBody += "End Get\r\n";
             return methodBody;
         }
 
         internal static string ConvertMethodEarlyBindToString(Settings settings, XElement methodNode)
         {
             string result = "";
-            string name = methodNode.Attribute("Name").Value;
+           // string name = "Function " + methodNode.Attribute("Name").Value;
             foreach (XElement itemParams in methodNode.Elements("Parameters"))
             {
                 XElement returnValue = itemParams.Element("ReturnValue");
 
                 string method = "";
                 method += "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
-
+                /*
                 string marshalReturnAs = returnValue.Attribute("MarshalAs").Value;
                 if ("" != marshalReturnAs)
                     method += "\t\t[return: MarshalAs(" + marshalReturnAs + ")]\r\n";
-
-                method += "\t\t" + "[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime), DispId(" + itemParams.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
-                method += "\t\t" + GetEarlyBindMethodSignatur(itemParams) + ";\r\n\r\n";
+                */
+                method += "\t\t" + "<MethodImpl(MethodImplOptions.InternalCall, MethodCodeType:=MethodCodeType.Runtime), DispId(" + itemParams.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value + ")> _\r\n";
+                method += "\t\t" + GetEarlyBindMethodSignatur(itemParams) + "\r\n\r\n";
                  
                 result += method;
             }
@@ -357,17 +348,23 @@ namespace LateBindingApi.CodeGenerator.VB
 
         internal static string GetEarlyBindMethodSignatur(XElement paramsNode)
         {
-            string result = paramsNode.Element("ReturnValue").Attribute("Type").Value + " " + paramsNode.Parent.Attribute("Name").Value + "(";
+            string methodType = "Sub ";
+            if(paramsNode.Element("ReturnValue").Attribute("Type").Value != "void")
+                methodType = "Function ";
+            
+            string result = methodType + paramsNode.Parent.Attribute("Name").Value + "(";
             foreach (XElement itemParam in paramsNode.Elements("Parameter"))
             {
                 string isRef = "";
                 if ("true" == itemParam.Attribute("IsRef").Value)
-                    isRef = "ref ";
+                    isRef = "ByRef ";
+                else
+                    isRef = "ByVal ";
 
-                string par = "[In";
+                string par = "<[In]()";
                 string marshalAs = itemParam.Attribute("MarshalAs").Value;
                 if ("" != marshalAs)
-                    marshalAs = ", MarshalAs(" + marshalAs + ")]";
+                    marshalAs = ", MarshalAs(" + marshalAs + ")>";
 
                 if (("true" == itemParam.Attribute("IsComProxy").Value) || ("COMObject" == itemParam.Attribute("Type").Value) ||
                     ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
@@ -376,7 +373,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 }
                 else
                 {
-                    par += marshalAs + isRef + itemParam.Attribute("Type").Value + " " + itemParam.Attribute("Name").Value;
+                    par += marshalAs + isRef + ParameterApi.ValidateName(itemParam.Attribute("Name").Value) + " As " + itemParam.Attribute("Type").Value;
                 }
 
                 result += par + ", ";
@@ -384,12 +381,17 @@ namespace LateBindingApi.CodeGenerator.VB
             if (", " == result.Substring(result.Length - 2))
                 result = result.Substring(0, result.Length - 2);
 
-            return result + ")";
+            result += ")";
+
+            if (paramsNode.Element("ReturnValue").Attribute("Type").Value != "void")
+                result += " As " + paramsNode.Element("ReturnValue").Attribute("Type").Value;
+
+            return result;
         }
 
         internal static string ConvertMethodsEarlyBindToString(Settings settings, XElement methodsNode)
         {
-            string result = "\t\t#region Methods\r\n\r\n";
+            string result = "\t\t#region \"Methods\"\r\n\r\n";
             foreach (XElement methodNode in methodsNode.Elements("Method"))
             {
                 if ("_NewEnum" == methodNode.Attribute("Name").Value)
@@ -398,7 +400,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 string method = ConvertMethodEarlyBindToString(settings, methodNode);
                 result += method;
             }
-            result += "\t\t#endregion\r\n";
+            result += "\t\t#End Region\r\n";
             return result;
         }
     }

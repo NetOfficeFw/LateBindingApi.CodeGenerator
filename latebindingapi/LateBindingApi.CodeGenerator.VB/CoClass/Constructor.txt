@@ -8,13 +8,13 @@
 
 #Region "Type Information"
 
-    Private Static _type As Type
+    Private Shared _type As Type
 
 	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
-    Public Static ReadOnly Property LateBindingApiWrapperType() As Type
+    Public Shared ReadOnly Property LateBindingApiWrapperType() As Type
 
             Get
-            If (IsNothing(_type)) Then
+            If (LateBindingApi.Core.Utils.IsNothing(_type)) Then
                     _type = GetType(%name%)
             End If
 
@@ -36,7 +36,7 @@
     ''' <param name="parentObject">object there has created the proxy</param>
     ''' <param name="comProxy">inner wrapped COM proxy</param>
     ''' <param name="comProxyType">Type of inner wrapped COM proxy"</param>
-	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)>_
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
 	Public Sub New( parentObject As COMObject,  comProxy As object, comProxyType As NetRuntimeSystem.Type) 
 		MyBase.New(parentObject, comProxy, comProxyType)
 			%callQuitInDispose%
@@ -80,11 +80,11 @@
             Return
         End If
 
-        If (False = IsNothing(_connectPoint)) Then
+        If (False = LateBindingApi.Core.Utils.IsNothing(_connectPoint)) Then
             Return
         End If
 
-        If (False = IsNothing(_activeSinkId)) Then
+        If (False = LateBindingApi.Core.Utils.IsNothing(_activeSinkId)) Then
 				_activeSinkId = SinkHelper.GetConnectionPoint(Me, _connectPoint, %CompareIds%)
         End If
 

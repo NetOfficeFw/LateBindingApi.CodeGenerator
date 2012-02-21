@@ -37,7 +37,7 @@ Namespace %AssemblyName%Api.Utils
 
         Public Function Contains(ByVal className As String) As Boolean Implements IFactoryInfo.Contains
 
-            If (IsNothing(_exportedTypes)) Then
+            If (LateBindingApi.Core.Utils.IsNothing(_exportedTypes)) Then
                 _exportedTypes = Assembly.GetExportedTypes()
             End If
 

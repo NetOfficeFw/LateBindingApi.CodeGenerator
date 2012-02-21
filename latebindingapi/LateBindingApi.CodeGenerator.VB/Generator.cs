@@ -162,22 +162,28 @@ namespace LateBindingApi.CodeGenerator.VB
 
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
-
+               
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
                 string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
-                string eventIncludes =   "";
+               // string eventIncludes =   "";
+
                 string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
                 string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
                 string recordsInclude = RecordsApi.ConvertRecordsToFiles(project, project.Element("Records"), _settings, solutionFolder);
-                string classesIncludes = "";
+                string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
 
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
 
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
                 projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
+                                        faceIncludes, dispatchIncludes, classesIncludes, "", modulesInclude, recordsInclude,
+                                        factoryInclude);
+                /*
+                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
+                projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
                                         faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude,
                                         factoryInclude);
-
+                */
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
 
@@ -211,7 +217,14 @@ namespace LateBindingApi.CodeGenerator.VB
         #endregion
     
         #region Static Methods
-        
+
+
+        public static string DecToHex(string stringDecValue)
+        {
+            int decValue = Convert.ToInt32(stringDecValue);
+            return string.Format("{0:x}", decValue);
+        }
+
         internal static bool IsDuplicatedReturnValue(XElement returnValue)
         {
             return _dublettes.IsDuplicatedReturnValue(returnValue);
@@ -296,8 +309,8 @@ namespace LateBindingApi.CodeGenerator.VB
                 if ((null != value.Attribute("IsOptional")) && ("true" == value.Attribute("IsOptional").Value))
                     return "object";
             }
-
-            string type = value.Attribute("Type").Value;
+            
+            string type = ParameterApi.ValidateVarTypeVB(value.Attribute("Type").Value);
             string space = GetQualifiedNamespace(value);
             return space + type;
         }
@@ -326,7 +339,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 return "object";
 
             string space = GetQualifiedNamespace(value);
-            return space + type;
+            return space +  ParameterApi.ValidateVarTypeVB(type);           
         }
 
         internal static string GetQualifiedNamespace(XElement value)

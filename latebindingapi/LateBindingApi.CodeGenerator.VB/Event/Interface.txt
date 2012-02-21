@@ -1,58 +1,59 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using LateBindingApi.Core;
+﻿Imports System
+Imports System.Runtime.CompilerServices
+Imports System.Runtime.InteropServices
+Imports System.Runtime.InteropServices.ComTypes
+Imports LateBindingApi.Core
 
 namespace %namespace%
-{	
-	#pragma warning disable
-	
-	#region SinkPoint Interface
+		
+	#Region "SinkPoint Interface"
 
 	%supportby%
-	[ComImport, Guid("%guid%"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch), TypeLibType((short)0x1010)]
-	public interface %name%
+	<ComImport, Guid("%guid%"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch), TypeLibType(Short(0x1010))> _
+	Public Interface %name%
+	
+%methods%	End Interface
+	
+	#end Region
+	
+	#Region "SinkHelper"
+	
+	<ComVisible(true), ClassInterface(ClassInterfaceType.None), TypeLibType(TypeLibTypeFlags.FHidden)> _
+	Public Class %name%_SinkHelper 
+				Inherits SinkHelper 
+				Implements %name%
 	{
-%methods%	}
-	
-	#endregion
-	
-	#region SinkHelper
-	
-	[ComVisible(true), ClassInterface(ClassInterfaceType.None), TypeLibType(TypeLibTypeFlags.FHidden)]
-	public class %name%_SinkHelper : SinkHelper, %name%
-	{
-		#region Static
+		#region "Static"
 		
-		public static readonly string Id = "%guid%";
+		Public Shared ReadOnly Id As String = "%guid%"
 		
-		#endregion
+		#End Region
 	
-		#region Fields
+		#region "Fields"
 
-		private IEventBinding	_eventBinding;
-        private COMObject		_eventClass;
+		Private _eventBinding As IEventBinding
+        Private _eventClass As COMObject
         
-		#endregion
+		#End Region
 		
-		#region Construction
+		#region "Construction"
 
-		public %name%_SinkHelper(COMObject eventClass, IConnectionPoint connectPoint): base(eventClass)
+		public Sub New(eventClass As COMObject, connectPoint As IConnectionPoint)
 		{
-			_eventClass = eventClass;
-			_eventBinding = (IEventBinding)eventClass;
-			SetupEventBinding(connectPoint);
+			MyBase.New(eventClass)
+
+			_eventClass = eventClass
+			_eventBinding = eventClass
+			SetupEventBinding(connectPoint)
 		}
 		
-		#endregion
+		#End Region
 		
-		#region %name% Members
+		#region "%name% Members"
 		
-%methodsImplement%		#endregion
+%methodsImplement%		#End Region
 	}
 	
-	#endregion
+	#End Region
 	
-	#pragma warning restore
-}
+End Namespace

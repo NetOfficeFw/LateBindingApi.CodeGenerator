@@ -14,6 +14,7 @@ namespace LateBindingApi.CodeGenerator.VB
                                           + "Imports NetRuntimeSystem = System\r\n"
                                           + "Imports System.ComponentModel\r\n"
                                           + "Imports System.Runtime.CompilerServices\r\n"
+                                          + "Imports System.Runtime.InteropServices\r\n"
                                           + "Imports System.Reflection\r\n"
                                           + "Imports System.Collections.Generic\r\n"
                                           + "%enumerableSpace%"
@@ -68,13 +69,13 @@ namespace LateBindingApi.CodeGenerator.VB
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value).Replace("%enumerableSpace%", "");
             string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", VBGenerator.GetSupportByLibraryString("", faceNode));
-
+            
             string version = VBGenerator.GetSupportByLibraryAttribute(faceNode);
             header += "\t" + version + "\r\n";
             string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
-            header += "\t<ComImport, Guid(\"" + guid + "\"), TypeLibType((short) " + faceNode.Attribute("TypeLibType").Value + ")> _\r\n";
+            header += "\t<ComImport(), Guid(\"" + guid + "\"), TypeLibType(" + "CShort(" + faceNode.Attribute("TypeLibType").Value + "))> _\r\n";
             header += _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
-            header =  header.Replace("class", "interface").Replace(" : %inherited%", "").Replace("%enumerable%", "");
+            header = header.Replace("Class", "Interface").Replace("Inherits %inherited%", "").Replace("%enumerable%", "");
             result += header;
 
             string methods = MethodApi.ConvertMethodsEarlyBindToString(settings, faceNode.Element("Methods"));
@@ -83,7 +84,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string properties = PropertyApi.ConvertPropertiesEarlyBindToString(settings, faceNode.Element("Properties"));
             result += properties;
 
-            result += "\tEndClass\r\nEnd Namespace";
+            result += "\tEnd Interface\r\nEnd Namespace";
             return result;
         }
 
@@ -96,7 +97,7 @@ namespace LateBindingApi.CodeGenerator.VB
             header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
-            string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
+            string construct = _classConstructor.Replace("%name%", ParameterApi.ValidateName(faceNode.Attribute("Name").Value));
             string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t''' " + VBGenerator.GetSupportByLibrary("", faceNode));          
            
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
@@ -106,7 +107,7 @@ namespace LateBindingApi.CodeGenerator.VB
             result += attributes + "\r\n";
             result += header;
             result += construct;
-//            result += properties;
+            result += properties;
             result += methods;
 
             ScanEnumerable(faceNode, ref result);

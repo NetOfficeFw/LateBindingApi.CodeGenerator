@@ -90,6 +90,7 @@ NotInheritable
 NotOverridable
 Object 
 On
+Operator
 Option 
 Optional
 Or
@@ -100,7 +101,7 @@ Overrides
 ParamArray
 Preserve
 Private
-Property 
+Property
 Protected
 Public
 RaiseEvent

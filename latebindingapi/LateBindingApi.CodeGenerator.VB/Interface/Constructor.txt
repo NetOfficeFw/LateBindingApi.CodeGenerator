@@ -5,7 +5,7 @@
 		<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
         Public Shared ReadOnly Property LateBindingApiWrapperType() As Type
 			Get
-				if(IsNothing(_type)) Then
+				if(LateBindingApi.Core.Utils.IsNothing(_type)) Then
 				 _type = GetType(%name%)
 				End If
 				Return _type
