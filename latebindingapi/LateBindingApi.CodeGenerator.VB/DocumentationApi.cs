@@ -49,7 +49,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string result = "";
             string tabSpace = VBGenerator.TabSpace(numberOfTabSpace);
 
-            string libs = "''' SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
+            string libs = "''' SupportByVersion " + parentNode.Attribute("Name").Value + " ";
             foreach (string lib in supportByLibrary)
             {
                 libs += lib + ", ";
@@ -64,26 +64,35 @@ namespace LateBindingApi.CodeGenerator.VB
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
             {
                 string typeName = VBGenerator.GetQualifiedType(itemParameter);
+                typeName = ValidateParamName(typeName);
 
                 if ("true" == itemParameter.Attribute("IsOptional").Value)
                     typeName = "optional " + typeName;
 
                 if ("true" == itemParameter.Attribute("IsRef").Value)
-                    typeName = "ref " + typeName;
-
+                    typeName = "ByRef " + typeName;
+                
                 if ("true" == itemParameter.Attribute("IsArray").Value)
-                    typeName += "[]";
+                    typeName += "()";
 
-                typeName += " " + itemParameter.Attribute("Name").Value;
+                typeName = itemParameter.Attribute("Name").Value + " As " + typeName;
                 string defaultInfo = "";
                 
                 if (itemParameter.Attribute("HasDefaultValue").Value == "true")
                 {
                     defaultInfo = " = " + itemParameter.Attribute("DefaultValue").Value;
                 }
-                string line = tabSpace + "''' <param name=\"" + ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + defaultInfo + "</param>\r\n";
+
+                string parName = ValidateParamName(itemParameter.Attribute("Name").Value);
+                if (parName.Equals(parametersNode.Parent.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase))
+                    parName += "_";
+                 
+
+                string line = tabSpace + "''' <param name=\"" + parName + "\">" + typeName + defaultInfo + "</param>\r\n";
                 result += line;
             }
+            if (parametersNode.Element("ReturnValue").Attribute("Type").Value == "COMObject")
+                summary += tabSpace + "''' <returns>COMObject</returns>\r\n";
             return result;
         }
 
@@ -138,11 +147,17 @@ namespace LateBindingApi.CodeGenerator.VB
                 }
                 summary += additional;
                 summary += tabSpace + "''' </summary>\r\n";
+
+                if (parametersNode.Element("ReturnValue").Attribute("Type").Value == "COMObject")
+                    summary += tabSpace + "''' <returns>COMObject</returns>\r\n";
             }
             else
             {
                 summary += additional;
+
                 summary += tabSpace + "''' </summary>\r\n";
+                if (parametersNode.Element("ReturnValue").Attribute("Type").Value == "COMObject")
+                    summary += tabSpace + "''' <returns>COMObject</returns>\r\n";
             }
             result += summary;
 
@@ -159,9 +174,13 @@ namespace LateBindingApi.CodeGenerator.VB
                 if ("true" == itemParameter.Attribute("IsArray").Value)
                     typeName += "[]";
 
-                typeName += " " + itemParameter.Attribute("Name").Value;
+                string parName = ValidateParamName(itemParameter.Attribute("Name").Value);
+                if (parametersNode.Parent.Attribute("Name").Value.Equals(itemParameter.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase))
+                    parName += "_";
 
-                string line = tabSpace + "''' <param name=\"" + itemParameter.Attribute("Name").Value + "\">" + typeName + "</param>\r\n";
+                typeName = typeName += " " + parName;
+
+                string line = tabSpace + "''' <param name=\"" + parName + "\">" + typeName + "</param>\r\n";
                 result += line;
             }
             return result;

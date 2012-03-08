@@ -25,8 +25,10 @@ namespace LateBindingApi.CodeGenerator.VB
             _derived = new XDocument();
             _derived.Add(new XElement("Document"));
 
-            ScanForDerived("DispatchInterfaces", "Interface");
-            ScanForDerived("Interfaces", "Interface");
+            ScanForDerived("DispatchInterfaces", "Interface", "Methods", "Method");
+            ScanForDerived("Interfaces", "Interface", "Methods", "Method");
+            ScanForDerived("DispatchInterfaces", "Interface", "Properties", "Property");
+            ScanForDerived("Interfaces", "Interface", "Properties", "Property");
         }
 
         private XElement GetMethodOverload(XElement itemMethod, IEnumerable<XElement> listParameters, int paramsCount)
@@ -80,32 +82,24 @@ namespace LateBindingApi.CodeGenerator.VB
             return newParameters;
         }
 
-        private void ScanForDerived(string elements, string element)
+        private void ScanForDerived(string elements, string element, string enumsNode, string entity)
         {
-
             var interfaces = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project").
-                                 Elements(elements).Elements(element)
-                              select a);
+                                 Elements(elements).Elements(element) select a);
 
             foreach (XElement itemFace in interfaces)
             {
-                foreach (XElement itemMethod in itemFace.Element("Methods").Elements("Method"))
+                foreach (XElement itemMethod in itemFace.Element(enumsNode).Elements(entity))
                 {
-                    if (itemMethod.Attribute("Name").Value == "Item")
-                        continue;
-
                     List<XElement> newParameters = new List<XElement>();
                     IEnumerable<XElement> listParameters = itemMethod.Elements("Parameters");
                     foreach (XElement itemParameters in listParameters)
                     {
-                        IEnumerable<XElement> nonOptionalParamNodes = (from a in itemParameters.Elements("Parameter")
-                                                                    where a.Attribute("IsOptional").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase)
-                                                                    select a);
+                        IEnumerable<XElement> nonOptionalParamNodes = (from a in itemParameters.Elements("Parameter") where a.Attribute("IsOptional").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) select a);
                         int nonOptionalsCount = nonOptionalParamNodes.Count();
 
                         IEnumerable<XElement> optionalParamNodes = (from a in itemParameters.Elements("Parameter")
-                                         where a.Attribute("IsOptional").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-                                         select a);
+                                         where a.Attribute("IsOptional").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) select a);
                         int optionalsCount = optionalParamNodes.Count();
 
                         if (optionalsCount > 0)
@@ -114,9 +108,15 @@ namespace LateBindingApi.CodeGenerator.VB
                             {
                                 XElement existingMethodOverload = GetMethodOverload(itemMethod, newParameters, i);
                                 if (null == existingMethodOverload)
-                                { 
-                                    XElement newParameter = CloneParametersNode(itemParameters, i);
-                                    newParameters.Add(newParameter);
+                                {
+                                    bool clone = true;
+                                    if ((i == 0) && (IsDefaultItem(itemParameters)))
+                                        clone = false;
+                                    if (clone)
+                                    { 
+                                        XElement newParameter = CloneParametersNode(itemParameters, i);
+                                        newParameters.Add(newParameter);
+                                    }
                                 }
                             }
                         }
@@ -128,14 +128,25 @@ namespace LateBindingApi.CodeGenerator.VB
             }
         }
 
-        private XElement HasCount(XElement itemFace)
+        private static bool IsDefaultItem(XElement itemParams)
+        {
+            XElement itemMethod = itemParams.Parent;
+
+            XElement node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                             where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            return (node != null);
+        }
+
+        private XElement GetCountNode(XElement itemFace)
         {
             XElement node = (from a in itemFace.Element("Properties").Elements("Property")
                              where a.Attribute("Name").Value.Equals("Count", StringComparison.InvariantCultureIgnoreCase)
                              select a).FirstOrDefault();
             if (null != node)
             {
-                string type = (node.Element("Parameters").Element("ReturnValue").Attribute("Type").Value) ;
+                string type = (node.Element("Parameters").Element("ReturnValue").Attribute("Type").Value);
                 if ("Int32" == type)
                     return node;
             }
@@ -149,24 +160,32 @@ namespace LateBindingApi.CodeGenerator.VB
             return null;
         }
 
-        private XElement HasItem(XElement itemFace)
+        private XElement GetDefaultItemNode(XElement itemFace)
         {
-            XElement node = (from a in itemFace.Element("Properties").Elements("Property")
-                             where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
-                             select a).FirstOrDefault();
-            if (null != node)
-                return node;
+            XElement node = null;
 
-            node = (from a in itemFace.Element("Methods").Elements("Method")
-                    where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
-                    select a).FirstOrDefault();
-            if (null != node)
-                return node;
+            foreach (XElement itemMethod in itemFace.Element("Properties").Elements("Property"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
+
+            foreach (XElement itemMethod in itemFace.Element("Methods").Elements("Method"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
 
             return null;
         }
 
-        private XElement HasEnum(XElement itemFace)
+        private XElement GetEnumeratorNode(XElement itemFace)
         {
             XElement node = (from a in itemFace.Element("Properties").Elements("Property")
                              where a.Attribute("Name").Value.Equals("_NewEnum", StringComparison.InvariantCultureIgnoreCase)

@@ -35,9 +35,9 @@ namespace LateBindingApi.CodeGenerator.VB
 
             if (true == settings.AddTestApp)
             {
-                string testProjectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\",\"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
+                string testProjectLine = "Project(\"{F184B08F-C81C-45F6-A57F-5ABD9991F28F}\") = \"%Name%\",\"%Name%\\%Name%.vbproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
                 string newProjectLine = testProjectLine.Replace("%Name%", "ClientApplication");
-                newProjectLine = newProjectLine.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
+                newProjectLine = newProjectLine.Replace("%Key%", "C2C0EDB2-88DC-4A32-82C3-6378009D96D7");
 
                 string depends = "\tProjectSection(ProjectDependencies) = postProject\r\n";
                 foreach (var item in solution.Element("Projects").Elements("Project"))                
@@ -49,7 +49,12 @@ namespace LateBindingApi.CodeGenerator.VB
                 newProjectLine = newProjectLine.Replace("%Depend%", depends);
                 projects += newProjectLine;
 
-                string newConfig = _buildConfig.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
+                string customBuildConfig = "\t\t{%Key%}.Debug|x86.ActiveCfg = Debug|x86\r\n" +
+                                           "\t\t{%Key%}.Debug|x86.Build.0 = Debug|x86\r\n" +
+                                           "\t\t{%Key%}.Release|x86.ActiveCfg = Release|x86\r\n" +
+                                           "\t\t{%Key%}.Release|x86.Build.0 = Release|x86\r\n";
+
+                string newConfig = customBuildConfig.Replace("%Key%", "C2C0EDB2-88DC-4A32-82C3-6378009D96D7");
                 configs += newConfig; 
             }
 
@@ -130,6 +135,17 @@ namespace LateBindingApi.CodeGenerator.VB
                 System.IO.File.Copy(file, newFilePath);
             }
 
+            if (!System.IO.Directory.Exists(path + "\\Attributes"))
+                System.IO.Directory.CreateDirectory(path + "\\Attributes");
+            files = System.IO.Directory.GetFiles(projectApiPath + "\\Attributes");
+            foreach (string file in files)
+            {
+                string fileName = System.IO.Path.GetFileName(file);
+                string newFilePath = System.IO.Path.Combine(path + "\\Attributes", fileName);
+                System.IO.File.Copy(file, newFilePath);
+            }
+
+
             if (!System.IO.Directory.Exists(path + "\\Properties"))
                 System.IO.Directory.CreateDirectory(path + "\\Properties");
             files = System.IO.Directory.GetFiles(projectApiPath + "\\Properties");
@@ -151,9 +167,11 @@ namespace LateBindingApi.CodeGenerator.VB
 
         internal static void SaveTestClient(Settings settings, XElement solution, string path)
         {
-            string projectFile  = RessourceApi.ReadString("TestClient.ClientApplication.csproj");
-            string programFile  = RessourceApi.ReadString("TestClient.Program.cs");
-            string formFile     = RessourceApi.ReadString("TestClient.Form1.cs");
+            string appConfigFile = RessourceApi.ReadString("TestClient.App.config");
+            string appInfoFile = RessourceApi.ReadString("TestClient.AssemblyInfo.vb");
+            string projectFile  = RessourceApi.ReadString("TestClient.ClientApplication.vbproj");
+            string formDesignerFile = RessourceApi.ReadString("TestClient.Form1.Designer.vb");
+            string formFile = RessourceApi.ReadString("TestClient.Form1.vb");
 
             string projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.vbproj\">\r\n"
                                                    + "      <Project>{%Key%}</Project>\r\n"
@@ -171,7 +189,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 newRefProject = newRefProject.Replace("%Name%", item.Attribute("Name").Value);
                 projectInclude += newRefProject;
 
-                string newUsing = "using " + item.Attribute("Name").Value + " = " + item.Attribute("Namespace").Value + ";\r\n";
+                string newUsing = "Imports " + item.Attribute("Name").Value + " = " + item.Attribute("Namespace").Value + "\r\n";
                 formUsings += newUsing;
             }
 
@@ -180,7 +198,7 @@ namespace LateBindingApi.CodeGenerator.VB
             projectInclude += newRefProject2;
             projectFile = projectFile.Replace("%ApiRefDll%", "");
 
-            formFile = formFile.Replace("using xyz;", formUsings);
+            formFile = formFile.Replace("Imports xyz", formUsings);
 
             string refProjectInclude = "  <ItemGroup>\r\n" + projectInclude + "  </ItemGroup>";
             projectFile = projectFile.Replace("%ProjectRefInclude%", refProjectInclude);
@@ -193,14 +211,21 @@ namespace LateBindingApi.CodeGenerator.VB
             projectFile = projectFile.Replace("%Framework%", "v" + settings.Framework);
 
             string projectPath = System.IO.Path.Combine(path, "ClientApplication");
-            PathApi.CreateFolder(projectPath); 
-            string projectFilePath = System.IO.Path.Combine(projectPath, "ClientApplication.csproj");
+            PathApi.CreateFolder(projectPath);
+
+            string appConfigFilePath = System.IO.Path.Combine(projectPath, "App.config");
+            System.IO.File.WriteAllText(appConfigFilePath, appConfigFile, Encoding.UTF8);
+
+            string appInfoFilePath = System.IO.Path.Combine(projectPath, "AssemblyInfo.vb");
+            System.IO.File.WriteAllText(appInfoFilePath, appInfoFile, Encoding.UTF8);
+
+            string projectFilePath = System.IO.Path.Combine(projectPath, "ClientApplication.vbproj");
             System.IO.File.WriteAllText(projectFilePath, projectFile, Encoding.UTF8);
 
-            string programFilePath = System.IO.Path.Combine(projectPath, "Program.cs");
-            System.IO.File.WriteAllText(programFilePath, programFile, Encoding.UTF8);
+            string formDesignerFilePath = System.IO.Path.Combine(projectPath, "Form1.Designer.vb");
+            System.IO.File.WriteAllText(formDesignerFilePath, formDesignerFile, Encoding.UTF8);
 
-            string formFilePath = System.IO.Path.Combine(projectPath, "Form1.cs");
+            string formFilePath = System.IO.Path.Combine(projectPath, "Form1.vb");
             System.IO.File.WriteAllText(formFilePath, formFile, Encoding.UTF8);
         }
     }

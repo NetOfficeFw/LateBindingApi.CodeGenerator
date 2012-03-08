@@ -13,7 +13,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="methodsNode"></param>
         /// <returns></returns>
-        internal static string ConvertMethodsLateBindToString(Settings settings, XElement methodsNode)
+        internal static string ConvertMethodsLateBindToString(Settings settings, XElement methodsNode, string instance)
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(methodsNode.Parent);
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(methodsNode.Parent);
@@ -27,7 +27,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 if("_NewEnum" == methodNode.Attribute("Name").Value)
                     continue;
 
-                string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem, hasItem);
+                string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem, hasItem, instance);
                 result += method;
             }
             result += "\t\t#End Region\r\n";
@@ -77,12 +77,26 @@ namespace LateBindingApi.CodeGenerator.VB
             return (paramsNode.Attribute("IsCustom") != null);
         }
 
+        private static bool IsDefaultItem(XElement itemParams)
+        {
+            XElement itemMethod = itemParams.Parent;
+
+            XElement node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                             where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (itemParams.Elements("Parameter").Count() > 0)
+                return (node != null);
+            else
+                return false;
+        }
+
         /// <summary>
         /// convert method to code as string
         /// </summary>
         /// <param name="methodNode"></param>
         /// <returns></returns>
-        internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem, bool hasItem)
+        internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem, bool hasItem, string instance)
         {
             string result = "";
             string name = ParameterApi.ValidateName(methodNode.Attribute("Name").Value);
@@ -112,9 +126,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 if (HasCustomAttribute(itemParams))
                     method += "\t\t" + "<CustomMethodAttribute> _" + "\r\n";
                 method += "\t\t" + supportAttribute + "\r\n";
-                if ("this" == name)
-                    method += "\t\t" + "<NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")> _" + "\r\n";
-
+               
                 string valueReturn = VBGenerator.GetQualifiedType(returnValue);
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "()";
@@ -128,9 +140,12 @@ namespace LateBindingApi.CodeGenerator.VB
                 string valReturnEnd = "";
                 if ("void" != valueReturn)
                     valReturnEnd = " As " + ParameterApi.ValidateVarTypeVB(valueReturn);
+               
+                if ("COMObject" == valueReturn)
+                    valueReturn = "Object";
 
                 string thisPrefix = "";
-                if(name =="this")
+                if(IsDefaultItem(itemParams))
                 {
                     thisPrefix = "Default Public ReadOnly Property";
                     methodType = "Property";
@@ -138,13 +153,17 @@ namespace LateBindingApi.CodeGenerator.VB
                 else
                     thisPrefix = "Public " + methodType;
 
-                method += "\t\t" + thisPrefix + " " + name + "(" + "%params%" + ")" + valReturnEnd + "\r\n\t\t\r\n%methodbody%\t\tEnd " + methodType + "\r\n";
-
-               // method += "\t\tPublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
+                if (IsDefaultItem(itemParams))
+                {
+                    method += "\t\t" + thisPrefix + " " + ParameterApi.ValidateNameWithoutVarType(name) + "(" + "%params%" + ")" + valReturnEnd + "\r\n\t\t\r\nGet\r\n%methodbody%\r\nEnd Get\r\n\t\tEnd " + methodType + "\r\n";
+                }
+                else
+                    method += "\t\t" + thisPrefix + " " + ParameterApi.ValidateNameWithoutVarType(name) + "(" + "%params%" + ")" + valReturnEnd + "\r\n\t\t\r\n%methodbody%\t\tEnd " + methodType + "\r\n";
+                
                 string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true,false);
                 method = method.Replace("%params%", parameters);
 
-                string methodBody = CreateLateBindMethodBody(settings, 3, itemParams, analyzeReturn);
+                string methodBody = CreateLateBindMethodBody(settings, 3, itemParams, analyzeReturn, instance);
                  
                 method = method.Replace("%methodbody%", methodBody);
                 result += method + "\r\n";
@@ -159,7 +178,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// <param name="numberOfRootTabs"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode, bool analyzeReturn)
+        internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode, bool analyzeReturn, string instance)
         {
             string tabSpace = VBGenerator.TabSpace(numberOfRootTabs);
             string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
@@ -193,7 +212,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 else
                     invokeTarget = methodName;
 
-                methodBody += tabSpace + "Dim returnItem As Object = Invoker.MethodReturn(Me, \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
+                methodBody += tabSpace + "Dim returnItem As Object = Invoker.MethodReturn(" + instance + ", \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
                 methodBody += tabSpace + "Return returnItem\r\n";
             }
             else if (typeName != "void") 
@@ -206,10 +225,10 @@ namespace LateBindingApi.CodeGenerator.VB
                     else
                         invokeTarget = methodName;
 
-                    methodBody += tabSpace + "Dim returnItem As Object = Invoker.MethodReturn(Me, \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
+                    methodBody += tabSpace + "Dim returnItem As Object = Invoker.MethodReturn(" + instance + ", \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
                     if (typeName == "COMObject")
                     {
-                        methodBody += tabSpace + "Dim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(Me," + objectArrayField + "returnItem)\r\n";
+                        methodBody += tabSpace + "Dim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(" + instance + "," + objectArrayField + "returnItem)\r\n";
                         methodBody += "%modifiers%";
                         methodBody += tabSpace + "Return newObject\r\n";
                     }
@@ -218,9 +237,9 @@ namespace LateBindingApi.CodeGenerator.VB
 
                         methodBody += tabSpace + "If (Not LateBindingApi.Core.Utils.IsNothing(returnItem)) And (TypeOf returnItem Is MarshalByRefObject)\r\n" + tabSpace + "\r\n";
                         if("" == objectArrayField)
-                            methodBody += tabSpace + "\tDim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
+                            methodBody += tabSpace + "\tDim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(" + instance + ", " + objectArrayField + "returnItem)\r\n";
                         else
-                            methodBody += tabSpace + "\ttDim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
+                            methodBody += tabSpace + "\ttDim newObject" + arrayField + " As COMObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(" + instance + ", " + objectArrayField + "returnItem)\r\n";
                         methodBody += "\t%modifiers%";
                         methodBody += tabSpace + "Return newObject\r\n";
                         methodBody += tabSpace + "\r\n";
@@ -234,7 +253,7 @@ namespace LateBindingApi.CodeGenerator.VB
                         // library type
                         if ("true" == returnValue.Attribute("IsArray").Value)
                         {
-                             methodBody += tabSpace + "Dim newObject() As COMObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
+                            methodBody += tabSpace + "Dim newObject() As COMObject = LateBindingApi.Core.Factory.CreateObjectArrayFromComProxy(" + instance + ", " + objectArrayField + "returnItem)\r\n";
                              methodBody += tabSpace + fullTypeName + " returnArray = new " + VBGenerator.GetQualifiedType(returnValue) + "(newObject.Length)\r\n";
                              methodBody += tabSpace + "For i As Integer = 0 To newObject.Length\r\n";
                              methodBody += tabSpace + "\treturnArray(i) = newObject(i) as " + VBGenerator.GetQualifiedType(returnValue) + "\r\n";
@@ -249,7 +268,7 @@ namespace LateBindingApi.CodeGenerator.VB
                             bool isDerived = VBGenerator.IsDerivedReturnValue(returnValue);
                             if ((true == isFromIgnoreProject) && (false == isDuplicated))
                             {
-                                methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(Me, " + objectArrayField + "returnItem)\r\n";
+                                methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(" + instance + ", " + objectArrayField + "returnItem)\r\n";
                                 methodBody += "%modifiers%";
                                 methodBody += tabSpace + "Return newObject\r\n";
                             }
@@ -257,14 +276,14 @@ namespace LateBindingApi.CodeGenerator.VB
                             {
                                 if ((isDerived) && (!isDuplicated))
                                 {
-                                    methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(Me," + objectArrayField + "returnItem)" + "\r\n";
+                                    methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(" + instance + "," + objectArrayField + "returnItem)" + "\r\n";
                                     methodBody += "%modifiers%";
                                     methodBody += tabSpace + "Return newObject\r\n";  
                                 }
                                 else
                                 {
                                     string knownType = fullTypeName + ".LateBindingApiWrapperType";
-                                    methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateKnownObjectFromComProxy(Me, " + objectArrayField + "returnItem," + knownType + ")" + "\r\n";
+                                    methodBody += tabSpace + "Dim newObject As " + fullTypeName + " = LateBindingApi.Core.Factory.CreateKnownObjectFromComProxy(" + instance + ", " + objectArrayField + "returnItem," + knownType + ")" + "\r\n";
                                     methodBody += "%modifiers%";
                                     methodBody += tabSpace + "Return newObject\r\n";
                                 }
@@ -280,7 +299,7 @@ namespace LateBindingApi.CodeGenerator.VB
                     else
                         invokeTarget = methodName;
 
-                    methodBody += tabSpace +  "Dim returnItem As Object = " + "Invoker.MethodReturn" + "(Me, \"" + invokeTarget + "\", paramsArray)\r\n";
+                    methodBody += tabSpace + "Dim returnItem As Object = " + "Invoker.MethodReturn" + "(" + instance + ", \"" + invokeTarget + "\", paramsArray)\r\n";
                     methodBody += "%modifiers%";
                     methodBody += tabSpace + "return returnItem\r\n";
                 }
@@ -303,7 +322,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 else
                     invokeTarget = methodName;
 
-                methodBody += tabSpace + "Invoker.Method(Me, \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
+                methodBody += tabSpace + "Invoker.Method(" + instance + ", \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
                 methodBody += "%modifiers%";
 
                 if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))

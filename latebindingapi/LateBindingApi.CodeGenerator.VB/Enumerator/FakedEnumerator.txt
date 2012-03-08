@@ -6,17 +6,13 @@
 		Private Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
 		
 			Dim count As Integer = Me.Count
-			Dim enumeratorObjects(count) As %Type%
+			Dim enumeratorObjectsList As List(Of %Type%) = New List(Of %Type%)()
 	
 	        For i As Integer = 0 To count-1
-				enumeratorObjects(i) = Me(i+1)
+				enumeratorObjectsList.Add(Me(i + 1))
 		    Next
-			
-			For Each item as %Type% in enumeratorObjects
-				return item
-			Next
-			
-			Return Nothing	
+			 
+			Return enumeratorObjectsList.GetEnumerator()	
         
 		End Function
 

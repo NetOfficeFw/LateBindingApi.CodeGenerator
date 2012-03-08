@@ -4,25 +4,25 @@ Imports System.Runtime.InteropServices
 Imports System.Runtime.InteropServices.ComTypes
 Imports LateBindingApi.Core
 
-namespace %namespace%
+Namespace %namespace%
 		
 	#Region "SinkPoint Interface"
-
+	
 	%supportby%
-	<ComImport, Guid("%guid%"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch), TypeLibType(Short(0x1010))> _
+	<ComImport(), Guid("%guid%"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch), TypeLibType(CShort(&H1010))> _
 	Public Interface %name%
 	
 %methods%	End Interface
 	
-	#end Region
+	#End Region
 	
 	#Region "SinkHelper"
 	
-	<ComVisible(true), ClassInterface(ClassInterfaceType.None), TypeLibType(TypeLibTypeFlags.FHidden)> _
-	Public Class %name%_SinkHelper 
+	<ComVisible(true), ClassInterface(ClassInterfaceType.None)> _
+	Public NotInheritable Class %name%_SinkHelper 
 				Inherits SinkHelper 
 				Implements %name%
-	{
+	
 		#region "Static"
 		
 		Public Shared ReadOnly Id As String = "%guid%"
@@ -38,21 +38,22 @@ namespace %namespace%
 		
 		#region "Construction"
 
-		public Sub New(eventClass As COMObject, connectPoint As IConnectionPoint)
-		{
+		Public Sub New(eventClass As COMObject, connectPoint As IConnectionPoint)
 			MyBase.New(eventClass)
 
 			_eventClass = eventClass
 			_eventBinding = eventClass
 			SetupEventBinding(connectPoint)
-		}
+
+		End Sub
 		
 		#End Region
 		
 		#region "%name% Members"
 		
 %methodsImplement%		#End Region
-	}
+	
+	End Class
 	
 	#End Region
 	

@@ -3,22 +3,8 @@
         
     %version%
     Private Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
-
-        Dim enumProxy As Object = Invoker.%Call%(Me, "_NewEnum")
-        Dim enumerator As COMObject = New COMObject(Me, enumProxy, True)
-        Invoker.Method(enumerator, "Reset", Nothing)
-        Dim isMoveNextTrue As Boolean = Invoker.MethodReturn(enumerator, "MoveNext", Nothing)
-
-        Do While (True = isMoveNextTrue)
-
-            Dim itemProxy As Object = Invoker.PropertyGet(enumerator, "Current", Nothing)
-            Dim returnClass As %Type% = LateBindingApi.Core.Factory.CreateObjectFromComProxy(Me, itemProxy)
-            isMoveNextTrue = Invoker.MethodReturn(enumerator, "MoveNext", Nothing)
-            Return returnClass
-
-        Loop
-
-        Return Nothing
+		
+		Return LateBindingApi.Core.Utils.GetProxyEnumerator(Me)
 
     End Function
 

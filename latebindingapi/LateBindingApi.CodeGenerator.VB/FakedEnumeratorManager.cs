@@ -38,9 +38,9 @@ namespace LateBindingApi.CodeGenerator.VB
 
             foreach (XElement itemFace in interfaces)
             {
-                XElement countNode = HasCount(itemFace);
-                XElement itemNode = HasItem(itemFace);
-                XElement enumNode = HasEnum(itemFace);
+                XElement countNode = GetCountNode(itemFace);
+                XElement itemNode = GetDefaultItemNode(itemFace);
+                XElement enumNode = GetEnumeratorNode(itemFace);
                 if ((null != countNode) && (null != itemNode) && (null == enumNode) && (itemNode.Element("Parameters").Element("Parameter").Attribute("IsEnum").Value == "false"))
                 {
                     XElement projectNode = itemFace;
@@ -89,7 +89,7 @@ namespace LateBindingApi.CodeGenerator.VB
             }
         }
 
-        private XElement HasCount(XElement itemFace)
+        private XElement GetCountNode(XElement itemFace)
         {
             XElement node = (from a in itemFace.Element("Properties").Elements("Property")
                              where a.Attribute("Name").Value.Equals("Count", StringComparison.InvariantCultureIgnoreCase)
@@ -110,24 +110,32 @@ namespace LateBindingApi.CodeGenerator.VB
             return null;
         }
 
-        private XElement HasItem(XElement itemFace)
+        private XElement GetDefaultItemNode(XElement itemFace)
         {
-            XElement node = (from a in itemFace.Element("Properties").Elements("Property")
-                             where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
-                             select a).FirstOrDefault();
-            if (null != node)
-                return node;
+            XElement node = null;
 
-            node = (from a in itemFace.Element("Methods").Elements("Method")
-                    where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
-                    select a).FirstOrDefault();
-            if (null != node)
-                return node;
+            foreach (XElement itemMethod in itemFace.Element("Properties").Elements("Property"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
+
+            foreach (XElement itemMethod in itemFace.Element("Methods").Elements("Method"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
 
             return null;
         }
 
-        private XElement HasEnum(XElement itemFace)
+        private XElement GetEnumeratorNode(XElement itemFace)
         {
             XElement node = (from a in itemFace.Element("Properties").Elements("Property")
                              where a.Attribute("Name").Value.Equals("_NewEnum", StringComparison.InvariantCultureIgnoreCase)

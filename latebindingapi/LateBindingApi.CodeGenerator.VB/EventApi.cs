@@ -39,14 +39,13 @@ namespace LateBindingApi.CodeGenerator.VB
 
         private static string ConvertInterfaceToFile(Settings settings, XElement projectNode, XElement faceNode, string faceFolder)
         {
-
-            string fileName = System.IO.Path.Combine(faceFolder, faceNode.Attribute("Name").Value + ".cs");
+            string fileName = System.IO.Path.Combine(faceFolder, faceNode.Attribute("Name").Value + ".vb");
 
             string newEnum = ConvertInterfaceToString(settings, projectNode, faceNode);
             System.IO.File.AppendAllText(fileName, newEnum);
 
             int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + faceNode.Attribute("Name").Value + ".cs" + "\" />";
+            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + faceNode.Attribute("Name").Value + ".vb" + "\" />";
             return result;
         }
 
@@ -62,9 +61,9 @@ namespace LateBindingApi.CodeGenerator.VB
             foreach (XElement itemMethod in faceNode.Element("Methods").Elements("Method"))
             {
                 methodResult += "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemMethod) + "\r\n"; 
-                methodResult += "\t\t[PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime), DispId(" + itemMethod.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
-                methodResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, false) + ";\r\n\r\n";
-                implementResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, true) + "\r\n" + "\t\t{\r\n" + GetMethodImplementCode(settings, itemMethod) + "\t\t}\r\n\r\n";
+                methodResult += "\t\t<PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType:=MethodCodeType.Runtime), DispId(" + itemMethod.Element("DispIds").Element("DispId").Attribute("Id").Value + ")> _\r\n";
+                methodResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, false, false) + "\r\n\r\n";
+                implementResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, true, true) + "\r\n" + "\r\n" + GetMethodImplementCode(settings, itemMethod) + "\t\tEnd Sub\r\n\r\n";
             }
             
             if("" !=methodResult)
@@ -75,33 +74,35 @@ namespace LateBindingApi.CodeGenerator.VB
             return result;
         }
 
-        internal static string GetEventMethodSignatur(Settings settings, XElement methodNode, bool withPublic)
+        internal static string GetEventMethodSignatur(Settings settings, XElement methodNode, bool withPublic, bool withImplementPostfix)
         {
             string publicModifier ="";
             if (true == withPublic)
-                publicModifier = "public ";
-
-            string result = publicModifier + "void " + methodNode.Attribute("Name").Value + "("; 
+                publicModifier = "Public ";
+            
+            string result = publicModifier + "Sub " + ParameterApi.ValidateName(methodNode.Attribute("Name").Value) + "("; 
             foreach (XElement itemParam in methodNode.Element("Parameters").Elements("Parameter"))
             {
                 string isRef = "";
                 if ("true" == itemParam.Attribute("IsRef").Value)
-                    isRef = "ref ";
+                    isRef = "ByRef ";
+                else
+                    isRef = "ByVal ";
 
                 string par = "";
                 if ("true" == itemParam.Attribute("IsRef").Value)
-                    par = "[In] [Out";
+                    par = "<[In](), [Out]()";
                 else
-                    par = "[In";
+                    par = "<[In]()";
                
-                if (("true" == itemParam.Attribute("IsComProxy").Value)
-                   || ("COMObject" == itemParam.Attribute("Type").Value) || ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
+                if (("true" == itemParam.Attribute("IsComProxy").Value) || ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
                 {
-                    par += ", MarshalAs(UnmanagedType.IDispatch)] object " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
+
+                    par += ",MarshalAs(UnmanagedType.IDispatch)> " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + " As Object";
                 }
                 else
                 {
-                    par += "] " + isRef + "object " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
+                    par += ">" +isRef + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + " As Object";
                 }
             
                 result += par +", ";
@@ -109,24 +110,26 @@ namespace LateBindingApi.CodeGenerator.VB
             if (", " == result.Substring(result.Length - 2))
                 result = result.Substring(0, result.Length - 2);
 
-            return result+ ")";
+            result += ")";
+            if (withImplementPostfix)
+                result += " Implements " + methodNode.Parent.Parent.Attribute("Name").Value + "." + methodNode.Attribute("Name").Value;
+
+            return result;
         }
 
         private static string GetMethodImplementCode(Settings settings, XElement methodNode)
         {
             bool hasRefParams = ParameterApi.HasRefOrOutParamsParams(methodNode.Element("Parameters"), true);
 
-            string result = "";
-            result += "\t\t\tDelegate[] recipients = _eventBinding.GetEventRecipients(\"" + methodNode.Attribute("Name").Value + "\");\r\n";
-            result += "\t\t\t" + "if( (true == _eventClass.IsCurrentlyDisposing) || (recipients.Length == 0) )\r\n";
-            result += "\t\t\t{\r\n";
-            result += "\t\t\t\tInvoker.ReleaseParamsArray(" + CreateParametersCallString(settings, methodNode.Element("Parameters"), "") + ");\r\n";
-            result += "\t\t\t\treturn;\r\n";
-            result += "\t\t\t}\r\n\r\n";
+            string result = "\t\t\tIf (_eventBinding.GetCountOfEventRecipients(\"" + methodNode.Attribute("Name").Value + "\") = 0 Or True = _eventClass.IsCurrentlyDisposing) Then\r\n";
+            result += "\t\t\t\tInvoker.ReleaseParamsArray(" + CreateParametersCallString(settings, methodNode.Element("Parameters"), "") + ")\r\n";
+            result += "\t\t\t\tReturn\r\n";
+            result += "\t\t\tEnd If\r\n";
+
             result += CreateConversionString(settings, 3, methodNode.Element("Parameters"));
             result += CreateSetArrayString(settings, 3, methodNode.Element("Parameters"));
-            result += "\t\t\tforeach(Delegate delItem in recipients)\r\n";
-            result += "\t\t\t\tdelItem.Method.Invoke(delItem.Target, paramsArray);\r\n";
+
+            result += "\t\t\t_eventBinding.RaiseCustomEvent(\"" + methodNode.Attribute("Name").Value + "\", paramsArray)\r\n";
 
             string modRefs = ParameterApi.CreateParametersToRefUpdateString(settings, 3, methodNode.Element("Parameters"), true);
             if (modRefs != "")
@@ -155,14 +158,14 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string CreateModifiersString(int tabCount, XElement parametersNode)
         {
             string tabSpace = VBGenerator.TabSpace(tabCount);
-            string result = tabSpace + "bool[] modifiers = new bool[]{%values%};\r\n";
+            string result = tabSpace + "Dim modifiers() As Boolean = new Boolean(%values%);\r\n";
             string arrays = "";
             foreach (XElement itemParam in ParameterApi.GetParameter(parametersNode, true))
             {
                 if("true" == itemParam.Attribute("IsRef").Value)
-                    arrays += "true, ";
+                    arrays += "True, ";
                 else
-                   arrays += "false, ";
+                   arrays += "False, ";
             }
             if (", " == arrays.Substring(arrays.Length - 2))
                 arrays = arrays.Substring(0, arrays.Length - 2);
@@ -175,19 +178,20 @@ namespace LateBindingApi.CodeGenerator.VB
         {
             string tabSpace = VBGenerator.TabSpace(tabCount);
             int paramsCount = ParameterApi.GetParamsCount(parametersNode, true);
+            paramsCount -= 1;
 
-            string result = tabSpace + "object[] paramsArray = new object[" + paramsCount.ToString() + "];\r\n";
+            string result = tabSpace + "Dim paramsArray("+ paramsCount.ToString() + ") As Object\r\n";
             
             int i = 0;
             foreach (XElement itemParam in ParameterApi.GetParameter(parametersNode, true))
             {
                 if ("true" == itemParam.Attribute("IsRef").Value)
                 {
-                    result += tabSpace + "paramsArray.SetValue(" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ", " + i.ToString() + ");\r\n";
+                    result += tabSpace + "paramsArray.SetValue(" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ", " + i.ToString() + ")\r\n";
                 }
                 else
                 {
-                    result += tabSpace + "paramsArray[" + i.ToString() + "] = " + "new" + itemParam.Attribute("Name").Value + ";\r\n";
+                    result += tabSpace + "paramsArray(" + i.ToString() + ") = " + "new" + itemParam.Attribute("Name").Value + "\r\n";
                 }
                 i++;
             }
@@ -206,22 +210,24 @@ namespace LateBindingApi.CodeGenerator.VB
                 if ("true" == itemParam.Attribute("IsComProxy").Value)
                 {
                     string qualifiedType = VBGenerator.GetQualifiedType(itemParam);
-                    result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
-                            " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(settings,itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
+                    if (qualifiedType.Equals("object", StringComparison.InvariantCultureIgnoreCase))
+                        qualifiedType = "COMObject";
+                    result += tabSpace + "Dim new" + itemParam.Attribute("Name").Value + " As " + qualifiedType +
+                            " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(settings,itemParam.Attribute("Name").Value) + ")" + "\r\n";
                 }
                 else
                 {
                     if ("true" == itemParam.Attribute("IsEnum").Value)
                     {
                         string qualifiedType = VBGenerator.GetQualifiedType(itemParam);
-                        result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
-                           " = (" + qualifiedType + ")" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ";\r\n";
+                        result += tabSpace + "Dim new" + itemParam.Attribute("Name").Value + " As " + qualifiedType +
+                           " = " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + "\r\n";
 
                     }
                     else
                     {
-                        result += tabSpace + itemParam.Attribute("Type").Value + " new" + itemParam.Attribute("Name").Value +
-                            " = (" + itemParam.Attribute("Type").Value + ")" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ";\r\n";
+                            result += tabSpace + "Dim new" + itemParam.Attribute("Name").Value + " As " +  ParameterApi.ValidateVarTypeVB(itemParam.Attribute("Type").Value) +
+                            " = " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + "\r\n";
                     }
                 }
             } 

@@ -1,67 +1,84 @@
 ﻿
-        #region "IEventBinding Member"
-        
-        <EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
-        Public ReadOnly Property EventBridgeInitialized As Boolean
+#Region "IEventBinding Member"
 
-            Get 
-            
-                return LateBindingApi.Core.Utils.IsNothing(_connectPoint)
-            
-            End Get
-            
-		End Property
-        
-        <EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
-        Public ReadOnly Property HasEventRecipients As Boolean
-			
-			Get
-						
-				If LateBindingApi.Core.Utils.IsNothing(_thisType)
-					_thisType = Me.GetType()
-				End If
-					
-				For Each item As NetRuntimeSystem.Reflection.EventInfo In _thisType.GetEvents()
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Private Sub CreateEventBridge() Implements IEventBinding.CreateEventBridge
 
-					Dim eventDelegate As MulticastDelegate = _thisType.GetType().GetField(item.Name, NetRuntimeSystem.Reflection.BindingFlags.NonPublic Or NetRuntimeSystem.Reflection.BindingFlags.Instance).GetValue(Me)
-					
-					If LateBindingApi.Core.Utils.IsNothing(eventDelegate) And eventDelegate.GetInvocationList().Length > 0
-						return false
-					End If		
-					
-                Next
-                				
-				return true
-			
-			End Get
-			
-        End Property
-        
-		<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
-        public Function GetEventRecipients(eventName As String) As Delegate() 
-        
-			If LateBindingApi.Core.Utils.IsNothing(_thisType)
-					_thisType = Me.GetType()
-				End If
-             
-            Dim eventDelegate As MulticastDelegate = _thisType.GetField("_" + eventName + "Event", NetRuntimeSystem.Reflection.BindingFlags.Instance Or NetRuntimeSystem.Reflection.BindingFlags.NonPublic).GetValue(Me)
-
-			If Not LateBindingApi.Core.Utils.IsNothing(eventDelegate)
-            
-                Dim delegates() As Delegate = eventDelegate.GetInvocationList()
-                return delegates
-            
-            Else
-                return new Delegate(0)
+            If (False = LateBindingApi.Core.Settings.EnableEvents) Then
+                Return
             End If
-                
+
+            If (Not LateBindingApi.Core.Utils.IsNothing(_connectPoint)) Then
+                Return
+            End If
+
+            If (LateBindingApi.Core.Utils.IsNothing(_activeSinkId)) Then
+                _activeSinkId = SinkHelper.GetConnectionPoint(Me, _connectPoint, %SinkHelperType%.Id)
+            End If
+%SetActiveSink% 
+
+        End Sub
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public ReadOnly Property EventBridgeInitialized() As Boolean Implements IEventBinding.EventBridgeInitialized
+            Get
+
+                Return Not LateBindingApi.Core.Utils.IsNothing(_connectPoint)
+
+            End Get
+        End Property
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Function GetCountOfEventRecipients(ByVal eventName As String) As Integer Implements IEventBinding.GetCountOfEventRecipients
+
+            If LateBindingApi.Core.Utils.IsNothing(_thisType) Then
+                _thisType = Me.GetType()
+            End If
+
+            Dim handlersName = "_" + eventName + "EventHandlers"
+            Dim handler As ArrayList = _thisType.GetField(handlersName, Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic).GetValue(Me)
+
+            Return handler.Count
+
         End Function
 
-        <EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
-        Public Sub DisposeSinkHelper()
-        
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Function HasEventRecipients() As Boolean Implements IEventBinding.HasEventRecipients
+
+%HandlerCheck%
+            Return False
+
+        End Function
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Function RaiseCustomEvent(ByVal eventName As String, ByRef paramsArray() As Object) As Integer Implements IEventBinding.RaiseCustomEvent
+
+            If LateBindingApi.Core.Utils.IsNothing(_thisType) Then
+                _thisType = Me.GetType()
+            End If
+
+            Dim handlersName = "_" + eventName + "EventHandlers"
+            Dim handler As ArrayList = _thisType.GetField(handlersName, Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic).GetValue(Me)
+            For Each itemHandler As [Delegate] In handler
+
+                Try
+                    itemHandler.DynamicInvoke(paramsArray)
+                Catch exception As NetRuntimeSystem.Exception
+                    DebugConsole.WriteException(exception)
+                End Try
+
+            Next
+
+            Return handler.Count
+
+        End Function
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Sub DisposeEventBridge() Implements IEventBinding.DisposeEventBridge
+
 %sinkHelperDispose%
-			_connectPoint = Nothing
-		End Sub
-        
-        #End Region
+            _connectPoint = Nothing
+
+        End Sub
+
+#End Region

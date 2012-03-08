@@ -165,7 +165,8 @@ namespace LateBindingApi.CodeGenerator.VB
                
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
                 string dispatchIncludes = DispatchApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), _settings, solutionFolder);
-               // string eventIncludes =   "";
+                string eventIncludes = EventApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), project.Element("Interfaces"), _settings, solutionFolder);
+
 
                 string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
                 string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
@@ -176,31 +177,11 @@ namespace LateBindingApi.CodeGenerator.VB
 
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
                 projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
-                                        faceIncludes, dispatchIncludes, classesIncludes, "", modulesInclude, recordsInclude,
-                                        factoryInclude);
-                /*
-                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
-                projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
                                         faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude,
                                         factoryInclude);
-                */
+                
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
-
-                /*
-                     string eventIncludes = EventApi.ConvertInterfacesToFiles(project, project.Element("DispatchInterfaces"), project.Element("Interfaces"), _settings, solutionFolder);
-                 
-                string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
-                string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
-
-                assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
-                projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
-                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, 
-                                        factoryInclude);
-
-                ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
-                ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
-                 *   */
             }
             
             DoUpdate("Create Solution");
@@ -307,7 +288,7 @@ namespace LateBindingApi.CodeGenerator.VB
             if( (true == settings.ConvertOptionalsToObject) || ("4.0" == settings.Framework) )
             {
                 if ((null != value.Attribute("IsOptional")) && ("true" == value.Attribute("IsOptional").Value))
-                    return "object";
+                    return "Object";
             }
             
             string type = ParameterApi.ValidateVarTypeVB(value.Attribute("Type").Value);
@@ -336,7 +317,7 @@ namespace LateBindingApi.CodeGenerator.VB
         {
             string type = value.Attribute("Type").Value;
             if ("COMVariant" == type)
-                return "object";
+                return "Object";
 
             string space = GetQualifiedNamespace(value);
             return space +  ParameterApi.ValidateVarTypeVB(type);           
@@ -424,7 +405,7 @@ namespace LateBindingApi.CodeGenerator.VB
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
 
-            result += "<SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")> _";
+            result += "<SupportByVersionAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")> _";
             return result;
         }
 
@@ -454,8 +435,8 @@ namespace LateBindingApi.CodeGenerator.VB
             }
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
-            
-            result += "<SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")> _";
+
+            result += "<SupportByVersionAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")> _";
             return result;
         }
 
@@ -493,7 +474,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 parentNode = parentNode.Parent;
 
             string summary1 = tabSpace + " ''' <summary>\r\n";
-            string between = tabSpace + " ''' SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
+            string between = tabSpace + " ''' SupportByVersion " + parentNode.Attribute("Name").Value + " ";
             string summary2 = tabSpace + " ''' </summary>\r\n";
 
             string[] result = GetSupportByLibraryArray(entityNode);
@@ -525,7 +506,7 @@ namespace LateBindingApi.CodeGenerator.VB
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
-            return tabSpace + "SupportByLibrary " + "" + parentNode.Attribute("Name").Value + ", " + res;
+            return tabSpace + "SupportByVersion " + "" + parentNode.Attribute("Name").Value + ", " + res;
         }
 
         /// <summary>
@@ -547,7 +528,7 @@ namespace LateBindingApi.CodeGenerator.VB
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
-            return tabSpace + "SupportByLibraryAttribute " + "" + parentNode.Attribute("Name").Value + ", " + res;
+            return tabSpace + "SupportByVersionAttribute " + "" + parentNode.Attribute("Name").Value + ", " + res;
         }
 
         /// <summary>

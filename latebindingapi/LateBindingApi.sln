@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.Core", "LateBindingApi.Core\LateBindingApi.Core.csproj", "{65442327-D01F-4ECB-8C39-6D5C7622A80F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.ComponentAnalyzer", "LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj", "{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}"

@@ -88,20 +88,53 @@ namespace LateBindingApi.CodeGenerator.VB
             return result;
         }
 
+        private static XElement GetDefaultItemNode(XElement itemFace)
+        {
+            XElement node = null;
+
+            foreach (XElement itemMethod in itemFace.Element("Properties").Elements("Property"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
+
+            foreach (XElement itemMethod in itemFace.Element("Methods").Elements("Method"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
+
+            return null;
+        }
+
+
         private static string ConvertLateBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
             string attributes = "\t" + VBGenerator.GetSupportByLibraryAttribute(faceNode);
-            string header = _classHeader.Replace("%name%", ParameterApi.ValidateName(faceNode.Attribute("Name").Value));
-            
+            XElement defaultItemNode = GetDefaultItemNode(faceNode);
+            if (null != defaultItemNode)
+                attributes += "\r\n\t<DefaultProperty(\"" + defaultItemNode.Attribute("Name").Value + "\")> _";
+
+            if (faceNode.Attribute("IsHidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                attributes += "\r\n\t<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _";
+           
+            string header = _classHeader.Replace("%name%", ParameterApi.ValidateNameWithoutVarType(faceNode.Attribute("Name").Value));
+           
             header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
-            string construct = _classConstructor.Replace("%name%", ParameterApi.ValidateName(faceNode.Attribute("Name").Value));
+            string construct = _classConstructor.Replace("%name%", ParameterApi.ValidateNameWithoutVarType(faceNode.Attribute("Name").Value));
             string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t''' " + VBGenerator.GetSupportByLibrary("", faceNode));          
            
-            string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
-            string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));
+            string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"), "Me");
+            string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"), "Me");
                 
             result += classDesc;
             result += attributes + "\r\n";

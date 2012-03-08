@@ -60,6 +60,7 @@ Get
 GetType
 GoSub
 GoTo
+Global
 Handles 
 If
 Implements
