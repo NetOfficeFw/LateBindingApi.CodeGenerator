@@ -1048,6 +1048,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("RefLibraries"),
                                new XAttribute("IsEventInterface", "false"),
                                new XAttribute("IsEarlyBind", "false"),
+                               new XAttribute("IsHidden", TypeDescriptor.IsHidden(itemInterface)),
                                new XAttribute("TypeLibType", itemInterface.AttributeMask),
                                new XAttribute("Name", itemInterface.Name),
                                new XAttribute("Key",  Utils.NewEncodedGuid()));
@@ -1159,6 +1160,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if (null == classNode)
             {
+                
                 classNode = new XElement("CoClass",
                                new XElement("RefLibraries"),
                                new XElement("DefaultInterfaces"),
@@ -1167,6 +1169,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                new XElement("DispIds"),
                                new XAttribute("Name", itemClass.Name),
                                new XAttribute("AutomaticQuit", "false"),
+                               new XAttribute("IsAppObject", TypeDescriptor.IsAppObject(itemClass)),
                                new XAttribute("Key", Utils.NewEncodedGuid()));
 
                 classes.Add(classNode);

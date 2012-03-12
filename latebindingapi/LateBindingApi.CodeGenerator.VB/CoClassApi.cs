@@ -37,9 +37,9 @@ namespace LateBindingApi.CodeGenerator.VB
                                 "\t\t\tMyBase.Dispose()\r\n\r\n" +
                                 "\t\tEnd Sub\r\n";
 
-        private static string _delegates = "\r\n\t#region \"Delegates\"\r\n\r\n" +
+        private static string _delegates = "#Region \"Delegates\"\r\n\r\n" +
                                             "%delegates%" +
-                                            "\r\n\t#end Region\r\n\r\n";
+                                            "\r\n#end Region\r\n\r\n";
 
         private static string _classDesc = "\t'''<summary>\r\n\t''' CoClass %name% %RefLibs%\r\n\t'''</summary>\r\n";
 
@@ -147,12 +147,8 @@ namespace LateBindingApi.CodeGenerator.VB
                 result = result.Replace("%SetActiveSink%", sinkHelperSetActive);
                 result = result.Replace("%HandlerCheck%", GetHandlerChecks(projectNode, classNode));
             }
-            else
-            {
 
-            }
-
-            result += "\tEnd Class\r\nEnd Namespace";
+            result += "\tEnd Class\r\n\r\nEnd Namespace";
             return result;
         }
 
@@ -451,7 +447,7 @@ namespace LateBindingApi.CodeGenerator.VB
 
         private static string GetEvents(XElement projectNode, XElement faceNode, Settings settings)
         {
-            string result = "\r\n\r\n\t\t#Region \"Events\"\r\n\r\n";
+            string result = "\r\n#Region \"Events\"\r\n\r\n";
             XDocument doc = GetImplementEvents(projectNode, faceNode);
             string line = "";
             foreach (var itemNode in doc.Element("Methods").Elements("Method"))
@@ -497,7 +493,7 @@ namespace LateBindingApi.CodeGenerator.VB
             }
             
             result += line;
-            result += "\t\t#End Region\r\n";
+            result += "#End Region\r\n";
             return result;
         }
 

@@ -20,8 +20,7 @@ namespace LateBindingApi.CodeGenerator.VB
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(propertiesNode.Parent);
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(propertiesNode.Parent);
-            bool hasItem = EnumerableApi.HasItem(propertiesNode.Parent);
-
+       
             ParameterApi.ValidateItems(propertiesNode, "Property", settings);
 
             string result = "\r\n\t\t#Region \"Properties\"\r\n\r\n";
@@ -31,7 +30,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 if ("_NewEnum" == propertyNode.Attribute("Name").Value)
                     continue;
 
-                string method = ConvertPropertyLateBindToString(settings, propertyNode, interfaceHasEnumerator, hasDefaultItem, hasItem, instance);
+                string method = ConvertPropertyLateBindToString(settings, propertyNode, interfaceHasEnumerator, hasDefaultItem, instance);
                 result += method;
             }
 
@@ -118,7 +117,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="propertyNode"></param>
         /// <returns></returns>
-        internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode, bool interfaceHasEnumerator, bool hasDefaultItem, bool hasItem, string instance)
+        internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode, bool interfaceHasEnumerator, bool hasDefaultItem, string instance)
         {
             string result = "";
             string name = ParameterApi.ValidateNameWithoutVarType(propertyNode.Attribute("Name").Value);
@@ -149,7 +148,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 if ("COMObject" == valueReturn)
                     valueReturn = "Object";
 
-                string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem, hasItem);
+                string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem);
                 paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
                 paramAttrib = VBGenerator.GetSupportByLibraryAttribute(itemParams);
                 bool hiddenIsSet = false;
@@ -269,19 +268,12 @@ namespace LateBindingApi.CodeGenerator.VB
             return (paramsNode.Attribute("IsCustom") != null);
         }
 
-        private static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams, bool interfaceHasEnumerator, bool hasDefaultItem,  bool hasItem)
+        private static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
-            if (itemParams.Parent.Parent.Parent.Attribute("Name").Value == "Range")
-            {
-                if (itemParams.Parent.Attribute("Name").Value == "Range")                
-                { 
-                }
-            }
-
             string name = ParameterApi.ValidateNameWithoutVarType(itemParams.Parent.Attribute("Name").Value);
             string faceName = itemParams.Parent.Parent.Parent.Attribute("Name").Value;
-          
-            string result = "\t\t%paramDocu%\r\n";
+
+            string result = "\r\n\t\t%paramDocu%";
             result += "\t\t%setAttribute%\r\n";
             string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, false,true);
             if (!string.IsNullOrEmpty(parameters))
@@ -316,13 +308,13 @@ namespace LateBindingApi.CodeGenerator.VB
                 if ((("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value)))
                 {
                     result += "\t\t" + defaultPrefix + "Public " + GetReadOnly(itemParams.Parent) + "Property " + name + parameters + " As " + "%valueReturn%" + "\r\n";
-                    result += "\t\t\r\n\r\n\t\t\tGet\r\n%propertyGetBody%\r\n\t\t\tEnd Get\r\n\t\t\r\n\r\n";
-                    result += "\t\t\r\n\r\n\t\t\tSet\r\n%propertySetBody%\r\n\t\t\tEnd Set\r\n\t\t\r\n\r\n";
+                    result += "\t\t\r\n\t\t\tGet\r\n\r\n%propertyGetBody%\r\n\t\t\tEnd Get\r\n\t\t\r\n";
+                    result += "\t\t\tSet\r\n\r\n%propertySetBody%\r\n\t\t\tEnd Set\r\n\t\t\r\n";
                 }
                 else
                 {
                     result += "\t\t" + defaultPrefix + "Public " + GetReadOnly(itemParams.Parent) + "Property " + name + parameters + " As " + "%valueReturn%" + "\r\n";
-                    result += "\t\t\r\n\r\n\t\t\tGet\r\n%propertyGetBody%\r\n\t\t\tEnd Get\r\n\t\t\r\n\r\n";
+                    result += "\t\t\r\n\r\n\t\t\tGet\r\n\r\n%propertyGetBody%\r\n\t\t\tEnd Get\r\n\t\t\r\n\r\n";
                 }
                 result += "\t\tEnd Property\r\n";
             }
@@ -445,7 +437,7 @@ namespace LateBindingApi.CodeGenerator.VB
                     invokeTarget = methodName;
 
                 methodBody += tabSpace + "Dim returnItem As Object = Invoker.PropertyGet(" + instance + ", \"" + invokeTarget + "\", paramsArray" + modifiers + ")\r\n";
-                methodBody += tabSpace + "return returnItem\r\n";
+                methodBody += tabSpace + "return returnItem\r\n\r\n";
             }
             else if (typeName != "void")
             {
@@ -476,7 +468,7 @@ namespace LateBindingApi.CodeGenerator.VB
                         methodBody += tabSpace + "\r\n";
                         methodBody += tabSpace + "Else" + "\r\n" + tabSpace + "\r\n";
                         methodBody += "\t%modifiers%";
-                        methodBody += tabSpace + "return " + objectArrayField + " returnItem\r\n";
+                        methodBody += tabSpace + "return " + objectArrayField + " returnItem\r\n\r\n";
                         methodBody += tabSpace + "End If\r\n";
                     }
                     else
@@ -524,11 +516,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 }
                 else
                 {
-                    // native type
-                    string objectString = "";
-                    if ("true" == returnValue.Attribute("IsArray").Value)
-                        objectString = "(object)";
-
+                   
                     string invokeTarget = "";
                     if ("this" == parametersNode.Parent.Attribute("Name").Value)
                         invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;

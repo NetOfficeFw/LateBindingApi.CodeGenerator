@@ -76,7 +76,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 i++;
             }
             
-            result += "\tEnd Enum" + Environment.NewLine;
+            result += "\tEnd Enum\r\n" + Environment.NewLine;
             result += "End Namespace";
             return result;
         }

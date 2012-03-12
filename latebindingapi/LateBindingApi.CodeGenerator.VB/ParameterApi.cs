@@ -29,13 +29,12 @@ namespace LateBindingApi.CodeGenerator.VB
                         isDefault = true;
                         break;
                     }
-
 	            }
 
                 if(isDefault)
                 {
                     bool hasParams = ParameterApi.HasParams(methodNode);
-                    bool hasItem = EnumerableApi.HasItem(enumeratorNode.Parent);
+                    bool hasItem = EnumerableApi.HasDefaultItem(enumeratorNode.Parent);
                     if ((hasParams) && (!hasItem))
                     {
                         foreach (XElement itemParameters in methodNode.Elements("Parameters"))

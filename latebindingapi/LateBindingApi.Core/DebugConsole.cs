@@ -70,7 +70,6 @@ namespace LateBindingApi.Core
         /// write log message
         /// </summary>
         /// <param name="message"></param>
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public static void WriteLine(string message)
         {
             string output = message;

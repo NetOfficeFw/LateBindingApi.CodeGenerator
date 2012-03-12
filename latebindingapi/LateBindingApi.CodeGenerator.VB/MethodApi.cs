@@ -17,7 +17,6 @@ namespace LateBindingApi.CodeGenerator.VB
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(methodsNode.Parent);
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(methodsNode.Parent);
-            bool hasItem = EnumerableApi.HasItem(methodsNode.Parent);
 
             ParameterApi.ValidateItems(methodsNode, "Method", settings);
 
@@ -27,7 +26,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 if("_NewEnum" == methodNode.Attribute("Name").Value)
                     continue;
 
-                string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem, hasItem, instance);
+                string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem, instance);
                 result += method;
             }
             result += "\t\t#End Region\r\n";
@@ -96,7 +95,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="methodNode"></param>
         /// <returns></returns>
-        internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem, bool hasItem, string instance)
+        internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem, string instance)
         {
             string result = "";
             string name = ParameterApi.ValidateName(methodNode.Attribute("Name").Value);
@@ -245,8 +244,8 @@ namespace LateBindingApi.CodeGenerator.VB
                         methodBody += tabSpace + "\r\n";
                         methodBody += tabSpace + "Else" + "\r\n" + tabSpace +"\r\n";
                         methodBody += "\t%modifiers%";
-                        methodBody += tabSpace + "Return " + objectArrayField + " returnItem\r\n";
-                        methodBody += tabSpace + " End If\r\n";
+                        methodBody += tabSpace + "Return " + objectArrayField + " returnItem\r\n\r\n";
+                        methodBody += tabSpace + "End If\r\n";
                     }
                     else
                     {                        
@@ -301,7 +300,7 @@ namespace LateBindingApi.CodeGenerator.VB
 
                     methodBody += tabSpace + "Dim returnItem As Object = " + "Invoker.MethodReturn" + "(" + instance + ", \"" + invokeTarget + "\", paramsArray)\r\n";
                     methodBody += "%modifiers%";
-                    methodBody += tabSpace + "return returnItem\r\n";
+                    methodBody += tabSpace + "return returnItem\r\n\r\n";
                 }
 
                 if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
@@ -337,6 +336,8 @@ namespace LateBindingApi.CodeGenerator.VB
             }
             if (methodName == "this")
                 methodBody += "End Get\r\n";
+            else
+                methodBody += "\r\n";
             return methodBody;
         }
 

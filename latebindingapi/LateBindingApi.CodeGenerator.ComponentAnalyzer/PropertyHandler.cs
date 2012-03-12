@@ -82,11 +82,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="withOptionalParameters"></param>
         internal static void AddParametersToPropertyNode(XElement libraryNode, XElement methodNode, TLI.MemberInfo itemMember)
         {
-            if (itemMember.Name == "Address")
-            {
- 
-            }
-
+           
             // check defintion exists
             XElement parametersNode = GetParametersNode(methodNode, itemMember);
             if (null == parametersNode)
@@ -95,12 +91,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo, true);
                 if (returnTypeName == "void")
                     returnTypeName = "object";
-
-                if ((returnTypeName == "LineFormat") && (libraryNode.Attribute("Name").Value == "Excel") )
-                {
-                    bool b = TypeDescriptor.IsExternal(returnTypeInfo);
-                }
-
+               
                 parametersNode = new XElement("Parameters",
                                     new XElement("ReturnValue",
                                         new XAttribute("Type",       returnTypeName),

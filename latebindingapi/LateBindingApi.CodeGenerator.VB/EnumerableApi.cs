@@ -111,7 +111,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="interfaceNode"></param>
         /// <returns></returns>
-        internal static EnumeratorType GetEnumType(XElement interfaceNode)
+        internal static EnumeratorType GetEnumeratorType(XElement interfaceNode)
         {
             XElement enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
                                        where a.Attribute("Name").Value.Equals("_NewEnum")
@@ -161,55 +161,32 @@ namespace LateBindingApi.CodeGenerator.VB
         /// <returns></returns>
         internal static bool HasDefaultItem(XElement interfaceNode)
         {
-            XElement enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
-                                       where a.Attribute("Name").Value.Equals("_Default")
-                                       select a).FirstOrDefault();
-            if (null == enumeratorNode)
-            {
-                enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
-                                  where a.Attribute("Name").Value.Equals("_Default")
-                                  select a).FirstOrDefault();
-                if (null == enumeratorNode)
-                    return false;
-                else
-                    return true;
-            }
-            else
-                return true;
+            return (GetDefaultItemNode(interfaceNode) !=null);
         }
 
-        /// <summary>
-        /// returns info interface has a Item or this
-        /// </summary>
-        /// <param name="interfaceNode"></param>
-        /// <returns></returns>
-        internal static bool HasItem(XElement interfaceNode)
+        private static XElement GetDefaultItemNode(XElement itemFace)
         {
-            XElement enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
-                                       where a.Attribute("Name").Value.Equals("Item")
-                                       select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
-           
-            enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
-                              where a.Attribute("Name").Value.Equals("Item")
-                              select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
+            XElement node = null;
 
-            enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
-                              where a.Attribute("Name").Value.Equals("this")
-                              select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
-            
-            enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
-                              where a.Attribute("Name").Value.Equals("this")
-                              select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
+            foreach (XElement itemMethod in itemFace.Element("Properties").Elements("Property"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
 
-            return false;
+            foreach (XElement itemMethod in itemFace.Element("Methods").Elements("Method"))
+            {
+                node = (from a in itemMethod.Element("DispIds").Elements("DispId")
+                        where a.Attribute("Id").Value.Equals("0", StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                if (null != node)
+                    return itemMethod;
+            }
+
+            return null;
         }
 
         internal static bool HasCustomAttribute(XElement enumNode)
@@ -224,12 +201,10 @@ namespace LateBindingApi.CodeGenerator.VB
 
         private static string GetThisReturnType(XElement faceNode, string defaultValue)
         {
-            XElement thisNode = (from a in faceNode.Element("Properties").Elements("Property") where a.Attribute("Name").Value == "this" select a).FirstOrDefault();
-            if(null == thisNode)
-                thisNode = (from a in faceNode.Element("Methods").Elements("Method") where a.Attribute("Name").Value == "this" select a).FirstOrDefault();
+            XElement thisNode = GetDefaultItemNode(faceNode);
             if (null == thisNode)
                 return defaultValue;
-
+        
             if ("COMVariant" == thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value)
                 return "Object";
 
@@ -300,14 +275,14 @@ namespace LateBindingApi.CodeGenerator.VB
             }
 
             // get call type
-            EnumeratorType enumType = GetEnumType(faceNode);
+            EnumeratorType enumType = GetEnumeratorType(faceNode);
             switch (enumType)
             {
                 case EnumeratorType.PropertyEnum:
-                    enumString = enumString.Replace("%Call%", "PropertyGet");
+                    enumString = enumString.Replace("%AsWhat%", "AsProperty");
                     break;
                 case EnumeratorType.MethodEnum:
-                    enumString = enumString.Replace("%Call%", "MethodReturn");
+                    enumString = enumString.Replace("%AsWhat%", "AsMethod");
                     break;
                 default:
                     throw (new Exception("Interface has no Enumerator"));

@@ -67,6 +67,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             XElement parametersNode = GetParametersNode(methodNode, itemMember);
             if (null == parametersNode)
             {
+                if ((libraryNode.Attribute("Name").Value == "Word") && (methodNode.Attribute("Name").Value == "Show"))
+                {
+ 
+                }
+
                 VarTypeInfo returnTypeInfo = itemMember.ReturnType;
                 string returnTypeName = TypeDescriptor.FormattedType(returnTypeInfo, true);
                 parametersNode = new XElement("Parameters",

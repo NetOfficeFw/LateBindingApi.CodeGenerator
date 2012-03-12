@@ -20,18 +20,18 @@ namespace LateBindingApi.CodeGenerator.VB
                                            + "Namespace %namespace%\r\n"
                                            + "\r\n";
 
-        private static string _fieldHeader = "#Region \"Fields\"\r\n" +
-                                     "\t\tPrivate _instance As COMObject\r\n" +
+        private static string _fieldHeader = "#Region \"Fields\"\r\n\r\n" +
+                                     "\t\tPrivate _instance As COMObject\r\n\r\n" +
                                      "\t\tFriend Property Instance As COMObject\r\n" +
-                                      "\t\tGet\r\n" +
-                                      "\t\tReturn _instance\r\n" +
-                                      "\t\tEnd Get\r\n" +
-                                      "\t\tSet(ByVal value As COMObject)\r\n" +
-                                       "\t\t If LateBindingApi.Core.Utils.IsNothing(value) Or LateBindingApi.Core.Utils.IsNothing(_instance) Then\r\n" +
-                                      "\t\t_instance = value\r\n" +
-                                      "\t\tEnd If\r\n" +
-                                      "\t\tEnd Set\r\n" +
-                                      "\t\tEnd Property\r\n" +
+                                      "\t\t\tGet\r\n" +
+                                      "\t\t\t\tReturn _instance\r\n" +
+                                      "\t\t\tEnd Get\r\n" +
+                                      "\t\t\tSet(ByVal value As COMObject)\r\n" +
+                                       "\t\t\t\tIf LateBindingApi.Core.Utils.IsNothing(value) Or LateBindingApi.Core.Utils.IsNothing(_instance) Then\r\n" +
+                                      "\t\t\t\t\t_instance = value\r\n" +
+                                      "\t\t\t\tEnd If\r\n" +
+                                      "\t\t\tEnd Set\r\n" +
+                                      "\t\tEnd Property\r\n\r\n" +
                                       "#End Region\r\n";
 
         private static string _classDesc = "\t''' <summary>\r\n\t''' Module %name%\r\n\t'''</summary>\r\n";
@@ -92,13 +92,13 @@ namespace LateBindingApi.CodeGenerator.VB
 
         private static string ConvertGlobalModuleToFile(Settings settings, XElement projectNode, XElement faceNode, string faceFolder)
         {
-            string fileName = System.IO.Path.Combine(faceFolder, faceNode.Attribute("Name").Value + ".vb");
+            string fileName = System.IO.Path.Combine(faceFolder, "Globals" + ".vb");
 
             string newEnum = ConvertGlobalModuleToString(settings, projectNode, faceNode);
             System.IO.File.AppendAllText(fileName, newEnum);
 
             int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + faceNode.Attribute("Name").Value + ".vb" + "\" />";
+            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "Globals" + ".vb" + "\" />";
             return result;
         }
         

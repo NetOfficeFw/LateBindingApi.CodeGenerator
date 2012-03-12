@@ -115,7 +115,7 @@ namespace LateBindingApi.CodeGenerator.VB
 
             ScanEnumerable(faceNode, ref result);
 
-            result += "\tEnd Class\r\nEnd Namespace";
+            result += "\r\n\tEnd Class\r\n\r\nEnd Namespace";
             return result;
         }
 

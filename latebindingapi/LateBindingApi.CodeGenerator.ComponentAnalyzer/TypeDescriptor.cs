@@ -19,13 +19,69 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <returns></returns>
         internal static bool IsHidden(MemberInfo member)
         {
-            if (member.AttributeMask == 64)
-                return true;
-            else
+            if (member.MemberId == 0)
                 return false;
+
+             Array arr = null;
+             member.get_AttributeStrings(out arr);
+
+             if (null == arr)
+                 return false;
+            
+             foreach (string item in arr)
+             {
+                 if (item.Equals("hidden", StringComparison.InvariantCultureIgnoreCase))
+                     return true;
+                 if (item.Equals("nonbrowsable", StringComparison.InvariantCultureIgnoreCase))
+                     return true;
+             }
+             return false;
         }
 
+        /// <summary>
+        /// returns member is hidden
+        /// </summary>
+        /// <param name="typeInfo"></param>
+        /// <returns></returns>
+        internal static bool IsHidden(InterfaceInfo face)
+        {
+            Array arr = null;
+            face.get_AttributeStrings(out arr);
 
+            if (null == arr)
+                return false;
+
+            foreach (string item in arr)
+            {
+                if (item.Equals("hidden", StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+                if (item.Equals("nonbrowsable", StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// returns member is hidden
+        /// </summary>
+        /// <param name="typeInfo"></param>
+        /// <returns></returns>
+        internal static bool IsAppObject(TLI.CoClassInfo coClass)
+        {
+            Array arr = null;
+            coClass.get_AttributeStrings(out arr);
+
+            if (null == arr)
+                return false;
+
+            foreach (string item in arr)
+            {
+                if (item.Equals("appobject", StringComparison.InvariantCultureIgnoreCase))
+                    return true;      
+            }
+            return false;
+        }
+         
         /// <summary>
         /// returns typeInfo is COMProxy or not
         /// </summary>

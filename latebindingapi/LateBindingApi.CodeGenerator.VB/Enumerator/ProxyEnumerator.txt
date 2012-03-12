@@ -1,12 +1,12 @@
 ﻿   
-	#region "IEnumerable Members"
+
+		#Region "IEnumerable Members"
         
-    %version%
-    Private Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
+		%version%
+		Private Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
 		
-		Return LateBindingApi.Core.Utils.GetProxyEnumerator(Me)
+			Return LateBindingApi.Core.Utils.GetProxyEnumerator%AsWhat%(Me)
 
-    End Function
+		End Function
 
-    #End Region
-        
+		#End Region

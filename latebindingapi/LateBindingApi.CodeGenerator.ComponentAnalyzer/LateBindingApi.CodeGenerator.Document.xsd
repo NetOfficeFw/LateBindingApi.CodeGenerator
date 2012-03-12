@@ -163,6 +163,7 @@
     <xs:attribute name="IsEventInterface"     type="xs:string"  use="required" />
     <!-- is an event interface -->
     <xs:attribute name="IsEarlyBind"          type="xs:string"  use="required" />
+    <xs:attribute name="IsHidden"             type="xs:string"  use="required" />
     <!-- generate as earlybind Interface equals as interop  -->
     <xs:attribute name="TypeLibType"          type="xs:string"  use="required" />
     <!-- TypeLibTypeAttribute -->
@@ -263,8 +264,7 @@
       <xs:element name="RefLibraries"         type="RefLibraries" />
       <xs:element name="DispIds"              type="DispIds" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  use="required" />
-    <!-- interface name: readonly -->
+    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name: readonly -->
     <xs:attribute name="Key"                  type="xs:string"  use="required" />
     <!-- unique key -->
   </xs:complexType>
@@ -283,12 +283,10 @@
       <xs:element name="Inherited"            type="RefInterfaces" />
       <xs:element name="DispIds"              type="DispIds" />
     </xs:sequence>
-    <xs:attribute name="Name"                 type="xs:string"  use="required" />
-    <!-- interface name: readonly -->
-    <xs:attribute name="Key"                  type="xs:string"  use="required" />
-    <!-- unique key -->
-    <xs:attribute name="AutomaticQuit"        type="xs:string"  use="required" />
-    <!-- call quit while dispose -->
+    <xs:attribute name="Name"                 type="xs:string"  use="required" /> <!-- interface name: readonly -->
+    <xs:attribute name="Key"                  type="xs:string"  use="required" /> <!-- unique key -->
+    <xs:attribute name="AutomaticQuit"        type="xs:string"  use="required" /> <!-- call quit while dispose -->
+    <xs:attribute name="IsAppObject"          type="xs:string"  use="required" />
   </xs:complexType>
 
   <xs:complexType name="DispIds">
@@ -301,8 +299,7 @@
     <xs:sequence>
       <xs:element name="RefLibraries" type="RefLibraries" />
     </xs:sequence>
-    <xs:attribute name="Id"           type="xs:string" use="required" />
-    <!-- dispatch -->
+    <xs:attribute name="Id"           type="xs:string" use="required" /> <!-- dispatch -->
   </xs:complexType>
 
   <xs:complexType name="Enums">
