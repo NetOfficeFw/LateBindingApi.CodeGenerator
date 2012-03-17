@@ -192,6 +192,12 @@
     <Compile Include="Forms\FormMain.designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormNetOffice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormNetOffice.Designer.cs">
+      <DependentUpon>FormNetOffice.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormShowError.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -271,6 +277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormNetOffice.resx">
+      <DependentUpon>FormNetOffice.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormShowError.resx">
       <DependentUpon>FormShowError.cs</DependentUpon>

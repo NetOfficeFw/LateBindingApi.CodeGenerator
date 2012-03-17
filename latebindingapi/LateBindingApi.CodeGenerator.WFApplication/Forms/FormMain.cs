@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Linq;
+using System.Linq;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
  
@@ -395,5 +398,209 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         }
 
         #endregion
+
+        private void toolStripNetOfficeCheats_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (null != _comAnalyzer.Document)
+                {
+                    FormNetOffice dialog = new FormNetOffice();
+                    if (DialogResult.OK == dialog.ShowDialog(this))
+                    {
+
+                        if (dialog.EnableSolutionName)
+                        {
+                            _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Attribute("Name").Value = dialog.SolutionName;
+                        }
+
+                        if (dialog.EnableAssemblyVersion)
+                        {
+                            var projects = _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project");
+                            foreach (var item in projects)
+                            {
+                                item.Attribute("Version").Value = dialog.AssemblyVersion;
+                                item.Attribute("FileVersion").Value = dialog.AssemblyVersion;
+                            }
+                        }
+
+                        if (dialog.EnableNamespaces)
+                        {
+                            var projects = _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project");
+                            foreach (var item in projects)
+                            {
+                                if (item.Attribute("Ignore").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                                    item.Attribute("Namespace").Value = item.Attribute("Name").Value;
+                                else
+                                    item.Attribute("Namespace").Value = "NetOffice." + item.Attribute("Name").Value + "Api";
+                            }
+                        }
+
+                        if (dialog.EnableCallQuit)
+                        {
+                            var projects = _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project");
+                            foreach (XElement item in projects)
+                            {
+                                if ((item.Attribute("Name").Value == "Excel") || (item.Attribute("Name").Value == "Word") || (item.Attribute("Name").Value == "Outlook") || (item.Attribute("Name").Value == "PowerPoint")  || (item.Attribute("Name").Value == "Access"))
+                                {
+                                    XElement appNode = (from a in item.Element("CoClasses").Elements("CoClass")
+                                                        where a.Attribute("Name").Value.Equals("Application", StringComparison.InvariantCultureIgnoreCase)
+                                                        select a).FirstOrDefault();
+                                    if (null == appNode)
+                                        throw new ArgumentOutOfRangeException("Cant find Application Class ");
+
+                                    appNode.Attribute("AutomaticQuit").Value = "true";
+                                }
+                            }                          
+                        }
+
+                        if (dialog.EnableAnalyzeReturn)
+                        {
+                            XElement projectNode = (from a in _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
+                                                where a.Attribute("Name").Value.Equals("Office", StringComparison.InvariantCultureIgnoreCase)
+                                                select a).FirstOrDefault();
+                            
+                            XElement targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                                                   where a.Attribute("Name").Value.Equals("COMAddin", StringComparison.InvariantCultureIgnoreCase)
+                                                   select a).FirstOrDefault();
+
+                            XElement propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                   where a.Attribute("Name").Value.Equals("Object", StringComparison.InvariantCultureIgnoreCase)
+                                                   select a).FirstOrDefault();
+                            propertyNode.Attribute("AnalyzeReturn").Value = "false";
+
+
+                            targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                                          where a.Attribute("Name").Value.Equals("_CustomTaskPane", StringComparison.InvariantCultureIgnoreCase)
+                                          select a).FirstOrDefault();
+
+                            propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                     where a.Attribute("Name").Value.Equals("ContentControl", StringComparison.InvariantCultureIgnoreCase)
+                                                     select a).FirstOrDefault();
+                            propertyNode.Attribute("AnalyzeReturn").Value = "false";
+                        }
+
+                        if (dialog.EnableEarlyBind)
+                        {
+                            XElement projectNode = (from a in _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
+                                                    where a.Attribute("Name").Value.Equals("Office", StringComparison.InvariantCultureIgnoreCase)
+                                                    select a).FirstOrDefault();
+
+                            XElement targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                                                   where a.Attribute("Name").Value.Equals("IRibbonUI", StringComparison.InvariantCultureIgnoreCase)
+                                                   select a).FirstOrDefault();
+
+                            targetNode.Attribute("IsEarlyBind").Value = "true";
+
+                            targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                                          where a.Attribute("Name").Value.Equals("IRibbonControl", StringComparison.InvariantCultureIgnoreCase)
+                                          select a).FirstOrDefault();
+
+                            targetNode.Attribute("IsEarlyBind").Value = "true";
+
+
+                            targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                                          where a.Attribute("Name").Value.Equals("IRibbonExtensibility", StringComparison.InvariantCultureIgnoreCase)
+                                          select a).FirstOrDefault();
+
+                            targetNode.Attribute("IsEarlyBind").Value = "true";
+
+                            targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                                          where a.Attribute("Name").Value.Equals("ICustomTaskPaneConsumer", StringComparison.InvariantCultureIgnoreCase)
+                                          select a).FirstOrDefault();
+
+                            targetNode.Attribute("IsEarlyBind").Value = "true";
+                        }
+
+
+                        if (dialog.EnableRangeType)
+                        {
+                            XElement projectNode = (from a in _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
+                                                    where a.Attribute("Name").Value.Equals("Excel", StringComparison.InvariantCultureIgnoreCase)
+                                                    select a).FirstOrDefault();
+
+                            XElement targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                                                   where a.Attribute("Name").Value.Equals("Range", StringComparison.InvariantCultureIgnoreCase)
+                                                   select a).FirstOrDefault();
+
+                            XElement templateNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                   where a.Attribute("Name").Value.Equals("CurrentRegion", StringComparison.InvariantCultureIgnoreCase)
+                                                   select a).FirstOrDefault();
+                            templateNode = templateNode.Element("Parameters").Element("ReturnValue");
+
+
+                            XElement propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                     where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
+                                                     select a).FirstOrDefault();
+
+                            foreach (XElement item in propertyNode.Elements("Parameters"))
+                            {
+                                XElement returnValue = item.Element("ReturnValue");
+                                foreach (XAttribute attrib in returnValue.Attributes())
+                                    attrib.Value = templateNode.Attribute(attrib.Name.LocalName).Value;
+                            }
+
+                            propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                     where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                                                     select a).FirstOrDefault();
+
+                            foreach (XElement item in propertyNode.Elements("Parameters"))
+                            {
+                                XElement returnValue = item.Element("ReturnValue");
+                                foreach (XAttribute attrib in returnValue.Attributes())
+                                    attrib.Value = templateNode.Attribute(attrib.Name.LocalName).Value;
+                            }
+
+                        }
+                    }
+
+                    if (dialog.EnableSupportByVersion)
+                    {
+                        var libs = _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library");
+                        foreach (XElement item in libs)
+                        {
+                            item.Attribute("Version").Value = GetVersionTag(item);
+                        }
+                    }
+
+                    MessageBox.Show("Done!");
+                }
+                else
+                {
+                    MessageBox.Show("Please load a Document first");
+                }
+            }
+            catch (Exception throwedException)
+            {
+                FormShowError formError = new FormShowError(throwedException);
+                formError.ShowDialog(this);
+            }
+        }
+
+        private string GetVersionTag(XElement itemLibrary)
+        {
+            string description = itemLibrary.Attribute("Description").Value;
+            string[] versions = new string[] { "14", "12", "11", "10", "9" };
+            foreach (string item in versions)
+            {
+                if (description.IndexOf(item, 0, description.Length, StringComparison.InvariantCultureIgnoreCase) > -1)
+                    return item;
+            }
+
+            if (description.IndexOf("OLE Automation", StringComparison.InvariantCultureIgnoreCase) > -1)
+                return "2";
+
+            if (description.IndexOf("2.5", StringComparison.InvariantCultureIgnoreCase) > -1)
+                return "2.5";
+
+            if (description.IndexOf("3.6", StringComparison.InvariantCultureIgnoreCase) > -1)
+                return "3.6";
+
+            if (description.IndexOf("5.3", StringComparison.InvariantCultureIgnoreCase) > -1)
+                return "5.3";
+             
+            return itemLibrary.Attribute("Version").Value;
+        }
+
      }
 }

@@ -36,6 +36,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTypeLibraries = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemLoadTypeLibrary = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemStatistics = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripGenerator = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemGenerateCode = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripHelp = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,7 +57,7 @@
             this.libraryGrid = new LateBindingApi.CodeGenerator.WFApplication.Controls.LibraryGrid.LibraryGridControl();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.menuItemStatistics = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripNetOfficeCheats = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -134,6 +135,14 @@
             this.menuItemLoadTypeLibrary.Text = "Load TypeLibrary";
             this.menuItemLoadTypeLibrary.Click += new System.EventHandler(this.menuItemLoadTypeLibrary_Click);
             // 
+            // menuItemStatistics
+            // 
+            this.menuItemStatistics.Name = "menuItemStatistics";
+            this.menuItemStatistics.ShortcutKeys = System.Windows.Forms.Keys.F9;
+            this.menuItemStatistics.Size = new System.Drawing.Size(202, 22);
+            this.menuItemStatistics.Text = "Statistik";
+            this.menuItemStatistics.Click += new System.EventHandler(this.menuItemStatistics_Click);
+            // 
             // toolStripGenerator
             // 
             this.toolStripGenerator.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -156,6 +165,7 @@
             this.toolStripHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.websiteToolStripMenuItem,
             this.toolStripSeparator5,
+            this.toolStripNetOfficeCheats,
             this.aboutToolStripMenuItem});
             this.toolStripHelp.Name = "toolStripHelp";
             this.toolStripHelp.Size = new System.Drawing.Size(40, 20);
@@ -164,19 +174,19 @@
             // websiteToolStripMenuItem
             // 
             this.websiteToolStripMenuItem.Name = "websiteToolStripMenuItem";
-            this.websiteToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.websiteToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.websiteToolStripMenuItem.Text = "&Goto Homepage";
             this.websiteToolStripMenuItem.Click += new System.EventHandler(this.websiteToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(165, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.aboutToolStripMenuItem.Text = "&About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -314,13 +324,12 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
             this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
             // 
-            // menuItemStatistics
+            // toolStripNetOfficeCheats
             // 
-            this.menuItemStatistics.Name = "menuItemStatistics";
-            this.menuItemStatistics.ShortcutKeys = System.Windows.Forms.Keys.F9;
-            this.menuItemStatistics.Size = new System.Drawing.Size(202, 22);
-            this.menuItemStatistics.Text = "Statistik";
-            this.menuItemStatistics.Click += new System.EventHandler(this.menuItemStatistics_Click);
+            this.toolStripNetOfficeCheats.Name = "toolStripNetOfficeCheats";
+            this.toolStripNetOfficeCheats.Size = new System.Drawing.Size(168, 22);
+            this.toolStripNetOfficeCheats.Text = "NetOffice Cheats";
+            this.toolStripNetOfficeCheats.Click += new System.EventHandler(this.toolStripNetOfficeCheats_Click);
             // 
             // FormMain
             // 
@@ -377,6 +386,7 @@
         private LateBindingApi.CodeGenerator.WFApplication.Controls.AliasGrid.AliasGridControl aliasGrid;
         private LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid.RecordGridControl recordGrid;
         private System.Windows.Forms.ToolStripMenuItem menuItemStatistics;
+        private System.Windows.Forms.ToolStripMenuItem toolStripNetOfficeCheats;
     }
 }
 
