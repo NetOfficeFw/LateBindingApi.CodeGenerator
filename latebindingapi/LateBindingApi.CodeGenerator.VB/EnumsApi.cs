@@ -43,13 +43,13 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string ConvertEnumToString(Settings settings, XElement projectNode, XElement enumNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value + ".Enums");
-            string enumAttributes = VBGenerator.GetSupportByLibraryAttribute(enumNode);
+            string enumAttributes = VBGenerator.GetSupportByVersionAttribute(enumNode);
 
             string name = enumNode.Attribute("Name").Value;
 
 
             if (true == settings.CreateXmlDocumentation)
-                result += VBGenerator.GetSupportByLibrarySummary("\t", enumNode);
+                result += VBGenerator.GetSupportByVersionSummary("\t", enumNode);
 
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\t<EntityTypeAttribute(EntityType.IsEnum)> _\r\n";
@@ -59,13 +59,13 @@ namespace LateBindingApi.CodeGenerator.VB
             int i = 1;
             foreach (var itemMember in enumNode.Element("Members").Elements("Member"))
             {
-                string memberAttribute = VBGenerator.GetSupportByLibraryAttribute(itemMember);
+                string memberAttribute = VBGenerator.GetSupportByVersionAttribute(itemMember);
                 string memberName = itemMember.Attribute("Name").Value;
                 string memberValue = itemMember.Attribute("Value").Value;
 
                 if (true == settings.CreateXmlDocumentation)
                 {
-                    result += VBGenerator.GetSupportByLibrarySummary("\t\t", itemMember);
+                    result += VBGenerator.GetSupportByVersionSummary("\t\t", itemMember);
                     result += "\t\t ''' <remarks>" + memberValue + "</remarks>\r\n";
                 }
 

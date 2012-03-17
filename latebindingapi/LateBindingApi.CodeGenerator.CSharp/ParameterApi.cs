@@ -24,8 +24,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("_Default" == methodNode.Attribute("Name").Value)
                 {
                     bool hasParams = ParameterApi.HasParams(methodNode);
-                    bool hasItem = EnumerableApi.HasItem(enumeratorNode.Parent);
-                    if ((hasParams) && (!hasItem))
+                    if (hasParams)
                     {
                         foreach (XElement itemParameters in methodNode.Elements("Parameters"))
                             RemoveRefAttributes(itemParameters);
@@ -37,8 +36,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 else if ("Item" == methodNode.Attribute("Name").Value)
                 {
+                    bool hasDefault = ParameterApi.HasThisOrDefault(enumeratorNode.Parent);
                     bool hasParams = ParameterApi.HasParams(methodNode);
-                    if (hasParams)
+                    if ((hasParams) && (!hasDefault))
                     { 
                         foreach (XElement itemParameters in methodNode.Elements("Parameters"))
                             RemoveRefAttributes(itemParameters);
@@ -48,10 +48,61 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         continue;
                     }
                 }
-
+          
                 if (itemName == "Property")
                     ParameterApi.xValidateParameters(methodNode);
             }
+        }
+
+        internal static bool HasThisOrDefault(XElement entityNode)
+        {
+
+            XElement node = (from a in entityNode.Element("Properties").Elements("Property")
+                             where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Properties").Elements("Property")
+                   where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                   select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+
+            return false;
+
+        }
+
+        internal static bool HasEnumerator(XElement entityNode)
+        {
+
+            XElement node = (from a in entityNode.Element("Properties").Elements("Property")
+                             where a.Attribute("Name").Value.Equals("_NewEnum", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("_NewEnum", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            return false;
+
         }
 
         internal static string ValidateParamName(Settings settings, string name)

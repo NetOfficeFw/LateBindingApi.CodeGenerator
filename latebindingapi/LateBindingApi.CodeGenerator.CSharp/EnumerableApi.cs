@@ -178,39 +178,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return true;
         }
 
-        /// <summary>
-        /// returns info interface has a Item or this
-        /// </summary>
-        /// <param name="interfaceNode"></param>
-        /// <returns></returns>
-        internal static bool HasItem(XElement interfaceNode)
-        {
-            XElement enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
-                                       where a.Attribute("Name").Value.Equals("Item")
-                                       select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
-           
-            enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
-                              where a.Attribute("Name").Value.Equals("Item")
-                              select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
 
-            enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
-                              where a.Attribute("Name").Value.Equals("this")
-                              select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
-            
-            enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
-                              where a.Attribute("Name").Value.Equals("this")
-                              select a).FirstOrDefault();
-            if (null != enumeratorNode)
-                return true;
-
-            return false;
-        }
 
         internal static bool HasCustomAttribute(XElement enumNode)
         {
@@ -240,6 +208,37 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value;
         }
 
+        internal static bool HasDefault(XElement entityNode)
+        {
+
+            XElement node = (from a in entityNode.Element("Properties").Elements("Property")
+                             where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+
+            node = (from a in entityNode.Element("Properties").Elements("Property")
+                             where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            return false;
+        }
+
         /// <summary>
         ///  add enumerator code
         /// </summary>
@@ -248,16 +247,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static void AddEnumerator(XElement faceNode, ref string content)
         {
             string faceName = faceNode.Attribute("Name").Value;
-            if (faceName.Equals("COMAddins", StringComparison.InvariantCultureIgnoreCase))
-            {
-            }
-
             XElement enumNode = GetEnumNode(faceNode);
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
             string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);
 
-            string versionSummary = CSharpGenerator.GetSupportByLibraryString("", enumNode);
-            string versionAttribute = CSharpGenerator.GetSupportByLibraryAttribute(enumNode); 
+            string versionSummary = CSharpGenerator.GetSupportByVersionString("", enumNode);
+            string versionAttribute = CSharpGenerator.GetSupportByVersionAttribute(enumNode); 
             content = content.Replace("%enumerableSpace%", "using System.Collections;\r\n");
 
             if (targetReturnType == "COMObject")            
@@ -278,11 +273,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
                     enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+
+                    if (HasDefault(faceNode))
+                        enumString = enumString.Replace("%ThisOrItem%", "this[i+1]");
+                    else
+                        enumString = enumString.Replace("%ThisOrItem%", "Item(i+1)");
                 }
                 else
                 {
                     enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
                     enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+
+                    if (HasDefault(faceNode))
+                        enumString = enumString.Replace("%ThisOrItem%", "this[i+1]");
+                    else
+                        enumString = enumString.Replace("%ThisOrItem%", "Item(i+1)");
                 }
             }
             else if("true" == returnType.Attribute("IsComProxy").Value)
@@ -290,7 +295,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {
                     enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
-                    enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                    enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);                    
                 }
                 else
                 {
@@ -309,10 +314,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             switch (enumType)
             {
                 case EnumeratorType.PropertyEnum:
-                    enumString = enumString.Replace("%Call%", "PropertyGet");
+                    enumString = enumString.Replace("%Call%", "Property");
                     break;
                 case EnumeratorType.MethodEnum:
-                    enumString = enumString.Replace("%Call%", "MethodReturn");
+                    enumString = enumString.Replace("%Call%", "Method");
                     break;
                 default:
                     throw (new Exception("Interface has no Enumerator"));

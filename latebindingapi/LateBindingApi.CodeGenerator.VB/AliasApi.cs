@@ -21,7 +21,7 @@ namespace LateBindingApi.CodeGenerator.VB
 
         private static string ConvertAliasToString(XElement projectNode, XElement aliasNode)
         {
-            string version = "' " + VBGenerator.GetSupportByLibraryAttribute(aliasNode) + "\r\n";
+            string version = "' " + VBGenerator.GetSupportByVersionAttribute(aliasNode) + "\r\n";
             string name = aliasNode.Attribute("Name").Value;
             string intrinsic = aliasNode.Attribute("Intrinsic").Value;
             string line = "' " + name + " as " + intrinsic + "\r\n\r\n";

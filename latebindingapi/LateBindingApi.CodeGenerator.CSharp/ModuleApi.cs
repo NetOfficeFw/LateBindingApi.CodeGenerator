@@ -47,7 +47,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertModuleToString(Settings settings, XElement projectNode, XElement moduleNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(moduleNode);
+            string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(moduleNode);
             string header = _classHeader.Replace("%name%", moduleNode.Attribute("Name").Value);
             string classDesc = _classDesc.Replace("%name%", moduleNode.Attribute("Name").Value);
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, moduleNode.Element("Methods"));

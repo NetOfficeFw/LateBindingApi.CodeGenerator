@@ -64,7 +64,7 @@
     <xs:attribute name="Description"    type="xs:string" />
     <!-- Description of TypeLib -->
     <xs:attribute name="Version"        type="xs:string" />
-    <!-- SupportByLibrary Value -->
+    <!-- SupportByVersion Value -->
     <xs:attribute name="SysKind"        type="xs:unsignedByte" />
     <!-- WIN16 WIN32 or Mac -->
   </xs:complexType>

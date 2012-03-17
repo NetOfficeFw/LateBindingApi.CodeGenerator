@@ -126,7 +126,7 @@ namespace LateBindingApi.CodeGenerator.VB
             {
                 string interfaceName = itemParams.Parent.Parent.Parent.Attribute("Name").Value;
          
-                string[] supportDocuArray = VBGenerator.GetSupportByLibraryArray(itemParams);
+                string[] supportDocuArray = VBGenerator.GetSupportByVersionArray(itemParams);
 
                 // gibt es andere überladungen mit mehr parametern als dieser überladung und sind die überzählen alle optional?
                 // dann füge deren supportbylibray überladungen an
@@ -135,7 +135,7 @@ namespace LateBindingApi.CodeGenerator.VB
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
 
                 string paramDoku = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
-                string paramAttrib = VBGenerator.GetSupportByLibraryAttribute(supportDocuArray, itemParams);
+                string paramAttrib = VBGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
 
                 XElement returnValue = itemParams.Element("ReturnValue");
 
@@ -150,7 +150,7 @@ namespace LateBindingApi.CodeGenerator.VB
 
                 string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem);
                 paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
-                paramAttrib = VBGenerator.GetSupportByLibraryAttribute(itemParams);
+                paramAttrib = VBGenerator.GetSupportByVersionAttribute(itemParams);
                 bool hiddenIsSet = false;
                 if (propertyNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                 { 
@@ -208,7 +208,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string name = propertyNode.Attribute("Name").Value;
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {
-                string method = "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                string method = "\t\t" + VBGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
                 method += GetEarlyBindPropertySignatur(itemParams);
 
                 string marshalAs = itemParams.Element("ReturnValue").Attribute("MarshalAs").Value;

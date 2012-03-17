@@ -68,23 +68,3 @@
 
 		#endregion
 		
-		#region Private Methods
-		
-		/// <summary>
-        /// creates active sink helper
-        /// </summary>
-		private void CreateEventBridge()
-        {
-			if(false == LateBindingApi.Core.Settings.EnableEvents)
-				return;
-	
-			if (null != _connectPoint)
-				return;
-	
-            if (null == _activeSinkId)
-				_activeSinkId = SinkHelper.GetConnectionPoint(this, ref _connectPoint, %CompareIds%);
-
-%SetActiveSink% 
-        }
-		
-		#endregion

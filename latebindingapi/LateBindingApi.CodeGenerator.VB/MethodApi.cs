@@ -104,7 +104,7 @@ namespace LateBindingApi.CodeGenerator.VB
             {
                 XElement returnValue = itemParams.Element("ReturnValue");
 
-                string[] supportDocuArray = VBGenerator.GetSupportByLibraryArray(itemParams);
+                string[] supportDocuArray = VBGenerator.GetSupportByVersionArray(itemParams);
 
                 // gibt es andere überladungen mit mehr parametern als dieser überladung und sind die überzählen alle optional?
                 // dann füge deren supportbylibray überladungen an
@@ -113,7 +113,7 @@ namespace LateBindingApi.CodeGenerator.VB
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
                 
                 string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
-                string supportAttribute = VBGenerator.GetSupportByLibraryAttribute(supportDocuArray, itemParams);
+                string supportAttribute = VBGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
                  
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
@@ -350,7 +350,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 XElement returnValue = itemParams.Element("ReturnValue");
 
                 string method = "";
-                method += "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                method += "\t\t" + VBGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
                 /*
                 string marshalReturnAs = returnValue.Attribute("MarshalAs").Value;
                 if ("" != marshalReturnAs)

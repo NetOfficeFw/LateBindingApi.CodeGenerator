@@ -45,7 +45,7 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string ConvertRecordToString(Settings settings, XElement projectNode, XElement enumNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value );
-            string enumAttributes = VBGenerator.GetSupportByLibraryAttribute(enumNode);
+            string enumAttributes = VBGenerator.GetSupportByVersionAttribute(enumNode);
             
             string comConversion = "<StructLayout(LayoutKind.Sequential), ";
             string typeLibType = enumNode.Attribute("TypeLibType").Value;
@@ -56,7 +56,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string name = enumNode.Attribute("Name").Value;
 
             if(true == settings.CreateXmlDocumentation)
-                result += VBGenerator.GetSupportByLibrarySummary("\t", enumNode);
+                result += VBGenerator.GetSupportByVersionSummary("\t", enumNode);
 
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\t" + comConversion + "\r\n";
@@ -70,7 +70,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 if ("true" == itemMember.Attribute("IsArray").Value)
                     arr = "()";
 
-                string memberAttribute = VBGenerator.GetSupportByLibraryAttribute(itemMember);
+                string memberAttribute = VBGenerator.GetSupportByVersionAttribute(itemMember);
                 
                 string memberType = "";
                 if ("true" == itemMember.Attribute("IsNative").Value)
@@ -81,7 +81,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 string memberName = itemMember.Attribute("Name").Value;
 
                 if (true == settings.CreateXmlDocumentation)
-                    result += VBGenerator.GetSupportByLibrarySummary("\t\t", itemMember);
+                    result += VBGenerator.GetSupportByVersionSummary("\t\t", itemMember);
                 result += "\t\t" + memberAttribute + "\r\n";
 
                 string marshalAs = itemMember.Attribute("MarshalAs").Value;

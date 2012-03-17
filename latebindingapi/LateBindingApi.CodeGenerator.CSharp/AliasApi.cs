@@ -21,7 +21,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string ConvertAliasToString(XElement projectNode, XElement aliasNode)
         {
-            string version = CSharpGenerator.GetSupportByLibraryAttribute(aliasNode) + "\r\n";
+            string version = CSharpGenerator.GetSupportByVersionAttribute(aliasNode) + "\r\n";
             string name = aliasNode.Attribute("Name").Value;
             string intrinsic = aliasNode.Attribute("Intrinsic").Value;
             string line = name + " as " + intrinsic + "\r\n\r\n";

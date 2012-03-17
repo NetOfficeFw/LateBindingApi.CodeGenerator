@@ -81,7 +81,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string delegates = _delegates.Replace("%delegates%", GetDelegates(projectNode, classNode));
             result += delegates;
 
-            string attributes = "\t" + VBGenerator.GetSupportByLibraryAttribute(classNode);
+            string attributes = "\t" + VBGenerator.GetSupportByVersionAttribute(classNode);
             string header = _classHeader.Replace("%name%", ParameterApi.ValidateNameWithoutVarType(classNode.Attribute("Name").Value));
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
             if (ImplentsAnEventInterface(projectNode, classNode))
@@ -122,7 +122,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 construct += events;
             }
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t''' " + VBGenerator.GetSupportByLibrary("", classNode));
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t''' " + VBGenerator.GetSupportByVersion("", classNode));
 
             if (null == _classEventBinding)
                 _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
@@ -267,7 +267,7 @@ namespace LateBindingApi.CodeGenerator.VB
                 string type = inInterface.Attribute("Name").Value + "_SinkHelper";
                 string name = "_" + type.Substring(0, 1).ToLower() + type.Substring(1);
 
-                result += "\t\t\t" + "if( Not LateBindingApi.Core.Utils.IsNothing(" + name + "))\r\n";
+                result += "\t\t\t" + "if(Not LateBindingApi.Core.Utils.IsNothing(" + name + "))\r\n";
                 result += "\t\t\t\t" + name + ".Dispose()\r\n";
                 result += "\t\t\t\t" + name + " = Nothing\r\n";
                 result += "\t\t\t" + "End If\r\n";
@@ -425,7 +425,7 @@ namespace LateBindingApi.CodeGenerator.VB
                         doc.Element("Methods").Add(methodNode);
                     }
 
-                    string[] versions = VBGenerator.GetSupportByLibraryArray(itemMethod);
+                    string[] versions = VBGenerator.GetSupportByVersionArray(itemMethod);
                     foreach (string version in versions)
                     {
                         XElement attribute = (from a in methodNode.Elements("Version")
@@ -460,10 +460,10 @@ namespace LateBindingApi.CodeGenerator.VB
                 }
                 versionAttributeString = versionAttributeString.Substring(0, versionAttributeString.Length - 1);
 
-                line += "\t\t''' <summary>\r\n" + "\t\t''' SupportByLibrary " + projectNode.Attribute("Name").Value + ", " + versionAttributeString.Replace("\"", "") + "\r\n" + "\t\t''' </summary>\r\n";
+                line += "\t\t''' <summary>\r\n" + "\t\t''' SupportByVersion " + projectNode.Attribute("Name").Value + ", " + versionAttributeString.Replace("\"", "") + "\r\n" + "\t\t''' </summary>\r\n";
                 line += "\t\tPrivate _" + itemNode.Attribute("Name").Value + "EventHandlers As New ArrayList()" + "\r\n\r\n";
 
-                line += "\t\t''' <summary>\r\n" + "\t\t''' SupportByLibrary " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") +
+                line += "\t\t''' <summary>\r\n" + "\t\t''' SupportByVersion " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") +
                     "\r\n" + "\t\t''' </summary>\r\n";  
 
                 line += "\t\t<SupportByVersion(" + "\"" + projectNode.Attribute("Name").Value + "\"" + ", " + versionAttributeString.Replace("\"", "") + ")> _\r\n";

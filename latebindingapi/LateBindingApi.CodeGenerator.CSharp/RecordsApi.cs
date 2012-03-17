@@ -45,7 +45,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertRecordToString(Settings settings, XElement projectNode, XElement enumNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value );
-            string enumAttributes = CSharpGenerator.GetSupportByLibraryAttribute(enumNode);
+            string enumAttributes = CSharpGenerator.GetSupportByVersionAttribute(enumNode);
 
             string comConversion = "[StructLayout(LayoutKind.Sequential, Pack=4), ";
             string typeLibType = enumNode.Attribute("TypeLibType").Value;
@@ -62,7 +62,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string name = enumNode.Attribute("Name").Value;
 
             if(true == settings.CreateXmlDocumentation)
-                result += CSharpGenerator.GetSupportByLibrarySummary("\t", enumNode);
+                result += CSharpGenerator.GetSupportByVersionSummary("\t", enumNode);
 
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\t" + comConversion + "\r\n";
@@ -76,7 +76,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == itemMember.Attribute("IsArray").Value)
                     arr = "[]";
 
-                string memberAttribute = CSharpGenerator.GetSupportByLibraryAttribute(itemMember);
+                string memberAttribute = CSharpGenerator.GetSupportByVersionAttribute(itemMember);
                 
                 string memberType = "";
                 if ("true" == itemMember.Attribute("IsNative").Value)
@@ -88,7 +88,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string memberName = itemMember.Attribute("Name").Value;
 
                 if (true == settings.CreateXmlDocumentation)
-                    result += CSharpGenerator.GetSupportByLibrarySummary("\t\t", itemMember);
+                    result += CSharpGenerator.GetSupportByVersionSummary("\t\t", itemMember);
                 result += "\t\t" + memberAttribute + "\r\n";
 
                 string marshalAs = itemMember.Attribute("MarshalAs").Value;

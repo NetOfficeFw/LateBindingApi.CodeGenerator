@@ -6,7 +6,7 @@ using System.Text;
 namespace LateBindingApi.Core
 {
     /// <summary>
-    /// some helper methods for visual basic
+    /// some helper methods (also for visual basic)
     /// </summary>
     public static class Utils
     {
@@ -34,7 +34,7 @@ namespace LateBindingApi.Core
             while (true == isMoveNextTrue)
             {
                 object itemProxy = Invoker.PropertyGetWithoutSafeMode(enumerator, "Current", null);
-                object returnClass = LateBindingApi.Core.Factory.CreateObjectFromComProxy(enumerator, itemProxy);
+                COMObject returnClass = LateBindingApi.Core.Factory.CreateObjectFromComProxy(enumerator, itemProxy);
                 isMoveNextTrue = (bool)Invoker.MethodReturnWithoutSafeMode(enumerator, "MoveNext", null);
                 yield return returnClass;
             }
@@ -54,7 +54,7 @@ namespace LateBindingApi.Core
             while (true == isMoveNextTrue)
             {
                 object itemProxy = Invoker.PropertyGetWithoutSafeMode(enumerator, "Current", null);
-                object returnClass = LateBindingApi.Core.Factory.CreateObjectFromComProxy(enumerator, itemProxy);
+                COMObject returnClass = LateBindingApi.Core.Factory.CreateObjectFromComProxy(enumerator, itemProxy);
                 isMoveNextTrue = (bool)Invoker.MethodReturnWithoutSafeMode(enumerator, "MoveNext", null);
                 yield return returnClass;
             }

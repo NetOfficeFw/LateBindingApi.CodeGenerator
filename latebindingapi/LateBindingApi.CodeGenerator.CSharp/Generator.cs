@@ -197,7 +197,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #endregion
     
         #region Static Methods
-        
+
+        internal static string ConvertTypeToConvertCall(string fullTypeName)
+        {
+            switch (fullTypeName.Trim().ToLower())
+            {
+                case "bool":
+                    return "Boolean";
+                case "string":
+                    return "String";
+                case "byte":
+                    return "Byte";
+                default:
+                    return fullTypeName;
+            }
+        }
+
         internal static bool IsDuplicatedReturnValue(XElement returnValue)
         {
             return _dublettes.IsDuplicatedReturnValue(returnValue);
@@ -380,7 +395,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibraryAttribute(string[] array, XElement entityNode)
+        internal static string GetSupportByVersionAttribute(string[] array, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
@@ -397,7 +412,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
 
-            result += "[SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            result += "[SupportByVersionAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
 
@@ -406,7 +421,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibraryAttribute(XElement entityNode)
+        internal static string GetSupportByVersionAttribute(XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
@@ -428,7 +443,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
             
-            result += "[SupportByLibraryAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            result += "[SupportByVersionAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
 
@@ -437,7 +452,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        public static string[] GetSupportByLibraryArray(XElement entityNode)
+        public static string[] GetSupportByVersionArray(XElement entityNode)
         {
             List<string> result = new List<string>();
             XElement refLibs = entityNode.Element("RefLibraries");
@@ -459,17 +474,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibrarySummary(string tabSpace, XElement entityNode)
+        internal static string GetSupportByVersionSummary(string tabSpace, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
             string summary1 = tabSpace + " /// <summary>\r\n";
-            string between  = tabSpace + " /// SupportByLibrary " +  parentNode.Attribute("Name").Value + " ";
+            string between  = tabSpace + " /// SupportByVersion " +  parentNode.Attribute("Name").Value + " ";
             string summary2 = tabSpace + " /// </summary>\r\n";
 
-            string[] result = GetSupportByLibraryArray(entityNode);
+            string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
                 between += item + ", ";
 
@@ -484,21 +499,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibrary(string tabSpace, XElement entityNode)
+        internal static string GetSupportByVersion(string tabSpace, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
             string res = "";
-            string[] result = GetSupportByLibraryArray(entityNode);
+            string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
                 res += item + ",";
 
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
-            return tabSpace + "SupportByLibrary " + "" + parentNode.Attribute("Name").Value + ", " + res;
+            return tabSpace + "SupportByVersion " + "" + parentNode.Attribute("Name").Value + ", " + res;
         }
 
         /// <summary>
@@ -506,21 +521,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibraryString(string tabSpace, XElement entityNode)
+        internal static string GetSupportByVersionString(string tabSpace, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
             string res = "";
-            string[] result = GetSupportByLibraryArray(entityNode);
+            string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
                 res += item + ",";
 
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
-            return tabSpace + "SupportByLibraryAttribute " + "" + parentNode.Attribute("Name").Value + ", " + res;
+            return tabSpace + "SupportByVersionAttribute " + "" + parentNode.Attribute("Name").Value + ", " + res;
         }
 
         /// <summary>

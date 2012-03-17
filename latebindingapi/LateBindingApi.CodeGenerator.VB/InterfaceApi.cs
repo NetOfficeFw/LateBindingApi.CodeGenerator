@@ -39,9 +39,9 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string ConvertEarlyBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value).Replace("%enumerableSpace%", "");
-            string header = _classDesc.Replace("%name%", ParameterApi.ValidateNameWithoutVarType(faceNode.Attribute("Name").Value)).Replace("%RefLibs%", VBGenerator.GetSupportByLibraryString("", faceNode));
+            string header = _classDesc.Replace("%name%", ParameterApi.ValidateNameWithoutVarType(faceNode.Attribute("Name").Value)).Replace("%RefLibs%", VBGenerator.GetSupportByVersionString("", faceNode));
 
-            string version = VBGenerator.GetSupportByLibraryAttribute(faceNode);
+            string version = VBGenerator.GetSupportByVersionAttribute(faceNode);
             header += "\t" + version + "\r\n";
             string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
             header += "\t<ComImport, Guid(\"" + guid + "\"), TypeLibType(CShort(" + faceNode.Attribute("TypeLibType").Value + "))> _\r\n";
@@ -87,7 +87,7 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string ConvertLateBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            string attributes = "\t" + VBGenerator.GetSupportByLibraryAttribute(faceNode);
+            string attributes = "\t" + VBGenerator.GetSupportByVersionAttribute(faceNode);
             XElement defaultItemNode = GetDefaultItemNode(faceNode);
             if (null != defaultItemNode)
                 attributes += "\r\n\t<DefaultProperty(\"" + defaultItemNode.Attribute("Name").Value + "\")> _";
@@ -101,7 +101,7 @@ namespace LateBindingApi.CodeGenerator.VB
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", ParameterApi.ValidateName(faceNode.Attribute("Name").Value));
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t''' " + VBGenerator.GetSupportByLibrary("", faceNode));
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t''' " + VBGenerator.GetSupportByVersion("", faceNode));
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"), "Me");
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"), "Me");

@@ -76,7 +76,7 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string ConvertModuleToString(Settings settings, XElement projectNode, XElement moduleNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            string attributes = "\t" + VBGenerator.GetSupportByLibraryAttribute(moduleNode);
+            string attributes = "\t" + VBGenerator.GetSupportByVersionAttribute(moduleNode);
             string header = _classHeader.Replace("%name%", moduleNode.Attribute("Name").Value);
             string classDesc = _classDesc.Replace("%name%", moduleNode.Attribute("Name").Value);
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, moduleNode.Element("Methods"), "Me");
@@ -106,7 +106,7 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string ConvertGlobalModuleToString(Settings settings, XElement projectNode, XElement moduleNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            string attributes = "\t" + VBGenerator.GetSupportByLibraryAttribute(moduleNode);
+            string attributes = "\t" + VBGenerator.GetSupportByVersionAttribute(moduleNode);
             string header = _classHeader.Replace("%name%","[Globals]");
             string classDesc = _classDesc.Replace("%name%", "[Globals]");
 

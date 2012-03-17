@@ -25,7 +25,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t///</summary>\r\n";
 
-        private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%, IEventBinding \r\n\t{\r\n" +
+        private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n";
 
         private static string _classConstructor;
@@ -64,9 +64,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string delegates = _delegates.Replace("%delegates%", GetDelegates(projectNode, classNode));
             result += delegates;
 
-            string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(classNode);
+            string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(classNode);
             string header = _classHeader.Replace("%name%", classNode.Attribute("Name").Value);
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
+
+            if (ImplentsAnEventInterface(projectNode, classNode))
+                header = header.Replace("%eventBindingInterface%", ",IEventBinding");
+            else
+                header = header.Replace("%eventBindingInterface%", "");
+
+
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("CoClass.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", classNode.Attribute("Name").Value);
@@ -78,13 +85,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string sinkHelperIds = GetSinkHelperIds(projectNode, classNode);
             string sinkHelperSetActive = GetSinkHelperSetActiveSink(projectNode, classNode);
 
-            construct = construct.Replace("%CompareIds%", sinkHelperIds);
-            construct = construct.Replace("%SetActiveSink%", sinkHelperSetActive);
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// "+ CSharpGenerator.GetSupportByVersion("", classNode));
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// "+ CSharpGenerator.GetSupportByLibrary("", classNode));
+            _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
 
-            if (null == _classEventBinding)
-                _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
+            _classEventBinding = _classEventBinding.Replace("%CompareIds%", sinkHelperIds);
+            _classEventBinding = _classEventBinding.Replace("%SetActiveSink%", sinkHelperSetActive);
 
             string sinkHelperDispose = GetSinkHelperDispose(projectNode, classNode);
 
@@ -104,6 +110,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result += "\t\t#pragma warning restore\r\n";
             result += "\t}\r\n}";
             return result;
+        }
+
+        private static bool ImplentsAnEventInterface(XElement projectNode, XElement faceNode)
+        {
+            return (faceNode.Element("EventInterfaces").Elements("Ref").Count() > 0);
         }
 
         private static string GetInherited(XElement projectNode, XElement faceNode)
@@ -290,7 +301,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         doc.Element("Methods").Add(methodNode);
                     }
 
-                    string[] versions = CSharpGenerator.GetSupportByLibraryArray(itemMethod);
+                    string[] versions = CSharpGenerator.GetSupportByVersionArray(itemMethod);
                     foreach (string version in versions)
                     {
                         XElement attribute = (from a in methodNode.Elements("Version")
@@ -325,15 +336,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 versionAttributeString = versionAttributeString.Substring(0, versionAttributeString.Length - 1);
 
-                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + projectNode.Attribute("Name").Value + ", " + versionAttributeString.Replace("\"", "") + "\r\n" + "\t\t/// </summary>\r\n";
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByVersion " + projectNode.Attribute("Name").Value + ", " + versionAttributeString.Replace("\"", "") + "\r\n" + "\t\t/// </summary>\r\n";
                 line += "\t\tprivate event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value +
                    "EventHandler _" + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
 
-                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByLibrary " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") + 
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByVersion " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") + 
                     "\r\n" + "\t\t/// </summary>\r\n";  
 
 
-                line += "\t\t[SupportByLibrary(" + "\"" + projectNode.Attribute("Name").Value + "\"" + ", " + versionAttributeString.Replace("\"", "") + ")]\r\n";
+                line += "\t\t[SupportByVersion(" + "\"" + projectNode.Attribute("Name").Value + "\"" + ", " + versionAttributeString.Replace("\"", "") + ")]\r\n";
 
                 string field = itemNode.Attribute("Name").Value + "Event";
 

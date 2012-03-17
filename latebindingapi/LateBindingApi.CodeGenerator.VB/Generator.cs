@@ -388,7 +388,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibraryAttribute(string[] array, XElement entityNode)
+        internal static string GetSupportByVersionAttribute(string[] array, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
@@ -414,7 +414,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibraryAttribute(XElement entityNode)
+        internal static string GetSupportByVersionAttribute(XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
@@ -445,7 +445,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        public static string[] GetSupportByLibraryArray(XElement entityNode)
+        public static string[] GetSupportByVersionArray(XElement entityNode)
         {
             List<string> result = new List<string>();
             XElement refLibs = entityNode.Element("RefLibraries");
@@ -467,7 +467,7 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibrarySummary(string tabSpace, XElement entityNode)
+        internal static string GetSupportByVersionSummary(string tabSpace, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
@@ -477,7 +477,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string between = tabSpace + " ''' SupportByVersion " + parentNode.Attribute("Name").Value + " ";
             string summary2 = tabSpace + " ''' </summary>\r\n";
 
-            string[] result = GetSupportByLibraryArray(entityNode);
+            string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
                 between += item + ", ";
 
@@ -492,14 +492,14 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibrary(string tabSpace, XElement entityNode)
+        internal static string GetSupportByVersion(string tabSpace, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
             string res = "";
-            string[] result = GetSupportByLibraryArray(entityNode);
+            string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
                 res += item + ",";
 
@@ -514,14 +514,14 @@ namespace LateBindingApi.CodeGenerator.VB
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByLibraryString(string tabSpace, XElement entityNode)
+        internal static string GetSupportByVersionString(string tabSpace, XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
             string res = "";
-            string[] result = GetSupportByLibraryArray(entityNode);
+            string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
                 res += item + ",";
 

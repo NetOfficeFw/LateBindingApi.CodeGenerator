@@ -53,7 +53,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {            
             string result = _interfaceFile.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            result = result.Replace("%supportby%", CSharpGenerator.GetSupportByLibraryAttribute(faceNode));
+            result = result.Replace("%supportby%", CSharpGenerator.GetSupportByVersionAttribute(faceNode));
             result = result.Replace("%name%", faceNode.Attribute("Name").Value);
             result = result.Replace("%guid%", XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value));
             
@@ -61,7 +61,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string implementResult = "";
             foreach (XElement itemMethod in faceNode.Element("Methods").Elements("Method"))
             {                
-                methodResult += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemMethod) + "\r\n"; 
+                methodResult += "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemMethod) + "\r\n"; 
                 methodResult += "\t\t[PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime), DispId(" + itemMethod.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
                 methodResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, false) + ";\r\n\r\n";
                 implementResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, true) + "\r\n" + "\t\t{\r\n" + GetMethodImplementCode(settings, itemMethod) + "\t\t}\r\n\r\n";
@@ -125,8 +125,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result += "\t\t\t}\r\n\r\n";
             result += CreateConversionString(settings, 3, methodNode.Element("Parameters"));
             result += CreateSetArrayString(settings, 3, methodNode.Element("Parameters"));
-            result += "\t\t\tforeach(Delegate delItem in recipients)\r\n";
-            result += "\t\t\t\tdelItem.Method.Invoke(delItem.Target, paramsArray);\r\n";
+
+            result +=  "\t\t\t_eventBinding.RaiseCustomEvent(\"" +  methodNode.Attribute("Name").Value + "\", ref paramsArray);" +"\r\n";
 
             string modRefs = ParameterApi.CreateParametersToRefUpdateString(settings, 3, methodNode.Element("Parameters"), true);
             if (modRefs != "")

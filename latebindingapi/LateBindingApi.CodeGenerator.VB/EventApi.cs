@@ -52,7 +52,7 @@ namespace LateBindingApi.CodeGenerator.VB
         private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {            
             string result = _interfaceFile.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            result = result.Replace("%supportby%", VBGenerator.GetSupportByLibraryAttribute(faceNode));
+            result = result.Replace("%supportby%", VBGenerator.GetSupportByVersionAttribute(faceNode));
             result = result.Replace("%name%", faceNode.Attribute("Name").Value);
             result = result.Replace("%guid%", XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value));
             
@@ -60,7 +60,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string implementResult = "";
             foreach (XElement itemMethod in faceNode.Element("Methods").Elements("Method"))
             {
-                methodResult += "\t\t" + VBGenerator.GetSupportByLibraryAttribute(itemMethod) + "\r\n"; 
+                methodResult += "\t\t" + VBGenerator.GetSupportByVersionAttribute(itemMethod) + "\r\n"; 
                 methodResult += "\t\t<PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType:=MethodCodeType.Runtime), DispId(" + itemMethod.Element("DispIds").Element("DispId").Attribute("Id").Value + ")> _\r\n";
                 methodResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, false, false) + "\r\n\r\n";
                 implementResult += "\t\t" + GetEventMethodSignatur(settings, itemMethod, true, true) + "\r\n" + "\r\n" + GetMethodImplementCode(settings, itemMethod) + "\t\tEnd Sub\r\n\r\n";

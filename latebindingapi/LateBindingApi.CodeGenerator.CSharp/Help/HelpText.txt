@@ -21,6 +21,6 @@ The generator creates VS 2008 solutions in .NET 2.0, .NET 3.0, .NET 3.5 and VS20
 #
 
 #Docu
-generates a xml documentation header for any method and property with original type lib info and SupportByLibrary information{nl}
+generates a xml documentation header for any method and property with original type lib info and SupportByVersion information{nl}
 if you have convert optional parameters to object, its helpful for example.
 #

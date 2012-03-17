@@ -102,7 +102,9 @@
     <EmbeddedResource Include="LateBindingApi.CodeGenerator.Document.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LateBindingApi.CodeGenerator.Document.xml" />
+    <EmbeddedResource Include="LateBindingApi.CodeGenerator.Document.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -12,7 +12,7 @@ namespace LateBindingApi.CodeGenerator.VB
         public static string[] AddParameterDocumentation(string[] supportDocuArray, XElement other)
         {
             List<string> list = new List<string>();
-            string[] otherSupport = VBGenerator.GetSupportByLibraryArray(other);
+            string[] otherSupport = VBGenerator.GetSupportByVersionArray(other);
             foreach (string item in supportDocuArray)
                 list.Add(item);
 
@@ -35,12 +35,12 @@ namespace LateBindingApi.CodeGenerator.VB
         }
 
         /// <summary>
-        /// SupportByLibraryArray 
+        /// SupportByVersionArray 
         /// </summary>
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateParameterDocumentationForMethod(int numberOfTabSpace, string[] supportByLibrary, XElement parametersNode)
+        internal static string CreateParameterDocumentationForMethod(int numberOfTabSpace, string[] SupportByVersion, XElement parametersNode)
         {
             XElement parentNode = parametersNode;
             while (parentNode.Name != "Project")
@@ -50,7 +50,7 @@ namespace LateBindingApi.CodeGenerator.VB
             string tabSpace = VBGenerator.TabSpace(numberOfTabSpace);
 
             string libs = "''' SupportByVersion " + parentNode.Attribute("Name").Value + " ";
-            foreach (string lib in supportByLibrary)
+            foreach (string lib in SupportByVersion)
             {
                 libs += lib + ", ";
             }
@@ -102,7 +102,7 @@ namespace LateBindingApi.CodeGenerator.VB
         }
 
         /// <summary>
-        /// SupportByLibraryArray 
+        /// SupportByVersionArray 
         /// </summary>
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
@@ -113,7 +113,7 @@ namespace LateBindingApi.CodeGenerator.VB
         }
 
         /// <summary>
-        /// SupportByLibraryArray 
+        /// SupportByVersionArray 
         /// </summary>
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
@@ -127,9 +127,9 @@ namespace LateBindingApi.CodeGenerator.VB
             string result = "";
             string tabSpace = VBGenerator.TabSpace(numberOfTabSpace);
 
-            string[] supportByLibrary = VBGenerator.GetSupportByLibraryArray(parametersNode);
-            string libs = "''' SupportByLibrary " + parentNode.Attribute("Name").Value + " ";
-            foreach (string lib in supportByLibrary)
+            string[] SupportByVersion = VBGenerator.GetSupportByVersionArray(parametersNode);
+            string libs = "''' SupportByVersion " + parentNode.Attribute("Name").Value + " ";
+            foreach (string lib in SupportByVersion)
             {
                 libs += lib + ", ";
             }

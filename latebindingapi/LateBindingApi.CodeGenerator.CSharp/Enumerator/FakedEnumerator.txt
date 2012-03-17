@@ -8,7 +8,7 @@
             int count = Count;
             %Type%[] enumeratorObjects = new %Type%[count];
             for (int i = 0; i < count; i++)
-                enumeratorObjects[i] = this[i+1];
+                enumeratorObjects[i] = %ThisOrItem%;
 
             foreach (%Type% item in enumeratorObjects)
                 yield return item;

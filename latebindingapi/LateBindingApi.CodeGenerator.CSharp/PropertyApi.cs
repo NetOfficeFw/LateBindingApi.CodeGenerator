@@ -10,7 +10,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
     internal static class PropertyApi
     {
         private static string[] _Keywords;
-
+       
         /// <summary>
         /// convert all properties to code as string
         /// </summary>
@@ -20,7 +20,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(propertiesNode.Parent);
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(propertiesNode.Parent);
-            bool hasItem = EnumerableApi.HasItem(propertiesNode.Parent);
 
             ParameterApi.ValidateItems(propertiesNode, "Property", settings);
 
@@ -31,14 +30,35 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("_NewEnum" == propertyNode.Attribute("Name").Value)
                     continue;
 
-                string method = ConvertPropertyLateBindToString(settings, propertyNode, interfaceHasEnumerator, hasDefaultItem, hasItem);
+                if (("Item" == propertyNode.Attribute("Name").Value) && HasThis(propertiesNode.Parent))
+                    continue;
+
+                string method = ConvertPropertyLateBindToString(settings, propertyNode, interfaceHasEnumerator, hasDefaultItem);
                 result += method;
             }
 
             result += "\t\t#endregion\r\n";
             return result;
         }
-        
+
+        internal static bool HasThis(XElement entityNode)
+        {
+
+            XElement node = (from a in entityNode.Element("Properties").Elements("Property")
+                             where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            return false;
+        }
+
         internal static string ConvertPropertiesEarlyBindToString(Settings settings, XElement propertiesNode)
         {
             ParameterApi.ValidateItems(propertiesNode, "Property", settings);
@@ -80,7 +100,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="propertyNode"></param>
         /// <returns></returns>
-        internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode, bool interfaceHasEnumerator, bool hasDefaultItem, bool hasItem)
+        internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
@@ -97,7 +117,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (true == settings.CreateXmlDocumentation)
                     method += DocumentationApi.CreateParameterDocumentation(2, itemParams);
 
-                method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                method += "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
 
                 if (propertyNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
@@ -109,10 +129,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
 
-                string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem, hasItem);
+                string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem);
                 string paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
-                string paramAttrib = "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams)+ "\r\n";
-                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams));
+                string paramAttrib = "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams)+ "\r\n";
+                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams));
 
                 if (true == settings.CreateXmlDocumentation)
                     paramAttrib = paramDoku + paramAttrib;
@@ -144,7 +164,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string name = propertyNode.Attribute("Name").Value;
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {
-                string method = "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                string method = "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
                 method += "\t\t" + "[DispId(" + itemParams.Parent.Element("DispIds").Element("DispId").Attribute("Id").Value + ")]\r\n";
 
                 XElement returnValue = itemParams.Element("ReturnValue");
@@ -199,7 +219,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return "";
         }
 
-        private static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams, bool interfaceHasEnumerator, bool hasDefaultItem,  bool hasItem)
+        private static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams, bool interfaceHasEnumerator, bool hasDefaultItem )
         {
             string getter = "get_";
             string inParam = "(";
@@ -345,6 +365,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName = parametersNode.Parent.Attribute("Name").Value;
             string typeName = returnValue.Attribute("Type").Value;
+            if("this" == methodName)
+                methodName = parametersNode.Parent.Attribute("Underlying").Value;
+
             string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
            
             string objectArrayField = "";
@@ -364,11 +387,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if (!analyzeReturn)
             {
-                string invokeTarget = "";
-                if ("this" == parametersNode.Parent.Attribute("Name").Value)
-                    invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;
-                else
-                    invokeTarget = methodName;
+                string invokeTarget = methodName;
 
                 methodBody += tabSpace + "object returnItem = Invoker.PropertyGet(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
                 methodBody += tabSpace + "return returnItem;\r\n";
@@ -377,12 +396,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if ("true" == returnValue.Attribute("IsComProxy").Value)
                 {
-                    string invokeTarget = "";
-                    if ("this" == parametersNode.Parent.Attribute("Name").Value)
-                        invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;
-                    else
-                        invokeTarget = methodName;
-
+                    string invokeTarget  = methodName;
+                   
                     methodBody += tabSpace + "object returnItem = Invoker.PropertyGet(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
                     if (typeName == "COMObject")
                     {
@@ -456,15 +471,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     if ("true" == returnValue.Attribute("IsArray").Value)
                         objectString = "(object)";
 
-                    string invokeTarget = "";
-                    if ("this" == parametersNode.Parent.Attribute("Name").Value)
-                        invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;
-                    else
-                        invokeTarget = methodName;
-
+                    string invokeTarget  = methodName;
+                   
                     methodBody += tabSpace + "object" + " returnItem = " + objectString + "Invoker.PropertyGet" + "(this, \"" + invokeTarget + "\", paramsArray);\r\n";
                     methodBody += "%modifiers%";
-                    methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
+
+                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase))
+                        methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
+                    else
+                        methodBody += tabSpace + "return NetRuntimeSystem.Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(fullTypeName) + "(returnItem);\r\n";
                 }
 
                 if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
@@ -479,12 +495,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             else
             {
-                string invokeTarget = "";
-                if ("this" == parametersNode.Parent.Attribute("Name").Value)
-                    invokeTarget = parametersNode.Parent.Attribute("Underlying").Value;
-                else
-                    invokeTarget = methodName;
-
+                string invokeTarget = methodName;
                 methodBody += tabSpace + "Invoker.PropertyGet(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
                 methodBody += "";
             }

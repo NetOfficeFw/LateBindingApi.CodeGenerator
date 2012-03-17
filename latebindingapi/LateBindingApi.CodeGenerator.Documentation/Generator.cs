@@ -84,7 +84,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                 else
                     propName = prefix + propName;
 
-                newPropertyNode = new XElement("Method", new XElement("Parameters", new XElement("SupportByLibrary", "")), new XAttribute("Name", propName));
+                newPropertyNode = new XElement("Method", new XElement("Parameters", new XElement("SupportByVersion", "")), new XAttribute("Name", propName));
                 docuClassItem.Element("Methods").Add(newPropertyNode);
                 newNodes.Add(newPropertyNode);
 
@@ -92,13 +92,13 @@ namespace LateBindingApi.CodeGenerator.Documentation
                 {
                     string key = itemRefLib.Attribute("Key").Value;
                     string version = GetLibraryVersion(key);
-                    XElement versionNode = (from a in newPropertyNode.Element("Parameters").Elements("SupportByLibrary").Elements("Version")
+                    XElement versionNode = (from a in newPropertyNode.Element("Parameters").Elements("SupportByVersion").Elements("Version")
                                             where a.Value.Equals(version, StringComparison.InvariantCultureIgnoreCase)
                                             select a).FirstOrDefault();
                     if (null == versionNode)
                     {
                         versionNode = new XElement("Version", version);
-                        newPropertyNode.Element("Parameters").Element("SupportByLibrary").Add(versionNode);
+                        newPropertyNode.Element("Parameters").Element("SupportByVersion").Add(versionNode);
                     }
                 }           
  
@@ -182,8 +182,8 @@ namespace LateBindingApi.CodeGenerator.Documentation
                         newMethodNode.Element("Parameters").Add(newParam);
                     }
 
-                    XElement supportNode = new XElement("SupportByLibrary");
-                    string[] supportDocuArray = CSharpGenerator.GetSupportByLibraryArray(itemParameters);
+                    XElement supportNode = new XElement("SupportByVersion");
+                    string[] supportDocuArray = CSharpGenerator.GetSupportByVersionArray(itemParameters);
 
                     List<XElement> otherOverloads = MethodApi.GetOverloadsWithMoreParameters(itemParameters, itemMethod.Elements("Parameters"));
                     foreach (XElement other in otherOverloads)
@@ -238,7 +238,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                 {
                     XElement newConstantNode = new XElement("Constant", new XAttribute("Name", constantItem.Attribute("Name").Value));
 
-                    XElement enumSupportNode = new XElement("SupportByLibrary");
+                    XElement enumSupportNode = new XElement("SupportByVersion");
                     foreach (XElement itemRefLib in constantItem.Element("RefLibraries").Elements("Ref"))
                     {
                         string key = itemRefLib.Attribute("Key").Value;
@@ -255,7 +255,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                     newEnumNode.Add(new XElement("Members"));
                     newAssemblyNode.Element("Enums").Add(newEnumNode);
                     
-                    XElement enumSupportNode = new XElement("SupportByLibrary");
+                    XElement enumSupportNode = new XElement("SupportByVersion");
                     foreach (XElement itemRefLib in enumItem.Element("RefLibraries").Elements("Ref"))
                     {
                         string key = itemRefLib.Attribute("Key").Value;
@@ -270,7 +270,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                                                     new XAttribute("Name", itemMember.Attribute("Name").Value),
                                                     new XAttribute("Value", itemMember.Attribute("Value").Value));
                         
-                        XElement memberSupportNode = new XElement("SupportByLibrary");
+                        XElement memberSupportNode = new XElement("SupportByVersion");
                         foreach (XElement itemRefLib in itemMember.Element("RefLibraries").Elements("Ref"))
                         {
                             string key = itemRefLib.Attribute("Key").Value;
@@ -294,7 +294,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                 foreach (XElement itemInterface in listElements)
                 {
                     XElement newInterfaceNode = new XElement("Type", new XElement("Methods"),new XAttribute("Name", itemInterface.Attribute("Name").Value));
-                    XElement supportNode = new XElement("SupportByLibrary");
+                    XElement supportNode = new XElement("SupportByVersion");
 
                     foreach (XElement itemRefLib in itemInterface.Element("RefLibraries").Elements("Ref"))
                     {
@@ -315,7 +315,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                 {
                     XElement newClassNode = new XElement("Type", new XElement("Events"), new XAttribute("Name", itemClass.Attribute("Name").Value));
                     newAssemblyNode.Element("Types").Add(newClassNode);
-                    XElement supportNode = new XElement("SupportByLibrary");
+                    XElement supportNode = new XElement("SupportByVersion");
                     foreach (XElement itemRefLib in itemClass.Element("RefLibraries").Elements("Ref"))
                     {
                         string key = itemRefLib.Attribute("Key").Value;
@@ -333,7 +333,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                             foreach (XElement itemEvent in itemEventMethod.Elements("Parameters"))
 	                        {
                                 XElement addEventMethod = new XElement("Event", new XAttribute("Name", "add_" + itemEventMethod.Attribute("Name").Value));
-                                XElement addSupportNode = new XElement("SupportByLibrary");
+                                XElement addSupportNode = new XElement("SupportByVersion");
                                 foreach (XElement itemRefLib in itemEvent.Element("RefLibraries").Elements("Ref"))
                                 {
                                     string addKey = itemRefLib.Attribute("Key").Value;
@@ -343,7 +343,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
                                 addEventMethod.Add(supportNode);
 
                                 XElement revEventMethod = new XElement("Event", new XAttribute("Name", "remove_" + itemEventMethod.Attribute("Name").Value));
-                                XElement revSupportNode = new XElement("SupportByLibrary");
+                                XElement revSupportNode = new XElement("SupportByVersion");
                                 foreach (XElement itemRefLib in itemEvent.Element("RefLibraries").Elements("Ref"))
                                 {
                                     string removeKey = itemRefLib.Attribute("Key").Value;

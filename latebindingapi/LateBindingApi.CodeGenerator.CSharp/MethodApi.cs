@@ -17,7 +17,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(methodsNode.Parent);
             bool hasDefaultItem = EnumerableApi.HasDefaultItem(methodsNode.Parent);
-            bool hasItem = EnumerableApi.HasItem(methodsNode.Parent);
 
             ParameterApi.ValidateItems(methodsNode, "Method", settings);
 
@@ -27,11 +26,32 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if("_NewEnum" == methodNode.Attribute("Name").Value)
                     continue;
 
-                string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem, hasItem);
+                if (("Item" == methodNode.Attribute("Name").Value) && HasThis(methodsNode.Parent))
+                    continue;
+
+                string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem);
                 result += method;
             }
             result += "\t\t#endregion\r\n";
             return result;
+        }
+
+        internal static bool HasThis(XElement entityNode)
+        {
+
+            XElement node = (from a in entityNode.Element("Properties").Elements("Property")
+                             where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            node = (from a in entityNode.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (node != null)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -82,7 +102,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="methodNode"></param>
         /// <returns></returns>
-        internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem, bool hasItem)
+        internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
             string result = "";
             string name = methodNode.Attribute("Name").Value;
@@ -100,10 +120,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     inParam = "[";
                     outParam = "]";
                 }
-
+                
                 XElement returnValue = itemParams.Element("ReturnValue");
 
-                string[] supportDocuArray = CSharpGenerator.GetSupportByLibraryArray(itemParams);
+                string[] supportDocuArray = CSharpGenerator.GetSupportByVersionArray(itemParams);
 
                 // gibt es andere überladungen mit mehr parametern als dieser überladung und sind die überzählen alle optional?
                 // dann füge deren supportbylibray überladungen an
@@ -112,7 +132,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
                 
                 string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
-                string supportAttribute = CSharpGenerator.GetSupportByLibraryAttribute(supportDocuArray, itemParams);
+                string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
                  
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
@@ -164,6 +184,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string methodName    = parametersNode.Parent.Attribute("Name").Value;
             string typeName      = returnValue.Attribute("Type").Value;
             string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
+
+            if ("this" == methodName)
+                methodName = parametersNode.Parent.Attribute("Underlying").Value;
 
             string objectArrayField = "";
             string arrayField = "";
@@ -279,7 +302,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                     methodBody += tabSpace + "object" + " returnItem = " + objectString + "Invoker.MethodReturn" + "(this, \"" + invokeTarget + "\", paramsArray);\r\n";
                     methodBody += "%modifiers%";
-                    methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
+
+                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase))
+                        methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
+                    else
+                        methodBody += tabSpace + "return NetRuntimeSystem.Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(fullTypeName) + "(returnItem);\r\n";
                 }
 
                 if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
@@ -315,7 +343,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             return methodBody;
         }
-
+          
         internal static string ConvertMethodEarlyBindToString(Settings settings, XElement methodNode)
         {
             string result = "";
@@ -325,7 +353,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 XElement returnValue = itemParams.Element("ReturnValue");
 
                 string method = "";
-                method += "\t\t" + CSharpGenerator.GetSupportByLibraryAttribute(itemParams) + "\r\n";
+                method += "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
 
                 string marshalReturnAs = returnValue.Attribute("MarshalAs").Value;
                 if ("" != marshalReturnAs)

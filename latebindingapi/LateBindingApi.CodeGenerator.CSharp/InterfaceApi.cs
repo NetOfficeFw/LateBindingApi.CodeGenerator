@@ -38,9 +38,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertEarlyBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value).Replace("%enumerableSpace%", "");
-            string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", faceNode));
+            string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByVersionString("", faceNode));
 
-            string version = CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
+            string version = CSharpGenerator.GetSupportByVersionAttribute(faceNode);
             header += "\t" + version + "\r\n";
             string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
             header += "\t[ComImport, Guid(\"" + guid + "\"), TypeLibType((short) " + faceNode.Attribute("TypeLibType").Value + ")]\r\n";
@@ -62,16 +62,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertLateBindInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
         {
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            string attributes = "\t" + CSharpGenerator.GetSupportByLibraryAttribute(faceNode);
+            string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(faceNode);
             string header = _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
             header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
             header += "\t\t#pragma warning disable\r\n";
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-            //string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByLibraryString("", faceNode));
+            //string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByVersionString("", faceNode));
 
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByLibrary("", faceNode));
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", faceNode));
 
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));

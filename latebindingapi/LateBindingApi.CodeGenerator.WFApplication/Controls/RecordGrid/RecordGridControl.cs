@@ -55,7 +55,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid
             comConversion += typeLibType;
             textBoxAlias.AppendText(comConversion + "\r\n");
 
-            string version = "SupportByLibrary[" + GetDependencies(node.Element("RefLibraries")) + "]\r\n";
+            string version = "SupportByVersion[" + GetDependencies(node.Element("RefLibraries")) + "]\r\n";
             textBoxAlias.AppendText(version);
             
             string name = "public struct " + node.Attribute("Name").Value + "\r\n{\r\n";
@@ -67,7 +67,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.RecordGrid
                 if ("true" == itemMember.Attribute("IsArray").Value)
                     arr = "[]";
 
-                string member = "\tSupportByLibrary[" + GetDependencies(node.Element("RefLibraries")) + "]\r\n";
+                string member = "\tSupportByVersion[" + GetDependencies(node.Element("RefLibraries")) + "]\r\n";
                 textBoxAlias.AppendText(member);
 
                 string marshalAs = itemMember.Attribute("MarshalAs").Value;

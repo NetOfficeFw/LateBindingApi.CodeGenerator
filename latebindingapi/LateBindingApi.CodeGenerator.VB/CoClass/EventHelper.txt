@@ -1,5 +1,4 @@
-﻿
-#Region "IEventBinding Member"
+﻿#Region "IEventBinding Member"
 
         <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
         Private Sub CreateEventBridge() Implements IEventBinding.CreateEventBridge

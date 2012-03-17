@@ -226,8 +226,8 @@ namespace LateBindingApi.CodeGenerator.VB
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
             string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);
 
-            string versionSummary = VBGenerator.GetSupportByLibraryString("", enumNode);
-            string versionAttribute = VBGenerator.GetSupportByLibraryAttribute(enumNode); 
+            string versionSummary = VBGenerator.GetSupportByVersionString("", enumNode);
+            string versionAttribute = VBGenerator.GetSupportByVersionAttribute(enumNode); 
             content = content.Replace("%enumerableSpace%", "Imports System.Collections\r\n");
 
             if (targetReturnType == "COMObject")

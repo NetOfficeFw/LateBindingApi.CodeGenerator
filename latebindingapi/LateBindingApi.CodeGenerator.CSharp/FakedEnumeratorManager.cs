@@ -38,14 +38,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             foreach (XElement itemFace in interfaces)
             {
-                if (itemFace.Attribute("Name").Value == "BuildingBlockTypes")
-                {
-                }
-
                 XElement countNode = HasCount(itemFace);
-                XElement itemNode = HasItem(itemFace);
+                XElement defaultNode = GetDefault(itemFace);
                 XElement enumNode = HasEnum(itemFace);
-                if ((null != countNode) && (null != itemNode) && (null == enumNode) && (itemNode.Element("Parameters").Element("Parameter").Attribute("IsEnum").Value == "false"))
+                if ((null != countNode) && (null != defaultNode) && (null == enumNode) && (defaultNode.Element("Parameters").Element("Parameter").Attribute("IsEnum").Value == "false"))
                 {
                     XElement projectNode = itemFace;
                     while (projectNode.Name != "Project")
@@ -60,34 +56,33 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     fakedEnum.Add(new XElement("RefLibraries"));
                     fakedEnum.Add(new XElement("Parameters", new XElement("RefLibraries")));
                     fakedEnum.Element("Parameters").Add(new XElement("ReturnValue",
-                                                    new XAttribute("Type", itemNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value),
-                                                    new XAttribute("VarType", itemNode.Element("Parameters").Element("ReturnValue").Attribute("VarType").Value),
-                                                    new XAttribute("MarshalAs", itemNode.Element("Parameters").Element("ReturnValue").Attribute("MarshalAs").Value),
-                                                    new XAttribute("TypeKind", itemNode.Element("Parameters").Element("ReturnValue").Attribute("TypeKind").Value),
-                                                    new XAttribute("IsComProxy", itemNode.Element("Parameters").Element("ReturnValue").Attribute("IsComProxy").Value),
-                                                    new XAttribute("IsExternal", itemNode.Element("Parameters").Element("ReturnValue").Attribute("IsExternal").Value),
-                                                    new XAttribute("IsEnum", itemNode.Element("Parameters").Element("ReturnValue").Attribute("IsEnum").Value),
-                                                    new XAttribute("IsArray", itemNode.Element("Parameters").Element("ReturnValue").Attribute("IsArray").Value),
-                                                    new XAttribute("IsNative", itemNode.Element("Parameters").Element("ReturnValue").Attribute("IsNative").Value),
-                                                    new XAttribute("TypeKey", itemNode.Element("Parameters").Element("ReturnValue").Attribute("TypeKey").Value),
-                                                    new XAttribute("ProjectKey", itemNode.Element("Parameters").Element("ReturnValue").Attribute("ProjectKey").Value),
-                                                    new XAttribute("LibraryKey", itemNode.Element("Parameters").Element("ReturnValue").Attribute("LibraryKey").Value)
-                                                    )); 
+                                                    new XAttribute("Type", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value),
+                                                    new XAttribute("VarType", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("VarType").Value),
+                                                    new XAttribute("MarshalAs", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("MarshalAs").Value),
+                                                    new XAttribute("TypeKind", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("TypeKind").Value),
+                                                    new XAttribute("IsComProxy", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("IsComProxy").Value),
+                                                    new XAttribute("IsExternal", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("IsExternal").Value),
+                                                    new XAttribute("IsEnum", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("IsEnum").Value),
+                                                    new XAttribute("IsArray", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("IsArray").Value),
+                                                    new XAttribute("IsNative", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("IsNative").Value),
+                                                    new XAttribute("TypeKey", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("TypeKey").Value),
+                                                    new XAttribute("ProjectKey", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("ProjectKey").Value),
+                                                    new XAttribute("LibraryKey", defaultNode.Element("Parameters").Element("ReturnValue").Attribute("LibraryKey").Value)
+                                                    ));
 
-                    foreach (XElement itemRef in itemNode.Element("Parameters").Element("RefLibraries").Elements("Ref"))
+                    foreach (XElement itemRef in defaultNode.Element("Parameters").Element("RefLibraries").Elements("Ref"))
                         fakedEnum.Element("Parameters").Element("RefLibraries").Add(new XElement("Ref", new XAttribute("Key", itemRef.Attribute("Key").Value)));
 
-                    foreach (XElement itemRef in itemNode.Element("RefLibraries").Elements("Ref"))
+                    foreach (XElement itemRef in defaultNode.Element("RefLibraries").Elements("Ref"))
                         fakedEnum.Element("RefLibraries").Add(new XElement("Ref", new XAttribute("Key", itemRef.Attribute("Key").Value)));
 
                     XElement dispNode = new XElement("DispIds", new XElement("DispId", new XAttribute("Id", "-999")));
                     dispNode.Element("DispId").Add(new XElement("RefLibraries"));
-                    foreach (XElement itemRef in itemNode.Element("Parameters").Element("RefLibraries").Elements("Ref"))
+                    foreach (XElement itemRef in defaultNode.Element("Parameters").Element("RefLibraries").Elements("Ref"))
                     {
                         dispNode.Element("DispId").Element("RefLibraries").Add(new XElement("Ref", new XAttribute("Key", itemRef.Attribute("Key").Value)));
                     }
                     fakedEnum.Add(dispNode);
-                    Console.WriteLine(projectNode.Attribute("Name").Value + "." + itemFace.Attribute("Name").Value);
                     itemFace.Element("Properties").Add(fakedEnum);
                 }
             }
@@ -114,16 +109,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return null;
         }
 
-        private XElement HasItem(XElement itemFace)
+        private XElement GetDefault(XElement itemFace)
         {
             XElement node = (from a in itemFace.Element("Properties").Elements("Property")
-                             where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                             where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
                              select a).FirstOrDefault();
             if (null != node)
                 return node;
 
             node = (from a in itemFace.Element("Methods").Elements("Method")
-                    where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                    where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
                     select a).FirstOrDefault();
             if (null != node)
                 return node;
