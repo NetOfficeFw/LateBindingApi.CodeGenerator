@@ -255,10 +255,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string versionAttribute = CSharpGenerator.GetSupportByVersionAttribute(enumNode); 
             content = content.Replace("%enumerableSpace%", "using System.Collections;\r\n");
 
-            if (targetReturnType == "COMObject")            
-                content = content.Replace("%enumerable%", " ,IEnumerable<" + "object" + ">");
-            else
-                content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
+            content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
 
             versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
             if (HasCustomAttribute(enumNode))
@@ -271,7 +268,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
+                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "COMObject");
                     enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
 
                     if (HasDefault(faceNode))
@@ -294,7 +291,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
+                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "COMObject");
                     enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);                    
                 }
                 else
