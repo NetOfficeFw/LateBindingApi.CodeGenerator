@@ -1,0 +1,18 @@
+﻿		#region Fields
+
+		private static COMObject _instance;
+
+        internal static COMObject Instance
+        {
+	        get
+	        {
+		        return _instance;
+	        }
+	        set
+	        {
+		        if( (null == value) || (null == _instance) )
+			        _instance = value;				
+        	}
+        }
+
+		#endregion

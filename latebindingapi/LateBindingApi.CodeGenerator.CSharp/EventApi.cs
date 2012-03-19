@@ -97,11 +97,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (("true" == itemParam.Attribute("IsComProxy").Value)
                    || ("COMObject" == itemParam.Attribute("Type").Value) || ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
                 {
-                    par += ", MarshalAs(UnmanagedType.IDispatch)] object " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
+                    par += ", MarshalAs(UnmanagedType.IDispatch)] object " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value);
                 }
                 else
                 {
-                    par += "] " + isRef + "object " + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
+                    par += "] " + isRef + "object " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value);
                 }
             
                 result += par +", ";
@@ -144,7 +144,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             int i = 1;
             foreach (XElement itemParam in ParameterApi.GetParameter(parametersNode, true))
             {               
-                result += prefix + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value);
+                result += prefix + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value);
                 if(i<paramsCount)
                     result += ", ";                
                 i++;
@@ -183,7 +183,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if ("true" == itemParam.Attribute("IsRef").Value)
                 {
-                    result += tabSpace + "paramsArray.SetValue(" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ", " + i.ToString() + ");\r\n";
+                    result += tabSpace + "paramsArray.SetValue(" + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ", " + i.ToString() + ");\r\n";
                 }
                 else
                 {
@@ -207,7 +207,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
                     result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
-                            " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(settings,itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
+                            " = LateBindingApi.Core.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
                 }
                 else
                 {
@@ -215,13 +215,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     {
                         string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
                         result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
-                           " = (" + qualifiedType + ")" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ";\r\n";
+                           " = (" + qualifiedType + ")" + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ";\r\n";
 
                     }
                     else
                     {
                         result += tabSpace + itemParam.Attribute("Type").Value + " new" + itemParam.Attribute("Name").Value +
-                            " = (" + itemParam.Attribute("Type").Value + ")" + ParameterApi.ValidateParamName(settings, itemParam.Attribute("Name").Value) + ";\r\n";
+                            " = (" + itemParam.Attribute("Type").Value + ")" + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ";\r\n";
                     }
                 }
             } 

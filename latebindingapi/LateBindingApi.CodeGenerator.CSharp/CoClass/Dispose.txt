@@ -1,0 +1,21 @@
+﻿		
+/// <summary>
+		/// NetOffice method: dispose instance and all child instances
+		/// </summary>
+		/// <param name="disposeEventBinding">dispose event exported proxies with one or more event recipients</param>
+		public override void Dispose(bool disposeEventBinding)
+		{
+			if(this.Equals(Global.Instance))
+				 Global.Instance = null;	
+			base.Dispose(disposeEventBinding);
+		}
+
+		/// <summary>
+		/// NetOffice method: dispose instance and all child instances
+		/// </summary>
+		public override void Dispose()
+		{
+			if(this.Equals(Global.Instance))
+				 Global.Instance = null;
+			base.Dispose();
+		}

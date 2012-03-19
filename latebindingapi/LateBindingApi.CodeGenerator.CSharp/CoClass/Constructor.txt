@@ -30,7 +30,7 @@
         /// <param name="comProxy">inner wrapped COM proxy</param>
 		public %name%(COMObject parentObject, object comProxy) : base(parentObject, comProxy)
 		{
-			%callQuitInDispose%
+			%callQuitInDispose%%setGlobalInstance%
 		}
 		
 		/// <param name="parentObject">object there has created the proxy</param>
@@ -54,7 +54,7 @@
         /// </summary>		
 		public %name%():base("%ProgId%")
 		{
-			%callQuitInDispose%
+			%callQuitInDispose%%setGlobalInstance%
 		}
 		
 		/// <summary>
@@ -63,8 +63,7 @@
         /// <param name="progId">registered ProgID</param>
 		public %name%(string progId):base(progId)
 		{
-			%callQuitInDispose%
+			%callQuitInDispose%%setGlobalInstance%
 		}
-
+%disposeGlobalInstance%
 		#endregion
-		

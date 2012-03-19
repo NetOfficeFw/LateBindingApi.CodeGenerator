@@ -143,6 +143,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             _customMethods = new CustomMethodManager(this, _document);
             _customMethods.ScanForOptionalMethods();
 
+            DoUpdate("Scan for CoClasses with multiple inherites");
+            InheritedInterfaceManager inheritedManager = new InheritedInterfaceManager(this, _document);
+            inheritedManager.ValidateMultipleCoClassInherited();
+
             DoUpdate("Create root folder");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
@@ -403,11 +407,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string result = "";
             string versions = "";
+            List<string> listVersions = new List<string>();
 
-            foreach (string  item in array)
+            foreach (string item in array)
             {
-                versions += item + ",";
+                listVersions.Add(item);
             }
+
+            listVersions.Sort(CompareSupportByVersion);
+
+            foreach (string versionAttribute in listVersions)
+                versions += versionAttribute + ",";
 
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
@@ -428,6 +438,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 parentNode = parentNode.Parent;
 
             string result = "";
+            List<string> listVersions = new List<string>();
             string versions = "";
 
             XElement refLibs = entityNode.Element("RefLibraries");
@@ -438,11 +449,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                     where a.Attribute("Key").Value.Equals(key)
                                     select a).FirstOrDefault();
                 string versionAttribute = libNode.Attribute("Version").Value;
-                versions += versionAttribute + ",";
+                listVersions.Add(versionAttribute);
+                
             }
+
+            listVersions.Sort(CompareSupportByVersion);
+
+            foreach (string versionAttribute in listVersions)
+                versions += versionAttribute + ",";
+
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
-            
+
             result += "[SupportByVersionAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
@@ -466,6 +484,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 result.Add(versionAttribute);
                
             }
+            result.Sort(CompareSupportByVersion);
             return result.ToArray();
         }
 
@@ -476,6 +495,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string GetSupportByVersionSummary(string tabSpace, XElement entityNode)
         {
+            List<string> resultList = new List<string>();
+
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
@@ -486,6 +507,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
+                resultList.Add(item);
+
+            resultList.Sort(CompareSupportByVersion);
+
+            foreach (var item in resultList)
                 between += item + ", ";
 
             if (between.EndsWith(", "))
@@ -501,6 +527,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string GetSupportByVersion(string tabSpace, XElement entityNode)
         {
+            List<string> listVersions = new List<string>();
+
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
@@ -508,13 +536,33 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string res = "";
             string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
-                res += item + ",";
+                listVersions.Add(item);
+
+            listVersions.Sort(CompareSupportByVersion);
+
+            foreach (string versionAttribute in listVersions)
+                res += versionAttribute + ",";
 
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
             return tabSpace + "SupportByVersion " + "" + parentNode.Attribute("Name").Value + ", " + res;
         }
+
+        public static int CompareSupportByVersion(string x, string y)
+        {
+            double val1 = Convert.ToDouble(x);
+            double val2 = Convert.ToDouble(y);
+
+            if (val1 > val2)
+                return 1;
+            if (val1 < val2)
+                return -1;
+
+            return 0;
+        }
+
+         
 
         /// <summary>
         /// returns support libary versions for entityNode as string
@@ -523,6 +571,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string GetSupportByVersionString(string tabSpace, XElement entityNode)
         {
+            List<string> listVersions = new List<string>();
+
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
@@ -530,8 +580,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string res = "";
             string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
-                res += item + ",";
+                listVersions.Add(item);
 
+            listVersions.Sort(CompareSupportByVersion);
+
+            foreach (string versionAttribute in listVersions)
+                res += versionAttribute + ",";
+             
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 

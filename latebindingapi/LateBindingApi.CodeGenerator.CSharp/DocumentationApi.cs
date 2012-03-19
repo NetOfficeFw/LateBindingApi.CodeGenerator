@@ -81,17 +81,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     defaultInfo = " = " + itemParameter.Attribute("DefaultValue").Value;
                 }
-                string line = tabSpace + "/// <param name=\"" + ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + defaultInfo + "</param>\r\n";
+                string line = tabSpace + "/// <param name=\"" +   ParameterApi.ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + defaultInfo + "</param>\r\n";
                 result += line;
             }
             return result;
         }
-
-        private static string ValidateParamName(string name)
-        {
-            return name.Substring(0, 1).ToLower() + name.Substring(1);
-        }
-
+  
         /// <summary>
         /// SupportByVersionArray 
         /// </summary>
@@ -111,6 +106,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode, bool generateGetSet, string additional)
         {
+            List<string> listVersions = new List<string>();
+
             XElement parentNode = parametersNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
@@ -121,9 +118,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string[] SupportByVersion = CSharpGenerator.GetSupportByVersionArray(parametersNode);
             string libs = "/// SupportByVersion " + parentNode.Attribute("Name").Value + " ";
             foreach (string lib in SupportByVersion)
-            {
-                libs += lib + ", ";
-            }
+                listVersions.Add(lib);
+
+            listVersions.Sort(CSharpGenerator.CompareSupportByVersion);
+
+            foreach (string versionAttribute in listVersions)
+                libs += versionAttribute + ", ";
+             
+
             libs = libs.Substring(0, libs.Length - 2);
 
             string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
@@ -161,7 +163,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 typeName += " " + itemParameter.Attribute("Name").Value;
 
-                string line = tabSpace + "/// <param name=\"" + itemParameter.Attribute("Name").Value + "\">" + typeName + "</param>\r\n";
+                string line = tabSpace + "/// <param name=\"" + ParameterApi.ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + "</param>\r\n";
                 result += line;
             }
             return result;

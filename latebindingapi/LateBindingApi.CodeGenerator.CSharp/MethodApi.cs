@@ -137,10 +137,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
                     method = supportDocu;
+              
+                int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
 
                 if(methodNode.Attribute("Hidden").Value.Equals("true",StringComparison.InvariantCultureIgnoreCase))
                     method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
-
+               
                 if (HasCustomAttribute(itemParams))
                     method += "\t\t" + "[CustomMethodAttribute]" + "\r\n";
                 method += "\t\t" + supportAttribute + "\r\n";
@@ -303,8 +305,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "object" + " returnItem = " + objectString + "Invoker.MethodReturn" + "(this, \"" + invokeTarget + "\", paramsArray);\r\n";
                     methodBody += "%modifiers%";
 
-                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase))
+                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) 
+                        || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsExternal").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) || fullTypeName == "UIntPtr")
                         methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
                     else
                         methodBody += tabSpace + "return NetRuntimeSystem.Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(fullTypeName) + "(returnItem);\r\n";

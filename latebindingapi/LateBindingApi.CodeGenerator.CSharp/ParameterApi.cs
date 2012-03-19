@@ -105,7 +105,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         }
 
-        internal static string ValidateParamName(Settings settings, string name)
+        internal static string ValidateParamName(string name)
         {
             if (null == _Keywords)
             {
@@ -113,8 +113,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _Keywords =  res.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             }
 
-            if (true == settings.ConvertParamNamesToCamelCase)
-                name = name.Substring(0, 1).ToLower() + name.Substring(1);
+            name = name.Substring(0, 1).ToLower() + name.Substring(1);
             
             bool isInList = false;
             foreach (string item in _Keywords)
@@ -426,7 +425,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     type += "[]";
 
                 string name = itemParam.Attribute("Name").Value;
-                name = ValidateParamName(settings, name);
+                name = ValidateParamName(name);
                 
                 if ("true" == itemParam.Attribute("IsOut").Value)
                     name = "out " + name;
@@ -479,7 +478,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     type = "ref " + type;
 
                 string name = itemParam.Attribute("Name").Value;
-                name = ValidateParamName(settings, name);
+                name = ValidateParamName(name);
 
                 parameter = type + " " + name;
                 if (i < countOfParams)
@@ -561,7 +560,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     isArray = "[]";
                
                 string paramName = itemParam.Attribute("Name").Value;
-                paramName = ValidateParamName(settings, paramName);
+                paramName = ValidateParamName(paramName);
 
                 if (("true" == itemParam.Attribute("IsRef").Value) || ("true" == itemParam.Attribute("IsOut").Value))
                     result += tabSpace + paramName + 
@@ -592,7 +591,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == itemParam.Attribute("IsOut").Value)
                 {
                     string paramName = itemParam.Attribute("Name").Value;
-                    paramName = ValidateParamName(settings, paramName);
+                    paramName = ValidateParamName(paramName);
 
                     if (itemParam.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                            result += tabSpace + paramName + " = null;" + Environment.NewLine;
@@ -651,7 +650,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     result += "(object)";
 
                 string paramName = itemParam.Attribute("Name").Value;
-                paramName = ValidateParamName(settings, paramName);
+                paramName = ValidateParamName(paramName);
  
                 result += paramName;
 
@@ -683,7 +682,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     result += "(object)";
 
                 string paramName = itemParam.Attribute("Name").Value;
-                paramName = ValidateParamName(settings, paramName);
+                paramName = ValidateParamName(paramName);
 
                 result += paramName;
 

@@ -119,7 +119,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 method += "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
 
+                int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
+
                 if (propertyNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                    method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+                else if( (paramsCountWithOptionals > 0) && (name != "this"))
                     method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
 
                 if("this" == name)
@@ -476,8 +480,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "object" + " returnItem = " + objectString + "Invoker.PropertyGet" + "(this, \"" + invokeTarget + "\", paramsArray);\r\n";
                     methodBody += "%modifiers%";
 
-                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase))
+                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) 
+                        || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsExternal").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) || fullTypeName == "UIntPtr")
                         methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
                     else
                         methodBody += tabSpace + "return NetRuntimeSystem.Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(fullTypeName) + "(returnItem);\r\n";

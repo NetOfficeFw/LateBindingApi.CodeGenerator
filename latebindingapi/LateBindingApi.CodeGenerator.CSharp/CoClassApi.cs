@@ -23,6 +23,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                             "\t#pragma warning restore\r\n" +
                                             "\r\n\t#endregion\r\n\r\n";
 
+        private static string _disposeOverride;
+
         private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t///</summary>\r\n";
 
         private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
@@ -41,8 +43,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string result = "";
             foreach (XElement faceNode in classesNode.Elements("CoClass"))
-                result += ConvertCoClassToFile(projectNode, faceNode, faceFolder) + "\r\n";
-
+            {
+                if(faceNode.Attribute("Name").Value != "Global")
+                    result += ConvertCoClassToFile(projectNode, faceNode, faceFolder) + "\r\n";
+            }
             return result;
         }
 
@@ -78,7 +82,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _classConstructor = RessourceApi.ReadString("CoClass.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", classNode.Attribute("Name").Value);
             construct = construct.Replace("%ProgId%", projectNode.Attribute("Name").Value + "." + classNode.Attribute("Name").Value);
-            
+
+            if (null == _disposeOverride)
+                _disposeOverride = RessourceApi.ReadString("CoClass.Dispose.txt");
+
+            if ("Application" == classNode.Attribute("Name").Value)
+            {
+                construct = construct.Replace("%setGlobalInstance%", "\r\n\t\tGlobal.Instance = this;");
+                construct = construct.Replace("%disposeGlobalInstance%", _disposeOverride);
+            }
+            else
+            {
+                construct = construct.Replace("%setGlobalInstance%", "");
+                construct = construct.Replace("%disposeGlobalInstance%", "");
+            }
+
+
             string sinkHelperDefine = GetSinkHelperDefine(projectNode, classNode);
             construct = construct.Replace("%sinkHelperDefine%", sinkHelperDefine);
 
