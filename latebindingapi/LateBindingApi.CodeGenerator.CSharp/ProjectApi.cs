@@ -26,7 +26,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             assemblyInfo = assemblyInfo.Replace("%Culture%", project.Attribute("Culture").Value);
             assemblyInfo = assemblyInfo.Replace("%Version%", project.Attribute("Version").Value);
             assemblyInfo = assemblyInfo.Replace("%FileVersion%", project.Attribute("FileVersion").Value);
-
+            assemblyInfo = assemblyInfo.Replace("%Product%", project.Attribute("Name").Value);
+             
             assemblyInfo = assemblyInfo.Replace("%AliasInclude%", typeDefsInclude);
 
             string listAssemblies = "\tName - Description - SupportByVersion\r\n";

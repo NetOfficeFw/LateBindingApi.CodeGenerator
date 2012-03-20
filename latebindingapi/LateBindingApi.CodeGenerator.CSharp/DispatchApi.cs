@@ -74,7 +74,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string version = CSharpGenerator.GetSupportByVersionAttribute(faceNode);
             header += "\t" + version + "\r\n";
             string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
-            header += "\t[ComImport, Guid(\"" + guid + "\"), TypeLibType((short) " + faceNode.Attribute("TypeLibType").Value + ")]\r\n";
+            header += "\t[ComImport, ComVisible(true), Guid(\"" + guid + "\"), TypeLibType((short) " + faceNode.Attribute("TypeLibType").Value + ")]\r\n";
             header += _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
             header =  header.Replace("class", "interface").Replace(" : %inherited%", "").Replace("%enumerable%", "");
             result += header;

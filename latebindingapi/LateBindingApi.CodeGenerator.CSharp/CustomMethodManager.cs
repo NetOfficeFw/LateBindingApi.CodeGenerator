@@ -91,23 +91,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 foreach (XElement itemMethod in itemFace.Element("Methods").Elements("Method"))
                 {
-                    if (itemMethod.Attribute("Name").Value == "Item")
-                        continue;
-
                     List<XElement> newParameters = new List<XElement>();
                     IEnumerable<XElement> listParameters = itemMethod.Elements("Parameters");
                     foreach (XElement itemParameters in listParameters)
                     {
-                        IEnumerable<XElement> nonOptionalParamNodes = (from a in itemParameters.Elements("Parameter")
-                                                                    where a.Attribute("IsOptional").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase)
-                                                                    select a);
+                        IEnumerable<XElement> nonOptionalParamNodes = (from a in itemParameters.Elements("Parameter")  where a.Attribute("IsOptional").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) select a);
+
                         int nonOptionalsCount = nonOptionalParamNodes.Count();
 
-                        IEnumerable<XElement> optionalParamNodes = (from a in itemParameters.Elements("Parameter")
-                                         where a.Attribute("IsOptional").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-                                         select a);
+                        IEnumerable<XElement> optionalParamNodes = (from a in itemParameters.Elements("Parameter")  where a.Attribute("IsOptional").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) select a);
+                        
                         int optionalsCount = optionalParamNodes.Count();
-
                         if (optionalsCount > 0)
                         {
                             for (int i = nonOptionalsCount; i < (nonOptionalsCount+optionalsCount); i++)
@@ -126,7 +120,45 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         itemMethod.Add(item);
 	            }
             }
+
+
+            foreach (XElement itemFace in interfaces)
+            {
+                foreach (XElement itemMethod in itemFace.Element("Properties").Elements("Property"))
+                {
+                    List<XElement> newParameters = new List<XElement>();
+                    IEnumerable<XElement> listParameters = itemMethod.Elements("Parameters");
+                    foreach (XElement itemParameters in listParameters)
+                    {
+                        IEnumerable<XElement> nonOptionalParamNodes = (from a in itemParameters.Elements("Parameter") where a.Attribute("IsOptional").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) select a);
+
+                        int nonOptionalsCount = nonOptionalParamNodes.Count();
+
+                        IEnumerable<XElement> optionalParamNodes = (from a in itemParameters.Elements("Parameter") where a.Attribute("IsOptional").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) select a);
+
+                        int optionalsCount = optionalParamNodes.Count();
+                        if (optionalsCount > 0)
+                        {
+                            for (int i = nonOptionalsCount; i < (nonOptionalsCount + optionalsCount); i++)
+                            {
+                                XElement existingMethodOverload = GetMethodOverload(itemMethod, newParameters, i);
+                                if (null == existingMethodOverload)
+                                {
+                                    XElement newParameter = CloneParametersNode(itemParameters, i);
+                                    newParameters.Add(newParameter);
+                                }
+                            }
+                        }
+                    }
+
+                    foreach (XElement item in newParameters)
+                        itemMethod.Add(item);
+                }
+            }
+
         }
+
+
 
         private XElement HasCount(XElement itemFace)
         {
@@ -135,30 +167,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                              select a).FirstOrDefault();
             if (null != node)
             {
-                string type = (node.Element("Parameters").Element("ReturnValue").Attribute("Type").Value) ;
+                string type = (node.Element("Parameters").Element("ReturnValue").Attribute("Type").Value);
                 if ("Int32" == type)
                     return node;
             }
 
             node = (from a in itemFace.Element("Methods").Elements("Method")
                     where a.Attribute("Name").Value.Equals("Count", StringComparison.InvariantCultureIgnoreCase)
-                    select a).FirstOrDefault();
-            if (null != node)
-                return node;
-
-            return null;
-        }
-
-        private XElement HasItem(XElement itemFace)
-        {
-            XElement node = (from a in itemFace.Element("Properties").Elements("Property")
-                             where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
-                             select a).FirstOrDefault();
-            if (null != node)
-                return node;
-
-            node = (from a in itemFace.Element("Methods").Elements("Method")
-                    where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
                     select a).FirstOrDefault();
             if (null != node)
                 return node;

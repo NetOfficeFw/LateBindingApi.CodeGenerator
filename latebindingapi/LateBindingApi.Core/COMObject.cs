@@ -112,7 +112,7 @@ namespace LateBindingApi.Core
         /// </summary>
         /// <param name="parentObject"></param>
         /// <param name="comProxy"></param>
-        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        //[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public COMObject(COMObject parentObject, object comProxy)
         {
             _parentObject = parentObject;
@@ -497,12 +497,9 @@ namespace LateBindingApi.Core
             // release proxy
             ReleaseCOMProxy();
 
-            // clear supportList
+            // clear supportList reference
             if (null != _listSupportedEntities)
-            {
-                _listSupportedEntities.Clear();
                 _listSupportedEntities = null;
-            }
 
             _isDisposed = true;
             _isCurrentlyDisposing = false;

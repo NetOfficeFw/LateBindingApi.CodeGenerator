@@ -99,6 +99,9 @@ namespace LateBindingApi.Core
             {
                 DebugConsole.WriteLine("LateBindingApi.Core.Factory.Initialize()");
 
+                // clear entities cache
+                _entitiesListCache.Clear();
+
                 List<string> dependAssemblies = new List<string>();
                 Assembly callingAssembly = System.Reflection.Assembly.GetCallingAssembly();
                 foreach (AssemblyName item in callingAssembly.GetReferencedAssemblies())
@@ -151,10 +154,7 @@ namespace LateBindingApi.Core
                         }
                     }
                 }
-
-                // clear entities cache
-                _entitiesListCache.Clear();
-
+                 
                 DebugConsole.WriteLine("LateBindingApi.Core.Factory.Initialize() passed");
             }
             catch (Exception throwedException)

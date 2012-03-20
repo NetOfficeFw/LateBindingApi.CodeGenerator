@@ -32,7 +32,7 @@
 		{
 			%callQuitInDispose%%setGlobalInstance%
 		}
-		
+
 		/// <param name="parentObject">object there has created the proxy</param>
         /// <param name="comProxy">inner wrapped COM proxy</param>
         /// <param name="comProxyType">Type of inner wrapped COM proxy"</param>

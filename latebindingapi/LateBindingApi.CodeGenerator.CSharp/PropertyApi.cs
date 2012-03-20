@@ -220,7 +220,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         
         private static string CreatePropertyEarlyBindPrototypeString(Settings settings, XElement itemParams)
         {
-            return "";
+            throw new NotSupportedException("CreatePropertyEarlyBindPrototypeString");
         }
 
         private static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams, bool interfaceHasEnumerator, bool hasDefaultItem )
@@ -245,7 +245,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
             int paramsCountWithOutOptionals = ParameterApi.GetParamsCount(itemParams, false);
             bool hasForbiddenName = IsKeyword(name);
-            if ((paramsCountWithOptionals > 0) || (faceName == name) || hasForbiddenName)
+            IEnumerable<XElement> xParams = ParameterApi.GetParameter(itemParams, true);
+            // paramsCountWithOptionals > 0 && 
+            if ((xParams.Count() > 0) || (faceName == name) || hasForbiddenName)
             {
                 result = "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
                 if (name != "this")

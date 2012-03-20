@@ -36,7 +36,7 @@ namespace LateBindingApi.Core
         private static bool        _enableAutomaticQuit;
         private static bool        _enableAdHocLoading = true;
         private static bool        _enableDebugOutput = true;
-        private static bool        _enableSafeMode = true;
+        private static bool        _enableSafeMode = false;
 
         #endregion
 

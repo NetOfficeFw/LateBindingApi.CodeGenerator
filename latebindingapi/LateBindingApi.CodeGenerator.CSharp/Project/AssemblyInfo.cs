@@ -23,8 +23,9 @@ using LateBindingApi.Core;
 [assembly: AssemblyVersion("%Version%")]
 [assembly: AssemblyFileVersion("%FileVersion%")]
 [assembly: ComVisibleAttribute(false)]
+[assembly: PrimaryInteropAssembly(1, 0)]
+[assembly: ImportedFromTypeLib("%Product%")]
 [assembly: LateBindingAttribute("1.0")]
-
 
 /*
 Alias Table
