@@ -498,8 +498,7 @@ namespace LateBindingApi.Core
             ReleaseCOMProxy();
 
             // clear supportList reference
-            if (null != _listSupportedEntities)
-                _listSupportedEntities = null;
+            _listSupportedEntities = null;
 
             _isDisposed = true;
             _isCurrentlyDisposing = false;

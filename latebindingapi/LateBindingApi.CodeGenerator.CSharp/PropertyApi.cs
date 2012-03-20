@@ -102,6 +102,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
+            if (propertyNode.Attribute("Name").Value == "Address")
+            {
+                if (propertyNode.Parent.Parent.Attribute("Name").Value == "Range")
+                {
+
+                }
+            }
+
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
             bool analyzeReturn = Convert.ToBoolean(propertyNode.Attribute("AnalyzeReturn").Value);
@@ -251,7 +259,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 result = "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
                 if (name != "this")
-                    result += "\t\t{\r\n%propertyGetBody%\t\t}\r\n\r\n";
+                    result += "\t\t{\t\t\r\n%propertyGetBody%\t\t}\r\n\r\n";
                 else
                     result += "\t\t{\r\n\t\t\tget\r\n{\t\t\t\r\n%propertyGetBody%\t\t\t}\r\n\t\t}\r\n\r\n";
 
@@ -260,13 +268,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     string retValueType = CSharpGenerator.GetQualifiedType(itemParams.Element("ReturnValue"));
                     if ("" != parameters)
                         retValueType = ", " + retValueType;
-
-                    if (name != "this")
-                    { 
-                        result += "%setAttribute%";
-                        result += "\t\tpublic " + "void set_" + name + inParam + parameters + retValueType + " value" + outParam + "\r\n";
-                        result += "\t\t{\r\n%propertySetBody%\t\t}\r\n\r\n";
-                    }
+                    
+                    result += "%setAttribute%";
+                    result += "\t\tpublic " + "void set_" + name + inParam + parameters + retValueType + " value" + outParam + "\r\n";
+                    result += "\t\t{\r\n%propertySetBody%\t\t}\r\n\r\n";                    
+                }
+                else if((("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value) && ("this" == name)))
+                {
+                    result = "\t\tpublic " + "%valueReturn% " + name + inParam + parameters + outParam + "\r\n";
+                    result += "\t\t{\r\n\t\t\tget\r\n\t\t\t{\r\n%propertyGetBody%\t\t\t}\r\n%%\t\t}\r\n\r\n";
+                    result = result.Replace("%%", "\t\t\tset\r\n\t\t\t{\r\n%propertySetBody%\t\t\t}\r\n");
                 }
             }
             else
@@ -281,7 +292,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     result = result.Replace("%%", "");
             }
 
-            if ((paramsCountWithOptionals > 0) && (paramsCountWithOutOptionals > 0) && ("this" != name) && ("_Default" != name) && (!faceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+            if ((paramsCountWithOutOptionals > 0) && ("this" != name) && ("_Default" != name) && (!faceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
             {
                 result += "\t\t%paramDocu%\r\n" + "\t\tpublic %valueReturn% " + name + "(" + parameters + ")" + "\r\n\t\t{\r\n\t\t\t" +
                     "return get_" + name + "(" + parametersCall + ");" +
@@ -484,7 +495,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                     if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) 
                         || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsExternal").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) || fullTypeName == "UIntPtr")
+                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsNative").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) || fullTypeName == "UIntPtr")
                         methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
                     else
                         methodBody += tabSpace + "return NetRuntimeSystem.Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(fullTypeName) + "(returnItem);\r\n";

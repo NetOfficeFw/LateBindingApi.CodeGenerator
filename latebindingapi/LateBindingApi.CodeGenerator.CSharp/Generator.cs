@@ -394,6 +394,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return tabSpace;
         }
 
+        private static void ListAdd(List<string> list, string value)
+        {
+            bool found = false;
+
+            foreach (string item in list)
+            {
+                if (item.Equals(value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                list.Add(value);
+        }
+        
         /// <summary>
         /// returns support libary versions for entityNode
         /// </summary>
@@ -411,7 +428,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             foreach (string item in array)
             {
-                listVersions.Add(item);
+                ListAdd(listVersions, item);
             }
 
             listVersions.Sort(CompareSupportByVersion);
@@ -449,8 +466,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                     where a.Attribute("Key").Value.Equals(key)
                                     select a).FirstOrDefault();
                 string versionAttribute = libNode.Attribute("Version").Value;
-                listVersions.Add(versionAttribute);
-                
+                ListAdd(listVersions, versionAttribute);
             }
 
             listVersions.Sort(CompareSupportByVersion);
@@ -481,8 +497,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                     where a.Attribute("Key").Value.Equals(key)
                                     select a).FirstOrDefault();
                 string versionAttribute = libNode.Attribute("Version").Value;
-                result.Add(versionAttribute);
-               
+                ListAdd(result, versionAttribute);
             }
             result.Sort(CompareSupportByVersion);
             return result.ToArray();
@@ -507,7 +522,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
-                resultList.Add(item);
+                ListAdd(resultList, item);
 
             resultList.Sort(CompareSupportByVersion);
 
@@ -536,7 +551,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string res = "";
             string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
-                listVersions.Add(item);
+                ListAdd(listVersions, item);
 
             listVersions.Sort(CompareSupportByVersion);
 
@@ -580,7 +595,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string res = "";
             string[] result = GetSupportByVersionArray(entityNode);
             foreach (string item in result)
-                listVersions.Add(item);
+                ListAdd(listVersions, item);
 
             listVersions.Sort(CompareSupportByVersion);
 
