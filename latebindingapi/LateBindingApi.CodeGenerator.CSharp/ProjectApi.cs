@@ -14,6 +14,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                    + "      <Name>%Name%Api</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";
 
+        private static XElement GetLibraryNode(XElement project)
+        { 
+            string name = project.Attribute("Name").Value;
+  
+            return (from a in project.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library") 
+                    where a.Attribute("Name").Value.Equals(name,StringComparison.InvariantCultureIgnoreCase) select a).FirstOrDefault();
+        }
+
         internal static string ReplaceAssemblyAttributes(Settings settings, string solutionPath, string assemblyInfo, XElement project, string typeDefsInclude)
         {
             assemblyInfo = assemblyInfo.Replace("%Title%", project.Attribute("Name").Value);
@@ -26,8 +34,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             assemblyInfo = assemblyInfo.Replace("%Culture%", project.Attribute("Culture").Value);
             assemblyInfo = assemblyInfo.Replace("%Version%", project.Attribute("Version").Value);
             assemblyInfo = assemblyInfo.Replace("%FileVersion%", project.Attribute("FileVersion").Value);
-            assemblyInfo = assemblyInfo.Replace("%Product%", project.Attribute("Name").Value);
-             
+            assemblyInfo = assemblyInfo.Replace("%ImportedTypeLibName%", project.Attribute("Name").Value);
+            assemblyInfo = assemblyInfo.Replace("%ImportedTypeLibGuid%", CSharpGenerator.ValidateGuid(GetLibraryNode(project).Attribute("GUID").Value));
+     
             assemblyInfo = assemblyInfo.Replace("%AliasInclude%", typeDefsInclude);
 
             string listAssemblies = "\tName - Description - SupportByVersion\r\n";

@@ -34,14 +34,14 @@ namespace LateBindingApi.Core
     {
         #region Fields
 
+        private static bool                     _assemblyResolveEventConnected;
         private static List<COMObject>          _globalObjectList = new List<COMObject>();
         private static List<IFactoryInfo>       _factoryList = new List<IFactoryInfo>();
         private static Dictionary<string, Type> _proxyTypeCache = new Dictionary<string, Type>();
         private static Dictionary<string, Type> _wrapperTypeCache = new Dictionary<string, Type>();
         private static Dictionary<Guid, Guid>   _hostCache = new Dictionary<Guid, Guid>();
-
         private static Dictionary<string, Dictionary<string, string>> _entitiesListCache = new Dictionary<string, Dictionary<string, string>>();
-
+        private static Assembly _thisAssembly = Assembly.GetAssembly(typeof(COMObject));
 
         #endregion
 
@@ -86,7 +86,7 @@ namespace LateBindingApi.Core
         public static event ProxyCountChangedHandler ProxyCountChanged;
 
         #endregion
-
+     
         #region Factory Methods
 
         /// <summary>
@@ -98,6 +98,12 @@ namespace LateBindingApi.Core
             try
             {
                 DebugConsole.WriteLine("LateBindingApi.Core.Factory.Initialize()");
+
+                if (!_assemblyResolveEventConnected)
+                {
+                    AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+                    _assemblyResolveEventConnected = true;
+                }
 
                 // clear entities cache
                 _entitiesListCache.Clear();
@@ -624,6 +630,29 @@ namespace LateBindingApi.Core
                 message += string.Format("Loaded LateBindingApi Assembly:{0} {1}{2}", item.ComponentGuid, item.Assembly.FullName, Environment.NewLine);
 
             throw new LateBindingApiException(message);
+        }
+
+        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            try
+            {
+                string directoryName = _thisAssembly.CodeBase.Substring(0, _thisAssembly.CodeBase.LastIndexOf("/"));
+                directoryName = directoryName.Replace("/", "\\").Substring(8);
+                string fileName = args.Name.Substring(0, args.Name.IndexOf(","));
+                string fullFileName = System.IO.Path.Combine(directoryName, fileName + ".dll");
+                if (System.IO.File.Exists(fullFileName))
+                {
+                    Assembly assembly = System.Reflection.Assembly.Load(args.Name);
+                    return assembly;
+                }
+                else
+                    return null;     
+            }
+            catch
+            {
+                return null;   
+            }
+             
         }
 
         #endregion

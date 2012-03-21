@@ -22,9 +22,9 @@ using LateBindingApi.Core;
 [assembly: AssemblyCulture("%Culture%")]
 [assembly: AssemblyVersion("%Version%")]
 [assembly: AssemblyFileVersion("%FileVersion%")]
-[assembly: ComVisibleAttribute(false)]
 [assembly: PrimaryInteropAssembly(1, 0)]
-[assembly: ImportedFromTypeLib("%Product%")]
+[assembly: ImportedFromTypeLib("%ImportedTypeLibName%")]
+[assembly: Guid("%ImportedTypeLibGuid%")]
 [assembly: LateBindingAttribute("1.0")]
 
 /*

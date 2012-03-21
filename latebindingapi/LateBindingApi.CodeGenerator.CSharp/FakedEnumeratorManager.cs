@@ -123,6 +123,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null != node)
                 return node;
 
+            node = (from a in itemFace.Element("Properties").Elements("Property")
+                    where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (null != node)
+                return node;
+
+            node = (from a in itemFace.Element("Methods").Elements("Method")
+                    where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+            if (null != node)
+                return node;
+
             return null;
         }
 

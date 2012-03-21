@@ -162,20 +162,36 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static bool HasDefaultItem(XElement interfaceNode)
         {
             XElement enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
-                                       where a.Attribute("Name").Value.Equals("_Default")
+                                       where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
                                        select a).FirstOrDefault();
+           
+            
             if (null == enumeratorNode)
-            {
                 enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
-                                  where a.Attribute("Name").Value.Equals("_Default")
+                                  where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
                                   select a).FirstOrDefault();
-                if (null == enumeratorNode)
-                    return false;
-                else
-                    return true;
-            }
-            else
-                return true;
+
+            if (null == enumeratorNode)
+                enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
+                                  where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                                  select a).FirstOrDefault();
+
+            if (null == enumeratorNode)
+                 enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
+                                   where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                              select a).FirstOrDefault();
+
+            if (null == enumeratorNode)
+                enumeratorNode = (from a in interfaceNode.Element("Methods").Elements("Method")
+                                  where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                                  select a).FirstOrDefault();
+
+            if (null == enumeratorNode)
+                enumeratorNode = (from a in interfaceNode.Element("Properties").Elements("Property")
+                                  where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
+                                  select a).FirstOrDefault();
+
+            return enumeratorNode != null;
         }
 
 
