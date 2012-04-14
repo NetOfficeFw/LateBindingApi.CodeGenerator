@@ -216,6 +216,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if ("COMVariant" == thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value)
                 return "object";
+            if ("COMObject" == thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value)
+                return "object";
 
             string qualifier = GetQualifier(faceNode, thisNode.Element("Parameters").Element("ReturnValue"));
             if (qualifier != "")
@@ -266,6 +268,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement enumNode = GetEnumNode(faceNode);
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
             string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);
+            if (targetReturnType == "COMObject")
+                targetReturnType = "object";
 
             string versionSummary = CSharpGenerator.GetSupportByVersionString("", enumNode);
             string versionAttribute = CSharpGenerator.GetSupportByVersionAttribute(enumNode); 
@@ -284,7 +288,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "COMObject");
+                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
                     enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
 
                     if (HasDefault(faceNode))
@@ -307,7 +311,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "COMObject");
+                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
                     enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);                    
                 }
                 else
@@ -340,7 +344,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string type = returnType.Attribute("Type").Value;
            
             if(returnType.Attribute("IsComProxy").Value == "true")
-                 type = "COMObject";
+                 type = "object";
 
             if("COMVariant" == type)
                 type = "object";
@@ -349,7 +353,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 type += "[]";
 
             // get type qualifiers
-            if (type != "COMObject")
+            if (type != "object")
             { 
                 string qualifier = GetQualifier(faceNode, returnType);
                 if(qualifier != "")
@@ -360,6 +364,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 enumString = enumString.Replace("%Type%", targetReturnType);
             else
             */
+
             enumString = enumString.Replace("%Type%", type);
 
             content += enumString;

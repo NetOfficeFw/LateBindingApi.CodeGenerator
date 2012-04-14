@@ -13,6 +13,41 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="methodsNode"></param>
         /// <returns></returns>
+        internal static string ConvertConflictMethodsLateBindToString(Settings settings, XElement methodsNode)
+        {
+            bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(methodsNode.Parent);
+            bool hasDefaultItem = EnumerableApi.HasDefaultItem(methodsNode.Parent);
+
+            ParameterApi.ValidateItems(methodsNode, "Method", settings);
+
+            string result = "\r\n\t\t#region Methods\r\n\r\n";
+            foreach (XElement methodNode in methodsNode.Elements("Method"))
+            {
+                if ("this" == methodNode.Attribute("Name").Value)
+                    continue;
+
+                if ("_NewEnum" == methodNode.Attribute("Name").Value)
+                    continue;
+
+                if (("Item" == methodNode.Attribute("Name").Value) && HasThis(methodsNode.Parent))
+                    continue;
+
+                string method = ConvertConflictMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem);
+                result += method;
+               
+            }
+
+            result += "\t\t#endregion\r\n";
+            return result;
+        }
+
+    
+
+        /// <summary>
+        /// convert all methods to code as string
+        /// </summary>
+        /// <param name="methodsNode"></param>
+        /// <returns></returns>
         internal static string ConvertMethodsLateBindToString(Settings settings, XElement methodsNode)
         {
             bool interfaceHasEnumerator = EnumerableApi.HasEnumerator(methodsNode.Parent);
@@ -29,8 +64,32 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (("Item" == methodNode.Attribute("Name").Value) && HasThis(methodsNode.Parent))
                     continue;
 
-                string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem);
-                result += method;
+                bool isNameConflict = false;
+                foreach (XAttribute item in methodNode.Attributes())
+                {
+                    if (item.Name == "IsNameConflict" && item.Value == "true")
+                    {
+                        isNameConflict = true;
+                        break;
+                    }
+
+                }
+
+                bool isOptionalConflict = false;
+                foreach (XAttribute item in methodNode.Attributes())
+                {
+                    if (item.Name == "IsOptionalConflict" && item.Value == "true")
+                    {
+                        isOptionalConflict = true;
+                        break;
+                    }
+                }
+
+                if (!isNameConflict && !isOptionalConflict)
+                {
+                    string method = ConvertMethodLateBindToString(settings, methodNode, interfaceHasEnumerator, hasDefaultItem);
+                    result += method;
+                }
             }
             result += "\t\t#endregion\r\n";
             return result;
@@ -102,6 +161,110 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="methodNode"></param>
         /// <returns></returns>
+        internal static string ConvertConflictMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem)
+        {
+            string result = "";
+            string name = methodNode.Attribute("Name").Value;
+            bool analyzeReturn = Convert.ToBoolean(methodNode.Attribute("AnalyzeReturn").Value);
+            foreach (XElement itemParams in methodNode.Elements("Parameters"))
+            {
+                if (("this" == name) && itemParams.HasAttributes)
+                    continue;
+
+                bool isOptionalConflict = false;
+                foreach (XAttribute item in itemParams.Attributes())
+                {
+                    if (item.Name == "IsOptionalConflict" && item.Value == "true")
+                    {
+                        isOptionalConflict = true;
+                        break;
+                    }
+                }
+
+                bool isNameConflict = false;
+                foreach (XAttribute item in itemParams.Attributes())
+                {
+                    if (item.Name == "IsNameConflict" && item.Value == "true")
+                    {
+                        isNameConflict = true;
+                        break;
+                    }
+                }
+
+                if (!isOptionalConflict && !isNameConflict)
+                    continue;
+
+                string inParam = "(";
+                string outParam = ")";
+
+                if ("this" == name)
+                {
+                    inParam = "[";
+                    outParam = "]";
+                }
+
+                XElement returnValue = itemParams.Element("ReturnValue");
+
+                string[] supportDocuArray = CSharpGenerator.GetSupportByVersionArray(itemParams);
+
+                // gibt es andere überladungen mit mehr parametern als dieser überladung und sind die überzählen alle optional?
+                // dann füge deren supportbylibray überladungen an
+                List<XElement> otherOverloads = GetOverloadsWithMoreParameters(itemParams, methodNode.Elements("Parameters"));
+                foreach (XElement other in otherOverloads)
+                    supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
+
+                string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
+                string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
+
+                string method = "";
+                if (true == settings.CreateXmlDocumentation)
+                    method = supportDocu;
+
+                int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
+
+                if (methodNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                    method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+
+                if (HasCustomAttribute(itemParams))
+                    method += "\t\t" + "[CustomMethodAttribute]" + "\r\n";
+                method += "\t\t" + supportAttribute + "\r\n";
+                if ("this" == name)
+                    method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
+
+                string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
+                if (valueReturn == "COMObject")
+                {
+                    valueReturn = "object";
+                }
+
+                if ("true" == returnValue.Attribute("IsArray").Value)
+                    valueReturn += "[]";
+                if (!analyzeReturn)
+                    valueReturn = "object";
+
+                method += "\t\tpublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
+                string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true);
+                method = method.Replace("%params%", parameters);
+
+                string methodBody = "";
+                if ("this" == name)
+                    methodBody = "\t\t\tget\r\n\t\t\t{\r\n" + CreateLateBindMethodBody(settings, 4, itemParams, analyzeReturn) + "\t\t\t}\r\n";
+                else
+                    methodBody = CreateLateBindMethodBody(settings, 3, itemParams, analyzeReturn);
+
+                method = method.Replace("%methodbody%", methodBody);
+                result += method + "\r\n";
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// convert method to code as string
+        /// </summary>
+        /// <param name="methodNode"></param>
+        /// <returns></returns>
         internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
             string result = "";
@@ -150,6 +313,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
+                if (valueReturn == "COMObject")
+                {
+                    valueReturn = "object";
+                }
+
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
                 if (!analyzeReturn)
@@ -185,6 +353,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName    = parametersNode.Parent.Attribute("Name").Value;
             string typeName      = returnValue.Attribute("Type").Value;
+
             string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
 
             if ("this" == methodName)
@@ -228,7 +397,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "object returnItem = Invoker.MethodReturn(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
                     if (typeName == "COMObject")
                     {
-                        methodBody += tabSpace + "COMObject" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                        methodBody += tabSpace + "object" + arrayField + " newObject = LateBindingApi.Core.Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
                         methodBody += "%modifiers%";
                         methodBody += tabSpace + "return newObject;\r\n";
                     }
@@ -305,8 +474,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "object" + " returnItem = " + objectString + "Invoker.MethodReturn" + "(this, \"" + invokeTarget + "\", paramsArray);\r\n";
                     methodBody += "%modifiers%";
 
-                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) 
-                        || returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) )
+                    {
+                        methodBody += tabSpace + "int intReturnItem = NetRuntimeSystem.Convert.ToInt32(returnItem);\r\n";
+                        methodBody += tabSpace + "return (" + fullTypeName + ")intReturnItem;\r\n";
+                    }
+                    else if (returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
                         || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsExternal").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) || fullTypeName == "UIntPtr")
                         methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
                     else

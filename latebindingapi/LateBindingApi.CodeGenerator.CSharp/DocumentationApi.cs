@@ -114,7 +114,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string result = "";
             string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
-
+            string retValueType = CSharpGenerator.GetQualifiedType(parametersNode.Element("ReturnValue"));
+            
             string[] SupportByVersion = CSharpGenerator.GetSupportByVersionArray(parametersNode);
             string libs = "/// SupportByVersion " + parentNode.Attribute("Name").Value + " ";
             foreach (string lib in SupportByVersion)
@@ -139,11 +140,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         summary += tabSpace + "/// Get/Set\r\n";
                 }
                 summary += additional;
+                if(retValueType == "COMObject")
+                    summary += tabSpace + "/// Unknown COM Proxy\r\n";
                 summary += tabSpace + "/// </summary>\r\n";
             }
             else
             {
                 summary += additional;
+                if (retValueType == "COMObject")
+                    summary += tabSpace + "/// Unknown COM Proxy\r\n";
                 summary += tabSpace + "/// </summary>\r\n";
             }
             result += summary;

@@ -69,6 +69,7 @@
     <Compile Include="CoClassApi.cs" />
     <EmbeddedResource Include="CoClass\EventHelper.txt" />
     <EmbeddedResource Include="Event\Interface.txt" />
+    <Compile Include="ConflictManager.cs" />
     <Compile Include="ConstantApi.cs" />
     <Compile Include="CustomMethodManager.cs" />
     <Compile Include="DerivedManager.cs" />
@@ -182,6 +183,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CoClass\Dispose.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Interface\FakedClassConstructor.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

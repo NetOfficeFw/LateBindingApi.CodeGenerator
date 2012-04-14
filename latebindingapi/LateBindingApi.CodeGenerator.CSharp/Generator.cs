@@ -143,9 +143,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
             _customMethods = new CustomMethodManager(this, _document);
             _customMethods.ScanForOptionalMethods();
 
+            DoUpdate("Scan for name conflicts");
+            ConflictManager conflictManager = new ConflictManager(this, _document);
+            conflictManager.ScanForConflicts();
+             
             DoUpdate("Scan for CoClasses with multiple inherites");
             InheritedInterfaceManager inheritedManager = new InheritedInterfaceManager(this, _document);
             inheritedManager.ValidateMultipleCoClassInherited();
+
+
 
             DoUpdate("Create root folder");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
