@@ -1,0 +1,11 @@
+﻿        
+		#region IEnumerable Members
+       
+		%version%
+		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
+		{
+			return NetOffice.Utils.GetScalarEnumeratorAs%Call%(this);
+		}
+
+		#endregion
+    

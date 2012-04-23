@@ -1,0 +1,12 @@
+﻿		
+		#Region "IEnumerable Members"
+        
+		%version%
+		Private Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
+
+			Return NetOffice.Utils.GetScalarEnumerator%AsWhat%(Me)
+
+		End Function
+
+		#End Region
+        

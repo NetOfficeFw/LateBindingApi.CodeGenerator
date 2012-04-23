@@ -1,0 +1,84 @@
+﻿#Region "IEventBinding Member"
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Private Sub CreateEventBridge() Implements IEventBinding.CreateEventBridge
+
+            If (False = NetOffice.Settings.EnableEvents) Then
+                Return
+            End If
+
+            If (Not NetOffice.Utils.IsNothing(_connectPoint)) Then
+                Return
+            End If
+
+            If (NetOffice.Utils.IsNothing(_activeSinkId)) Then
+                _activeSinkId = SinkHelper.GetConnectionPoint(Me, _connectPoint, %SinkHelperType%.Id)
+            End If
+%SetActiveSink% 
+
+        End Sub
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public ReadOnly Property EventBridgeInitialized() As Boolean Implements IEventBinding.EventBridgeInitialized
+            Get
+
+                Return Not NetOffice.Utils.IsNothing(_connectPoint)
+
+            End Get
+        End Property
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Function GetCountOfEventRecipients(ByVal eventName As String) As Integer Implements IEventBinding.GetCountOfEventRecipients
+
+            If NetOffice.Utils.IsNothing(_thisType) Then
+                _thisType = Me.GetType()
+            End If
+
+            Dim handlersName = "_" + eventName + "EventHandlers"
+            Dim handler As ArrayList = _thisType.GetField(handlersName, Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic).GetValue(Me)
+
+            Return handler.Count
+
+        End Function
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Function HasEventRecipients() As Boolean Implements IEventBinding.HasEventRecipients
+
+%HandlerCheck%
+            Return False
+
+        End Function
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Function RaiseCustomEvent(ByVal eventName As String, ByRef paramsArray() As Object) As Integer Implements IEventBinding.RaiseCustomEvent
+
+            If NetOffice.Utils.IsNothing(_thisType) Then
+                _thisType = Me.GetType()
+            End If
+
+            Dim handlersName = "_" + eventName + "EventHandlers"
+            Dim handler As ArrayList = _thisType.GetField(handlersName, Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic).GetValue(Me)
+            For Each itemHandler As [Delegate] In handler
+
+                Try
+                    itemHandler.DynamicInvoke(paramsArray)
+                Catch exception As NetRuntimeSystem.Exception
+                    DebugConsole.WriteException(exception)
+                End Try
+
+            Next
+
+            Return handler.Count
+
+        End Function
+
+        <EditorBrowsable(EditorBrowsableState.Never), Browsable(False)> _
+        Public Sub DisposeEventBridge() Implements IEventBinding.DisposeEventBridge
+
+%sinkHelperDispose%
+            _connectPoint = Nothing
+
+        End Sub
+
+#End Region
+

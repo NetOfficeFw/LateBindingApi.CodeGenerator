@@ -1,0 +1,70 @@
+﻿#Region "Fields"
+
+    Private _connectPoint As NetRuntimeSystem.Runtime.InteropServices.ComTypes.IConnectionPoint
+    Private _activeSinkId As String
+    Private _thisType As NetRuntimeSystem.Type
+%sinkHelperDefine%	
+#End Region
+
+#Region "Type Information"
+
+    Private Shared _type As Type
+
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+    Public Shared ReadOnly Property LateBindingApiWrapperType() As Type
+
+            Get
+            If (NetOffice.Utils.IsNothing(_type)) Then
+                    _type = GetType(%name%)
+            End If
+
+            Return _type
+        End Get
+    End Property
+
+#End Region
+
+#Region "Construction"
+
+    ''' <param name="parentObject">object there has created the proxy</param>
+    ''' <param name="comProxy">inner wrapped COM proxy</param>
+	Public Sub New( parentObject As COMObject, comProxy As object) 
+		MyBase.New(parentObject, comProxy)
+			%callQuitInDispose%%setGlobalInstance%
+	End Sub
+
+    ''' <param name="parentObject">object there has created the proxy</param>
+    ''' <param name="comProxy">inner wrapped COM proxy</param>
+    ''' <param name="comProxyType">Type of inner wrapped COM proxy"</param>
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+	Public Sub New( parentObject As COMObject,  comProxy As object, comProxyType As NetRuntimeSystem.Type) 
+		MyBase.New(parentObject, comProxy, comProxyType)
+			%callQuitInDispose%
+	End Sub
+
+
+    ''' <param name="replacedObject">object to replaced. replacedObject are not usable after this action</param>
+	<EditorBrowsable(EditorBrowsableState.Never), Browsable(false)> _
+	Public Sub New(replacedObject As COMObject)
+		MyBase.New(replacedObject)
+		%callQuitInDispose%
+	End Sub
+
+    ''' <summary>
+    ''' creates a new instance of %name% 
+    ''' </summary>		
+	Public Sub New()
+		MyBase.New("%ProgId%")
+			%callQuitInDispose%%setGlobalInstance%
+	End Sub
+
+    ''' <summary>
+    ''' creates a new instance of %name%
+    ''' </summary>
+    ''' <param name="progId">registered ProgID</param>
+	Public Sub New(progId as String)
+		MyBase.New(progId)
+			%callQuitInDispose%%setGlobalInstance%
+	End Sub
+%disposeGlobalInstance%
+#End Region

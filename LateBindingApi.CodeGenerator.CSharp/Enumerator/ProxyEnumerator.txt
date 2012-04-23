@@ -1,0 +1,10 @@
+﻿   
+		#region IEnumerable Members
+       
+		%version%
+		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
+		{
+			return NetOffice.Utils.GetProxyEnumeratorAs%Call%(this);
+		}
+
+		#endregion
