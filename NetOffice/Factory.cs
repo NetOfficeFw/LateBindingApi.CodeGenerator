@@ -310,23 +310,23 @@ namespace NetOffice
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYGET:
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT:
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUTREF:
-                        {
+                    {
                             typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
                             string outValue = "";
                             bool exists = supportList.TryGetValue("Property-" + strName, out outValue);
                             if (!exists)
                                 supportList.Add("Property-" + strName, strDocString);
                             break;
-                        }
+                    }
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_FUNC:
-                        {
+                    {
                             typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
                             string outValue = "";
                             bool exists = supportList.TryGetValue("Method-" + strName, out outValue);
                             if (!exists)
                                 supportList.Add("Method-" + strName, strDocString);
                             break;
-                        }
+                    }
                 }
 
                 typeInfo.ReleaseFuncDesc(funcDescPointer);
@@ -877,11 +877,11 @@ namespace NetOffice
                 else
                     return null;
             }
-            catch
+            catch(Exception exception)
             {
+                DebugConsole.WriteException(exception);
                 return null;
             }
-
         }
 
         #endregion
