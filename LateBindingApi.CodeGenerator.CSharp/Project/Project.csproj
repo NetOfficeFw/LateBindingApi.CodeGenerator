@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NetOffice.%Name%</RootNamespace>
     <AssemblyName>%Name%</AssemblyName>
-    <TargetFrameworkVersion>%Framework%</TargetFrameworkVersion>
+    <TargetFrameworkVersion>%Framework%</TargetFrameworkVersion>%Profile%
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>%Name%_%Framework%.snk</AssemblyOriginatorKeyFile>

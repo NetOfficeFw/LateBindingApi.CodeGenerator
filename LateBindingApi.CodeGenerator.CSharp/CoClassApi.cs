@@ -88,7 +88,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if ("Application" == classNode.Attribute("Name").Value)
             {
-                construct = construct.Replace("%setGlobalInstance%", "\r\n\t\tGlobal.Instance = this;");
+                construct = construct.Replace("%setGlobalInstance%", "\r\n\t\t\tGlobalHelperModules.GlobalModule.Instance = this;");
                 construct = construct.Replace("%disposeGlobalInstance%", _disposeOverride);
             }
             else

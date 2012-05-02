@@ -107,7 +107,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%EventInclude%", eventIncludes);
             projectFile = projectFile.Replace("%RecordsInclude%", recordsInclude);
 
-            projectFile = projectFile.Replace("%Framework%", "v" +  settings.Framework);
+            if (("3.5" == settings.Framework) || ("4.0" == settings.Framework))
+            {
+                projectFile = projectFile.Replace("%Framework%", "v" + settings.Framework);
+                projectFile = projectFile.Replace("%Profile%", Environment.NewLine + "    <TargetFrameworkProfile>Client</TargetFrameworkProfile>");
+            }
+            else
+            {
+                projectFile = projectFile.Replace("%Framework%", "v" + settings.Framework);
+                projectFile = projectFile.Replace("%Profile%", "");
+            }
 
             string refProjectInclude = "";
             if (project.Element("RefProjects").Elements("RefProject").Count() > 0)

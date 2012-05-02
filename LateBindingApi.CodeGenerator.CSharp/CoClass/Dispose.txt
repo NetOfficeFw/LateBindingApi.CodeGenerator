@@ -5,8 +5,8 @@
 		/// <param name="disposeEventBinding">dispose event exported proxies with one or more event recipients</param>
 		public override void Dispose(bool disposeEventBinding)
 		{
-			if(this.Equals(Global.Instance))
-				 Global.Instance = null;	
+			if(this.Equals(GlobalHelperModules.GlobalModule.Instance))
+				 GlobalHelperModules.GlobalModule.Instance = null;	
 			base.Dispose(disposeEventBinding);
 		}
 
@@ -15,7 +15,7 @@
 		/// </summary>
 		public override void Dispose()
 		{
-			if(this.Equals(Global.Instance))
-				 Global.Instance = null;
+			if(this.Equals(GlobalHelperModules.GlobalModule.Instance))
+				 GlobalHelperModules.GlobalModule.Instance = null;
 			base.Dispose();
 		}

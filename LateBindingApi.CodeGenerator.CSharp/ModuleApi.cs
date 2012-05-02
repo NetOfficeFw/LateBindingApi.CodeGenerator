@@ -13,7 +13,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                      + "using NetRuntimeSystem = System;\r\n"
                                      + "using System.ComponentModel;\r\n"
                                      + "using NetOffice;\r\n"
-                                     + "namespace %namespace%\r\n"
+                                     + "namespace %namespace%.GlobalHelperModules\r\n"
                                      + "{\r\n";
 
         private static string _classDesc = "\t///<summary>\r\n\t/// Module %name%\r\n\t///</summary>\r\n";
@@ -64,8 +64,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
             string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(moduleNode);
-            string header = _classHeader.Replace("%name%", "Global");
-            string classDesc = _classDesc.Replace("%name%", "Global");
+            string header = _classHeader.Replace("%name%", "GlobalModule");
+            string classDesc = _classDesc.Replace("%name%", "GlobalModule");
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, moduleNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, moduleNode.Element("Methods"));

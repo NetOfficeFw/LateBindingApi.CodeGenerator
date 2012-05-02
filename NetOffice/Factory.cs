@@ -832,7 +832,7 @@ namespace NetOffice
         {
             if (_factoryList.Count == 0)
             {
-                string notInitMessage = "Factory are not initialized with LateBindingApi assemblies." + Environment.NewLine;
+                string notInitMessage = "Factory is initialized with NetOffice assemblies." + Environment.NewLine;
                 notInitMessage = "Please call NetOffice.Factory.Initialize()";
                 throw new LateBindingApiException(notInitMessage);
             }
