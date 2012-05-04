@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Attributes\CustomEnumeratorAttribute.cs" />
     <Compile Include="Attributes\CustomMethodAttribute.cs" />
+    <Compile Include="CacheOptions.cs" />
     <Compile Include="DebugConsole.cs" />
     <Compile Include="Attributes\EntityTypeAttribute.cs" />
     <Compile Include="EntityNotSupportedException.cs" />

@@ -669,14 +669,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "object" + " returnItem = " + objectString + "Invoker.PropertyGet" + "(this, \"" + invokeTarget + "\", paramsArray);\r\n";
                     methodBody += "%modifiers%";
 
-                    if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) )
+                    if (returnValue.Attribute("TypeKind").Value.Equals("TKIND_RECORD", StringComparison.InvariantCultureIgnoreCase) || fullTypeName == "UIntPtr")
+                    {
+                        methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
+                    }
+                    else if (returnValue.Attribute("IsEnum").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) )
                     {
                         methodBody += tabSpace + "int intReturnItem = NetRuntimeSystem.Convert.ToInt32(returnItem);\r\n";
                         methodBody += tabSpace + "return (" + fullTypeName + ")intReturnItem;\r\n";
                     }
-                    else if( returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-                        || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase) || returnValue.Attribute("IsNative").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase) || fullTypeName == "UIntPtr")
+                    else if (returnValue.Attribute("IsArray").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                                    || fullTypeName.Equals("object", StringComparison.InvariantCultureIgnoreCase))
+                    {
                         methodBody += tabSpace + "return (" + fullTypeName + ")returnItem;\r\n";
+                    }
+                    else if (returnValue.Attribute("IsExternal").Value.Equals("false", StringComparison.InvariantCultureIgnoreCase))
+                        methodBody += tabSpace + "return NetRuntimeSystem.Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(fullTypeName) + "(returnItem);\r\n";
+
                     else
                         methodBody += tabSpace + "return NetRuntimeSystem.Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(fullTypeName) + "(returnItem);\r\n";
                 }
