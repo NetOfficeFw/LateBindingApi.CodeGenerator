@@ -135,6 +135,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
             bool isUnkownProxy = false;
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
+
+            if( (name == "Name") && (propertyNode.Parent.Parent.Attribute("Name").Value == "Name"))
+            { 
+            
+            }
+
             bool analyzeReturn = Convert.ToBoolean(propertyNode.Attribute("AnalyzeReturn").Value);
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {
@@ -414,7 +420,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             int paramsCountWithOutOptionals = ParameterApi.GetParamsCount(itemParams, false);
             bool hasForbiddenName = IsKeyword(name);
             IEnumerable<XElement> xParams = ParameterApi.GetParameter(itemParams, true);
-            if ((xParams.Count() > 0) || (faceName == name) || hasForbiddenName ) 
+            if ((xParams.Count() > 0) || hasForbiddenName) // || (faceName == name) 
             {
                 result = "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
                 if (name != "this")

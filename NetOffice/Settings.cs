@@ -35,16 +35,18 @@ namespace NetOffice
         private static IntPtr       _messageFilter;
         private static bool         _enableAutomaticQuit;
         private static bool         _enableAdHocLoading = true;
-        private static bool         _enableDebugOutput = true;
+        private static bool         _enableDeepLoading = true;
+        private static bool         _enableDebugOutput = false;
         private static bool         _enableEventDebugOutput;
         private static bool         _enableSafeMode;
         private static bool         _enableThreadSafe = true;
         private static CacheOptions _cacheOptions = CacheOptions.KeepExistingCacheAlive;
+        private static bool         _enableOperatorOverlads = true;
 
         #endregion
-
+         
         #region Properties
-
+         
         /// <summary>
         /// Used Thread Culture given in the Invoke Calls. en-US by default
         /// </summary>
@@ -176,6 +178,22 @@ namespace NetOffice
         }
 
         /// <summary>
+        /// Get or set the Initialize method perform a deep level analyzing(may cause security issues)
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public static bool EnableDeepLoading
+        {
+            get
+            {
+                return _enableDeepLoading;
+            }
+            set
+            {
+                _enableDeepLoading = value;
+            }
+        }
+
+        /// <summary>
         /// Get or set NetOffice logs essential system steps in the DebugConsole(if enabled). true by default
         /// </summary>
         public static bool EnableDebugOutput
@@ -221,6 +239,23 @@ namespace NetOffice
                 _cacheOptions = value;
             }
         }
+
+        /// <summary>
+        /// Get or set NetOffice spend custom overloads for the "==" and "!=" operators for semanticly comparsion. true by default
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        public static bool EnableOperatorOverlads
+        {
+            get
+            {
+                return _enableOperatorOverlads;
+            }
+            set
+            {
+                _enableOperatorOverlads = value;
+            }
+        }
+        
 
         #endregion
     }

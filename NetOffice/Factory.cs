@@ -43,6 +43,8 @@ namespace NetOffice
         private static Dictionary<Guid, Guid> _hostCache = new Dictionary<Guid, Guid>();
         private static Dictionary<string, Dictionary<string, string>> _entitiesListCache = new Dictionary<string, Dictionary<string, string>>();
         private static Assembly _thisAssembly = Assembly.GetAssembly(typeof(COMObject));
+        private static List<DependentAssembly> _dependentAssemblies = new List<DependentAssembly>();
+        private static string[] _knownNetOfficeKeyTokens;
 
         private static object _factoryListLock = new object();
         private static object _comObjectLock = new object();
@@ -96,7 +98,7 @@ namespace NetOffice
 
         /// <summary>
         /// Must be called from client assembly for COMObject Support
-        /// Recieve factory infos from all loaded LateBindingApi Assemblies in current application domain
+        /// Recieve factory infos from all loaded NetOffice Assemblies in current application domain
         /// </summary>
         /// <param name="threadCulture">given value for Settings.ThreadCulture</param>
         /// <param name="enableThreadSafe">given value for Settings.EnableThreadSafe</param>
@@ -109,7 +111,7 @@ namespace NetOffice
 
         /// <summary>
         /// Must be called from client assembly for COMObject Support
-        /// Recieve factory infos from all loaded LateBindingApi Assemblies in current application domain
+        /// Recieve factory infos from all loaded NetOffice Assemblies in current application domain
         /// </summary>
         /// <param name="threadCulture">given value for Settings.ThreadCulture</param>
         public static void Initialize(System.Globalization.CultureInfo threadCulture)
@@ -120,7 +122,7 @@ namespace NetOffice
 
         /// <summary>
         /// Must be called from client assembly for COMObject Support
-        /// Recieve factory infos from all loaded LateBindingApi Assemblies in current application domain
+        /// Recieve factory infos from all loaded NetOffice Assemblies in current application domain
         /// </summary>
         /// <param name="enableThreadSafe">given value for Settings.EnableThreadSafe</param>
         public static void Initialize(bool enableThreadSafe)
@@ -131,7 +133,7 @@ namespace NetOffice
 
         /// <summary>
         /// Must be called from client assembly for COMObject Support
-        /// Recieve factory infos from all loaded LateBindingApi Assemblies in current application domain
+        /// Recieve factory infos from all loaded NetOffice Assemblies in current application domain
         /// </summary>
         /// <param name="cacheOptions">settings what NetOffice does with a previous existing cache(if exists)</param>
         public static void Initialize(CacheOptions cacheOptions)
@@ -156,88 +158,18 @@ namespace NetOffice
                     isLocked = true;
                 }
 
-                DebugConsole.WriteLine("NetOffice.Factory.Initialize()");
+                DebugConsole.WriteLine("NetOffice.Factory.Initialize() DeepLevel:{0}", Settings.EnableDeepLoading);
 
                 if (!_assemblyResolveEventConnected)
                 {
                     AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
                     _assemblyResolveEventConnected = true;
                 }
-
-                // clear entities cache
-                if (CacheOptions.ClearExistingCache == Settings.CacheOptions)
-                {
-                    _wrapperTypeCache.Clear();
-                    _entitiesListCache.Clear();
-                    _hostCache.Clear();
-                    _proxyTypeCache.Clear();
-                    _factoryList.Clear();
-                }
-
-                List<string> dependAssemblies = new List<string>();
-               
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                foreach (Assembly domainAssembly in assemblies)
-                {
-                    foreach (AssemblyName itemName in domainAssembly.GetReferencedAssemblies())
-                    {
-                        Assembly itemAssembly = Assembly.Load(itemName);
-
-                        string assemblyName = itemName.Name;
-                        if (ContainsNetOfficeAttribute(itemAssembly))
-                            DebugConsole.WriteLine(string.Format("Load assembly {0}.", assemblyName));
-
-                        string[] depends = AddAssembly(assemblyName, itemAssembly);
-                        foreach (string depend in depends)
-                        {
-                            bool found = false;
-                            foreach (string itemExistingDependency in dependAssemblies)
-                            {
-                                if (depend == itemExistingDependency)
-                                {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found)
-                                dependAssemblies.Add(depend);
-                        }
-
-                        // try load non loaded dependent assemblies
-                        if (Settings.EnableAdHocLoading)
-                        {
-                            foreach (string itemAssemblyName in dependAssemblies)
-                            {
-                                if (!AssemblyExistsInFactoryList(itemAssemblyName))
-                                {
-                                    DebugConsole.WriteLine(string.Format("Try to load dependent assembly {0}.", itemAssemblyName));
-
-                                    string fileName = domainAssembly.CodeBase.Substring(0, domainAssembly.CodeBase.LastIndexOf("/")) + "/" + itemAssemblyName;
-                                    fileName = fileName.Replace("/", "\\").Substring(8);
-
-                                    if (System.IO.File.Exists(fileName))
-                                    {
-                                        try
-                                        {
-                                            Assembly dependAssembly = Assembly.LoadFile(fileName);
-                                            AddAssembly(dependAssembly.GetName().Name, dependAssembly);
-                                        }
-                                        catch (Exception exception)
-                                        {
-                                            DebugConsole.WriteException(exception);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        DebugConsole.WriteLine(string.Format("Assembly {0} not found.", itemAssemblyName));
-                                    }
-                                }                                
-                            }
-                        }
-                    }                    
-                   
-                }
-
+                
+                ClearCache();
+                AddNetOfficeAssemblies(Settings.EnableDeepLoading);
+                AddDependentNetOfficeAssemblies();
+              
                 DebugConsole.WriteLine("NetOffice.Factory.Initialize() passed");
             }
             catch (Exception throwedException)
@@ -252,6 +184,130 @@ namespace NetOffice
                     Monitor.Exit(_factoryListLock);
                     isLocked = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// analyze assemblies in current appdomain and connect all NetOffice assemblies to the core runtime
+        /// </summary>
+        private static void AddNetOfficeAssemblies(bool deepLevel)
+        {
+            _dependentAssemblies.Clear();
+
+            if (deepLevel)
+            {
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly domainAssembly in assemblies)
+                {
+                    foreach (AssemblyName itemName in domainAssembly.GetReferencedAssemblies())
+                    {
+                        if (ContainsNetOfficePublicKeyToken(itemName))
+                        {
+                            string assemblyName = itemName.Name;
+
+                            DebugConsole.WriteLine(string.Format("Detect NetOffice assembly {0}.", assemblyName));
+                            
+                            Assembly itemAssembly = Assembly.Load(itemName);
+
+                            string[] depends = AddAssembly(assemblyName, itemAssembly);
+                            foreach (string depend in depends)
+                            {
+                                bool found = false;
+                                foreach (DependentAssembly itemExistingDependency in _dependentAssemblies)
+                                {
+                                    if (depend == itemExistingDependency.Name)
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found)
+                                    _dependentAssemblies.Add(new DependentAssembly(depend, itemAssembly));
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly itemAssembly in assemblies)
+                {
+                    string assemblyName = itemAssembly.GetName().Name;
+                    if (ContainsNetOfficeAttribute(itemAssembly))
+                    {
+                        DebugConsole.WriteLine(string.Format("Detect NetOffice assembly {0}.", assemblyName));
+
+                        string[] depends = AddAssembly(assemblyName, itemAssembly);
+                        foreach (string depend in depends)
+                        {
+                            bool found = false;
+                            foreach (DependentAssembly itemExistingDependency in _dependentAssemblies)
+                            {
+                                if (depend == itemExistingDependency.Name)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found)
+                                _dependentAssemblies.Add(new DependentAssembly(depend, itemAssembly));
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// analyze loaded NetOffice assemblies and add dependent assemblies to the runtime if necessary
+        /// </summary>
+        private static void AddDependentNetOfficeAssemblies()
+        {
+            if (!Settings.EnableAdHocLoading)
+                return;
+
+            foreach (DependentAssembly dependAssembly in _dependentAssemblies)
+            {
+                if (!AssemblyExistsInFactoryList(dependAssembly.Name))
+                {
+                    string fileName = dependAssembly.ParentAssembly.CodeBase.Substring(0, dependAssembly.ParentAssembly.CodeBase.LastIndexOf("/")) + "/" + dependAssembly.Name;
+                    fileName = fileName.Replace("/", "\\").Substring(8);
+
+                    DebugConsole.WriteLine(string.Format("Try to load dependent assembly {0}.", fileName));
+
+                    if (System.IO.File.Exists(fileName))
+                    {
+                        try
+                        {
+                            Assembly asssembly = Assembly.LoadFile(fileName);
+                            AddAssembly(asssembly.GetName().Name, asssembly);
+                        }
+                        catch (Exception exception)
+                        {
+                            DebugConsole.WriteException(exception);
+                        }
+                    }
+                    else
+                    {
+                        DebugConsole.WriteLine(string.Format("Assembly {0} not found.", fileName));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// clears proxy/type/wrapper/assembly cache etc.
+        /// </summary>
+        private static void ClearCache()
+        {
+            // clear entities cache
+            if (CacheOptions.ClearExistingCache == Settings.CacheOptions)
+            {
+                _wrapperTypeCache.Clear();
+                _entitiesListCache.Clear();
+                _hostCache.Clear();
+                _proxyTypeCache.Clear();
+                _factoryList.Clear();
             }
         }
 
@@ -757,44 +813,69 @@ namespace NetOffice
         /// <param name="itemAssembly"></param>
         /// <returns></returns>
         private static bool ContainsNetOfficeAttribute(Assembly itemAssembly)
-        { 
-            List<string> dependAssemblies = new List<string>();
-            object[] attributes = itemAssembly.GetCustomAttributes(true);
-            foreach (object itemAttribute in attributes)
+        {
+            try
             {
-                string fullnameAttribute = itemAttribute.GetType().FullName;
-                if (fullnameAttribute == "NetOffice.LateBindingAttribute")
-                    return true;
+                List<string> dependAssemblies = new List<string>();
+                object[] attributes = itemAssembly.GetCustomAttributes(true);
+                foreach (object itemAttribute in attributes)
+                {
+                    string fullnameAttribute = itemAttribute.GetType().FullName;
+                    if (fullnameAttribute == "NetOffice.LateBindingAttribute")
+                        return true;
+                }
+                return false;
             }
-            return false;
+            catch (System.IO.FileNotFoundException exception)
+            {
+                DebugConsole.WriteException(exception);
+                return false;
+            }
         }
 
         /// <summary>
-        /// checks the target is assembly is currently loaded
+        /// returns info the assembly is a NetOffice Api Assembly
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="itemAssembly"></param>
+        /// <param name="itemName"></param>
         /// <returns></returns>
-        private static bool NetOfficeAssemblyIsAlreadyLoaded(string name, Assembly itemAssembly)
+        private static bool ContainsNetOfficePublicKeyToken(AssemblyName itemName)
         {
-            List<string> dependAssemblies = new List<string>();
-            object[] attributes = itemAssembly.GetCustomAttributes(true);
-            foreach (object itemAttribute in attributes)
+            try
             {
-                string fullnameAttribute = itemAttribute.GetType().FullName;
-                if (fullnameAttribute == "NetOffice.LateBindingAttribute")
+                string targetKeyToken = itemName.FullName.Substring(itemName.FullName.LastIndexOf(" ") +1);
+                foreach (string item in KnownNetOfficeKeyTokens)
                 {
-                    Type factoryInfoType = itemAssembly.GetType(name + ".Utils.ProjectInfo");
-                    IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as IFactoryInfo;
-
-                    foreach (IFactoryInfo itemFactory in _factoryList)
-                    {
-                        if (itemFactory.Assembly.FullName == factoryInfo.Assembly.FullName)
-                            return true;
-                    }
+                    if (item.EndsWith(targetKeyToken, StringComparison.InvariantCultureIgnoreCase))
+                        return true;
                 }
+                return false;
             }
-            return false;
+            catch (System.IO.FileNotFoundException exception)
+            {
+                DebugConsole.WriteException(exception);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// contains a list of all known netoffice 
+        /// </summary>
+        private static string[] KnownNetOfficeKeyTokens
+        {
+            get 
+            {
+                if (null == _knownNetOfficeKeyTokens)
+                { 
+                    Type thisType =  typeof(Factory);
+                    System.IO.Stream ressourceStream = thisType.Assembly.GetManifestResourceStream(thisType.Namespace + ".KeyTokens.txt");
+                    System.IO.StreamReader textStreamReader = new System.IO.StreamReader(ressourceStream);
+                    string text = textStreamReader.ReadToEnd();
+                    ressourceStream.Close();
+                    textStreamReader.Close();
+                    _knownNetOfficeKeyTokens = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                }
+                return _knownNetOfficeKeyTokens;
+            }
         }
 
         /// <summary>
@@ -968,7 +1049,10 @@ namespace NetOffice
                     return assembly;
                 }
                 else
+                {
+                    DebugConsole.WriteLine(string.Format("Failed to resolve Assembly", args.Name));
                     return null;
+                }
             }
             catch(Exception exception)
             {
