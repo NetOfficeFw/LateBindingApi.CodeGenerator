@@ -119,7 +119,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
-
       
     }
 }

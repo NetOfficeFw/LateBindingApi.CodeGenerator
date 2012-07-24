@@ -137,6 +137,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     this.Cursor = Cursors.WaitCursor;
                     DateTime startTime = DateTime.Now;
                     _comAnalyzer.LoadProject(fileDialog.FileName);
+                    _comAnalyzer.ScanForOptionals();
                     TimeSpan timeElapsed = DateTime.Now - startTime;
                     comAnalyzer_OnTypeLibrariesLoaded(timeElapsed);
                     InvisiblePanels();
@@ -552,14 +553,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                             }
 
                         }
-                    }
 
-                    if (dialog.EnableSupportByVersion)
-                    {
-                        var libs = _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library");
-                        foreach (XElement item in libs)
+                        if (dialog.EnableSupportByVersion)
                         {
-                            item.Attribute("Version").Value = GetVersionTag(item);
+                            var libs = _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library");
+                            foreach (XElement item in libs)
+                            {
+                                item.Attribute("Version").Value = GetVersionTag(item);
+                            }
                         }
                     }
 

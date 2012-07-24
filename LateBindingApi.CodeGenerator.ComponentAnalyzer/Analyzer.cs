@@ -8,7 +8,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
 using System.ComponentModel;
-
+using System.Runtime.InteropServices.ComTypes;
 using TLI;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
@@ -228,6 +228,119 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         {
             _document = XDocument.Load(fileName);          
             ValidateSchema();
+        }
+
+        public void ScanForOptionals()
+        {
+            foreach (var item in _document.Descendants("Parameter"))
+            {
+                if (item.Attribute("ParamFlags").Value.Equals("17", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    item.Attribute("IsOptional").Value = "true";
+                }
+            }               
+        }
+
+        public void ScanFor15()
+        {
+            //foreach (var item in _document.Descendants("CoClass"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if(null != lib)
+            //        Console.WriteLine(lib.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+
+            //foreach (var item in _document.Descendants("Interface"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if (null != lib)
+            //        Console.WriteLine(lib.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+
+            //foreach (var item in _document.Descendants("Enum"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if (null != lib)
+            //        Console.WriteLine("Enum: " + lib.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+
+            //foreach (var item in _document.Descendants("Constant"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if (null != lib)
+            //        Console.WriteLine("Constant: " + lib.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+
+            //foreach (var item in _document.Descendants("EnumMember"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if (null != lib)
+            //        Console.WriteLine("EnumMember: " + lib.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+
+            //foreach (var item in _document.Descendants("Member"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if (null != lib)
+            //        if(lib.Attribute("Name").Value == "Office")
+            //            if(!Is15Only(item.Parent.Parent))
+            //                Console.WriteLine("EnumMember: " + lib.Attribute("Name").Value + "." + item.Parent.Parent.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+
+            //foreach (var item in _document.Descendants("Property"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if (null != lib)
+            //        if (lib.Attribute("Name").Value == "Office")
+            //            if (!Is15Only(item.Parent.Parent))
+            //                Console.WriteLine("Property: " + lib.Attribute("Name").Value + "." + item.Parent.Parent.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+
+            //foreach (var item in _document.Descendants("Method"))
+            //{
+            //    XElement lib = Is15Only(item.Element("RefLibraries").Elements("Ref"));
+            //    if (null != lib)
+            //        if (lib.Attribute("Name").Value == "Office")
+            //            if (!Is15Only(item.Parent.Parent))
+            //                Console.WriteLine("Method: " + lib.Attribute("Name").Value + "." + item.Parent.Parent.Attribute("Name").Value + "." + item.Attribute("Name").Value);
+            //}
+            // Constant
+
+        }
+
+        private bool Is15Only(XElement classOrInterface)
+        {
+            return Is15Only(classOrInterface.Element("RefLibraries").Elements("Ref")) != null;
+        }
+
+        private XElement Is15Only(IEnumerable<XElement> refLibs)
+        {
+            XElement lib = null;
+            bool office15Found = false;
+            bool office14Found = false;
+            foreach (var refItem in refLibs)
+            {
+                lib = GetLibraryNode(refItem);
+                if(lib.Attribute("Version").Value == "15")
+                 office15Found = true;
+                else if (lib.Attribute("Version").Value == "14")
+                    office14Found = true;
+            }
+
+            if (office15Found && !office14Found)
+                return lib;
+            else
+                return null;
+        }
+
+        private XElement GetLibraryNode(XElement refLib)
+        {
+            foreach (var item in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library"))
+            {
+                if (item.Attribute("Key").Value == refLib.Attribute("Key").Value)
+                    return item;
+            }
+            throw new ArgumentOutOfRangeException("refLib");
         }
 
         /// <summary>
@@ -733,8 +846,17 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 TLI.Interfaces interfaces = item.Interfaces;
                 foreach (TLI.InterfaceInfo itemInterface in interfaces)
                 {
+                    if (itemInterface.Name == "IAccessible")
+                    {
+                        // as ITypeInfo
+                     
+
+                    }
+
                     if (true == TypeDescriptor.IsTargetInterfaceType(itemInterface.TypeKind, wantDispatch))
                     {
+                     
+
                         var faceNode = CreateInterfaceNode(faces, itemInterface);
 
                         List<TLI.MemberInfo> listMembers = TypeDescriptor.GetFilteredMembers(itemInterface);
@@ -742,6 +864,16 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         {
                             if (true == TypeDescriptor.IsInterfaceMethod(itemMember, item.Name))
                             {
+                                foreach (TLI.ParameterInfo param in itemMember.Parameters)
+                                {
+                                    if (Convert.ToInt16(param.Flags) == 17)
+                                    {
+
+                                    }
+
+
+                                }
+
                                 var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
                                 AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
                                 var refNode = methodNode.Elements("RefLibraries").FirstOrDefault();
@@ -750,6 +882,21 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             }
                             else if (true == TypeDescriptor.IsInterfaceProperty(itemMember))
                             {
+                                if (itemMember.Name.Equals("accChild", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    // ITypeInfo tInfo = itemInterface.VTableInterface.ITypeInfo as ITypeInfo;
+                                }
+
+                                foreach (TLI.ParameterInfo param in itemMember.Parameters)
+                                {
+                                    if (Convert.ToInt16(param.Flags) == 17)
+                                    { 
+                                    
+                                    }
+
+
+                                }
+
                                 var propertyNode = PropertyHandler.CreatePropertyNode(itemMember, faceNode);
                                 AddDispatchIdToEntityNode(library, propertyNode, itemMember.MemberId.ToString());
                                 var refNode = propertyNode.Elements("RefLibraries").FirstOrDefault();

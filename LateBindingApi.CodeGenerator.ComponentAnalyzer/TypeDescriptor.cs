@@ -122,7 +122,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 return true;
             if (paramInfo.Default)
                 return true;
-
+            if (Convert.ToInt16(paramInfo.Flags) == 17)
+                return true;
             return false;
         }
 
