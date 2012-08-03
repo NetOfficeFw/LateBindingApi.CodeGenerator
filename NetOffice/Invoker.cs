@@ -12,12 +12,6 @@ namespace NetOffice
     /// </summary>
     public static class Invoker
     {
-        #region Fields
-
-        private static readonly string _exceptionMessage = "See inner exception(s) for details.";
-
-        #endregion
-
         #region Method
 
         /// <summary>
@@ -58,7 +52,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -78,7 +72,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -97,7 +91,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -120,7 +114,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -143,7 +137,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -167,7 +161,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -189,7 +183,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -214,11 +208,44 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
         #endregion
+
+        private static string GetExceptionMessage(Exception throwedException)
+        {
+            switch (Settings.UseExceptionMessage)
+            {
+                case ExceptionMessageHandling.Default:
+
+                    return Settings.ExceptionMessage;
+
+                case ExceptionMessageHandling.CopyInnerExceptionMessageToTopLevelException:
+
+                    string message = string.Empty;
+                    while (throwedException.InnerException != null)
+                    {
+                        message = throwedException.Message;
+                        throwedException = throwedException.InnerException;
+                    }
+                    return message;
+
+                case ExceptionMessageHandling.CopyAllInnerExceptionMessagesToTopLevelException:
+
+                    string messageSummary = string.Empty;
+                    while (throwedException.InnerException != null)
+                    {
+                        messageSummary += throwedException.Message + Environment.NewLine;
+                        throwedException = throwedException.InnerException;
+                    }
+                    return messageSummary;
+
+                default:
+                    throw new NetOfficeException("ArgumentOutOfRange:Settings.CopyInnerExceptionMessage");
+            }
+        }
 
         #region Property
 
@@ -238,7 +265,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -261,7 +288,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -282,7 +309,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -307,7 +334,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -330,7 +357,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -356,7 +383,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -384,7 +411,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -413,7 +440,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -435,7 +462,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -458,7 +485,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -481,7 +508,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -503,7 +530,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 
@@ -589,7 +616,7 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(_exceptionMessage, throwedException);
+                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
 

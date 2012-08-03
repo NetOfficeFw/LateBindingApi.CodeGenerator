@@ -137,7 +137,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     this.Cursor = Cursors.WaitCursor;
                     DateTime startTime = DateTime.Now;
                     _comAnalyzer.LoadProject(fileDialog.FileName);
-                    _comAnalyzer.ScanForOptionals();
                     TimeSpan timeElapsed = DateTime.Now - startTime;
                     comAnalyzer_OnTypeLibrariesLoaded(timeElapsed);
                     InvisiblePanels();
