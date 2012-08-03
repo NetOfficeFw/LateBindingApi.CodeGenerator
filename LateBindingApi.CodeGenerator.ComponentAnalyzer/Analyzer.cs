@@ -848,15 +848,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 {
                     if (itemInterface.Name == "IAccessible")
                     {
-                        // as ITypeInfo
-                     
-
+                        // as ITypeInfo                     
                     }
 
                     if (true == TypeDescriptor.IsTargetInterfaceType(itemInterface.TypeKind, wantDispatch))
                     {
-                     
-
                         var faceNode = CreateInterfaceNode(faces, itemInterface);
 
                         List<TLI.MemberInfo> listMembers = TypeDescriptor.GetFilteredMembers(itemInterface);
@@ -864,15 +860,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         {
                             if (true == TypeDescriptor.IsInterfaceMethod(itemMember, item.Name))
                             {
-                                foreach (TLI.ParameterInfo param in itemMember.Parameters)
-                                {
-                                    if (Convert.ToInt16(param.Flags) == 17)
-                                    {
-
-                                    }
-
-
-                                }
+                   
 
                                 var methodNode = MethodHandler.CreateMethodNode(itemMember, faceNode);
                                 AddDispatchIdToEntityNode(library, methodNode, itemMember.MemberId.ToString());
@@ -885,16 +873,6 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                                 if (itemMember.Name.Equals("accChild", StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     // ITypeInfo tInfo = itemInterface.VTableInterface.ITypeInfo as ITypeInfo;
-                                }
-
-                                foreach (TLI.ParameterInfo param in itemMember.Parameters)
-                                {
-                                    if (Convert.ToInt16(param.Flags) == 17)
-                                    { 
-                                    
-                                    }
-
-
                                 }
 
                                 var propertyNode = PropertyHandler.CreatePropertyNode(itemMember, faceNode);

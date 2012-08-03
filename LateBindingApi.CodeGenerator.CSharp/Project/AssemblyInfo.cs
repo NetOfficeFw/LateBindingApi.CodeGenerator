@@ -21,7 +21,7 @@ using NetOffice;
 [assembly: PrimaryInteropAssembly(1, 0)]
 [assembly: ImportedFromTypeLib("%ImportedTypeLibName%")]
 [assembly: Guid("%ImportedTypeLibGuid%")]
-[assembly: LateBindingAttribute("1.0")]
+[assembly: NetOfficeAssemblyAttribute("1.5.1")]
 
 /*
 Alias Table

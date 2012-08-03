@@ -533,17 +533,19 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                             XElement propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
                                                      where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
                                                      select a).FirstOrDefault();
+                            if (null != propertyNode)
+                            { 
+                                foreach (XElement item in propertyNode.Elements("Parameters"))
+                                {
+                                    XElement returnValue = item.Element("ReturnValue");
+                                    foreach (XAttribute attrib in returnValue.Attributes())
+                                        attrib.Value = templateNode.Attribute(attrib.Name.LocalName).Value;
+                                }
 
-                            foreach (XElement item in propertyNode.Elements("Parameters"))
-                            {
-                                XElement returnValue = item.Element("ReturnValue");
-                                foreach (XAttribute attrib in returnValue.Attributes())
-                                    attrib.Value = templateNode.Attribute(attrib.Name.LocalName).Value;
+                                propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                         where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                                                         select a).FirstOrDefault();
                             }
-
-                            propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
-                                                     where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
-                                                     select a).FirstOrDefault();
 
                             foreach (XElement item in propertyNode.Elements("Parameters"))
                             {

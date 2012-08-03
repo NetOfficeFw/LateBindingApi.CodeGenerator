@@ -7,7 +7,7 @@ using System.Text;
 namespace NetOffice
 {
     /// <summary>
-    /// info about a late binding assembly
+    /// info about a NetOffice assembly
     /// </summary>
     public interface IFactoryInfo
     {

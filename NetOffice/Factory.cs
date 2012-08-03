@@ -1007,7 +1007,7 @@ namespace NetOffice
             {
                 string notInitMessage = "Factory is initialized with NetOffice assemblies." + Environment.NewLine;
                 notInitMessage = "Please call NetOffice.Factory.Initialize()";
-                throw new LateBindingApiException(notInitMessage);
+                throw new NetOfficeException(notInitMessage);
             }
 
             string className = TypeDescriptor.GetClassName(comProxy);
@@ -1031,7 +1031,7 @@ namespace NetOffice
             foreach (IFactoryInfo item in _factoryList)
                 message += string.Format("Loaded LateBindingApi Assembly:{0} {1}{2}", item.ComponentGuid, item.Assembly.FullName, Environment.NewLine);
 
-            throw new LateBindingApiException(message);
+            throw new NetOfficeException(message);
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
