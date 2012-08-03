@@ -60,7 +60,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>NetOffice_v4.0.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -109,9 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="KeyTokens.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="NetOffice_v4.0.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
