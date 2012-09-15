@@ -6,7 +6,6 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
-    
     internal static class CoClassApi
     {
         private static string _fileHeader = ""
@@ -68,6 +67,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string delegates = _delegates.Replace("%delegates%", GetDelegates(projectNode, classNode));
             result += delegates;
 
+           
+
             string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(classNode);
             string header = _classHeader.Replace("%name%", classNode.Attribute("Name").Value);
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
@@ -82,7 +83,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _classConstructor = RessourceApi.ReadString("CoClass.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", classNode.Attribute("Name").Value);
             construct = construct.Replace("%ProgId%", projectNode.Attribute("Name").Value + "." + classNode.Attribute("Name").Value);
-
+            construct = construct.Replace("%Component%", projectNode.Attribute("Name").Value);
+            construct = construct.Replace("%Class%", classNode.Attribute("Name").Value);
+             
             if (null == _disposeOverride)
                 _disposeOverride = RessourceApi.ReadString("CoClass.Dispose.txt");
 

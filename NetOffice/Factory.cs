@@ -904,7 +904,6 @@ namespace NetOffice
         /// <returns>list of dependend assemblies</returns>
         private static string[] AddAssembly(string name, Assembly itemAssembly)
         {
-            Console.WriteLine("AddAssembly " + name);
             List<string> dependAssemblies = new List<string>();
             object[] attributes = itemAssembly.GetCustomAttributes(true);
             foreach (object itemAttribute in attributes)

@@ -65,7 +65,7 @@
             this.textBoxAssemblyVersion.Name = "textBoxAssemblyVersion";
             this.textBoxAssemblyVersion.Size = new System.Drawing.Size(78, 20);
             this.textBoxAssemblyVersion.TabIndex = 25;
-            this.textBoxAssemblyVersion.Text = "1.4.0.1";
+            this.textBoxAssemblyVersion.Text = "1.5.1.2";
             // 
             // checkBoxAssemblyVersion
             // 

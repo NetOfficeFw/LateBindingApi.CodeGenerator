@@ -132,15 +132,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string ConvertConflictPropertyLateBindToString(Settings settings, XElement propertyNode, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
-            bool isUnkownProxy = false;
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
-
-            if( (name == "Name") && (propertyNode.Parent.Parent.Attribute("Name").Value == "Name"))
-            { 
-            
-            }
-
+          
             bool analyzeReturn = Convert.ToBoolean(propertyNode.Attribute("AnalyzeReturn").Value);
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {
@@ -149,12 +143,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     continue;
   
                 bool isOptionalConflict = false;
-                foreach (XAttribute item in itemParams.Attributes())
+
+                if (!CSharpGenerator.Settings.VBOptimization)
                 {
-                    if (item.Name == "IsOptionalConflict" && item.Value == "true")
+                    foreach (XAttribute item in itemParams.Attributes())
                     {
-                        isOptionalConflict = true;
-                        break;
+                        if (item.Name == "IsOptionalConflict" && item.Value == "true")
+                        {
+                            isOptionalConflict = true;
+                            break;
+                        }
                     }
                 }
 
@@ -181,18 +179,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
 
-                if (propertyNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                if (!isOptionalConflict && propertyNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
              
-
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if (valueReturn == "COMObject")
-                {
                     valueReturn = "object";
-                    isUnkownProxy = true;
-                }
-                else
-                    isUnkownProxy = false;
 
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
@@ -243,7 +235,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     continue;
 
                 bool isOptionalConflict = false;
-                if ("this" != name)
+                if ("this" != name && !CSharpGenerator.Settings.VBOptimization)
                 { 
                     foreach (XAttribute item in itemParams.Attributes())
                     {
@@ -291,9 +283,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if (valueReturn == "COMObject")
-                {
                     valueReturn = "object";
-                }
+                
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
 
@@ -337,8 +328,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 XElement returnValue = itemParams.Element("ReturnValue");
                 method += "\t\t" + GetEarlyBindPropertySignatur(itemParams) + "\r\n\r\n";
-
-
                 result += method;
             }
             return result;
@@ -375,7 +364,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if ("" != marshalAs)
                 marshalAs = "[return: MarshalAs(" + marshalAs + ")] ";
 
-            string result = paramsNode.Element("ReturnValue").Attribute("Type").Value + " " + paramsNode.Parent.Attribute("Name").Value + "{";
+            string result = string.Empty;
+            if (("true" == paramsNode.Element("ReturnValue").Attribute("IsComProxy").Value) || ("COMObject" == paramsNode.Element("ReturnValue").Attribute("Type").Value) ||
+                  ("COMObject" == paramsNode.Element("ReturnValue").Attribute("Type").Value) || ("object" == paramsNode.Element("ReturnValue").Attribute("Type").Value))
+            {
+                result = "object" + " " + paramsNode.Parent.Attribute("Name").Value + "{";
+            }
+            else
+            {
+                result = paramsNode.Element("ReturnValue").Attribute("Type").Value + " " + paramsNode.Parent.Attribute("Name").Value + "{";
+            }
+             
 
             result += marshalAs + "[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime), DispId(" + dispId + ")] get;";
 
@@ -397,7 +396,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return false;
         }
 
-        private static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams, bool interfaceHasEnumerator, bool hasDefaultItem, bool isFromConflicted )
+        private static string CreatePropertyLateBindPrototypeString(Settings settings, XElement itemParams, bool interfaceHasEnumerator, bool hasDefaultItem, bool isOptionalConflicted )
         {
             string getter = "get_";
             string inParam = "(";
@@ -413,6 +412,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 getter = "";
             }
 
+            if (faceName == "Range" && name == "Offset")
+            { 
+            
+            }
+
             string result = "";
             string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, false);
             string parametersCall = ParameterApi.CreateParametersCallString(settings, itemParams, true, false);
@@ -422,7 +426,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             IEnumerable<XElement> xParams = ParameterApi.GetParameter(itemParams, true);
             if ((xParams.Count() > 0) || hasForbiddenName) // || (faceName == name) 
             {
-                result = "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
+                if (isOptionalConflicted && (name != "this"))
+                {
+                    result = "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+                    result += "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
+                }
+                else
+                {
+                    result = "\t\tpublic " + "%valueReturn% " + getter + name + inParam + parameters + outParam + "\r\n";
+                }
+                
                 if (name != "this")
                     result += "\t\t{\t\t\r\n%propertyGetBody%\t\t}\r\n\r\n";
                 else
@@ -431,14 +444,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ((("INVOKE_PROPERTYGET" != itemParams.Parent.Attribute("InvokeKind").Value) && ("this" != name)))
                 {
                     string retValueType = CSharpGenerator.GetQualifiedType(itemParams.Element("ReturnValue"));
-                    if (retValueType == "COMObject")
-                    { 
-                       
-                    }
                     if ("" != parameters)
                         retValueType = ", " + retValueType;
                     
                     result += "%setAttribute%";
+                    result += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
                     result += "\t\tpublic " + "void set_" + name + inParam + parameters + retValueType + " value" + outParam + "\r\n";
                     result += "\t\t{\r\n%propertySetBody%\t\t}\r\n\r\n";                    
                 }
@@ -461,8 +471,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     result = result.Replace("%%", "");
             }
 
-            
-            if (isFromConflicted)
+
+            if (isOptionalConflicted)
             {
                 if ((paramsCountWithOptionals > 0) && ("this" != name) && ("_Default" != name))
                 {

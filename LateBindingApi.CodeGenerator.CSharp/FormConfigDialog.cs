@@ -37,7 +37,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newSettings.CreateXmlDocumentation = checkBoxCreateDocu.Checked;
                 newSettings.UseSigning = checkBoxSignAssemblies.Checked;
                 newSettings.SignPath = textBoxKeyFiles.Text;
- 
+                newSettings.VBOptimization = radioButtonSyntaxFakeProgrammingLanguage.Checked;
+
                 string res = "";
                 switch (comboBoxFramework.SelectedIndex)
                 {
@@ -52,6 +53,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         break;
                     case 3:
                         res = "4.0";
+                        break;
+                    case 4:
+                        res = "4.5";
                         break;
                 }
                 newSettings.Framework = res;

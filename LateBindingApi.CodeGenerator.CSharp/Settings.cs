@@ -24,6 +24,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #region Properties
 
+        public bool VBOptimization{get;internal set;}
+
         public string SignPath
         {
             get
@@ -145,6 +147,5 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         #endregion
-
     }
 }

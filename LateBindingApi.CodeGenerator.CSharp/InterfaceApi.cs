@@ -49,6 +49,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static bool IsOptionalConflicted(XElement faceNode)
         {
+            // optional konflikte gibt es für VB nicht
+            if (CSharpGenerator.Settings.VBOptimization)
+                return false;
+
             foreach (XAttribute item in faceNode.Attributes())
             {
                 if (item.Name == "IsOptionalConflict" && item.Value == "true")
@@ -76,7 +80,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string properties = PropertyApi.ConvertPropertiesEarlyBindToString(settings, faceNode.Element("Properties"));
             result += properties;
-
 
             result += "\t}\r\n}";
             return result;

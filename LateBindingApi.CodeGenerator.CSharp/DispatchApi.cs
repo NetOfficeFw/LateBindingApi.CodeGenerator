@@ -79,6 +79,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static bool IsOptionalConflicted(XElement faceNode)
         {
+            // optional konflikte gibt es für VB nicht
+            if (CSharpGenerator.Settings.VBOptimization)
+                return false;
+
             foreach (XAttribute item in faceNode.Attributes())
             {
                 if (item.Name == "IsOptionalConflict" && item.Value == "true")
@@ -108,9 +112,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string properties = PropertyApi.ConvertPropertiesEarlyBindToString(settings, faceNode.Element("Properties"));
             result += properties;
 
+            result += "\t}\r\n}\r\n";
             result += "\t#pragma warning restore\r\n";
-
-            result += "\t}\r\n}";
             return result;
         }
 
@@ -123,7 +126,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _fakedConstructor = RessourceApi.ReadString("Interface.FakedClassConstructor.txt");
 
             string name = faceNode.Attribute("Name").Value + "_";
-
+            
             string result = "\r\n\t///<summary>\r\n\t/// " + faceNode.Attribute("Name").Value + "\r\n\t///</summary>\r\n" +
              "\tpublic class " + name + " : " + GetInherited(projectNode, faceNode) + "\r\n\t{\r\n" + "" + _fakedConstructor.Replace("%fakeName%", name) + "\t}\r\n";
 

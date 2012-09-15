@@ -15,7 +15,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #region Fields
 
         DateTime _startTimeOperation;
-        Settings _settings;
+        static Settings _settings;
         static XDocument _document;
         static DubletteManager _dublettes;
         static DerivedManager _derives;
@@ -26,6 +26,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #endregion
 
         #region Properties
+
+        public static Settings Settings
+        {
+            get
+            {
+                return _settings;
+            }
+        }
 
         #endregion
 
@@ -166,8 +174,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
                 
-                if ("4.0" == _settings.Framework)
-                    ProjectApi.RemoveRefAttributeInOptionals(project);
  
                 DoUpdate("Create project " + project.Attribute("Name").Value);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");

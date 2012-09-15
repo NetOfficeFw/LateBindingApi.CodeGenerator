@@ -172,12 +172,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     continue;
 
                 bool isOptionalConflict = false;
-                foreach (XAttribute item in itemParams.Attributes())
+                if (!CSharpGenerator.Settings.VBOptimization)
                 {
-                    if (item.Name == "IsOptionalConflict" && item.Value == "true")
+                    foreach (XAttribute item in itemParams.Attributes())
                     {
-                        isOptionalConflict = true;
-                        break;
+                        if (item.Name == "IsOptionalConflict" && item.Value == "true")
+                        {
+                            isOptionalConflict = true;
+                            break;
+                        }
                     }
                 }
 
@@ -314,9 +317,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if (valueReturn == "COMObject")
-                {
                     valueReturn = "object";
-                }
 
                 if ("true" == returnValue.Attribute("IsArray").Value)
                     valueReturn += "[]";
@@ -353,12 +354,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName    = parametersNode.Parent.Attribute("Name").Value;
             string typeName      = returnValue.Attribute("Type").Value;
-
-            if (methodName == "Show")
-            {
-                Console.WriteLine("xy");
-            }
-
+ 
             string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
 
             if ("this" == methodName)

@@ -44,6 +44,9 @@ namespace NetOffice
         {
             try
             {
+                if(comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if( (Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name,SupportEntityType.Method)))
                     throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
 
@@ -67,6 +70,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
             }
             catch (Exception throwedException)
@@ -85,7 +91,10 @@ namespace NetOffice
         public static void Method(object comObject, string name, object[] paramsArray)
         {
             try
-            { 
+            {
+                if ((comObject as COMObject).IsDisposed)
+                    throw new InvalidComObjectException();
+
                 comObject.GetType().InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject, paramsArray, Settings.ThreadCulture);
             }
             catch (Exception throwedException)
@@ -106,6 +115,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
                     throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
 
@@ -128,6 +140,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
                     throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
 
@@ -152,6 +167,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
                     throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
 
@@ -177,6 +195,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
                 return returnValue;
             }
@@ -199,6 +220,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
                     throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
 
@@ -214,39 +238,6 @@ namespace NetOffice
 
         #endregion
 
-        private static string GetExceptionMessage(Exception throwedException)
-        {
-            switch (Settings.UseExceptionMessage)
-            {
-                case ExceptionMessageHandling.Default:
-
-                    return Settings.ExceptionMessage;
-
-                case ExceptionMessageHandling.CopyInnerExceptionMessageToTopLevelException:
-
-                    string message = string.Empty;
-                    while (throwedException.InnerException != null)
-                    {
-                        message = throwedException.Message;
-                        throwedException = throwedException.InnerException;
-                    }
-                    return message;
-
-                case ExceptionMessageHandling.CopyAllInnerExceptionMessagesToTopLevelException:
-
-                    string messageSummary = string.Empty;
-                    while (throwedException.InnerException != null)
-                    {
-                        messageSummary += throwedException.Message + Environment.NewLine;
-                        throwedException = throwedException.InnerException;
-                    }
-                    return messageSummary;
-
-                default:
-                    throw new NetOfficeException("ArgumentOutOfRange:Settings.CopyInnerExceptionMessage");
-            }
-        }
-
         #region Property
 
         /// <summary>
@@ -259,6 +250,9 @@ namespace NetOffice
         {
             try
             {
+                if ((comObject as COMObject).IsDisposed)
+                    throw new InvalidComObjectException();
+
                 object returnValue = comObject.GetType().InvokeMember(name, BindingFlags.GetProperty, null, comObject, null, Settings.ThreadCulture);
                 return returnValue;
             }
@@ -279,6 +273,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -303,6 +300,9 @@ namespace NetOffice
         {
             try
             {
+                if ((comObject as COMObject).IsDisposed)
+                    throw new InvalidComObjectException();
+
                 object returnValue = comObject.GetType().InvokeMember(name, BindingFlags.GetProperty, null, comObject, paramsArray, Settings.ThreadCulture);
                 return returnValue;
             }
@@ -312,7 +312,6 @@ namespace NetOffice
                 throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
             }
         }
-
         
         /// <summary>
         /// perform property get as latebind call with return value
@@ -325,6 +324,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -338,7 +340,6 @@ namespace NetOffice
             }
         }
 
-        
         /// <summary>
         /// perform property get as latebind call with return value
         /// </summary>
@@ -351,6 +352,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 object returnValue = comObject.InstanceType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.ThreadCulture);
                 return returnValue;
             }
@@ -374,6 +378,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -398,6 +405,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -427,6 +437,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -454,6 +467,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -477,6 +493,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -500,6 +519,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -522,6 +544,9 @@ namespace NetOffice
         {
             try
             {
+                if (comObject.IsDisposed)
+                    throw new InvalidComObjectException();
+
                 if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
                     throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
 
@@ -676,6 +701,43 @@ namespace NetOffice
             }
             else
                 return null;
+        }
+
+        #endregion
+
+        #region Privates
+
+        private static string GetExceptionMessage(Exception throwedException)
+        {
+            switch (Settings.UseExceptionMessage)
+            {
+                case ExceptionMessageHandling.Default:
+
+                    return Settings.ExceptionMessage;
+
+                case ExceptionMessageHandling.CopyInnerExceptionMessageToTopLevelException:
+
+                    string message = string.Empty;
+                    while (throwedException.InnerException != null)
+                    {
+                        message = throwedException.Message;
+                        throwedException = throwedException.InnerException;
+                    }
+                    return message;
+
+                case ExceptionMessageHandling.CopyAllInnerExceptionMessagesToTopLevelException:
+
+                    string messageSummary = string.Empty;
+                    while (throwedException.InnerException != null)
+                    {
+                        messageSummary += throwedException.Message + Environment.NewLine;
+                        throwedException = throwedException.InnerException;
+                    }
+                    return messageSummary;
+
+                default:
+                    throw new NetOfficeException("ArgumentOutOfRange:Settings.CopyInnerExceptionMessage");
+            }
         }
 
         #endregion

@@ -50,13 +50,17 @@
             this.buttonKeyFiles = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxKeyFiles = new System.Windows.Forms.TextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.radioButtonSyntaxTrueProgrammingLanguage = new System.Windows.Forms.RadioButton();
+            this.radioButtonSyntaxFakeProgrammingLanguage = new System.Windows.Forms.RadioButton();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(411, 284);
+            this.buttonCancel.Location = new System.Drawing.Point(427, 278);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(77, 22);
             this.buttonCancel.TabIndex = 21;
@@ -67,7 +71,7 @@
             // buttonOkay
             // 
             this.buttonOkay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOkay.Location = new System.Drawing.Point(328, 284);
+            this.buttonOkay.Location = new System.Drawing.Point(344, 278);
             this.buttonOkay.Name = "buttonOkay";
             this.buttonOkay.Size = new System.Drawing.Size(77, 22);
             this.buttonOkay.TabIndex = 20;
@@ -81,7 +85,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxFolder.Location = new System.Drawing.Point(53, 21);
             this.textBoxFolder.Name = "textBoxFolder";
-            this.textBoxFolder.Size = new System.Drawing.Size(407, 20);
+            this.textBoxFolder.Size = new System.Drawing.Size(391, 20);
             this.textBoxFolder.TabIndex = 22;
             // 
             // labelFolder
@@ -96,7 +100,7 @@
             // buttonFolder
             // 
             this.buttonFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonFolder.Location = new System.Drawing.Point(466, 18);
+            this.buttonFolder.Location = new System.Drawing.Point(459, 19);
             this.buttonFolder.Name = "buttonFolder";
             this.buttonFolder.Size = new System.Drawing.Size(45, 23);
             this.buttonFolder.TabIndex = 24;
@@ -110,7 +114,7 @@
             this.labelNotes.AutoSize = true;
             this.labelNotes.BackColor = System.Drawing.SystemColors.Info;
             this.labelNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelNotes.Location = new System.Drawing.Point(48, 284);
+            this.labelNotes.Location = new System.Drawing.Point(53, 283);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(259, 15);
             this.labelNotes.TabIndex = 27;
@@ -122,7 +126,7 @@
             this.checkBoxOpenFolder.AutoSize = true;
             this.checkBoxOpenFolder.Checked = true;
             this.checkBoxOpenFolder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxOpenFolder.Location = new System.Drawing.Point(48, 255);
+            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 255);
             this.checkBoxOpenFolder.Name = "checkBoxOpenFolder";
             this.checkBoxOpenFolder.Size = new System.Drawing.Size(157, 17);
             this.checkBoxOpenFolder.TabIndex = 28;
@@ -207,8 +211,9 @@
             ".NET Framework 2.0",
             ".NET Framework 3.0",
             ".NET Framework 3.5",
-            ".NET Framework 4.0"});
-            this.comboBoxFramework.Location = new System.Drawing.Point(53, 196);
+            ".NET Framework 4.0",
+            ".NET Framework 4.5"});
+            this.comboBoxFramework.Location = new System.Drawing.Point(53, 192);
             this.comboBoxFramework.Name = "comboBoxFramework";
             this.comboBoxFramework.Size = new System.Drawing.Size(176, 21);
             this.comboBoxFramework.TabIndex = 35;
@@ -216,7 +221,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(50, 180);
+            this.label1.Location = new System.Drawing.Point(50, 176);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(201, 13);
             this.label1.TabIndex = 36;
@@ -225,7 +230,7 @@
             // buttonWhyFramework
             // 
             this.buttonWhyFramework.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 195);
+            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 191);
             this.buttonWhyFramework.Name = "buttonWhyFramework";
             this.buttonWhyFramework.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyFramework.TabIndex = 37;
@@ -264,7 +269,7 @@
             this.checkBoxAddTestApplication.AutoSize = true;
             this.checkBoxAddTestApplication.Checked = true;
             this.checkBoxAddTestApplication.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(48, 232);
+            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(53, 232);
             this.checkBoxAddTestApplication.Name = "checkBoxAddTestApplication";
             this.checkBoxAddTestApplication.Size = new System.Drawing.Size(299, 17);
             this.checkBoxAddTestApplication.TabIndex = 40;
@@ -286,7 +291,7 @@
             // buttonKeyFiles
             // 
             this.buttonKeyFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonKeyFiles.Location = new System.Drawing.Point(466, 64);
+            this.buttonKeyFiles.Location = new System.Drawing.Point(459, 65);
             this.buttonKeyFiles.Name = "buttonKeyFiles";
             this.buttonKeyFiles.Size = new System.Drawing.Size(45, 23);
             this.buttonKeyFiles.TabIndex = 46;
@@ -309,16 +314,51 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxKeyFiles.Location = new System.Drawing.Point(53, 67);
             this.textBoxKeyFiles.Name = "textBoxKeyFiles";
-            this.textBoxKeyFiles.Size = new System.Drawing.Size(407, 20);
+            this.textBoxKeyFiles.Size = new System.Drawing.Size(391, 20);
             this.textBoxKeyFiles.TabIndex = 44;
             this.textBoxKeyFiles.Text = "D:\\Workbench\\Sebastian\\NetOffice\\KeyFiles";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.radioButtonSyntaxFakeProgrammingLanguage);
+            this.groupBox1.Controls.Add(this.radioButtonSyntaxTrueProgrammingLanguage);
+            this.groupBox1.Location = new System.Drawing.Point(312, 103);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(134, 90);
+            this.groupBox1.TabIndex = 47;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Syntax Optimization";
+            // 
+            // radioButtonSyntaxTrueProgrammingLanguage
+            // 
+            this.radioButtonSyntaxTrueProgrammingLanguage.AutoSize = true;
+            this.radioButtonSyntaxTrueProgrammingLanguage.Checked = true;
+            this.radioButtonSyntaxTrueProgrammingLanguage.Location = new System.Drawing.Point(27, 31);
+            this.radioButtonSyntaxTrueProgrammingLanguage.Name = "radioButtonSyntaxTrueProgrammingLanguage";
+            this.radioButtonSyntaxTrueProgrammingLanguage.Size = new System.Drawing.Size(39, 17);
+            this.radioButtonSyntaxTrueProgrammingLanguage.TabIndex = 0;
+            this.radioButtonSyntaxTrueProgrammingLanguage.TabStop = true;
+            this.radioButtonSyntaxTrueProgrammingLanguage.Text = "C#";
+            this.radioButtonSyntaxTrueProgrammingLanguage.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonSyntaxFakeProgrammingLanguage
+            // 
+            this.radioButtonSyntaxFakeProgrammingLanguage.AutoSize = true;
+            this.radioButtonSyntaxFakeProgrammingLanguage.Location = new System.Drawing.Point(27, 58);
+            this.radioButtonSyntaxFakeProgrammingLanguage.Name = "radioButtonSyntaxFakeProgrammingLanguage";
+            this.radioButtonSyntaxFakeProgrammingLanguage.Size = new System.Drawing.Size(64, 17);
+            this.radioButtonSyntaxFakeProgrammingLanguage.TabIndex = 1;
+            this.radioButtonSyntaxFakeProgrammingLanguage.Text = "VB.NET";
+            this.radioButtonSyntaxFakeProgrammingLanguage.UseVisualStyleBackColor = true;
             // 
             // FormConfigDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(532, 328);
+            this.ClientSize = new System.Drawing.Size(526, 325);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonKeyFiles);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBoxKeyFiles);
@@ -350,6 +390,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Options";
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -380,6 +422,9 @@
         private System.Windows.Forms.Button buttonKeyFiles;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBoxKeyFiles;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RadioButton radioButtonSyntaxFakeProgrammingLanguage;
+        private System.Windows.Forms.RadioButton radioButtonSyntaxTrueProgrammingLanguage;
 
     }
 }
