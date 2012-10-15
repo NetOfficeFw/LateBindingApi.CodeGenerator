@@ -159,8 +159,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
             InheritedInterfaceManager inheritedManager = new InheritedInterfaceManager(this, _document);
             inheritedManager.ValidateMultipleCoClassInherited();
 
-
-
             DoUpdate("Create root folder");
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
@@ -173,7 +171,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
-                
  
                 DoUpdate("Create project " + project.Attribute("Name").Value);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
@@ -186,13 +183,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string typeDefsInclude = AliasApi.ConvertTypeDefsToString(project, project.Element("TypeDefs"));
                 string modulesInclude = ModuleApi.ConvertModulesToFiles(project, project.Element("Modules"), _settings, solutionFolder);
                 string recordsInclude = RecordsApi.ConvertRecordsToFiles(project, project.Element("Records"), _settings, solutionFolder);
-                 
+
+                string toolsInclude = ToolsApi.ConvertToolsToFiles(project, _settings, solutionFolder);
+
                 string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
 
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
                 projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
-                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, 
+                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, toolsInclude, 
                                         factoryInclude);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);

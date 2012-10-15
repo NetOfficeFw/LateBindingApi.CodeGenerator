@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="AliasApi.cs" />
     <Compile Include="CoClassApi.cs" />
+    <Compile Include="ToolsApi.cs" />
     <EmbeddedResource Include="CoClass\EventHelper.txt" />
     <EmbeddedResource Include="Event\Interface.txt" />
     <Compile Include="ConflictManager.cs" />
@@ -186,6 +187,41 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Interface\FakedClassConstructor.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Office\CustomTaskPaneCollection.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Excel\ITaskPane.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Excel\COMAddin.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Office\MultiRegisterAttribute.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Access\ITaskPane.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Access\COMAddin.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Visio\COMAddin.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Outlook\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\Outlook\ITaskPane.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Office\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\Office\ITaskPane.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\ITaskPane.txt" />
+    <EmbeddedResource Include="Tools\Project\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\Project\ITaskPane.txt" />
+    <EmbeddedResource Include="Tools\Word\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\Word\ITaskPane.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

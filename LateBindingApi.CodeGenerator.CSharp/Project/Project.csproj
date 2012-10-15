@@ -49,6 +49,7 @@
     %EventInclude%
     %ModulesInclude%
     %RecordsInclude%
+    %ToolsInclude%
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="stdole">

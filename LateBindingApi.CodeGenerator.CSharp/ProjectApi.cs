@@ -87,7 +87,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string ReplaceProjectAttributes(string solutionPath, string projectFile, Settings settings, XElement project, string enumIncludes,
                                         string constIncludes, string faceIncludes, string dispatchIncludes, string classesIncludes, 
-                                                         string eventIncludes, string modulesInclude, string recordsInclude, string factoryInclude)
+                                                         string eventIncludes, string modulesInclude, string recordsInclude, string toolsInclude, string factoryInclude)
         {
 
             if("4.0" == settings.Framework)
@@ -106,6 +106,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%ModulesInclude%", modulesInclude);
             projectFile = projectFile.Replace("%EventInclude%", eventIncludes);
             projectFile = projectFile.Replace("%RecordsInclude%", recordsInclude);
+            projectFile = projectFile.Replace("%ToolsInclude%", toolsInclude);
 
             if (("3.5" == settings.Framework) || ("4.0" == settings.Framework))
             {

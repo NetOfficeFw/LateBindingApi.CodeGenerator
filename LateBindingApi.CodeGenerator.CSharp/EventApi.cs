@@ -93,9 +93,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     par = "[In] [Out";
                 else
                     par = "[In";
-               
-                if (("true" == itemParam.Attribute("IsComProxy").Value)
-                   || ("COMObject" == itemParam.Attribute("Type").Value) || ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
+
+                //if("newVal".Equals(itemParam.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase))
+                //{
+                
+                //}
+
+                bool isComProxy = IsComProxy(itemParam);
+                if (isComProxy)
                 {
                     par += ", MarshalAs(UnmanagedType.IDispatch)] object " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value);
                 }
@@ -103,13 +108,32 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     par += "] " + isRef + "object " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value);
                 }
-            
+
                 result += par +", ";
             }
             if (", " == result.Substring(result.Length - 2))
                 result = result.Substring(0, result.Length - 2);
 
             return result+ ")";
+        }
+
+        internal static bool IsStruct(XElement itemParam)
+        {
+            if ("VT_VARIANT" == itemParam.Attribute("VarType").Value && itemParam.Attribute("MarshalAs").Value == "UnmanagedType.Struct")
+                return true;
+            else
+                return false;
+        }
+
+        internal static bool IsComProxy(XElement itemParam)
+        {
+            if ("VT_VARIANT" == itemParam.Attribute("VarType").Value && itemParam.Attribute("MarshalAs").Value == "UnmanagedType.Struct")
+                return false;
+
+            if (("true" == itemParam.Attribute("IsComProxy").Value) || ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
+                return true;
+            else
+                return false;
         }
 
         private static string GetMethodImplementCode(Settings settings, XElement methodNode)
@@ -203,7 +227,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == itemParam.Attribute("IsRef").Value)
                     continue;
 
-                if ("true" == itemParam.Attribute("IsComProxy").Value)
+                if (IsComProxy(itemParam)) // if ("true" == itemParam.Attribute("IsComProxy").Value)                
                 {
                     string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
                     result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
@@ -216,12 +240,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
                         result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
                            " = (" + qualifiedType + ")" + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ";\r\n";
-
                     }
                     else
                     {
-                        result += tabSpace + itemParam.Attribute("Type").Value + " new" + itemParam.Attribute("Name").Value +
-                            " = (" + itemParam.Attribute("Type").Value + ")" + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ";\r\n";
+                        if (itemParam.Attribute("Type").Value.Equals("object", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            result += tabSpace + itemParam.Attribute("Type").Value + " new" + itemParam.Attribute("Name").Value +
+                            " = (" + CSharpGenerator.ConvertTypeToConvertCall(itemParam.Attribute("Type").Value) + ")" + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ";\r\n";
+                        }
+                        else
+                        {
+                            result += tabSpace + itemParam.Attribute("Type").Value + " new" + itemParam.Attribute("Name").Value +
+                            " = Convert.To" + CSharpGenerator.ConvertTypeToConvertCall(itemParam.Attribute("Type").Value) + "(" + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ");\r\n";
+                        }
                     }
                 }
             } 

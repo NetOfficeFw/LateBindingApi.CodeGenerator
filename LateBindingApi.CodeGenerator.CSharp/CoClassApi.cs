@@ -282,8 +282,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     isRef = "ref ";
 
                 string par = "";
-                if (("true" == itemParam.Attribute("IsComProxy").Value) &&
-                    ("object" == itemParam.Attribute("Type").Value))
+                if(EventApi.IsStruct(itemParam))
+                {
+                    par = isRef + "object" + " " + itemParam.Attribute("Name").Value;
+                }
+                else if (("true" == itemParam.Attribute("IsComProxy").Value) && ("object" == itemParam.Attribute("Type").Value))
                 {
                     par = isRef + "COMObject" + " " + itemParam.Attribute("Name").Value;
                 }
@@ -291,7 +294,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     par = isRef + CSharpGenerator.GetQualifiedType(itemParam) + " " + itemParam.Attribute("Name").Value;
                 }
-
 
                 result += par + ", ";
             }
