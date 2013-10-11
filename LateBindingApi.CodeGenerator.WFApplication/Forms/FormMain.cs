@@ -603,6 +603,5 @@ namespace LateBindingApi.CodeGenerator.WFApplication
              
             return itemLibrary.Attribute("Version").Value;
         }
-
      }
 }

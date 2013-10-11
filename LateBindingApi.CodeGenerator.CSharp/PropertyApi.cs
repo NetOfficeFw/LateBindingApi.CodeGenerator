@@ -225,8 +225,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string ConvertPropertyLateBindToString(Settings settings, XElement propertyNode, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
+
             string result = "";
             string name = propertyNode.Attribute("Name").Value;
+
             bool analyzeReturn = Convert.ToBoolean(propertyNode.Attribute("AnalyzeReturn").Value);
             foreach (XElement itemParams in propertyNode.Elements("Parameters"))
             {

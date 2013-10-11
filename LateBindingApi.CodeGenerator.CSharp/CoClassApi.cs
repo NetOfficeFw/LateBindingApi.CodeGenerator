@@ -25,7 +25,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _disposeOverride;
 
         private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t///</summary>\r\n";
-
+        
         private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n";
 
@@ -66,8 +66,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
             string delegates = _delegates.Replace("%delegates%", GetDelegates(projectNode, classNode));
             result += delegates;
-
-           
 
             string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(classNode);
             string header = _classHeader.Replace("%name%", classNode.Attribute("Name").Value);
@@ -128,6 +126,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result += attributes + "\r\n";
             result += header;
             result += construct;
+
+            if (projectNode.Attribute("Name").Value == "Word" && classNode.Attribute("Name").Value == "Application")
+                _classEventBinding = _classEventBinding.Replace("= SinkHelper.GetConnectionPoint(this", "= SinkHelper.GetConnectionPoint2(this");
+
             result += _classEventBinding.Replace("%sinkHelperDispose%", sinkHelperDispose);
             result += "\t\t#pragma warning restore\r\n";
             result += "\t}\r\n}";

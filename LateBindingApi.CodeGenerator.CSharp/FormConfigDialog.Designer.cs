@@ -51,8 +51,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxKeyFiles = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radioButtonSyntaxTrueProgrammingLanguage = new System.Windows.Forms.RadioButton();
             this.radioButtonSyntaxFakeProgrammingLanguage = new System.Windows.Forms.RadioButton();
+            this.radioButtonSyntaxTrueProgrammingLanguage = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -316,7 +316,7 @@
             this.textBoxKeyFiles.Name = "textBoxKeyFiles";
             this.textBoxKeyFiles.Size = new System.Drawing.Size(391, 20);
             this.textBoxKeyFiles.TabIndex = 44;
-            this.textBoxKeyFiles.Text = "D:\\Workbench\\Sebastian\\NetOffice\\KeyFiles";
+            this.textBoxKeyFiles.Text = "C:\\NetOffice\\KeyFiles";
             // 
             // groupBox1
             // 
@@ -329,6 +329,17 @@
             this.groupBox1.TabIndex = 47;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Syntax Optimization";
+            this.groupBox1.Visible = false;
+            // 
+            // radioButtonSyntaxFakeProgrammingLanguage
+            // 
+            this.radioButtonSyntaxFakeProgrammingLanguage.AutoSize = true;
+            this.radioButtonSyntaxFakeProgrammingLanguage.Location = new System.Drawing.Point(27, 58);
+            this.radioButtonSyntaxFakeProgrammingLanguage.Name = "radioButtonSyntaxFakeProgrammingLanguage";
+            this.radioButtonSyntaxFakeProgrammingLanguage.Size = new System.Drawing.Size(64, 17);
+            this.radioButtonSyntaxFakeProgrammingLanguage.TabIndex = 1;
+            this.radioButtonSyntaxFakeProgrammingLanguage.Text = "VB.NET";
+            this.radioButtonSyntaxFakeProgrammingLanguage.UseVisualStyleBackColor = true;
             // 
             // radioButtonSyntaxTrueProgrammingLanguage
             // 
@@ -341,16 +352,6 @@
             this.radioButtonSyntaxTrueProgrammingLanguage.TabStop = true;
             this.radioButtonSyntaxTrueProgrammingLanguage.Text = "C#";
             this.radioButtonSyntaxTrueProgrammingLanguage.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonSyntaxFakeProgrammingLanguage
-            // 
-            this.radioButtonSyntaxFakeProgrammingLanguage.AutoSize = true;
-            this.radioButtonSyntaxFakeProgrammingLanguage.Location = new System.Drawing.Point(27, 58);
-            this.radioButtonSyntaxFakeProgrammingLanguage.Name = "radioButtonSyntaxFakeProgrammingLanguage";
-            this.radioButtonSyntaxFakeProgrammingLanguage.Size = new System.Drawing.Size(64, 17);
-            this.radioButtonSyntaxFakeProgrammingLanguage.TabIndex = 1;
-            this.radioButtonSyntaxFakeProgrammingLanguage.Text = "VB.NET";
-            this.radioButtonSyntaxFakeProgrammingLanguage.UseVisualStyleBackColor = true;
             // 
             // FormConfigDialog
             // 

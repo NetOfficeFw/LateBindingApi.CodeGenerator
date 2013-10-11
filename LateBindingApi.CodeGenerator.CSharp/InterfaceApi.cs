@@ -12,6 +12,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _fileHeader = ""
                                        + "using System;\r\n"
                                        + "using NetRuntimeSystem = System;\r\n"
+                                       + "using System.Runtime.InteropServices;\r\n"
                                        + "using System.ComponentModel;\r\n"
                                        + "using System.Runtime.CompilerServices;\r\n"
                                        + "using System.Reflection;\r\n"

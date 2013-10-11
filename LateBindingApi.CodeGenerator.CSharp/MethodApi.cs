@@ -97,7 +97,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static bool HasThis(XElement entityNode)
         {
-
             XElement node = (from a in entityNode.Element("Properties").Elements("Property")
                              where a.Attribute("Name").Value.Equals("this", StringComparison.InvariantCultureIgnoreCase)
                              select a).FirstOrDefault();

@@ -125,6 +125,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return false;
         }
 
+        internal static bool IsEarlyBindInterface(XElement itemParam)
+        {
+            XElement node = CSharpGenerator.GetInterfaceOrClassFromKeyAndName(itemParam);
+            if (node == null || null == node.Attribute("IsEarlyBind"))
+                return false;
+
+            if (node.Attribute("IsEarlyBind").Value == "true")
+                 return true;
+            else
+                return false;
+        }
+
         internal static bool IsComProxy(XElement itemParam)
         {
             if ("VT_VARIANT" == itemParam.Attribute("VarType").Value && itemParam.Attribute("MarshalAs").Value == "UnmanagedType.Struct")
@@ -229,9 +241,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 if (IsComProxy(itemParam)) // if ("true" == itemParam.Attribute("IsComProxy").Value)                
                 {
-                    string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
-                    result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
+                    if (IsEarlyBindInterface(itemParam))
+                    {
+                        string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
+                        result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value + " = " +  ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + " as " + qualifiedType + ";\r\n";
+                    }
+                    else
+                    { 
+                        string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
+                        result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
                             " = NetOffice.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
+                    }
                 }
                 else
                 {

@@ -53,6 +53,7 @@ namespace NetOffice
         private static bool         _enableDebugOutput = false;
         private static bool         _enableEventDebugOutput;
         private static bool         _enableSafeMode;
+        private static bool         _enableProxyManagement = true;
         private static bool         _enableThreadSafe = true;
         private static CacheOptions _cacheOptions = CacheOptions.KeepExistingCacheAlive;
         private static bool         _enableOperatorOverlads = true;
@@ -64,7 +65,22 @@ namespace NetOffice
         #region Properties
 
         /// <summary>
-        /// NetOffice wrap all thrown exceptions from Office applications in a COMException. This option can be used to set the exception message
+        /// Enable the NetOffice COM proxy management. true by default
+        /// </summary>
+        public static bool EnableProxyManagement
+        {
+            get 
+            {
+                return _enableProxyManagement;
+            }
+            set
+            {
+                _enableProxyManagement = value;
+            }
+        }
+
+        /// <summary>
+        /// NetOffice wrap all thrown exceptions from Office applications in a COMException. This option can be used to set the top level exception message
         /// </summary>
         public static ExceptionMessageHandling UseExceptionMessage
         {
@@ -256,7 +272,6 @@ namespace NetOffice
             }
         }
 
-
         /// <summary>
         /// Get or set Factory.Initialize() try to load non loaded dependend assemblies to fetch type informations. KeepExistingCacheAlive by default
         /// </summary>
@@ -289,7 +304,6 @@ namespace NetOffice
             }
         }
         
-
         #endregion
     }
 }

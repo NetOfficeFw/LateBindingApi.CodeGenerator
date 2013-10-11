@@ -54,6 +54,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 listAssemblies += libInfo; 
             }
             assemblyInfo = assemblyInfo.Replace("%List%", listAssemblies);
+
+            string dependentAssemblies = "";
+            string[] depenents = GetRefProjects(project);
+            foreach (string item in depenents)
+            {
+                string refName = "[assembly: Dependency(" + "\"" + item + "Api.dll\"" + ", LoadHint.Default)]" + Environment.NewLine; ;
+                dependentAssemblies += refName;
+            }
+            string defaultRef = "[assembly: Dependency(" + "\"" + "NetOffice.dll\"" + ", LoadHint.Default)]" + Environment.NewLine; ;
+            dependentAssemblies += defaultRef;
+
+            assemblyInfo = assemblyInfo.Replace("//%DependencyInclude%", dependentAssemblies);
+
             return assemblyInfo;
         }
         

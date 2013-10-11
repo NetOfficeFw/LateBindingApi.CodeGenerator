@@ -19,6 +19,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <returns></returns>
         internal static bool IsHidden(MemberInfo member)
         {
+            if (member.Name == "EntireColumn")
+            { 
+            }
             if (member.MemberId == 0)
                 return false;
 

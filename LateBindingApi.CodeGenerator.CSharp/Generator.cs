@@ -248,6 +248,46 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return _derives.IsDerived(id);
         }
 
+        internal static XElement GetInterfaceOrClassFromKeyAndName(XElement itemParam)
+        {
+            if (itemParam.Attribute("ProjectKey") == null || itemParam.Attribute("ProjectKey").Value == "")
+                return null;
+
+            XElement node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project")
+                             where a.Attribute("Key").Value.Equals(itemParam.Attribute("ProjectKey").Value , StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+            if (null == node)
+                throw new Exception("ProjectKey not found");
+
+            if (itemParam.Attribute("TypeKind").Value == "TKIND_COCLASS")
+            {
+                XElement targetNode =  (from a in node.Elements("CoClasses").Elements("CoClass")
+                        where a.Attribute("Name").Value.Equals(itemParam.Attribute("Type").Value, StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+
+                if(null == targetNode)
+                    throw new Exception("Class not found");
+                return targetNode;
+            }
+            else if (itemParam.Attribute("TypeKind").Value == "TKIND_DISPATCH")
+            {
+                XElement targetNode = (from a in node.Elements("DispatchInterfaces").Elements("Interface")
+                                       where a.Attribute("Name").Value.Equals(itemParam.Attribute("Type").Value, StringComparison.InvariantCultureIgnoreCase)
+                                       select a).FirstOrDefault();
+
+                if (null == targetNode)
+                    throw new Exception("Interface not found");
+                return targetNode;
+            }
+            else
+            { 
+            
+            }
+            return null;
+                               // _x0037_9b19a83-a79f-446c-9b7e-9b595e918e40
+        }
+
         internal static XElement GetInterfaceOrClassFromKey(string key)
         {
             XElement node = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Elements("DispatchInterfaces").Elements("Interface")
