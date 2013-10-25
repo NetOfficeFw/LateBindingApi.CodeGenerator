@@ -132,7 +132,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
       
 
             string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", faceNode));
-
+            if (CSharpGenerator.Settings.AddDocumentationLinks)
+            {
+                string projectName = projectNode.Attribute("Name").Value;
+                if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                {
+                    XElement linkNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                         where a.Element("Name").Value.Equals(faceNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                         select a).FirstOrDefault();
+                    if (null != linkNode)
+                        classDesc += "\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                }
+            }
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));

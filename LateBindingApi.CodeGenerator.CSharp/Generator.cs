@@ -130,6 +130,35 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return document;
         }
 
+        internal static  XDocument LinkFileDocument
+        {
+            get 
+            {
+                if (null == _linkFileDocument)
+                    _linkFileDocument = XDocument.Load(Settings.LinkFilePath);
+                return _linkFileDocument;
+            }
+        }
+        private static XDocument _linkFileDocument;
+
+        internal static bool IsRootProjectName(string name)
+        {
+            switch (name)
+            {
+                case "Excel":
+                case "Word":
+                case "Outlook":
+                case "PowerPoint":
+                case "Access":
+                case "MSProject":
+                case "Visio":
+                case "Office":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         void _job_DoWork()
         {
             DoUpdate("Create Copy");
@@ -583,7 +612,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (between.EndsWith(", "))
                 between = between.Substring(0, between.Length - 2);
 
-            return summary1 + between + "\r\n" + summary2;
+            return summary1 + between  + "\r\n" + summary2;
         }
 
         /// <summary>

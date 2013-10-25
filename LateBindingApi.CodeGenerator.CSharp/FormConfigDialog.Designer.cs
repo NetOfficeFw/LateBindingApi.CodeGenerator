@@ -53,6 +53,10 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioButtonSyntaxFakeProgrammingLanguage = new System.Windows.Forms.RadioButton();
             this.radioButtonSyntaxTrueProgrammingLanguage = new System.Windows.Forms.RadioButton();
+            this.buttonDocLinks = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBoxDocLinkFile = new System.Windows.Forms.TextBox();
+            this.checkBoxAddDocumentationLinks = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,7 +64,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(427, 278);
+            this.buttonCancel.Location = new System.Drawing.Point(427, 333);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(77, 22);
             this.buttonCancel.TabIndex = 21;
@@ -71,7 +75,7 @@
             // buttonOkay
             // 
             this.buttonOkay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOkay.Location = new System.Drawing.Point(344, 278);
+            this.buttonOkay.Location = new System.Drawing.Point(344, 333);
             this.buttonOkay.Name = "buttonOkay";
             this.buttonOkay.Size = new System.Drawing.Size(77, 22);
             this.buttonOkay.TabIndex = 20;
@@ -114,7 +118,7 @@
             this.labelNotes.AutoSize = true;
             this.labelNotes.BackColor = System.Drawing.SystemColors.Info;
             this.labelNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelNotes.Location = new System.Drawing.Point(53, 283);
+            this.labelNotes.Location = new System.Drawing.Point(53, 338);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(259, 15);
             this.labelNotes.TabIndex = 27;
@@ -126,7 +130,7 @@
             this.checkBoxOpenFolder.AutoSize = true;
             this.checkBoxOpenFolder.Checked = true;
             this.checkBoxOpenFolder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 255);
+            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 310);
             this.checkBoxOpenFolder.Name = "checkBoxOpenFolder";
             this.checkBoxOpenFolder.Size = new System.Drawing.Size(157, 17);
             this.checkBoxOpenFolder.TabIndex = 28;
@@ -136,7 +140,7 @@
             // checkBoxConvertOptionals
             // 
             this.checkBoxConvertOptionals.AutoSize = true;
-            this.checkBoxConvertOptionals.Location = new System.Drawing.Point(53, 105);
+            this.checkBoxConvertOptionals.Location = new System.Drawing.Point(53, 160);
             this.checkBoxConvertOptionals.Name = "checkBoxConvertOptionals";
             this.checkBoxConvertOptionals.Size = new System.Drawing.Size(183, 17);
             this.checkBoxConvertOptionals.TabIndex = 29;
@@ -148,7 +152,7 @@
             this.checkBoxConvertToCamel.AutoSize = true;
             this.checkBoxConvertToCamel.Checked = true;
             this.checkBoxConvertToCamel.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxConvertToCamel.Location = new System.Drawing.Point(53, 138);
+            this.checkBoxConvertToCamel.Location = new System.Drawing.Point(53, 193);
             this.checkBoxConvertToCamel.Name = "checkBoxConvertToCamel";
             this.checkBoxConvertToCamel.Size = new System.Drawing.Size(185, 17);
             this.checkBoxConvertToCamel.TabIndex = 30;
@@ -158,7 +162,7 @@
             // buttonWhyOptionals
             // 
             this.buttonWhyOptionals.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyOptionals.Location = new System.Drawing.Point(242, 103);
+            this.buttonWhyOptionals.Location = new System.Drawing.Point(242, 158);
             this.buttonWhyOptionals.Name = "buttonWhyOptionals";
             this.buttonWhyOptionals.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyOptionals.TabIndex = 31;
@@ -169,7 +173,7 @@
             // buttonWhyCamel
             // 
             this.buttonWhyCamel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyCamel.Location = new System.Drawing.Point(242, 134);
+            this.buttonWhyCamel.Location = new System.Drawing.Point(242, 189);
             this.buttonWhyCamel.Name = "buttonWhyCamel";
             this.buttonWhyCamel.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyCamel.TabIndex = 32;
@@ -180,7 +184,7 @@
             // buttonWhyRef
             // 
             this.buttonWhyRef.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyRef.Location = new System.Drawing.Point(485, 101);
+            this.buttonWhyRef.Location = new System.Drawing.Point(485, 156);
             this.buttonWhyRef.Name = "buttonWhyRef";
             this.buttonWhyRef.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyRef.TabIndex = 34;
@@ -194,7 +198,7 @@
             this.checkBoxRemoveRef.AutoSize = true;
             this.checkBoxRemoveRef.Checked = true;
             this.checkBoxRemoveRef.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxRemoveRef.Location = new System.Drawing.Point(296, 105);
+            this.checkBoxRemoveRef.Location = new System.Drawing.Point(296, 160);
             this.checkBoxRemoveRef.Name = "checkBoxRemoveRef";
             this.checkBoxRemoveRef.Size = new System.Drawing.Size(183, 17);
             this.checkBoxRemoveRef.TabIndex = 33;
@@ -213,7 +217,7 @@
             ".NET Framework 3.5",
             ".NET Framework 4.0",
             ".NET Framework 4.5"});
-            this.comboBoxFramework.Location = new System.Drawing.Point(53, 192);
+            this.comboBoxFramework.Location = new System.Drawing.Point(53, 247);
             this.comboBoxFramework.Name = "comboBoxFramework";
             this.comboBoxFramework.Size = new System.Drawing.Size(176, 21);
             this.comboBoxFramework.TabIndex = 35;
@@ -221,7 +225,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(50, 176);
+            this.label1.Location = new System.Drawing.Point(50, 231);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(201, 13);
             this.label1.TabIndex = 36;
@@ -230,7 +234,7 @@
             // buttonWhyFramework
             // 
             this.buttonWhyFramework.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 191);
+            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 246);
             this.buttonWhyFramework.Name = "buttonWhyFramework";
             this.buttonWhyFramework.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyFramework.TabIndex = 37;
@@ -241,7 +245,7 @@
             // buttonWhyDocu
             // 
             this.buttonWhyDocu.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyDocu.Location = new System.Drawing.Point(485, 133);
+            this.buttonWhyDocu.Location = new System.Drawing.Point(485, 188);
             this.buttonWhyDocu.Name = "buttonWhyDocu";
             this.buttonWhyDocu.Size = new System.Drawing.Size(48, 21);
             this.buttonWhyDocu.TabIndex = 39;
@@ -255,7 +259,7 @@
             this.checkBoxCreateDocu.AutoSize = true;
             this.checkBoxCreateDocu.Checked = true;
             this.checkBoxCreateDocu.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateDocu.Location = new System.Drawing.Point(296, 137);
+            this.checkBoxCreateDocu.Location = new System.Drawing.Point(296, 192);
             this.checkBoxCreateDocu.Name = "checkBoxCreateDocu";
             this.checkBoxCreateDocu.Size = new System.Drawing.Size(150, 17);
             this.checkBoxCreateDocu.TabIndex = 38;
@@ -269,7 +273,7 @@
             this.checkBoxAddTestApplication.AutoSize = true;
             this.checkBoxAddTestApplication.Checked = true;
             this.checkBoxAddTestApplication.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(53, 232);
+            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(53, 287);
             this.checkBoxAddTestApplication.Name = "checkBoxAddTestApplication";
             this.checkBoxAddTestApplication.Size = new System.Drawing.Size(299, 17);
             this.checkBoxAddTestApplication.TabIndex = 40;
@@ -323,7 +327,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.radioButtonSyntaxFakeProgrammingLanguage);
             this.groupBox1.Controls.Add(this.radioButtonSyntaxTrueProgrammingLanguage);
-            this.groupBox1.Location = new System.Drawing.Point(312, 103);
+            this.groupBox1.Location = new System.Drawing.Point(312, 158);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(134, 90);
             this.groupBox1.TabIndex = 47;
@@ -353,12 +357,58 @@
             this.radioButtonSyntaxTrueProgrammingLanguage.Text = "C#";
             this.radioButtonSyntaxTrueProgrammingLanguage.UseVisualStyleBackColor = true;
             // 
+            // buttonDocLinks
+            // 
+            this.buttonDocLinks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDocLinks.Location = new System.Drawing.Point(459, 115);
+            this.buttonDocLinks.Name = "buttonDocLinks";
+            this.buttonDocLinks.Size = new System.Drawing.Size(45, 23);
+            this.buttonDocLinks.TabIndex = 51;
+            this.buttonDocLinks.Text = "...";
+            this.buttonDocLinks.UseVisualStyleBackColor = true;
+            this.buttonDocLinks.Click += new System.EventHandler(this.buttonDocLinks_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(11, 120);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(23, 13);
+            this.label3.TabIndex = 50;
+            this.label3.Text = "File";
+            // 
+            // textBoxDocLinkFile
+            // 
+            this.textBoxDocLinkFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxDocLinkFile.Location = new System.Drawing.Point(53, 117);
+            this.textBoxDocLinkFile.Name = "textBoxDocLinkFile";
+            this.textBoxDocLinkFile.Size = new System.Drawing.Size(391, 20);
+            this.textBoxDocLinkFile.TabIndex = 49;
+            this.textBoxDocLinkFile.Text = "C:\\NetOffice\\ReferenceIndex.xml";
+            // 
+            // checkBoxAddDocumentationLinks
+            // 
+            this.checkBoxAddDocumentationLinks.AutoSize = true;
+            this.checkBoxAddDocumentationLinks.Checked = true;
+            this.checkBoxAddDocumentationLinks.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAddDocumentationLinks.Location = new System.Drawing.Point(53, 97);
+            this.checkBoxAddDocumentationLinks.Name = "checkBoxAddDocumentationLinks";
+            this.checkBoxAddDocumentationLinks.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxAddDocumentationLinks.TabIndex = 48;
+            this.checkBoxAddDocumentationLinks.Text = "Sign assemblies";
+            this.checkBoxAddDocumentationLinks.UseVisualStyleBackColor = true;
+            // 
             // FormConfigDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(526, 325);
+            this.ClientSize = new System.Drawing.Size(526, 380);
+            this.Controls.Add(this.buttonDocLinks);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.textBoxDocLinkFile);
+            this.Controls.Add(this.checkBoxAddDocumentationLinks);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonKeyFiles);
             this.Controls.Add(this.label2);
@@ -426,6 +476,10 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton radioButtonSyntaxFakeProgrammingLanguage;
         private System.Windows.Forms.RadioButton radioButtonSyntaxTrueProgrammingLanguage;
+        private System.Windows.Forms.Button buttonDocLinks;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxDocLinkFile;
+        private System.Windows.Forms.CheckBox checkBoxAddDocumentationLinks;
 
     }
 }

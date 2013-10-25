@@ -37,6 +37,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newSettings.CreateXmlDocumentation = checkBoxCreateDocu.Checked;
                 newSettings.UseSigning = checkBoxSignAssemblies.Checked;
                 newSettings.SignPath = textBoxKeyFiles.Text;
+                newSettings.AddDocumentationLinks = checkBoxAddDocumentationLinks.Checked;
+                newSettings.LinkFilePath = textBoxDocLinkFile.Text;
                 newSettings.VBOptimization = radioButtonSyntaxFakeProgrammingLanguage.Checked;
 
                 string res = "";
@@ -121,6 +123,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
             FolderBrowserDialog folderDialog = new FolderBrowserDialog();
             if (DialogResult.OK == folderDialog.ShowDialog(this))
                 textBoxKeyFiles.Text = folderDialog.SelectedPath;
+        }
+
+        private void buttonDocLinks_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            if (DialogResult.OK == dialog.ShowDialog(this))
+                textBoxDocLinkFile.Text = dialog.FileName;
         }
     }
 }

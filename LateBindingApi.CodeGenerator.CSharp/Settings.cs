@@ -17,7 +17,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
         string _framework;
         bool   _addTestApp;
         bool   _openFolder;
-        bool _useSigning;
+        bool  _useSigning;
+        bool _addDocumentationLinks = true;
+        string _linkFilePath;
         string _signPath;
 
         #endregion
@@ -35,6 +37,30 @@ namespace LateBindingApi.CodeGenerator.CSharp
             internal set
             {
                 _signPath = value;
+            }
+        }
+
+        public string LinkFilePath
+        {
+            get
+            {
+                return _linkFilePath;
+            }
+            internal set
+            {
+                _linkFilePath = value;
+            }
+
+        }
+        public bool AddDocumentationLinks
+        {
+            get
+            {
+                return _addDocumentationLinks;
+            }
+            internal set
+            {
+                _addDocumentationLinks = value;
             }
         }
 

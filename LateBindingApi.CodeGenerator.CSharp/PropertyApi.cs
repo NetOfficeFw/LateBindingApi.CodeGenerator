@@ -174,7 +174,35 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
                     method += DocumentationApi.CreateParameterDocumentation(2, itemParams);
+                string paramDoku2 = "";
+                if (CSharpGenerator.Settings.AddDocumentationLinks)
+                {
+                    XElement typeNode = GetTypeNode(propertyNode);
+                    XElement projectNode = GetProjectNode(propertyNode);
 
+                    string projectName = projectNode.Attribute("Name").Value;
+                    if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                    {
+                        XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                                where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                select a).FirstOrDefault();
+
+                        if (null != typeDocNode)
+                        {
+                            XElement linkNode = (from a in typeDocNode.Element("Properties").Elements("Property")
+                                                 where a.Element("Name").Value.Equals(propertyNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                 select a).FirstOrDefault();
+
+                            if (null != linkNode)
+                                paramDoku2 = "\t\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                            method += paramDoku2;
+                        }
+                    }
+                }
+                if (!String.IsNullOrEmpty(paramDoku2))
+                {
+                    Console.WriteLine("stop");
+                }
                 method += "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
 
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
@@ -192,7 +220,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem, true);
                 string paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
                 string paramAttrib = "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
-                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams));
+                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + paramDoku2 + "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams));
 
                 if (true == settings.CreateXmlDocumentation)
                     paramAttrib = paramDoku + paramAttrib;
@@ -216,6 +244,24 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 result += method;
             }
             return result;
+        }
+
+        private static XElement GetTypeNode(XElement methodNode)
+        {
+            XElement parentNode = methodNode;
+            while (parentNode.Name != "Interface")
+                parentNode = parentNode.Parent;
+
+            return parentNode;
+        }
+
+        private static XElement GetProjectNode(XElement methodNode)
+        {
+            XElement parentNode = methodNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
+            return parentNode;
         }
 
         /// <summary>
@@ -271,6 +317,32 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (true == settings.CreateXmlDocumentation)
                     method += DocumentationApi.CreateParameterDocumentation(2, itemParams);
 
+                string paramDoku2 = "";
+                if (CSharpGenerator.Settings.AddDocumentationLinks)
+                {
+                    XElement typeNode = GetTypeNode(propertyNode);
+                    XElement projectNode = GetProjectNode(propertyNode);
+
+                    string projectName = projectNode.Attribute("Name").Value;
+                    if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                    {
+                        XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                                where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                select a).FirstOrDefault();
+
+                        if (null != typeDocNode)
+                        {
+                            XElement linkNode = (from a in typeDocNode.Element("Properties").Elements("Property")
+                                                 where a.Element("Name").Value.Equals(propertyNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                 select a).FirstOrDefault();
+
+                            if (null != linkNode)
+                                paramDoku2 = "\t\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                            method += paramDoku2;
+                        }
+                    }
+                }
+
                 method += "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
 
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
@@ -292,8 +364,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string protoype = CreatePropertyLateBindPrototypeString(settings, itemParams, interfaceHasEnumerator, hasDefaultItem, false);
                 string paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
-                string paramAttrib = "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams)+ "\r\n";
-                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams));
+               
+
+                string paramAttrib =  "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams)+ "\r\n";
+                protoype = protoype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + paramDoku2 + "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams));
+
 
                 if (true == settings.CreateXmlDocumentation)
                     paramAttrib = paramDoku + paramAttrib;
@@ -412,11 +487,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 inParam = "[";
                 outParam = "]";
                 getter = "";
-            }
-
-            if (faceName == "Range" && name == "Offset")
-            { 
-            
             }
 
             string result = "";

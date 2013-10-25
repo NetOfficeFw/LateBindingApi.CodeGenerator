@@ -214,6 +214,30 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
 
                 string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
+                if (CSharpGenerator.Settings.AddDocumentationLinks)
+                {
+                    XElement typeNode = GetTypeNode(methodNode);
+                    XElement projectNode = GetProjectNode(methodNode);
+
+                    string projectName = projectNode.Attribute("Name").Value;
+                    if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                    {
+                        XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                                where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                select a).FirstOrDefault();
+
+                        if (null != typeDocNode)
+                        {
+                            XElement linkNode = (from a in typeDocNode.Element("Methods").Elements("Method")
+                                                 where a.Element("Name").Value.Equals(methodNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                 select a).FirstOrDefault();
+
+                            if (null != linkNode)
+                                supportDocu += "\t\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                        }
+                    }
+                }
+
                 string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
 
                 string method = "";
@@ -259,6 +283,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
+        private static XElement GetTypeNode(XElement methodNode)
+        {
+            XElement parentNode = methodNode;
+            while (parentNode.Name != "Interface")
+                parentNode = parentNode.Parent;
+
+            return parentNode;
+        }
+
+        private static XElement GetProjectNode(XElement methodNode)
+        {
+            XElement parentNode = methodNode;
+            while (parentNode.Name != "Project")
+                parentNode = parentNode.Parent;
+
+            return parentNode;
+        }
 
         /// <summary>
         /// convert method to code as string
@@ -300,7 +341,31 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
                     method = supportDocu;
-              
+
+                
+                if (CSharpGenerator.Settings.AddDocumentationLinks)
+                {
+                    XElement typeNode = GetTypeNode(methodNode);
+                    XElement projectNode = GetProjectNode(methodNode);
+                    string projectName = projectNode.Attribute("Name").Value;
+                    if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                    {
+                        XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                             where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                             select a).FirstOrDefault();
+
+                        if (null != typeDocNode)
+                        {
+                            XElement linkNode = (from a in typeDocNode.Element("Methods").Elements("Method")
+                             where a.Element("Name").Value.Equals(methodNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                             select a).FirstOrDefault();
+
+                            if (null != linkNode)
+                                method += "\t\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                        }
+                    }
+                }
+
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
 
                 if(methodNode.Attribute("Hidden").Value.Equals("true",StringComparison.InvariantCultureIgnoreCase))

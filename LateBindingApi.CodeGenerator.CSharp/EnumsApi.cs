@@ -49,7 +49,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if(true == settings.CreateXmlDocumentation)
                 result += CSharpGenerator.GetSupportByVersionSummary("\t", enumNode);
+             
+            string between2 = "";
+            if (CSharpGenerator.Settings.AddDocumentationLinks)
+            {
+                string projectName = projectNode.Attribute("Name").Value;
+                if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                {
+                    XElement linkNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Enums").Elements("Enum")
+                                         where a.Element("Name").Value.Equals(enumNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                         select a).FirstOrDefault();
+                    if (null != linkNode)
+                        between2 = "\t" + " ///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                }
+            }
 
+            result += between2;
             result += "\t" + enumAttributes + Environment.NewLine;
             result += "\t[EntityTypeAttribute(EntityType.IsEnum)]\r\n" + "\tpublic enum " + name + Environment.NewLine + "\t{" + Environment.NewLine;
             

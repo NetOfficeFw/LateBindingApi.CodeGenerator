@@ -107,6 +107,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// "+ CSharpGenerator.GetSupportByVersion("", classNode));
 
+            if (CSharpGenerator.Settings.AddDocumentationLinks)
+            {
+                string projectName = projectNode.Attribute("Name").Value;
+                if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                {
+                    XElement linkNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                         where a.Element("Name").Value.Equals(classNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                         select a).FirstOrDefault();
+                    if (null != linkNode)
+                        classDesc += "\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                }
+            }
+
             _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
 
             _classEventBinding = _classEventBinding.Replace("%CompareIds%", sinkHelperIds);
@@ -347,6 +360,24 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return doc;
         }
 
+        private static XElement GetTypeNode(XElement methodNode)
+        {
+            XElement parentNode = methodNode;
+            while (parentNode.Name != "CoClass")
+                parentNode = parentNode.Parent;
+
+            return parentNode;
+        }
+
+        private static XElement GetProjectNode(XElement methodNode)
+        {
+            XElement parentNode = methodNode;
+            while (parentNode.Name != "CoClass")
+                parentNode = parentNode.Parent;
+
+            return parentNode;
+        }
+
         private static string GetEvents(XElement projectNode, XElement faceNode)
         {
             string result = "\r\n\r\n\t\t#region Events\r\n\r\n";
@@ -367,7 +398,28 @@ namespace LateBindingApi.CodeGenerator.CSharp
                    "EventHandler _" + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
 
                 line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByVersion " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") + 
-                    "\r\n" + "\t\t/// </summary>\r\n";  
+                    "\r\n" + "\t\t/// </summary>\r\n";
+
+                if (CSharpGenerator.Settings.AddDocumentationLinks)
+                {
+                    string projectName = projectNode.Attribute("Name").Value;
+                    if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                    {
+                        XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                                where a.Element("Name").Value.Equals(faceNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                select a).FirstOrDefault();
+
+                        if (null != typeDocNode)
+                        {
+                            XElement linkNode = (from a in typeDocNode.Element("Events").Elements("Event")
+                                                 where a.Element("Name").Value.Equals(itemNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                 select a).FirstOrDefault();
+
+                            if (null != linkNode)
+                                line += "\t\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                        }
+                    }
+                }
 
 
                 line += "\t\t[SupportByVersion(" + "\"" + projectNode.Attribute("Name").Value + "\"" + ", " + versionAttributeString.Replace("\"", "") + ")]\r\n";
