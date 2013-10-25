@@ -7,7 +7,7 @@
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		public void CreateEventBridge()
         {
-			if(false == NetOffice.Settings.EnableEvents)
+			if(false == Factory.Settings.EnableEvents)
 				return;
 	
 			if (null != _connectPoint)
@@ -109,7 +109,7 @@
                     }
                     catch (NetRuntimeSystem.Exception exception)
                     {
-                        DebugConsole.WriteException(exception);
+                        Factory.Console.WriteException(exception);
                     }
                 }
                 return delegates.Length;

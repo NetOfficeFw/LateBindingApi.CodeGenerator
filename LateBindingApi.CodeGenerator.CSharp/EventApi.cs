@@ -250,7 +250,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     { 
                         string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
                         result += tabSpace + qualifiedType + " new" + itemParam.Attribute("Name").Value +
-                            " = NetOffice.Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
+                            " = Factory.CreateObjectFromComProxy(_eventClass, " + ParameterApi.ValidateParamName(itemParam.Attribute("Name").Value) + ") as " + qualifiedType + ";\r\n";
                     }
                 }
                 else

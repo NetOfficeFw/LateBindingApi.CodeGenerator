@@ -6,7 +6,7 @@ using System.IO;
 
 namespace NetOffice.NamedPipes
 {
-    internal abstract class PipeConnection : CriticalFinalizerObject 
+    internal abstract class PipeConnection
     {
         protected PipeHandle Handle = new PipeHandle();
         protected string Name;

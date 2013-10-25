@@ -38,7 +38,7 @@ namespace NetOffice.NamedPipes
                 if (!NamedPipeNative.ReadFile(handle.Handle, msgBytes, (uint)len, numReadWritten, 0))
                 {
                     handle.State = InterProcessConnectionState.Error;
-                    throw new Exception("Error reading from pipe. Internal error: " + NamedPipeNative.GetLastError().ToString());
+                    return null;
                 }
             }
             else
@@ -83,13 +83,13 @@ namespace NetOffice.NamedPipes
                 if (!NamedPipeNative.WriteFile(handle.Handle, bytes, len, numReadWritten, 0))
                 {
                     handle.State = InterProcessConnectionState.Error;
-                    throw new Exception("Error writing to pipe. Internal error: " + NamedPipeNative.GetLastError().ToString());
+                    return;
                 }
             }
             else
             {
                 handle.State = InterProcessConnectionState.Error;
-                throw new Exception("Error writing to pipe. Internal error: " + NamedPipeNative.GetLastError().ToString());
+                return;
             }
             handle.State = InterProcessConnectionState.Flushing;
             Flush(handle);
@@ -150,7 +150,7 @@ namespace NetOffice.NamedPipes
                     if (i >= ATTEMPTS)
                     {
                         handle.State = InterProcessConnectionState.Error;
-                        throw new Exception("Error setting read mode on pipe " + name + " . Internal error: " + NamedPipeNative.GetLastError().ToString());
+                        return null;
                     }
                 }
                 if (i >= ATTEMPTS)
@@ -159,12 +159,12 @@ namespace NetOffice.NamedPipes
                     {
                         handle.State = InterProcessConnectionState.Error;
                         // After a certain number of unsuccessful attempt raise an exception
-                        throw new Exception("Error connecting to pipe " + name + " . Internal error: " + NamedPipeNative.GetLastError().ToString());
+                        return null;
                     }
                     else
                     {
                         handle.State = InterProcessConnectionState.Error;
-                        throw new Exception("Pipe " + name + " is too busy. Internal error: " + NamedPipeNative.GetLastError().ToString());
+                        return null;
                     }
                 }
                 else
@@ -202,7 +202,7 @@ namespace NetOffice.NamedPipes
                 if (i >= ATTEMPTS)
                 {
                     handle.State = InterProcessConnectionState.Error;
-                    throw new Exception("Error creating named pipe " + name + " . Internal error: " + NamedPipeNative.GetLastError().ToString());
+                    return null;
                 }
             }
 
@@ -217,7 +217,6 @@ namespace NetOffice.NamedPipes
             if (!connected && NamedPipeNative.GetLastError() != NamedPipeNative.ERROR_PIPE_CONNECTED)
             {
                 handle.State = InterProcessConnectionState.Error;
-                throw new Exception("Error connecting pipe. Internal error: " + NamedPipeNative.GetLastError().ToString());
             }
         }
 

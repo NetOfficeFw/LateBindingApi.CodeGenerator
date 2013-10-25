@@ -35,6 +35,9 @@ namespace NetOffice.OutlookApi.Tools
         /// </summary>
         public COMAddin()
         {
+            Factory = RaiseCreateFactory();
+            if (null == Factory)
+                Factory = Core.Default;
             TaskPanes = new CustomTaskPaneCollection();
 			TaskPaneInstances = new List<ITaskPane>();
             Type = this.GetType();
@@ -43,6 +46,11 @@ namespace NetOffice.OutlookApi.Tools
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// The used factory core
+        /// </summary>
+        public Core Factory { get; private set; }
 
         /// <summary>
         /// Type Information of the instance
@@ -139,8 +147,8 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnStartupComplete, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnStartupComplete, exception);
             }
         }
 
@@ -153,8 +161,8 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnDisconnection, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnDisconnection, exception);
             }
         }
 
@@ -167,8 +175,8 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnConnection, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnConnection, exception);
             }
         }
 
@@ -181,8 +189,8 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnAddInsUpdate, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnAddInsUpdate, exception);
             }
         }
 
@@ -195,8 +203,8 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnBeginShutdown, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnBeginShutdown, exception);
             }
         }
 
@@ -206,17 +214,19 @@ namespace NetOffice.OutlookApi.Tools
 
         void IDTExtensibility2.OnStartupComplete(ref Array custom)
         {
+            Tweaks.ApplyTweaks(Factory, this, Type, "Outlook");
             RaiseOnStartupComplete(ref custom);
         }
 
         void IDTExtensibility2.OnConnection(object Application, ext_ConnectMode ConnectMode, object AddInInst, ref Array custom)
         {
-			this.Application = new Outlook.Application(null, Application);
+			this.Application = new Outlook.Application(Factory, null, Application);
 			RaiseOnConnection(Application, ConnectMode, AddInInst, ref custom);
         }
 
         void IDTExtensibility2.OnDisconnection(ext_DisconnectMode RemoveMode, ref Array custom)
         {
+            Tweaks.DisposeTweaks(Factory, this, Type);
             RaiseOnDisconnection(RemoveMode, ref custom);
 
 			foreach(ITaskPane item in TaskPaneInstances)
@@ -227,7 +237,7 @@ namespace NetOffice.OutlookApi.Tools
 				}
 				catch(NetRunTimeSystem.Exception exception)
 				{
-						NetOffice.DebugConsole.WriteException(exception);
+						NetOffice.DebugConsole.Default.WriteException(exception);
 				}			
 			}
 
@@ -240,7 +250,7 @@ namespace NetOffice.OutlookApi.Tools
 				}
 				catch(NetRunTimeSystem.Exception exception)
 				{
-					NetOffice.DebugConsole.WriteException(exception);
+					NetOffice.DebugConsole.Default.WriteException(exception);
 				}		
 			 }
              
@@ -251,7 +261,7 @@ namespace NetOffice.OutlookApi.Tools
 			 }
 			 catch(NetRunTimeSystem.Exception exception)
 			 {
-				 NetOffice.DebugConsole.WriteException(exception);
+				 NetOffice.DebugConsole.Default.WriteException(exception);
 			 }	
                 
              try
@@ -261,7 +271,7 @@ namespace NetOffice.OutlookApi.Tools
 			 }
 			 catch(NetRunTimeSystem.Exception exception)
 			 {
-				 NetOffice.DebugConsole.WriteException(exception);
+				 NetOffice.DebugConsole.Default.WriteException(exception);
 			 }	
         }
 
@@ -296,8 +306,8 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.GetCustomUI, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.GetCustomUI, exception);
 				return string.Empty;
             } 
         }
@@ -316,12 +326,13 @@ namespace NetOffice.OutlookApi.Tools
             {
                 if (null != CTPFactoryInst)
                 {
-                    TaskPaneFactory = new NetOffice.OfficeApi.ICTPFactory(null, CTPFactoryInst);
+                    TaskPaneFactory = new NetOffice.OfficeApi.ICTPFactory(Factory, null, CTPFactoryInst);
                     foreach (TaskPaneInfo item in TaskPanes)
                     {
                         string title = item.Title;
-                        Office._CustomTaskPane taskPane = TaskPaneFactory.CreateCTP(item.Type.FullName, title);                        
+                        Office.CustomTaskPane taskPane = TaskPaneFactory.CreateCTP(item.Type.FullName, title) as Office.CustomTaskPane;                        
                         item.Pane = taskPane;
+                        item.AssignEvents();
                         item.IsLoaded = true;
 
                         ITaskPane pane = taskPane.ContentControl as ITaskPane;
@@ -344,9 +355,123 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.CTPFactoryAvailable, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.CTPFactoryAvailable, exception);
             } 
+        }
+
+        #endregion
+
+        #region Tweaks
+
+        /// <summary>
+        /// This is method is called while startup and ask for permissions to apply a tweak. 
+        /// </summary>
+        /// <param name="name">name of the tweak</param>
+        /// <param name="value">value of the tweak</param>
+        /// <returns>true(default) or false if you dont want this tweak is affected to the addin instance</returns>
+        protected virtual bool AllowApplyTweak(string name, string value)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Called for custom tweaks to apply the tweak.
+        /// </summary>
+        /// <param name="name">name for the tweak</param>
+        /// <param name="value">value for the teak</param>
+        protected virtual void ApplyCustomTweak(string name, string value)
+        {
+        }
+
+        /// <summary>
+        /// Called for custom tweaks to unload a tweak. Please note: This method is not called in case of unexpected termination.
+        /// You have no warranties for dispose your tweak.
+        /// </summary>
+        /// <param name="name">name for the tweak</param>
+        /// <param name="value">value for the teak</param>
+        protected virtual void DisposeCustomTweak(string name, string value)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates an registry tweak entry in the current addin key
+        /// </summary>
+        /// <param name="addinType">addin type information</param>
+        /// <param name="name">name for the tweak</param>
+        /// <param name="value">value for the tweak</param>
+        /// <param name="throwException">throw exception on error</param>
+        /// <returns>true if key was created otherwise false</returns>
+        protected static bool SetTweakPersistenceEntry(Type addinType, string name, string value, bool throwException)
+        {
+            try
+            {
+                if (null == addinType)
+                    return false;
+                RegistryLocationAttribute registry = AttributeHelper.GetRegistryLocationAttribute(addinType);
+                ProgIdAttribute progID = AttributeHelper.GetProgIDAttribute(addinType);
+                if (null == registry)
+                    return false;
+                if (null == progID)
+                    return false;
+                // my current keyboard miss the logical or. thanks LogiLink
+
+                RegistryKey regKeyOutlook = null;
+                if (registry.Value == RegistrySaveLocation.LocalMachine)
+                    regKeyOutlook = Registry.LocalMachine.OpenSubKey(_addinOfficeRegistryKey + progID.Value, true);
+                else
+                    regKeyOutlook = Registry.CurrentUser.OpenSubKey(_addinOfficeRegistryKey + progID.Value, true);
+
+                if (null == regKeyOutlook)
+                    regKeyOutlook = Registry.CurrentUser.CreateSubKey(_addinOfficeRegistryKey + progID.Value);
+                if (null == regKeyOutlook)
+                    return false;
+                regKeyOutlook.SetValue(name, value);
+                regKeyOutlook.Close();
+                //regKeyOutlook.Dispose(); not available in previous .net versions
+                return true;
+
+            }
+            catch (System.Exception exception)
+            {
+                NetOffice.DebugConsole.Default.WriteException(exception);
+                if (throwException)
+                    throw;
+                else
+                    return false;
+            }
+        }
+
+        #endregion
+
+        #region Virtual Methods
+
+        /// <summary>
+        /// Create the used factory. The method was called as first in the base ctor
+        /// </summary>
+        /// <returns>new Settings instance</returns>
+        protected virtual Core CreateFactory()
+        {
+            return new Core();
+        }
+
+        /// <summary>
+        /// Create the necessary factory and was called in the first line in base ctor
+        /// </summary>
+        /// <returns></returns>
+        private Core RaiseCreateFactory()
+        {
+            try
+            {
+                return CreateFactory();
+            }
+            catch (NetRunTimeSystem.Exception exception)
+            {
+                NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.CreateFactory, exception);
+                return null;
+            }
         }
 
         #endregion
@@ -367,15 +492,13 @@ namespace NetOffice.OutlookApi.Tools
         }
 
         /// <summary>
-        /// redirect to errorhandler method if exists
+        /// Custom error handler
         /// </summary>
-	    /// <param name="methodKind">origin method where the error comes from</param>
+        /// <param name="methodKind">origin method where the error comes from</param>
         /// <param name="exception">occured exception</param>
-        private void RaiseErrorHandlerMethod(ErrorMethodKind methodKind, NetRunTimeSystem.Exception exception)
+        protected virtual void OnError(ErrorMethodKind methodKind, NetRunTimeSystem.Exception exception)
         {
-            MethodInfo errorMethod = AttributeHelper.GetErrorMethod(this);
-            if (null != errorMethod)
-                errorMethod.Invoke(this, new object[] { methodKind, exception });
+
         }
         
         #endregion
@@ -441,7 +564,7 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
                 RaiseStaticErrorHandlerMethod(type, RegisterErrorMethodKind.Register, exception);
             }
         }
@@ -482,7 +605,7 @@ namespace NetOffice.OutlookApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
                 RaiseStaticErrorHandlerMethod(type, RegisterErrorMethodKind.UnRegister, exception);
             }
         }

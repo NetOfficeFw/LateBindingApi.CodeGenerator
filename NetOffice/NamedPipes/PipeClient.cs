@@ -6,37 +6,82 @@ namespace NetOffice.NamedPipes
 {
     internal class PipeClient
     {
-        private string _pipeName = "NOTools.ConsoleMonitor.Shared.Server";
+        private static string _pipeName = "NOTools.ConsoleMonitor.PipeConnection";
 
-        public bool SendConsoleMessage(string message)
+        private static int _maxMessageLenght = 1024;
+
+        /// <summary>
+        /// Send a message to specific console
+        /// </summary>
+        /// <param name="console">name of the console. use null for main console</param>
+        /// <param name="message">given message as any</param>        
+        /// <returns>loghandle from server if recieved</returns>
+        public string SendConsoleMessage(string console, string message)
         {
-            if (String.IsNullOrEmpty(message) || message.Length > 1023)
-                return false;
-            return SendRecieveString("CNSL?" + "[" + DateTime.Now.ToLongTimeString() + "]" + message);
+            return SendConsoleMessage(console, message, "");
         }
 
-        public bool SendChannelMessage(string channel, string message)
+        /// <summary>
+        /// Send a message to specific console
+        /// </summary>
+        /// <param name="console">name of the console. use null for main console</param>
+        /// <param name="message">given message as any</param>  
+        /// <param name="parentMessageID">parent loghandle or null</param>  
+        /// <returns>loghandle from server if recieved</returns>
+        public string SendConsoleMessage(string console, string message, string parentMessageID)
+        {
+            if (null != console && console.IndexOf("?") < -1)
+                throw new ArgumentException("console must be without '?' character");
+
+            if (String.IsNullOrEmpty(message) || message.Length > _maxMessageLenght)
+                return null;
+
+            if (null == parentMessageID)
+                parentMessageID = "";
+
+            DateTime now = DateTime.Now;
+            string timeString = now.ToLongTimeString() + ":" + now.Millisecond;
+
+            return SendRecieveString("CNSL?" + console + "?" + Environment.MachineName + "?" + (null != AppDomain.CurrentDomain ? AppDomain.CurrentDomain.FriendlyName + AppDomain.CurrentDomain.Id.ToString() : "") + "?" + timeString + "?" + parentMessageID + "?" + message);
+        }
+
+
+        /// <summary>
+        /// Send a message to specific channel
+        /// </summary>
+        /// <param name="channel">name of the channel</param>
+        /// <param name="message">given message as any</param>
+        /// <returns>loghandle from server if recieved</returns>
+        public string SendChannelMessage(string channel, string message)
         {
             if (String.IsNullOrEmpty(channel) || channel.IndexOf("?") < -1)
                 throw new ArgumentException("channel can't empty und must be without '?' character");
-            if (String.IsNullOrEmpty(message) || message.Length > 1023)
-                return false;
-            return SendRecieveString(channel + "?" + message);
+            if (String.IsNullOrEmpty(message) || message.Length > _maxMessageLenght)
+                return null;
+
+            DateTime now = DateTime.Now;
+            string timeString = now.ToLongTimeString() + ":" + now.Millisecond;
+            return SendRecieveString("CHNL?" + channel + "?" + Environment.MachineName + "?" + (null != AppDomain.CurrentDomain ? AppDomain.CurrentDomain.FriendlyName + AppDomain.CurrentDomain.Id.ToString() : "") + "?" + timeString + "?" + /*parentMessageID*/ "?" + message);
         }
 
-        private bool SendRecieveString(string any)
+
+        private string SendRecieveString(string any)
         {
             ClientPipeConnection clientConnection = null;
             try
             {
                 clientConnection = new ClientPipeConnection(_pipeName, ".");
                 if (!clientConnection.TryConnect())
-                    return false;
-                
+                {
+                    clientConnection.Dispose();
+                    return null;
+                }
+
                 clientConnection.Write(any);
                 string response = clientConnection.Read();
                 clientConnection.Close();
-                return true;
+                clientConnection.Dispose();
+                return response;
             }
             catch (Exception exception)
             {

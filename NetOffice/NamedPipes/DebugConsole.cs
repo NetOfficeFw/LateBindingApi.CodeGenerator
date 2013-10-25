@@ -7,104 +7,95 @@ using NetOffice.NamedPipes;
 namespace NetOffice
 {
     /// <summary>
+    /// Operation mode for DebugConsole
+    /// </summary>
+    public enum ConsoleMode
+    {
+        /// <summary>
+        /// debug log are not enabled
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// debug log was redirected to System.Console
+        /// </summary>
+        Console = 1,
+
+        /// <summary>
+        /// debug log append to a logfile
+        /// </summary>
+        LogFile = 2,
+
+        /// <summary>
+        /// hold all debug and exceptions logs in a internal string list
+        /// </summary>
+        MemoryList = 3,
+
+        /// <summary>
+        /// debug log was redirected to System.Diagnostics.Trace
+        /// </summary>
+        Trace = 4
+    }
+
+    /// <summary>
+    /// Shared output connection technique
+    /// </summary>
+    public enum SharedOutputMode
+    {
+        /// <summary>
+        /// IPC named pipes
+        /// </summary>
+        LocalNamedPipes = 0
+    }
+
+    /// <summary>
     /// offers various debug, log and diagnostic functionality
     /// </summary>
-    public class DebugConsole
+    public static class DebugConsole
     {
-        #region Fields
-
         private static object _sharedLock = new object();
 
-        private List<string> _messageList = new List<string>();
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Shared Default Instance
-        /// </summary>
-        public static DebugConsole Default
-        {
-            get
-            {
-                lock (_sharedLock)
-                {
-                    if (null == _default)
-                        _default = new DebugConsole();
-                    return _default;
-                }
-
-            }
-        }
-        private static DebugConsole _default;
-
-        /// <summary>
-        /// Name of the Console instance
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    if (value.Length > 32)
-                        throw new FormatException("Name lenght must be < 32");
-                    if (value.IndexOf("?", 0) > -1)
-                        throw new FormatException("Name can't contain the '?' character.");
-                }
-                _name = value;
-            }
-        }
-        private string _name;
+        private static List<string> _messageList = new List<string>();
 
         /// <summary>
         /// append current time information in messages
         /// </summary>
-        public bool AppendTimeInfoEnabled { get; set; }
+        public static bool AppendTimeInfoEnabled { get; set; }
 
         /// <summary>
         /// operation mode
         /// </summary>
-        public DebugConsoleMode Mode { get; set; }
+        public static ConsoleMode Mode { get; set; }
 
         /// <summary>
         /// send a all messages to a named pipe. Use the NOTools.ConsoleMonitor to observe the console
         /// </summary>
-        public bool EnableSharedOutput { get; set; }
+        public static bool EnableSharedOutput { get; set; }
 
         /// <summary>
         /// Specify the shared output connection technique (currently ipc named pipes only. for future use to enable network and db logging)
         /// </summary>
-        public SharedOutputMode SharedOutputMode { get; set; }
+        public static SharedOutputMode SharedOutputMode { get; set; }
 
         /// <summary>
         /// PipeConnection to NOTools.ConsoleMonitor
         /// </summary>
-        private PipeClient Pipe { get; set; }
+        private static PipeClient Pipe { get; set; }
 
         /// <summary>
         /// name full file path and name of a logfile, must be set if Mode == LogFile
         /// </summary>
-        public string FileName { get; set; }
+        public static string FileName { get; set; }
 
         /// <summary>
         /// returns all collected messages if Mode == MemoryList
         /// </summary>
-        public string[] Messages { get { return _messageList.ToArray(); } }
-
-        #endregion
-
-        #region Methods
+        public static string[] Messages { get { return _messageList.ToArray(); } }
 
         /// <summary>
         /// clears message buffer
         /// </summary>
-        public void ClearMessagesList()
+        public static void ClearMessagesList()
         {
             _messageList.Clear();
         }
@@ -114,7 +105,7 @@ namespace NetOffice
         /// </summary>
         /// <param name="message"></param>
         /// <param name="args"></param>
-        public void WriteLine(string message, params object[] args)
+        public static void WriteLine(string message, params object[] args)
         {
             string output = message;
 
@@ -128,7 +119,7 @@ namespace NetOffice
                 i++;
             }
 
-            if (DebugConsoleMode.Console == Mode || DebugConsoleMode.Trace == Mode)
+            if (ConsoleMode.Console == Mode || ConsoleMode.Trace == Mode)
                 output = "NetOffice: " + output;
 
             if (AppendTimeInfoEnabled)
@@ -136,19 +127,19 @@ namespace NetOffice
 
             switch (Mode)
             {
-                case DebugConsoleMode.Console:
+                case ConsoleMode.Console:
                     Console.WriteLine(output);
                     break;
-                case DebugConsoleMode.Trace:
+                case ConsoleMode.Trace:
                     System.Diagnostics.Trace.WriteLine(output);
                     break;
-                case DebugConsoleMode.LogFile:
+                case ConsoleMode.LogFile:
                     AppendToLogFile(output);
                     break;
-                case DebugConsoleMode.MemoryList:
+                case ConsoleMode.MemoryList:
                     _messageList.Add(output);
                     break;
-                case DebugConsoleMode.None:
+                case ConsoleMode.None:
                     // do nothing
                     break;
                 default:
@@ -162,11 +153,11 @@ namespace NetOffice
         /// write log message
         /// </summary>
         /// <param name="message"></param>
-        public void WriteLine(string message)
+        public static void WriteLine(string message)
         {
             string output = message;
 
-            if (DebugConsoleMode.Console == Mode || DebugConsoleMode.Trace == Mode)
+            if (ConsoleMode.Console == Mode || ConsoleMode.Trace == Mode)
                 output = "NetOffice: " + output;
 
             if (AppendTimeInfoEnabled)
@@ -174,19 +165,19 @@ namespace NetOffice
 
             switch (Mode)
             {
-                case DebugConsoleMode.Console:
+                case ConsoleMode.Console:
                     Console.WriteLine(output);
                     break;
-                case DebugConsoleMode.Trace:
+                case ConsoleMode.Trace:
                     System.Diagnostics.Trace.WriteLine(output);
                     break;
-                case DebugConsoleMode.LogFile:
+                case ConsoleMode.LogFile:
                     AppendToLogFile(output);
                     break;
-                case DebugConsoleMode.MemoryList:
+                case ConsoleMode.MemoryList:
                     _messageList.Add(output);
                     break;
-                case DebugConsoleMode.None:
+                case ConsoleMode.None:
                     // do nothing
                     break;
                 default:
@@ -200,7 +191,7 @@ namespace NetOffice
         /// write exception log message
         /// </summary>
         /// <param name="exception"></param>
-        public void WriteException(Exception exception)
+        public static void WriteException(Exception exception)
         {
             string message = CreateExecptionLog(exception);
             WriteLine(message);
@@ -212,7 +203,7 @@ namespace NetOffice
         /// <param name="console">name for the console(must exclude the '?' char) or null for default console</param>
         /// <param name="message">the given message as any</param>
         /// <returns>entry id for the log message if arrived, otherwise null</returns>
-        public string SendPipeConsoleMessage(string console, string message)
+        public static string SendPipeConsoleMessage(string console, string message)
         {
             try
             {
@@ -230,7 +221,7 @@ namespace NetOffice
                 return null;
             }
         }
-
+    
         /// <summary>
         /// Send a message to the NOTools.Console monitor pipe
         /// </summary>
@@ -238,7 +229,7 @@ namespace NetOffice
         /// <param name="message">the given message as any</param>
         /// <param name="parentEntryID">parent message id. the console monitor can show a hierarchy with these info</param>
         /// <returns>entry id for the log message if arrived, otherwise null</returns>
-        public string SendPipeConsoleMessage(string console, string message, string parentEntryID)
+        public static string SendPipeConsoleMessage(string console, string message, string parentEntryID)
         {
             try
             {
@@ -263,7 +254,7 @@ namespace NetOffice
         /// <param name="channel">channel id string. the argument must exclude the '?' character</param>
         /// <param name="message">the given message as any</param>
         /// <returns>entry id for the log message if arrived, otherwise null</returns>
-        public string SendPipeChannelMessage(string channel, string message)
+        public static string SendPipeChannelMessage(string channel, string message)
         {
             try
             {
@@ -282,13 +273,12 @@ namespace NetOffice
             }
         }
 
-        /// <summary>
+
         /// Send a message to the NOTools.Console monitor pipe
         /// </summary>
-        /// <param name="message">given message as any</param>
-        /// <param name="parentEntryID">parent loghandle</param>
-        /// <returns>entry id for the log message if arrived, otherwise null</returns>
-        internal string InternalSendNamedPipeMessage(string message, string parentEntryID)
+        /// <param name="message">the given message as any</param>
+        /// <returns>true if send</returns>
+        internal static string InternalSendNamedPipeMessage(string message, string parentEntryID)
         {
             try
             {
@@ -298,7 +288,7 @@ namespace NetOffice
                 {
                     if (null == Pipe)
                         Pipe = new PipeClient();
-                    return Pipe.SendConsoleMessage(Name, message, parentEntryID);
+                    return Pipe.SendConsoleMessage(null, message, parentEntryID);
                 }
             }
             catch (Exception exception)
@@ -315,7 +305,7 @@ namespace NetOffice
         /// <param name="channel">channel id string. the argument must exclude the '?' character</param>
         /// <param name="message">the given message as any</param>
         /// <returns>true if send</returns>
-        internal string InternalSendNamedPipeChannelMessage(string channel, string message)
+        internal static string InternalSendNamedPipeChannelMessage(string channel, string message)
         {
             try
             {
@@ -340,7 +330,7 @@ namespace NetOffice
         /// append message to logfile
         /// </summary>
         /// <param name="message"></param>
-        private void AppendToLogFile(string message)
+        private static void AppendToLogFile(string message)
         {
             if (null == FileName)
                 throw new NetOfficeException("FileName not set.");
@@ -353,7 +343,7 @@ namespace NetOffice
         /// </summary>
         /// <param name="exception"></param>
         /// <returns></returns>
-        private string CreateExecptionLog(Exception exception)
+        private static string CreateExecptionLog(Exception exception)
         {
             string result = "";
             Exception ex = exception;
@@ -378,7 +368,5 @@ namespace NetOffice
             }
             return result;
         }
-
-        #endregion
     }
 }

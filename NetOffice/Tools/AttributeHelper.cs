@@ -9,30 +9,9 @@ namespace NetOffice.Tools
     /// <summary>
     /// Provides Attribute Helper functions
     /// </summary>
-    [Browsable(false), EditorBrowsable( EditorBrowsableState.Never)]
+    [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
     public static class AttributeHelper
     {
-        /// <summary>
-        /// Anyalyze first parameter and returns the error method delegate if exists
-        /// </summary>
-        /// <param name="comAddin">target addin</param>
-        /// <returns>delegate or null</returns>
-        public static MethodInfo GetErrorMethod(object comAddin)
-        {
-            foreach (MethodInfo item in comAddin.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public))
-            {
-                object[] array = item.GetCustomAttributes(typeof(ErrorHandlerAttribute), false);
-                if (array.Length == 1)
-                {
-                    ParameterInfo[] paramInfo = item.GetParameters();
-                    if (paramInfo.Length == 2 && paramInfo[0].ParameterType == typeof(ErrorMethodKind) && paramInfo[1].ParameterType == typeof(Exception))
-                        return item;
-                }
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Anyalyze first parameter and returns the register error method delegate if exists
         /// </summary>
@@ -53,7 +32,7 @@ namespace NetOffice.Tools
 
             return null;
         }
-         
+
         /// <summary>
         /// Looks for a method with the RegisterErrorHandlerFunctionAttribute
         /// </summary>
@@ -132,7 +111,7 @@ namespace NetOffice.Tools
                 return null;
             return array[0] as CustomUIAttribute;
         }
-         
+
         /// <summary>
         /// Looks for the GuidAttribute. Throws an exception if not found
         /// </summary>
@@ -140,7 +119,7 @@ namespace NetOffice.Tools
         /// <returns>GuidAttribute</returns>
         public static GuidAttribute GetGuidAttribute(Type type)
         {
-         
+
             object[] array = type.GetCustomAttributes(typeof(GuidAttribute), false);
             if (array.Length == 0)
                 throw new ArgumentNullException("GuidAttribute is missing");
@@ -159,7 +138,21 @@ namespace NetOffice.Tools
                 throw new ArgumentNullException("ProgIdAttribute is missing");
             return array[0] as ProgIdAttribute;
         }
- 
+
+        /// Looks for the TweakAttribute.
+        /// <summary>
+        /// <param name="type">the type you want looking for the attribute</param>
+        /// </summary>
+        /// <returns>TweakAttribute</returns>
+        public static TweakAttribute GetTweakAttribute(Type type)
+        {
+            object[] array = type.GetCustomAttributes(typeof(TweakAttribute), false);
+            if (array.Length == 0)
+                return new TweakAttribute(false);
+            else
+                return array[0] as TweakAttribute;
+        }
+
         /// <summary>
         /// Looks for the RegistryLocationAttribute. Returns a default RegistryLocationAttribute(CurrentUser) if not found
         /// </summary>
@@ -175,7 +168,7 @@ namespace NetOffice.Tools
         }
 
         /// <summary>
-        /// Looks for the COMAddinAttribute. Throws an exception if not found
+        /// Looks for the COMAddinAttribute.
         /// </summary>
         /// <param name="type">the type you want looking for the attribute</param>
         /// <returns>COMAddinAttribute</returns>
@@ -183,8 +176,9 @@ namespace NetOffice.Tools
         {
             object[] array = type.GetCustomAttributes(typeof(COMAddinAttribute), false);
             if (array.Length == 0)
-                throw new ArgumentNullException("COMAddinAttribute is missing");
-            return array[0] as COMAddinAttribute;
+                return null;
+            else
+                return array[0] as COMAddinAttribute;
         }
     }
 }

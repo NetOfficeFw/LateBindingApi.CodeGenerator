@@ -18,7 +18,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _classDesc = "\t///<summary>\r\n\t/// Module %name%\r\n\t///</summary>\r\n";
 
-        private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsModule)]\r\n" + "\tpublic class %name%\r\n\t{\r\n\r\n%instanceType%";
+        private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsModule)]\r\n" + "\tpublic class %name%\r\n\t{\r\n\r\n%instanceType%\r\n\r\n"
+            + "\t\t#region Internal Properties\r\n\r\n"
+            + "\t\tinternal static Core Factory\r\n\t\t{\r\n\t\t\tget\r\n\t\t\t{\r\n\t\t\t\tif(null != _instance)\r\n\t\t\t\t\t return _instance.Factory;\r\n\t\t\telse\r\n\t\t\t\treturn Core.Default;\r\n\t\t\t}\r\n\t\t}\r\n\r\n"
+            + "\t\tinternal static Invoker Invoker\r\n\t\t{\r\n\t\t\tget\r\n\t\t\t{\r\n\t\t\t\tif(null != _instance)\r\n\t\t\t\t\t return _instance.Invoker;\r\n\t\t\telse\r\n\t\t\t\treturn Invoker.Default;\r\n\t\t\t}\r\n\t\t}\r\n\r\n" 
+            + "\t\t#endregion\r\n";       
+
         private static string _instanceType;
  
         internal static string ConvertModulesToFiles(XElement projectNode, XElement facesNode, Settings settings, string solutionFolder)

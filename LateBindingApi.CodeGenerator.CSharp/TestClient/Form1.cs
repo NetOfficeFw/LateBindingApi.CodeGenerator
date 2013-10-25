@@ -20,10 +20,6 @@ namespace ClientApplication
         public Form1()
         {
             InitializeComponent();
-
-            /*Initialize Api COMObject Support*/
-            NetOffice.Factory.Initialize();
-
             
             /*>> your testcode here <<*/
         }

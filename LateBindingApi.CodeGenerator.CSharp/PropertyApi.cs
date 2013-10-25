@@ -612,7 +612,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "object returnItem = Invoker.PropertyGet(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
                     if (typeName == "COMObject")
                     {
-                        methodBody += tabSpace + "COMObject" + arrayField + " newObject = NetOffice.Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                        methodBody += tabSpace + "COMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
                         methodBody += "%modifiers%";
                         methodBody += tabSpace + "return newObject;\r\n";
                     }
@@ -620,7 +620,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     {
                         methodBody += tabSpace + "if((null != returnItem) && (returnItem is MarshalByRefObject))\r\n" + tabSpace + "{\r\n";
                         if ("" == objectArrayField)
-                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = NetOffice.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         else
                             methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = NetOffice.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         methodBody += "\t%modifiers%";
@@ -636,7 +636,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         // library type
                         if ("true" == returnValue.Attribute("IsArray").Value)
                         {
-                            methodBody += tabSpace + "COMObject[] newObject = NetOffice.Factory.CreateObjectArrayFromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "COMObject[] newObject = Factory.CreateObjectArrayFromComProxy(this," + objectArrayField + "returnItem);\r\n";
                             methodBody += tabSpace + fullTypeName + " returnArray = new " + CSharpGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
                             methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
                             methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
@@ -650,7 +650,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                             bool isDerived = CSharpGenerator.IsDerivedReturnValue(returnValue);  
                             if((true == isFromIgnoreProject) && (false == isDuplicated) )
                             {
-                                methodBody += tabSpace + fullTypeName + " newObject = NetOffice.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                methodBody += tabSpace + fullTypeName + " newObject = Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
                                 methodBody += "%modifiers%";
                                 methodBody += tabSpace + "return newObject;\r\n";
                             }
@@ -658,7 +658,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                             {
                                 if( (isDerived) && (!isDuplicated))
                                 {
-                                    methodBody += tabSpace + fullTypeName + " newObject = NetOffice.Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
+                                    methodBody += tabSpace + fullTypeName + " newObject = Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
                                     methodBody += "%modifiers%";
                                     methodBody += tabSpace + "return newObject;\r\n";  
 
@@ -666,7 +666,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                 else
                                 {
                                     string knownType = fullTypeName + ".LateBindingApiWrapperType";
-                                    methodBody += tabSpace + fullTypeName + " newObject = NetOffice.Factory.CreateKnownObjectFromComProxy(this," + objectArrayField + "returnItem," + knownType + ") as " + fullTypeName + ";\r\n";
+                                    methodBody += tabSpace + fullTypeName + " newObject = Factory.CreateKnownObjectFromComProxy(this," + objectArrayField + "returnItem," + knownType + ") as " + fullTypeName + ";\r\n";
                                     methodBody += "%modifiers%";
                                     methodBody += tabSpace + "return newObject;\r\n";
 
