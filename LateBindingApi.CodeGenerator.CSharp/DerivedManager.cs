@@ -87,6 +87,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             throw new Exception("name not found " + name);           
         }
+
         private bool HasAttriute(XElement node, string attributeName)
         {
             foreach (XAttribute  item in node.Attributes())

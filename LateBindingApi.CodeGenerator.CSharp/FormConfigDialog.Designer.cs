@@ -385,7 +385,7 @@
             this.textBoxDocLinkFile.Name = "textBoxDocLinkFile";
             this.textBoxDocLinkFile.Size = new System.Drawing.Size(391, 20);
             this.textBoxDocLinkFile.TabIndex = 49;
-            this.textBoxDocLinkFile.Text = "C:\\NetOffice\\ReferenceIndex.xml";
+            this.textBoxDocLinkFile.Text = "C:\\NetOffice\\ReferenceIndex2.xml";
             // 
             // checkBoxAddDocumentationLinks
             // 

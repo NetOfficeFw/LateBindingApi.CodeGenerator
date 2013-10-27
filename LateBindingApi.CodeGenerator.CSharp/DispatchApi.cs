@@ -158,7 +158,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", faceNode));
+           
+            string docLink = "";
             if (CSharpGenerator.Settings.AddDocumentationLinks)
             {
                 string projectName = projectNode.Attribute("Name").Value;
@@ -168,9 +169,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                          where a.Element("Name").Value.Equals(faceNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
                                          select a).FirstOrDefault();
                     if (null != linkNode)
-                        classDesc += "\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                        docLink = "\r\n\t" + "/// MSDN Online Documentation: " + linkNode.Element("Link").Value;
                 }
             }
+
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", faceNode) + docLink);
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));

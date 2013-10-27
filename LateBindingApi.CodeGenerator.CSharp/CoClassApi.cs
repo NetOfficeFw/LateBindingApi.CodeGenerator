@@ -105,8 +105,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string sinkHelperIds = GetSinkHelperIds(projectNode, classNode);
             string sinkHelperSetActive = GetSinkHelperSetActiveSink(projectNode, classNode);
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// "+ CSharpGenerator.GetSupportByVersion("", classNode));
-
+            string docLink = "";
             if (CSharpGenerator.Settings.AddDocumentationLinks)
             {
                 string projectName = projectNode.Attribute("Name").Value;
@@ -116,9 +115,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                          where a.Element("Name").Value.Equals(classNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
                                          select a).FirstOrDefault();
                     if (null != linkNode)
-                        classDesc += "\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                        docLink = "\r\n\t" + "/// MSDN Online Documentation: " + linkNode.Element("Link").Value;
                 }
             }
+
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", classNode) + docLink);
 
             _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
 

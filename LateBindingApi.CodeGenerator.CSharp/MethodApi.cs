@@ -212,8 +212,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 List<XElement> otherOverloads = GetOverloadsWithMoreParameters(itemParams, methodNode.Elements("Parameters"));
                 foreach (XElement other in otherOverloads)
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
-
-                string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
+                
+                string docLink = "";
                 if (CSharpGenerator.Settings.AddDocumentationLinks)
                 {
                     XElement typeNode = GetTypeNode(methodNode);
@@ -225,6 +225,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
                                                 where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
                                                 select a).FirstOrDefault();
+                        
+                        if (null == typeDocNode && typeNode.Attribute("Name").Value.StartsWith("_"))
+                        {
+                            string typeName = typeNode.Attribute("Name").Value.Substring(1);
+                            typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                           where a.Element("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
+                                           select a).FirstOrDefault();
+                        }
 
                         if (null != typeDocNode)
                         {
@@ -233,11 +241,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                  select a).FirstOrDefault();
 
                             if (null != linkNode)
-                                supportDocu += "\t\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                                docLink = "MSDN Online Documentation: " + linkNode.Element("Link").Value;
                         }
                     }
                 }
 
+                string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams, docLink);
+               
                 string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
 
                 string method = "";
@@ -334,15 +344,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 List<XElement> otherOverloads = GetOverloadsWithMoreParameters(itemParams, methodNode.Elements("Parameters"));
                 foreach (XElement other in otherOverloads)
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
-                
-                string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams);
-                string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
-                 
-                string method = "";
-                if (true == settings.CreateXmlDocumentation)
-                    method = supportDocu;
 
-                
+                string docLink = "";
                 if (CSharpGenerator.Settings.AddDocumentationLinks)
                 {
                     XElement typeNode = GetTypeNode(methodNode);
@@ -351,20 +354,35 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
                     {
                         XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
-                                             where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
-                                             select a).FirstOrDefault();
+                                                where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                select a).FirstOrDefault();
+                        if (null == typeDocNode && typeNode.Attribute("Name").Value.StartsWith("_"))
+                        {
+                            string typeName = typeNode.Attribute("Name").Value.Substring(1);
+                            typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
+                                           where a.Element("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
+                                           select a).FirstOrDefault();
+                        }
 
                         if (null != typeDocNode)
                         {
                             XElement linkNode = (from a in typeDocNode.Element("Methods").Elements("Method")
-                             where a.Element("Name").Value.Equals(methodNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
-                             select a).FirstOrDefault();
+                                                 where a.Element("Name").Value.Equals(methodNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
+                                                 select a).FirstOrDefault();
 
                             if (null != linkNode)
-                                method += "\t\t" + "///<remarks> MSDN Online Documentation: " + linkNode.Element("Link").Value + " </remarks>\r\n";
+                                docLink = "MSDN Online Documentation: " + linkNode.Element("Link").Value;
                         }
                     }
                 }
+               
+
+                string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams, docLink);
+                string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
+                 
+                string method = "";
+                if (true == settings.CreateXmlDocumentation)
+                    method = supportDocu;
 
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
 
@@ -611,7 +629,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                  
                 result += method;
             }
-          
 
             return result;
         }

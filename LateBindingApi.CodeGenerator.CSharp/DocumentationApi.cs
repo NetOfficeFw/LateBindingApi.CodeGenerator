@@ -40,7 +40,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateParameterDocumentationForMethod(int numberOfTabSpace, string[] SupportByVersion, XElement parametersNode)
+        internal static string CreateParameterDocumentationForMethod(int numberOfTabSpace, string[] SupportByVersion, XElement parametersNode, string additional ="")
         {
             XElement parentNode = parametersNode;
             while (parentNode.Name != "Project")
@@ -57,6 +57,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             libs = libs.Substring(0, libs.Length - 2);
 
             string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
+            summary += tabSpace + "/// " + additional + "\r\n";
             summary += tabSpace + "/// </summary>\r\n";
 
             result += summary;
@@ -104,7 +105,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode, bool generateGetSet, string additional)
+        internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode, bool generateGetSet, string additional="")
         {
             List<string> listVersions = new List<string>();
 
