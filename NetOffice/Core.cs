@@ -1056,18 +1056,19 @@ namespace NetOffice
 
             foreach (IFactoryInfo item in _factoryList)
             {
-                if (true == hostGuid.Equals(item.ComponentGuid))
-                    return item;
+                foreach (var guid in item.ComponentGuid)
+                    if (true == guid.Equals(item.ComponentGuid))
+                        return item;
             }
 
-            // failback
+            // failback because some types was multiple defined (not allowed in COM but in fact ms do this)
             foreach (IFactoryInfo item in _factoryList)
             {
                 if (item.Contains(className))
                     return item;
             }
 
-            string message = string.Format("class {0}:{1} not found in loaded NetOffice Assemblies{2}", hostGuid, className, Environment.NewLine);
+            string message = string.Format("Class {0}:{1} not found in loaded NetOffice Assemblies{2}", hostGuid, className, Environment.NewLine);
             message += string.Format("Currently loaded NetOfficeApi Assemblies{0}", Environment.NewLine);
             foreach (IFactoryInfo item in _factoryList)
                 message += string.Format("Loaded NetOffice Assembly:{0} {1}{2}", item.ComponentGuid, item.Assembly.FullName, Environment.NewLine);

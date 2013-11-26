@@ -1,0 +1,228 @@
+﻿using System;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Text;
+
+namespace NetOffice.ExcelApi
+{
+    /// <summary>
+    /// Provides helper methods to detect all current running excel applications.
+    /// </summary>
+    internal static class ExcelApplicationEnumerator
+    {
+        /// <summary>
+        /// Returns current running excel applications
+        /// </summary>
+        /// <returns>application instance array</returns>
+        internal static NetOffice.ExcelApi.Application[] GetActiveInstances()
+        {
+            return GetActiveInstances(NetOffice.Core.Default, 1000);
+        }
+
+        /// <summary>
+        /// Returns current running excel application
+        /// </summary>
+        /// <param name="factory">the factory for com proxy management and settings</param>
+        /// <returns>Application instance array</returns>
+        internal static NetOffice.ExcelApi.Application[] GetActiveInstances(NetOffice.Core factory)
+        {
+            return GetActiveInstances(factory, 1000);
+        }
+
+        /// <summary>
+        /// Returns current running excel application
+        /// </summary>
+        /// <param name="factory">the factory for com proxy management and settings</param>
+        /// <param name="timeOutInMilliSeconds">timeout for method.</param>
+        /// <returns>Application instance array</returns>
+        internal static NetOffice.ExcelApi.Application[] GetActiveInstances(NetOffice.Core factory, int timeOutInMilliSeconds)
+        {
+            List<NetOffice.ExcelApi.Application> list = new List<NetOffice.ExcelApi.Application>();
+            WindowEnumerator enumerator = new WindowEnumerator("XLMAIN");
+            DateTime startTime = DateTime.Now;
+            IntPtr[] handles = enumerator.EnumerateWindows(timeOutInMilliSeconds);
+            if (null != handles)
+            {
+                foreach (IntPtr item in handles)
+                {
+                    object proxy = ExcelApplicationWindow.GetApplicationProxyFromHandle(item);
+                    if (null != proxy)
+                        list.Add(new NetOffice.ExcelApi.Application(factory, null, proxy));
+                }
+                return list.ToArray();
+            }
+            else
+            {
+                return new NetOffice.ExcelApi.Application[0];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Enumerate Top Level Windows on Desktop
+    /// </summary>
+    internal class WindowEnumerator
+    {
+        #region Imports
+        
+        protected delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        protected static extern int GetWindowText(IntPtr hWnd, StringBuilder strText, int maxCount);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        protected static extern int GetWindowTextLength(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        protected static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
+        [DllImport("user32.dll")]
+        protected static extern bool IsWindowVisible(IntPtr hWnd);
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        protected static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+        #endregion
+
+        #region Fields
+
+        private static object _lockInstance = new object();
+        private static WindowEnumerator _currentInstance;
+
+        #endregion
+
+        #region Ctor
+
+        /// <summary>
+        /// Creates an instance of the class
+        /// </summary>
+        /// <param name="filter">optional class name filter or null</param>
+        public WindowEnumerator(string filter)
+        {
+            Filter = filter;
+            Result = new List<IntPtr>();
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Optional class name filter or null
+        /// </summary>
+        public string Filter { get; private set; }
+
+        private List<IntPtr> Result { get; set; }
+
+        #endregion
+
+        #region Methods
+        
+        /// <summary>
+        /// Enumerates all top level windows on desktop. WARNING: The method returns null if operation timeout is reached.
+        /// </summary>
+        /// <param name="milliSecondsTimeout">a timeout for the operation. when a desktop is busy or non responding these method freeze. you can handle this with the operation timeout</param>
+        /// <returns>Result Array or null</returns>
+        public IntPtr[] EnumerateWindows(int milliSecondsTimeout)
+        {
+            lock (_lockInstance)
+            {
+                Result.Clear();
+                _currentInstance = this;
+                Thread thread1 = new Thread(new ParameterizedThreadStart(EnumerateWindowsAsync));
+                WaitHandle[] waitHandles = new WaitHandle[1];
+                ManualResetEvent mre1 = new ManualResetEvent(false);
+                waitHandles[0] = mre1;
+                thread1.Start(mre1);
+                bool result = WaitHandle.WaitAll(waitHandles, milliSecondsTimeout);
+                if (!result)
+                { 
+                    thread1.Abort();
+                    Result.Clear();
+                    return null;
+                }
+            }
+            return Result.ToArray();
+        }
+
+        private void EnumerateWindowsAsync(object mre)
+        {
+            EnumWindows(new EnumWindowsProc(EnumTopLevelWindows), IntPtr.Zero);
+            (mre as ManualResetEvent).Set();
+        }
+
+        private static bool EnumTopLevelWindows(IntPtr hWnd, IntPtr lParam)
+        {
+            int size = GetWindowTextLength(hWnd);
+            if (size++ > 0)
+            {
+                StringBuilder sb = new StringBuilder(size);
+                int nRet;
+                StringBuilder sb2 = new StringBuilder(100);
+                nRet = GetClassName(hWnd, sb2, sb2.Capacity);
+                if(nRet != 0)
+                {
+                    string className = sb2.ToString();
+                    if (null != _currentInstance.Filter)
+                    {
+                        if (_currentInstance.Filter.Equals(className, StringComparison.InvariantCultureIgnoreCase))
+                            _currentInstance.Result.Add(hWnd);
+                    }
+                    else
+                        _currentInstance.Result.Add(hWnd);
+                }                
+            }
+            return true;
+        } 
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Provide helper methods to get application proxy from main window handle
+    /// </summary>
+    internal static class ExcelApplicationWindow
+    {
+        #region Imports
+
+        [DllImport("oleacc.dll")]
+        internal static extern int AccessibleObjectFromWindow(IntPtr hwnd, uint id, ref Guid iid, [In, Out, MarshalAs(UnmanagedType.IUnknown)] ref object ppvObject);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+        static uint _objectID = 0xFFFFFFF0;
+        static Guid _dispatchID = new Guid("{00020400-0000-0000-C000-000000000046}");
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Try get the com application proxy from application window handle
+        /// </summary>
+        /// <param name="hwnd">excel application window handle</param>
+        /// <returns>com proxy or null</returns>
+        public static object GetApplicationProxyFromHandle(IntPtr hwnd)
+        {
+            IntPtr hwnd2 = FindWindowEx(hwnd, IntPtr.Zero, "XLDESK", null);
+            if (hwnd2 == (IntPtr)0)
+                return null;
+            IntPtr hwnd3 = FindWindowEx(hwnd2, IntPtr.Zero, "EXCEL7", null);
+            if (hwnd3 == (IntPtr)0)
+                return null;
+
+            object accObject = new object();
+            if (hwnd3 != (IntPtr)0)
+            {
+                AccessibleObjectFromWindow(hwnd3, _objectID, ref _dispatchID, ref accObject);
+                if (accObject is MarshalByRefObject)
+                {
+                    object targetProxy = accObject.GetType().InvokeMember("Application", BindingFlags.GetProperty, null, accObject, new object[0]);
+                    Marshal.ReleaseComObject(accObject);
+                    return targetProxy;
+                }
+            }
+            return null;
+        }
+
+        #endregion
+    }
+}
