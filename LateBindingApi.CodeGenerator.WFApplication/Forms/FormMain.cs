@@ -518,41 +518,43 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                             XElement projectNode = (from a in _comAnalyzer.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
                                                     where a.Attribute("Name").Value.Equals("Excel", StringComparison.InvariantCultureIgnoreCase)
                                                     select a).FirstOrDefault();
-
-                            XElement targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
+                            if (null != projectNode)
+                            { 
+                                XElement targetNode = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
                                                    where a.Attribute("Name").Value.Equals("Range", StringComparison.InvariantCultureIgnoreCase)
                                                    select a).FirstOrDefault();
+                            
 
-                            XElement templateNode = (from a in targetNode.Element("Properties").Elements("Property")
-                                                   where a.Attribute("Name").Value.Equals("CurrentRegion", StringComparison.InvariantCultureIgnoreCase)
-                                                   select a).FirstOrDefault();
-                            templateNode = templateNode.Element("Parameters").Element("ReturnValue");
+                                XElement templateNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                       where a.Attribute("Name").Value.Equals("CurrentRegion", StringComparison.InvariantCultureIgnoreCase)
+                                                       select a).FirstOrDefault();
+                                templateNode = templateNode.Element("Parameters").Element("ReturnValue");
 
 
-                            XElement propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
-                                                     where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
-                                                     select a).FirstOrDefault();
-                            if (null != propertyNode)
-                            { 
+                                XElement propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                         where a.Attribute("Name").Value.Equals("_Default", StringComparison.InvariantCultureIgnoreCase)
+                                                         select a).FirstOrDefault();
+                                if (null != propertyNode)
+                                { 
+                                    foreach (XElement item in propertyNode.Elements("Parameters"))
+                                    {
+                                        XElement returnValue = item.Element("ReturnValue");
+                                        foreach (XAttribute attrib in returnValue.Attributes())
+                                            attrib.Value = templateNode.Attribute(attrib.Name.LocalName).Value;
+                                    }
+
+                                    propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
+                                                             where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
+                                                             select a).FirstOrDefault();
+                                }
+
                                 foreach (XElement item in propertyNode.Elements("Parameters"))
                                 {
                                     XElement returnValue = item.Element("ReturnValue");
                                     foreach (XAttribute attrib in returnValue.Attributes())
                                         attrib.Value = templateNode.Attribute(attrib.Name.LocalName).Value;
                                 }
-
-                                propertyNode = (from a in targetNode.Element("Properties").Elements("Property")
-                                                         where a.Attribute("Name").Value.Equals("Item", StringComparison.InvariantCultureIgnoreCase)
-                                                         select a).FirstOrDefault();
                             }
-
-                            foreach (XElement item in propertyNode.Elements("Parameters"))
-                            {
-                                XElement returnValue = item.Element("ReturnValue");
-                                foreach (XAttribute attrib in returnValue.Attributes())
-                                    attrib.Value = templateNode.Attribute(attrib.Name.LocalName).Value;
-                            }
-
                         }
 
                         if (dialog.EnableSupportByVersion)

@@ -1057,7 +1057,7 @@ namespace NetOffice
             foreach (IFactoryInfo item in _factoryList)
             {
                 foreach (var guid in item.ComponentGuid)
-                    if (true == guid.Equals(item.ComponentGuid))
+                    if (true == guid.Equals(hostGuid))
                         return item;
             }
 
