@@ -159,6 +159,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 System.IO.File.Copy(file, newFilePath);
             }
 
+
+            if (!System.IO.Directory.Exists(path + "\\WndUtils"))
+                System.IO.Directory.CreateDirectory(path + "\\WndUtils");
+            files = System.IO.Directory.GetFiles(projectApiPath + "\\WndUtils");
+            foreach (string file in files)
+            {
+                string fileName = System.IO.Path.GetFileName(file);
+                string newFilePath = System.IO.Path.Combine(path + "\\WndUtils", fileName);
+                System.IO.File.Copy(file, newFilePath);
+            }
+
             if (!System.IO.Directory.Exists(path + "\\Properties"))
                 System.IO.Directory.CreateDirectory(path + "\\Properties");
             files = System.IO.Directory.GetFiles(projectApiPath + "\\Properties");
