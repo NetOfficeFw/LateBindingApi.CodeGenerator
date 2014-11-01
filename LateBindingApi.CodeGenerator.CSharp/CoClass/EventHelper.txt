@@ -109,7 +109,7 @@
                     }
                     catch (NetRuntimeSystem.Exception exception)
                     {
-                        Factory.Console.WriteException(exception);
+                        Factory.Console.Default.WriteException(exception);
                     }
                 }
                 return delegates.Length;

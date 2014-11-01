@@ -7,8 +7,6 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using NetOffice;
 using NetOffice.Tools;
-using NetOffice.OfficeApi.Tools;
-using Office = NetOffice.OfficeApi;
 using Visio = NetOffice.VisioApi;
 
 namespace NetOffice.VisioApi.Tools
@@ -17,7 +15,7 @@ namespace NetOffice.VisioApi.Tools
     /// The class provides a lot of essential functionality for an MS-Visio COMAddin
     /// </summary>
 	[ComVisible(true)]
-    public abstract class COMAddin : IDTExtensibility2, Office.IRibbonExtensibility, Office.ICustomTaskPaneConsumer
+    public abstract class COMAddin : IDTExtensibility2
     {
         #region Fields
 
@@ -35,8 +33,6 @@ namespace NetOffice.VisioApi.Tools
         /// </summary>
         public COMAddin()
         {
-            TaskPanes = new CustomTaskPaneCollection();
-			TaskPaneInstances = new List<ITaskPane>();
             Type = this.GetType();
         }
 
@@ -54,20 +50,6 @@ namespace NetOffice.VisioApi.Tools
         /// </summary>
         protected Visio.Application Application { get; private set; }
         
-        /// <summary>
-        /// Collection with all created custom Task Panes
-        /// </summary>
-        protected CustomTaskPaneCollection TaskPanes { get; private set; }
-
-        /// <summary>
-        /// TaskPaneFactory from CTPFactoryAvailable
-        /// </summary>
-        protected Office.ICTPFactory TaskPaneFactory { get; set; }
-
-		/// <summary>
-        /// ITaskPane Instances
-        /// </summary>
-		protected List<ITaskPane> TaskPaneInstances { get; set; }
 
 		/// <summary>
         /// Cached Error Method Delegate
@@ -139,8 +121,8 @@ namespace NetOffice.VisioApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnStartupComplete, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnStartupComplete, exception);
             }
         }
 
@@ -153,8 +135,8 @@ namespace NetOffice.VisioApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnDisconnection, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnDisconnection, exception);
             }
         }
 
@@ -167,8 +149,8 @@ namespace NetOffice.VisioApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnConnection, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnConnection, exception);
             }
         }
 
@@ -181,8 +163,8 @@ namespace NetOffice.VisioApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnAddInsUpdate, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnAddInsUpdate, exception);
             }
         }
 
@@ -195,8 +177,8 @@ namespace NetOffice.VisioApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.OnBeginShutdown, exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
+                OnError(ErrorMethodKind.OnBeginShutdown, exception);
             }
         }
 
@@ -219,41 +201,6 @@ namespace NetOffice.VisioApi.Tools
         {
             RaiseOnDisconnection(RemoveMode, ref custom);
 
-			foreach(ITaskPane item in TaskPaneInstances)
-			{
-				try
-				{
-					item.OnDisconnection();
-				}
-				catch(NetRunTimeSystem.Exception exception)
-				{
-					NetOffice.DebugConsole.WriteException(exception);
-				}			
-			}
-
-			foreach (var item in TaskPanes)
-            {
-				try
-				{
-					if(null != item.Pane && !item.Pane.IsDisposed)
-	                    item.Pane.Dispose();
-				}
-				catch(NetRunTimeSystem.Exception exception)
-				{
-					NetOffice.DebugConsole.WriteException(exception);
-				}		
-			 }
-             
-			 try
-			 { 
-				if (null != TaskPaneFactory && false == TaskPaneFactory.IsDisposed)
-					TaskPaneFactory.Dispose();
-			 }
-			 catch(NetRunTimeSystem.Exception exception)
-			 {
-				 NetOffice.DebugConsole.WriteException(exception);
-			 }	
-                
              try
 			 { 
 				 if (!Application.IsDisposed)
@@ -261,7 +208,7 @@ namespace NetOffice.VisioApi.Tools
 			 }
 			 catch(NetRunTimeSystem.Exception exception)
 			 {
-				 NetOffice.DebugConsole.WriteException(exception);
+				 NetOffice.DebugConsole.Default.WriteException(exception);
 			 }	
         }
 
@@ -273,80 +220,6 @@ namespace NetOffice.VisioApi.Tools
         void IDTExtensibility2.OnBeginShutdown(ref Array custom)
         {
             RaiseOnBeginShutdown(ref custom);
-        }
-
-        #endregion
-
-        #region IRibbonExtensibility Members
-
-        /// <summary>
-        /// IRibbonExtensibility implementation
-        /// </summary>
-        /// <param name="RibbonID">target ribbon id, only used from Outlook and ignored in this standard impklementation. overwrite this method if you need a custom behavior</param>
-        /// <returns>XML content oder string.Empty</returns>
-        public virtual string GetCustomUI(string RibbonID)
-        {
-            try
-            {
-                CustomUIAttribute ribbon = AttributeHelper.GetRibbonAttribute(Type);
-                if (null != ribbon)
-                    return ReadRessourceFile(ribbon.Value);
-                else
-                    return string.Empty;
-            }
-            catch (NetRunTimeSystem.Exception exception)
-            {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.GetCustomUI, exception);
-				return string.Empty;
-            } 
-        }
-
-        #endregion
-
-        #region ICustomTaskPaneConsumer Member
-
-        /// <summary>
-        /// ICustomTaskPaneConsumer implementation
-        /// </summary>
-        /// <param name="CTPFactoryInst">factory proxy from host application</param>
-        public virtual void CTPFactoryAvailable(object CTPFactoryInst)
-        {
-            try
-            {
-                if (null != CTPFactoryInst)
-                {
-                    TaskPaneFactory = new NetOffice.OfficeApi.ICTPFactory(null, CTPFactoryInst);
-                    foreach (TaskPaneInfo item in TaskPanes)
-                    {
-                        string title = item.Title;
-                        Office._CustomTaskPane taskPane = TaskPaneFactory.CreateCTP(item.Type.FullName, title);                        
-                        item.Pane = taskPane;
-                        item.IsLoaded = true;
-
-                        ITaskPane pane = taskPane.ContentControl as ITaskPane;
-                        if (null != pane)
-						{
-							TaskPaneInstances.Add(pane);
-							object[] argumentArray = new object[0];
-
-							if(item.Arguments != null)
-								argumentArray = item.Arguments;
-
-							pane.OnConnection(Application, taskPane, argumentArray);
-						}
-
-                        foreach (KeyValuePair<string, object> property in item.ChangedProperties)
-                            if (property.Key != "Title")
-                                taskPane.GetType().InvokeMember(property.Key, BindingFlags.SetProperty, null, taskPane, new object[] { property.Value });
-                    }
-                }
-            }
-            catch (NetRunTimeSystem.Exception exception)
-            {
-				NetOffice.DebugConsole.WriteException(exception);
-                RaiseErrorHandlerMethod(ErrorMethodKind.CTPFactoryAvailable, exception);
-            } 
         }
 
         #endregion
@@ -367,15 +240,13 @@ namespace NetOffice.VisioApi.Tools
         }
 
         /// <summary>
-        /// redirect to errorhandler method if exists
+        /// Custom error handler
         /// </summary>
-	    /// <param name="methodKind">origin method where the error comes from</param>
+        /// <param name="methodKind">origin method where the error comes from</param>
         /// <param name="exception">occured exception</param>
-        private void RaiseErrorHandlerMethod(ErrorMethodKind methodKind, NetRunTimeSystem.Exception exception)
+        protected virtual void OnError(ErrorMethodKind methodKind, NetRunTimeSystem.Exception exception)
         {
-            MethodInfo errorMethod = AttributeHelper.GetErrorMethod(this);
-            if (null != errorMethod)
-                errorMethod.Invoke(this, new object[] { methodKind, exception });
+
         }
         
         #endregion
@@ -444,7 +315,7 @@ namespace NetOffice.VisioApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
                 RaiseStaticErrorHandlerMethod(type, RegisterErrorMethodKind.Register, exception);
             }
         }
@@ -485,7 +356,7 @@ namespace NetOffice.VisioApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-				NetOffice.DebugConsole.WriteException(exception);
+				NetOffice.DebugConsole.Default.WriteException(exception);
                 RaiseStaticErrorHandlerMethod(type, RegisterErrorMethodKind.UnRegister, exception);
             }
         }

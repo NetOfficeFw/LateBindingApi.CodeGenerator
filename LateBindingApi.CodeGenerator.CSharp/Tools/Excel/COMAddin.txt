@@ -147,7 +147,7 @@ namespace NetOffice.ExcelApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-                Factory.Console.WriteException(exception);
+                Factory.Console.Default.WriteException(exception);
                 OnError(ErrorMethodKind.OnStartupComplete, exception);
             }
         }
@@ -161,7 +161,7 @@ namespace NetOffice.ExcelApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-                Factory.Console.WriteException(exception);
+                Factory.Console.Default.WriteException(exception);
                 OnError(ErrorMethodKind.OnDisconnection, exception);
             }
         }
@@ -175,7 +175,7 @@ namespace NetOffice.ExcelApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-                Factory.Console.WriteException(exception);
+                Factory.Console.Default.WriteException(exception);
                 OnError(ErrorMethodKind.OnDisconnection, exception);
             }
         }
@@ -189,7 +189,7 @@ namespace NetOffice.ExcelApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-                Factory.Console.WriteException(exception);
+                Factory.Console.Default.WriteException(exception);
                 OnError(ErrorMethodKind.OnAddInsUpdate, exception);
             }
         }
@@ -203,7 +203,7 @@ namespace NetOffice.ExcelApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-                Factory.Console.WriteException(exception);
+                Factory.Console.Default.WriteException(exception);
                 OnError(ErrorMethodKind.OnBeginShutdown, exception);
             }
         }
@@ -237,7 +237,7 @@ namespace NetOffice.ExcelApi.Tools
 				}
 				catch(NetRunTimeSystem.Exception exception)
 				{
-                    Factory.Console.WriteException(exception);
+                    Factory.Console.Default.WriteException(exception);
 				}			
 			}
 
@@ -250,7 +250,7 @@ namespace NetOffice.ExcelApi.Tools
 				}
 				catch(NetRunTimeSystem.Exception exception)
 				{
-                    Factory.Console.WriteException(exception);
+                    Factory.Console.Default.WriteException(exception);
 				}		
 			 }
              
@@ -261,7 +261,7 @@ namespace NetOffice.ExcelApi.Tools
 			 }
 			 catch(NetRunTimeSystem.Exception exception)
 			 {
-                 Factory.Console.WriteException(exception);
+                 Factory.Console.Default.WriteException(exception);
 			 }	
                 
              try
@@ -271,7 +271,7 @@ namespace NetOffice.ExcelApi.Tools
 			 }
 			 catch(NetRunTimeSystem.Exception exception)
 			 {
-                 Factory.Console.WriteException(exception);
+                 Factory.Console.Default.WriteException(exception);
 			 }	
         }
 
@@ -306,7 +306,7 @@ namespace NetOffice.ExcelApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-                Factory.Console.WriteException(exception);
+                Factory.Console.Default.WriteException(exception);
                 OnError(ErrorMethodKind.GetCustomUI, exception);
 				return string.Empty;
             } 
@@ -355,7 +355,7 @@ namespace NetOffice.ExcelApi.Tools
             }
             catch (NetRunTimeSystem.Exception exception)
             {
-                Factory.Console.WriteException(exception);
+                Factory.Console.Default.WriteException(exception);
                 OnError(ErrorMethodKind.CTPFactoryAvailable, exception);
             } 
         }
