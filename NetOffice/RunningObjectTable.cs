@@ -16,7 +16,7 @@ namespace NetOffice
         /// <summary>
         /// some office applications in specific version use the "Microsoft" prefix in the COM server name
         /// </summary>
-        private static readonly string _ballmersPlace = "Microsoft ";
+        private static readonly string _ballmersPlace = "Microsoft "; // name is depricated of course
 
         [DllImport("ole32.dll")]
         private static extern int GetRunningObjectTable(uint reserved, out IRunningObjectTable pprot);
@@ -25,7 +25,8 @@ namespace NetOffice
         private static extern int CreateBindCtx(uint reserved, out IBindCtx pctx);
 
         /// <summary>
-        /// returns a running com proxy from the running object table. the method takes the first proxy there matched with the input parameters
+        /// returns a running com proxy from the running object table. the method takes the first proxy there matched with the input parameters.
+        /// WARNING: the method returns always the first com proxy from the running object table if multiple (match) proxies exists.
         /// </summary>
         /// <param name="componentName">component name, for example Excel</param>
         /// <param name="className">class name, for example Application</param>
@@ -104,6 +105,7 @@ namespace NetOffice
 
         /// <summary>
         /// returns all running com proxies from the running object table there matched with the input parameters 
+        ///  WARNING: the method returns always the first com proxy from the running object table if multiple (match) proxies exists.
         /// </summary>
         /// <param name="componentName">component name, for example Excel</param>
         /// <param name="className">class name, for example Application</param>

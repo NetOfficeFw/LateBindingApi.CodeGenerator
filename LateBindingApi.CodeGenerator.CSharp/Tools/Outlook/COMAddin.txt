@@ -542,7 +542,7 @@ namespace NetOffice.OutlookApi.Tools
                     key.SetValue("", "Office .NET Framework Lockback Bypass Key");
                 key.Close();
 
-                // register addin in Word
+                // register addin in Outlook
                 Registry.CurrentUser.CreateSubKey(_addinOfficeRegistryKey +  progId.Value);
                 RegistryKey regKeyWord = null;
                 
