@@ -47,6 +47,7 @@
             this.checkBoxSolutionName = new System.Windows.Forms.CheckBox();
             this.textBoxSolutionName = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // okButton
@@ -264,12 +265,23 @@
             this.label8.TabIndex = 43;
             this.label8.Text = "Solution Name";
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.ForeColor = System.Drawing.Color.Red;
+            this.label9.Location = new System.Drawing.Point(329, 318);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(131, 13);
+            this.label9.TabIndex = 44;
+            this.label9.Text = "IRTDServer, IRTDUpdate";
+            // 
             // FormNetOffice
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(604, 472);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.checkBoxSolutionName);
             this.Controls.Add(this.textBoxSolutionName);
@@ -326,5 +338,6 @@
         private System.Windows.Forms.CheckBox checkBoxSolutionName;
         private System.Windows.Forms.TextBox textBoxSolutionName;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
     }
 }

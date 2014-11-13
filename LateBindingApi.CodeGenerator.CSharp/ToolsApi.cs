@@ -71,6 +71,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
         private static string _excelCOMAddinContent;
 
+        public static string ExcelCOMAddinDescriptorContent
+        {
+            get
+            {
+                if (null == _excelCOMAddinDescriptorContent)
+                    _excelCOMAddinDescriptorContent = RessourceApi.ReadString("Tools.Excel.COMAddinTypeDescriptionProvider.txt");
+                return _excelCOMAddinDescriptorContent;
+            }
+        }
+        private static string _excelCOMAddinDescriptorContent;
+
         private static string ExcelTaskPaneContent
         {
             get
@@ -278,6 +289,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string file2 = ExcelTaskPaneContent;
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
             result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
+
+            //string file3 = ExcelCOMAddinDescriptorContent;
+            //System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddinTypeDescriptionProvider.cs"), file3);
+            //result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddinTypeDescriptionProvider.cs" + "\" />" + "\r\n";
 
             return result;
         }
