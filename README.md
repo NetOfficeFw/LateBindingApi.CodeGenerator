@@ -16,6 +16,13 @@ Copy it to any directory and register it using `regsvr32.exe`.
 You can now refresh TLI reference in ComponentAnalyzer project or re-open the project.
 
 
+## Development
+
+Please, read the [contribution guideline](CONTRIBUTING.md) for information about development process.
+
+The `master` branch contains stable release codebase. Use the `develop` branch to implement new features.
+
+
 ## License
 
 Late Binding API Code Generator source code is license under [Microsoft Public License (Ms-PL)](LICENSE.txt)
