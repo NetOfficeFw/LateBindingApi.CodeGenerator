@@ -1,5 +1,7 @@
 # Late Binding API Code Generator
 
+![version: 0.8.1](http://img.shields.io/badge/version-0.8.1-68217a.svg)
+
 Creates .NET proxy components from COM+ Type Libraries. 
 The components will be created as C# or VB.NET source code in a generated Visual Studio solution. 
 The classes in the generated solution are accessing the COM Server with late binding reflection technique.
