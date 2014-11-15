@@ -4,7 +4,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
-using TLI;
+using TypeLibInformation;
+using TLI = TypeLibInformation;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {

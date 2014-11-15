@@ -6,7 +6,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Xml.Linq;
 using COMTypes = System.Runtime.InteropServices.ComTypes;
-using TLI;
+using TypeLibInformation;
+using TLI = TypeLibInformation;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {
