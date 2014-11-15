@@ -9,7 +9,8 @@ using System.Xml.Schema;
 using System.Xml.Linq;
 using System.ComponentModel;
 using System.Runtime.InteropServices.ComTypes;
-using TLI;
+using TypeLibInformation;
+using TLI = TypeLibInformation;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {
