@@ -672,7 +672,7 @@ namespace NetOffice.MSProjectApi.Tools
 			// MSProject works not as well without a message filter
 			Core core = new Core();
 			core.Settings.MessageFilter.Enabled = true;
-            return new Core();
+            return new core;
         }
 
         /// <summary>
