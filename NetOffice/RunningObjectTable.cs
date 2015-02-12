@@ -123,7 +123,7 @@ namespace NetOffice
             if (String.IsNullOrEmpty(className))
                 throw new ArgumentNullException("className");
 
-            // excel hot fix
+            // excel hot fix - we dont use the ROT and try to find all instances trough the main windows
             if (componentName.Equals("excel", StringComparison.InvariantCultureIgnoreCase) && className.Equals("application", StringComparison.InvariantCultureIgnoreCase))
                 return GetActiveExcelApplicationProxiesFromROT();
 
@@ -171,6 +171,7 @@ namespace NetOffice
                         }
                         else
                         {
+                            // sometimes its not supported to free them
                             if (comInstance.GetType().IsCOMObject)
                                 Marshal.ReleaseComObject(comInstance);
                         }
