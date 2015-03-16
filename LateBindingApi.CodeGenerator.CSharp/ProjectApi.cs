@@ -225,7 +225,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement libNode = (from a in project.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
                                 where a.Attribute("Key").Value.Equals(project.Element("RefLibraries").Element("Ref").Attribute("Key").Value)
                                 select a).FirstOrDefault();
-            string guidString = XmlConvert.DecodeName(libNode.Attribute("GUID").Value);
+
+            string guidString = "";
+            System.Windows.Forms.MessageBox.Show("UNTESTED");
+            if (libNode.Element("Name").Value == "DAO")
+            {
+                guidString = "new Guid(\"" + XmlConvert.DecodeName(libNode.Attribute("GUID").Value) + "\"), new Guid(\"4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28\")";
+            }
+            else
+            {
+                guidString = "new Guid(\"" + XmlConvert.DecodeName(libNode.Attribute("GUID").Value) + "\")";
+            }
 
             string dependent = "";
             string[] depenents = GetRefProjects(project);

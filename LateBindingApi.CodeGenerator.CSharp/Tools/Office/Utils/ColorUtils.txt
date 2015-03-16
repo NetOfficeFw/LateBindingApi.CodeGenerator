@@ -22,7 +22,7 @@ namespace NetOffice.OfficeApi.Tools.Utils
         /// Creates an instance of the class
         /// </summary>
         /// <param name="owner">owner instance</param>
-        internal ColorUtils(CommonUtils owner)
+        protected internal ColorUtils(CommonUtils owner)
         {
             if (null == owner)
                 throw new ArgumentNullException("owner");

@@ -24,7 +24,7 @@ namespace NetOffice.OfficeApi.Tools.Utils
         /// Creates an instance of the class
         /// </summary>
         /// <param name="owner">owner instance</param>
-        internal ResourceUtils(CommonUtils owner)
+        protected internal ResourceUtils(CommonUtils owner)
         {
             if (null == owner)
                 throw new ArgumentNullException("owner");
