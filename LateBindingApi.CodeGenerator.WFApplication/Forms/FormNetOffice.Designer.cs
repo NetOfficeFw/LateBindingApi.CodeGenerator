@@ -271,9 +271,9 @@
             this.label9.ForeColor = System.Drawing.Color.Red;
             this.label9.Location = new System.Drawing.Point(329, 318);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(131, 13);
+            this.label9.Size = new System.Drawing.Size(238, 13);
             this.label9.TabIndex = 44;
-            this.label9.Text = "IRTDServer, IRTDUpdate";
+            this.label9.Text = "IRTDServer, IRTDUpdate Outlook.PropertyPage";
             // 
             // FormNetOffice
             // 

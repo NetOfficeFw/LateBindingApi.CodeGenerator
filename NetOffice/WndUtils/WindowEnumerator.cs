@@ -64,10 +64,13 @@ namespace NetOffice.WndUtils
         /// <summary>
         /// Enumerates all top level windows on desktop. WARNING: The method returns null if operation timeout is reached.
         /// </summary>
-        /// <param name="milliSecondsTimeout">a timeout for the operation. when a desktop is busy or non responding these method freeze. you can handle this with the operation timeout</param>
-        /// <returns>Result Array or null</returns>
+        /// <param name="milliSecondsTimeout">a timeout for the operation. when a desktop windows is busy or non responding these method freeze. you can handle this with the operation timeout</param>
+        /// <returns>result array or null</returns>
         public IntPtr[] EnumerateWindows(int milliSecondsTimeout)
         {
+            if (milliSecondsTimeout < 0)
+                throw new ArgumentOutOfRangeException("milliSecondsTimeout");
+
             try
             {
                 lock (_lockInstance)
@@ -91,7 +94,6 @@ namespace NetOffice.WndUtils
                     {
                         _currentInstance = null;
                     }
-
                 }
                 return Result.ToArray();
             }
@@ -100,6 +102,18 @@ namespace NetOffice.WndUtils
                 DebugConsole.Default.WriteException(exception);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Returns information a window is currently visible
+        /// </summary>
+        /// <param name="handle">target window handle</param>
+        /// <returns>true if window is visible, otherwise false</returns>
+        public bool IsVisible(IntPtr handle)
+        {
+            if (IntPtr.Zero == handle)
+                throw new ArgumentNullException("handle");
+            return IsWindowVisible(handle);
         }
 
         private void EnumerateWindowsAsync(object mre)

@@ -16,6 +16,11 @@ namespace NetOffice
         private static object _lockUtils = new object();
 
         /// <summary>
+        /// shared default
+        /// </summary>
+        private static Utils _default;
+
+        /// <summary>
         /// Shared Default Invoker
         /// </summary>
         public static Utils Default
@@ -30,7 +35,6 @@ namespace NetOffice
                 }
             }
         }
-        private static Utils _default;
 
         /// <summary>
         /// checks value is null or nothing. 

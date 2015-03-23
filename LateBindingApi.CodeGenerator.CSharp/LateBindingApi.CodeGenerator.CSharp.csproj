@@ -68,6 +68,13 @@
     <Compile Include="AliasApi.cs" />
     <Compile Include="CoClassApi.cs" />
     <Compile Include="ToolsApi.cs" />
+    <EmbeddedResource Include="Tools\PowerPoint\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\Utils\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\Utils\FileUtils.txt" />
+    <EmbeddedResource Include="Tools\Outlook\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ToolsDialog.rtxt">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="CoClass\EventHelper.txt" />
     <EmbeddedResource Include="Event\Interface.txt" />
     <Compile Include="ConflictManager.cs" />
@@ -224,7 +231,71 @@
     <EmbeddedResource Include="Tools\Word\ITaskPane.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Tools\Excel\COMAddinTypeDescriptionProvider.txt" />
+    <EmbeddedResource Include="Tools\Access\CommonUtils.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Access\Utils\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\Access\Utils\FileUtils.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Excel\CommonUtils.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Excel\Utils\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\Excel\Utils\FileUtils.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Office\CommonUtils.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Project\CommonUtils.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Office\Utils\ColorUtils.txt" />
+    <EmbeddedResource Include="Tools\Office\Utils\DialogUtils.txt" />
+    <EmbeddedResource Include="Tools\Office\Utils\ImageUtils.txt" />
+    <EmbeddedResource Include="Tools\Office\Utils\ResourceUtils.txt" />
+    <EmbeddedResource Include="Tools\Office\Utils\TrayUtils.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Office\Informations\AppDomainInfo.txt" />
+    <EmbeddedResource Include="Tools\Office\Informations\AssemblyInfo.txt" />
+    <EmbeddedResource Include="Tools\Office\Informations\DiagnosticPair.txt" />
+    <EmbeddedResource Include="Tools\Office\Informations\DiagnosticPairCollection.txt" />
+    <EmbeddedResource Include="Tools\Office\Informations\EnvironmentInfo.txt" />
+    <EmbeddedResource Include="Tools\Office\Informations\HostInfo.txt" />
+    <EmbeddedResource Include="Tools\Office\Informations\Infos.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Office\Dialogs\AboutDialog.1031.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\AboutDialog.1033.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\AboutDialog.Designer.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\AboutDialog.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\DiagnosticsDialog.1031.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\DiagnosticsDialog.1033.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\DiagnosticsDialog.Designer.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\DiagnosticsDialog.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\DialogLayoutSettings.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\DialogLocalizationSettings.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ErrorDialog.1031.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ErrorDialog.1033.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ErrorDialog.Designer.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ErrorDialog.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\RichTextDialog.1031.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\RichTextDialog.1033.xml" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\RichTextDialog.Designer.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\RichTextDialog.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ToolsDialog.Designer.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ToolsDialog.txt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\RichTextDialog.rtxt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\ErrorDialog.rtxt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\DiagnosticsDialog.rtxt" />
+    <EmbeddedResource Include="Tools\Office\Dialogs\AboutDialog.rtxt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Word\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Word\Utils\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\Word\Utils\FileUtils.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

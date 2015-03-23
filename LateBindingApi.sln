@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.ComponentAnalyzer", "LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj", "{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.CSharp", "LateBindingApi.CodeGenerator.CSharp\LateBindingApi.CodeGenerator.CSharp.csproj", "{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}"
@@ -14,6 +16,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetOffice", "NetOffice\NetOffice.csproj", "{65442327-D01F-4ECB-8C39-6D5C7622A80F}"
 EndProject
 Global
+	GlobalSection(CodealikeProperties) = postSolution
+		SolutionGuid = b33594cf-1c7b-4712-bfb0-1276a237553e
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms

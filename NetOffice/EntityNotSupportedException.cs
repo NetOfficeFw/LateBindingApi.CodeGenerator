@@ -5,7 +5,7 @@ using System.Text;
 namespace NetOffice
 {
     /// <summary>
-    /// Signals the target method or property is not supported from the COM proxy in the current version
+    /// Signals the target method or property is not supported from the COM proxy in the current office application version
     /// </summary>
     public class EntityNotSupportedException : NetOfficeException 
     {        

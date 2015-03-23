@@ -12,7 +12,7 @@ namespace NetOffice
     public interface IFactoryInfo
     {
         /// <summary>
-        /// namespace of assembly
+        /// root namespace of assembly
         /// </summary>
         string AssemblyNamespace { get; }
 
