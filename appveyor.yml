@@ -1,0 +1,27 @@
+#
+# LateBindingApi project
+# AppVeyor configuration
+#
+
+version: 1.0.0.{build}
+
+branches:
+  except:
+    - gh-pages
+
+os: Windows Server 2012
+
+platform: Any CPU
+configuration:
+  - Debug
+  - Release
+
+build:
+  project: LateBindingApi.sln
+  verbosity: detailed
+
+before_build:
+  - cmd: nuget restore LateBindingApi.sln
+
+cache:
+  - packages
