@@ -15,8 +15,6 @@ namespace NetOffice.Tools
     /// </summary>
     public static class Tweaks
     {
-       
-
         #region Fields
 
         private static string[] _noTweakNames = new string[] { "NOConsoleMode", "NOConsoleShare", "NOExceptionHandling", "NOExceptionMessage", "NOCultureInfo", 
@@ -46,6 +44,8 @@ namespace NetOffice.Tools
         private static Dictionary<int, Dictionary<string, string>> CustomTweaks { get; set; }
 
         #endregion
+
+        #region Methods
 
         /// <summary>
         /// Analyze a COMAddin for the TweakAttribute and try to set given arguments(registry) if exists
@@ -124,6 +124,8 @@ namespace NetOffice.Tools
                 factory.Console.WriteException(exception);
             }
         }
+
+        #endregion
 
         #region Custom Tweaks
 

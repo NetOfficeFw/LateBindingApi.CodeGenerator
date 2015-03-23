@@ -82,7 +82,6 @@ namespace NetOffice
         #region Fields
 
         private bool _initalized;
-        private bool _assemblyResolveEventConnected;
         private List<COMObject> _globalObjectList = new List<COMObject>();
         private List<IFactoryInfo> _factoryList = new List<IFactoryInfo>();
         private Dictionary<string, Type> _proxyTypeCache = new Dictionary<string, Type>();
@@ -90,17 +89,17 @@ namespace NetOffice
         private Dictionary<Guid, Guid> _hostCache = new Dictionary<Guid, Guid>();
         private Dictionary<string, Dictionary<string, string>> _entitiesListCache = new Dictionary<string, Dictionary<string, string>>();
         private List<DependentAssembly> _dependentAssemblies = new List<DependentAssembly>();
+        private static string[] _knownNetOfficeKeyTokens;
+        private Assembly _thisAssembly;
+        private CurrentAppDomain _appDomain;
 
+        private static object _defaultLock = new object();
         private static object _factoryListLock = new object();
         private static object _comObjectLock = new object();
         private static object _globalObjectListLock = new object();
 
-        private static Assembly _thisAssembly = Assembly.GetAssembly(typeof(COMObject));
-        private static string[] _knownNetOfficeKeyTokens;
-        private static object _defaultLock = new object();
-
         private static readonly string _noAssemblyAttributeName = "NetOffice.NetOfficeAssemblyAttribute";
-        private static readonly string[] _tryLoadAssemblyNames = new string[] { "ExcelApi.dll", "WordApi.dll", "OutlookApi.dll", "PowerPointApi.dll", "AccessApi.dll", "VisioApi.dll", "MSProjectApi.dll" };
+        private static readonly string[] _tryLoadAssemblyNames = new string[] { "ExcelApi.dll", "WordApi.dll", "OutlookApi.dll", "PowerPointApi.dll", "AccessApi.dll", "VisioApi.dll", "MSProjectApi.dll", "MSFormsApi.dll" };
 
         #endregion
 
@@ -111,6 +110,7 @@ namespace NetOffice
         /// </summary>
         public Core()
         {
+            _appDomain = new CurrentAppDomain(this);
             Settings = new Settings();
             Console = new DebugConsole();
             Invoker = new Invoker(this);
@@ -122,6 +122,7 @@ namespace NetOffice
         /// <param name="isDefault">Mark this instance as default instance</param>
         private Core(bool isDefault)
         {
+            _appDomain = new CurrentAppDomain(this);
             IsDefault = isDefault;
             if (IsDefault)
             {
@@ -140,6 +141,19 @@ namespace NetOffice
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Current NetOffice Assembly
+        /// </summary>
+        internal Assembly ThisAssembly
+        {
+            get
+            {
+                if (null == _thisAssembly)
+                    _thisAssembly = Assembly.GetAssembly(typeof(COMObject));
+                return _thisAssembly;
+            }
+        }
 
         /// <summary>
         /// Returns info about intialized state
@@ -290,12 +304,6 @@ namespace NetOffice
                 foreach (var item in _tryLoadAssemblyNames)
                     TryLoadAssembly(item);
 
-                if (!_assemblyResolveEventConnected)
-                {
-                    AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
-                    _assemblyResolveEventConnected = true;
-                }
-
                 ClearCache();
                 AddNetOfficeAssemblies();
                 AddDependentNetOfficeAssemblies();
@@ -327,16 +335,18 @@ namespace NetOffice
 
             if (Settings.EnableDeepLoading)
             {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                Assembly[] assemblies = _appDomain.GetAssemblies();
                 foreach (Assembly domainAssembly in assemblies)
                 {
                     foreach (AssemblyName itemName in domainAssembly.GetReferencedAssemblies())
                     {
                         if (ContainsNetOfficePublicKeyToken(itemName))
                         {
-                            string assemblyName = itemName.Name;
-                            Assembly itemAssembly = Assembly.Load(itemName);
+                            Assembly itemAssembly = _appDomain.Load(itemName);
+                            if (null == itemAssembly)
+                                continue;
 
+                            string assemblyName = itemName.Name;
                             string[] depends = AddAssembly(assemblyName, itemAssembly);
                             foreach (string depend in depends)
                             {
@@ -358,7 +368,7 @@ namespace NetOffice
             }
             else
             {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                Assembly[] assemblies = _appDomain.GetAssemblies();
                 foreach (Assembly itemAssembly in assemblies)
                 {
                     string assemblyName = itemAssembly.GetName().Name;
@@ -407,7 +417,7 @@ namespace NetOffice
                     {
                         try
                         {
-                            Assembly asssembly = Assembly.LoadFile(fileName);
+                            Assembly asssembly = _appDomain.LoadFile(fileName);
                             AddAssembly(asssembly.GetName().Name, asssembly);
                         }
                         catch (Exception exception)
@@ -519,23 +529,23 @@ namespace NetOffice
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYGET:
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUT:
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_PROPERTYPUTREF:
-                    {
-                        typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
-                        string outValue = "";
-                        bool exists = supportList.TryGetValue("Property-" + strName, out outValue);
-                        if (!exists)
-                            supportList.Add("Property-" + strName, strDocString);
-                        break;
-                    }
+                        {
+                            typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
+                            string outValue = "";
+                            bool exists = supportList.TryGetValue("Property-" + strName, out outValue);
+                            if (!exists)
+                                supportList.Add("Property-" + strName, strDocString);
+                            break;
+                        }
                     case System.Runtime.InteropServices.ComTypes.INVOKEKIND.INVOKE_FUNC:
-                    {
-                        typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
-                        string outValue = "";
-                        bool exists = supportList.TryGetValue("Method-" + strName, out outValue);
-                        if (!exists)
-                            supportList.Add("Method-" + strName, strDocString);
-                        break;   
-                    }
+                        {
+                            typeInfo.GetDocumentation(funcDesc.memid, out strName, out strDocString, out dwHelpContext, out strHelpFile);
+                            string outValue = "";
+                            bool exists = supportList.TryGetValue("Method-" + strName, out outValue);
+                            if (!exists)
+                                supportList.Add("Method-" + strName, strDocString);
+                            break;
+                        }
                 }
 
                 typeInfo.ReleaseFuncDesc(funcDescPointer);
@@ -839,7 +849,7 @@ namespace NetOffice
         {
             // NO is appending new proxies so we free them in reverse order
             while (_globalObjectList.Count > 0)
-                _globalObjectList[_globalObjectList.Count -1].Dispose();
+                _globalObjectList[_globalObjectList.Count - 1].Dispose();
         }
 
         /// <summary>
@@ -1163,43 +1173,6 @@ namespace NetOffice
         }
 
         /// <summary>
-        /// Occurs when the resolution of an assembly fails.
-        /// </summary>
-        /// <param name="sender">The source of the event</param>
-        /// <param name="args">A System.ResolveEventArgs that contains the event data</param>
-        /// <returns>The System.Reflection.Assembly that resolves the type, assembly, or resource or null if the assembly cannot be resolved</returns>
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            try
-            {
-                // dont care for resources
-                if ((!String.IsNullOrEmpty(args.Name) && args.Name.ToLower().Trim().IndexOf(".resources") > -1))
-                    return null;
-
-                string directoryName = _thisAssembly.CodeBase.Substring(0, _thisAssembly.CodeBase.LastIndexOf("/"));
-                directoryName = directoryName.Replace("/", "\\").Substring(8);
-                string fileName = args.Name.Substring(0, args.Name.IndexOf(","));
-                string fullFileName = System.IO.Path.Combine(directoryName, fileName + ".dll");
-                if (System.IO.File.Exists(fullFileName))
-                {
-                    Console.WriteLine(string.Format("Try to resolve assembly {0}", args.Name));
-                    Assembly assembly = System.Reflection.Assembly.Load(args.Name);
-                    return assembly;
-                }
-                else
-                {
-                    Console.WriteLine(string.Format("Unable to resolve assembly {0}. The file doesnt exists in current codebase.", args.Name));
-                    return null;
-                }
-            }
-            catch (Exception exception)
-            {
-                Console.WriteException(exception);
-                return null;
-            }
-        }
-
-        /// <summary>
         /// Assembly loader for multitargeting(host) scenarios
         /// </summary>
         /// <param name="fileName">full file name</param>
@@ -1208,13 +1181,12 @@ namespace NetOffice
         {
             try
             {
-                string directoryName = _thisAssembly.CodeBase.Substring(0, _thisAssembly.CodeBase.LastIndexOf("/"));
+                string directoryName = ThisAssembly.CodeBase.Substring(0, ThisAssembly.CodeBase.LastIndexOf("/"));
                 directoryName = directoryName.Replace("/", "\\").Substring(8);
                 string fullFileName = System.IO.Path.Combine(directoryName, fileName);
                 if (System.IO.File.Exists(fullFileName))
                 {
-
-                    Assembly assembly = System.Reflection.Assembly.LoadFrom(fullFileName);
+                    Assembly assembly = _appDomain.LoadFrom(fullFileName);
                     Type factoryInfoType = assembly.GetType(fileName.Substring(0, fileName.Length - 4) + ".Utils.ProjectInfo", false, false);
                     NetOffice.IFactoryInfo factoryInfo = Activator.CreateInstance(factoryInfoType) as NetOffice.IFactoryInfo;
                     bool exists = false;

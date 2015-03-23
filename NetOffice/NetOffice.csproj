@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="COMObjectExpandableObjectConverter.cs" />
     <Compile Include="Core.cs" />
+    <Compile Include="CurrentAppDomain.cs" />
     <Compile Include="DebugConsoleMode.cs" />
     <Compile Include="NamedPipes\ClientPipeConnection.cs" />
     <Compile Include="NamedPipes\InterProcessConnectionState.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Tools\COMAddinAttribute.cs" />
     <Compile Include="Attributes\CustomEnumeratorAttribute.cs" />
     <Compile Include="Attributes\CustomMethodAttribute.cs" />
+    <Compile Include="Tools\COMAddinBase.cs" />
     <Compile Include="Tools\CustomPaneAttribute.cs" />
     <Compile Include="Tools\CustomUIAttribute.cs" />
     <Compile Include="Attributes\NetOfficeAssemblyAttribute.cs" />

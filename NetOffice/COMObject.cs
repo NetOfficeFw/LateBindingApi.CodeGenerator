@@ -9,7 +9,7 @@ using COMTypes = System.Runtime.InteropServices.ComTypes;
 namespace NetOffice
 {
     /// <summary>
-    /// represents a managed COM proxy 
+    /// represents a managed COM proxy wrapper
     /// </summary>
     [TypeConverter(typeof(COMObjectExpandableObjectConverter))]
     public class COMObject : IDisposable
