@@ -1,6 +1,7 @@
 # Late Binding API Code Generator
 
 ![version: 0.8.1](http://img.shields.io/badge/version-0.8.1-68217a.svg)
+[![AppVeyor](https://img.shields.io/appveyor/ci/jozefizso/latebindingapi-codegenerator.svg)](https://ci.appveyor.com/project/jozefizso/latebindingapi-codegenerator)
 
 Creates .NET proxy components from COM+ Type Libraries. 
 The components will be created as C# or VB.NET source code in a generated Visual Studio solution. 
