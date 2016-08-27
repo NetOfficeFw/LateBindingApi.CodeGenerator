@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LateBindingApi.CodeGenerator.WFApplication</RootNamespace>
-    <AssemblyName>LateBindingApi.CodeGenerator.WFApplication</AssemblyName>
+    <AssemblyName>LateBindingGui</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>App.ico</ApplicationIcon>
