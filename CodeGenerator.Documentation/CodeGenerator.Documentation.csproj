@@ -59,13 +59,13 @@
     <Compile Include="ThreadJob.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj">
+    <ProjectReference Include="..\CodeGenerator.ComponentAnalyzer\CodeGenerator.ComponentAnalyzer.csproj">
       <Project>{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}</Project>
-      <Name>LateBindingApi.CodeGenerator.ComponentAnalyzer</Name>
+      <Name>CodeGenerator.ComponentAnalyzer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LateBindingApi.CodeGenerator.CSharp\LateBindingApi.CodeGenerator.CSharp.csproj">
+    <ProjectReference Include="..\CodeGenerator.CSharp\CodeGenerator.CSharp.csproj">
       <Project>{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}</Project>
-      <Name>LateBindingApi.CodeGenerator.CSharp</Name>
+      <Name>CodeGenerator.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

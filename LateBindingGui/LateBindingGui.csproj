@@ -291,17 +291,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj">
+    <ProjectReference Include="..\CodeGenerator.ComponentAnalyzer\CodeGenerator.ComponentAnalyzer.csproj">
       <Project>{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}</Project>
-      <Name>LateBindingApi.CodeGenerator.ComponentAnalyzer</Name>
+      <Name>CodeGenerator.ComponentAnalyzer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LateBindingApi.CodeGenerator.CSharp\LateBindingApi.CodeGenerator.CSharp.csproj">
+    <ProjectReference Include="..\CodeGenerator.CSharp\CodeGenerator.CSharp.csproj">
       <Project>{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}</Project>
-      <Name>LateBindingApi.CodeGenerator.CSharp</Name>
+      <Name>CodeGenerator.CSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LateBindingApi.CodeGenerator.Documentation\LateBindingApi.CodeGenerator.Documentation.csproj">
+    <ProjectReference Include="..\CodeGenerator.Documentation\CodeGenerator.Documentation.csproj">
       <Project>{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}</Project>
-      <Name>LateBindingApi.CodeGenerator.Documentation</Name>
+      <Name>CodeGenerator.Documentation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.ComponentAnalyzer", "LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj", "{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator.ComponentAnalyzer", "CodeGenerator.ComponentAnalyzer\CodeGenerator.ComponentAnalyzer.csproj", "{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.CSharp", "LateBindingApi.CodeGenerator.CSharp\LateBindingApi.CodeGenerator.CSharp.csproj", "{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator.CSharp", "CodeGenerator.CSharp\CodeGenerator.CSharp.csproj", "{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.WFApplication", "LateBindingApi.CodeGenerator.WFApplication\LateBindingApi.CodeGenerator.WFApplication.csproj", "{52CE03D1-62AD-4FF9-9BD5-A8310D877A4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingGui", "LateBindingGui\LateBindingGui.csproj", "{52CE03D1-62AD-4FF9-9BD5-A8310D877A4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.Documentation", "LateBindingApi.CodeGenerator.Documentation\LateBindingApi.CodeGenerator.Documentation.csproj", "{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator.Documentation", "CodeGenerator.Documentation\CodeGenerator.Documentation.csproj", "{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetOffice", "NetOffice\NetOffice.csproj", "{65442327-D01F-4ECB-8C39-6D5C7622A80F}"
 EndProject
