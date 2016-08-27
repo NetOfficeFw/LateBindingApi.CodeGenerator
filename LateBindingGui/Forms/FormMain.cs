@@ -15,6 +15,8 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 {
     public partial class FormMain : Form
     {
+        private const string FileDialog_ProjectFileFilter = @"Project Files (*.xml)|*.xml";
+
         #region Fields
 
         Analyzer       _comAnalyzer = new Analyzer();
@@ -131,7 +133,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             try
             {
                 OpenFileDialog fileDialog = new OpenFileDialog();
-                fileDialog.Filter = "ProjectFiles|*.xml";
+                fileDialog.Filter = FileDialog_ProjectFileFilter;
                 if (DialogResult.OK == fileDialog.ShowDialog(this))
                 {
                     this.Cursor = Cursors.WaitCursor;
@@ -163,7 +165,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             try
             {
                 SaveFileDialog fileDialog = new SaveFileDialog();
-                fileDialog.Filter = "ProjectFiles|*.xml";
+                fileDialog.Filter = FileDialog_ProjectFileFilter;
                 if (DialogResult.OK == fileDialog.ShowDialog(this))
                 {
                     this.Cursor = Cursors.WaitCursor;
