@@ -55,7 +55,7 @@
             this.linkLabel.Size = new System.Drawing.Size(179, 13);
             this.linkLabel.TabIndex = 26;
             this.linkLabel.TabStop = true;
-            this.linkLabel.Text = "http://LateBindingApi.Codeplex.com";
+            this.linkLabel.Text = "https://github.com/NetOfficeFw";
             this.linkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.linkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
             // 

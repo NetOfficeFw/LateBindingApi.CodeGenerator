@@ -66,7 +66,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         {
             try
             {
-                System.Diagnostics.Process.Start("http://latebindingapi.codeplex.com");
+                System.Diagnostics.Process.Start("https://github.com/NetOfficeFw");
             }
             catch (Exception throwedException)
             {
