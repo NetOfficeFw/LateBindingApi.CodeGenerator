@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.ComponentAnalyzer", "LateBindingApi.CodeGenerator.ComponentAnalyzer\LateBindingApi.CodeGenerator.ComponentAnalyzer.csproj", "{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}"
 EndProject
@@ -11,14 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.Documentation", "LateBindingApi.CodeGenerator.Documentation\LateBindingApi.CodeGenerator.Documentation.csproj", "{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingApi.CodeGenerator.VB", "LateBindingApi.CodeGenerator.VB\LateBindingApi.CodeGenerator.VB.csproj", "{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetOffice", "NetOffice\NetOffice.csproj", "{65442327-D01F-4ECB-8C39-6D5C7622A80F}"
 EndProject
 Global
-	GlobalSection(CodealikeProperties) = postSolution
-		SolutionGuid = b33594cf-1c7b-4712-bfb0-1276a237553e
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -40,10 +35,6 @@ Global
 		{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}.Release|Any CPU.Build.0 = Release|Any CPU
-		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{999C8E62-C2E3-4D3B-B2EE-C185D1CF1942}.Release|Any CPU.Build.0 = Release|Any CPU
 		{65442327-D01F-4ECB-8C39-6D5C7622A80F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{65442327-D01F-4ECB-8C39-6D5C7622A80F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65442327-D01F-4ECB-8C39-6D5C7622A80F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,5 +42,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(CodealikeProperties) = postSolution
+		SolutionGuid = b33594cf-1c7b-4712-bfb0-1276a237553e
 	EndGlobalSection
 EndGlobal
