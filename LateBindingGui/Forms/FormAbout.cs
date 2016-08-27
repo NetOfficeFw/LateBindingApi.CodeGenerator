@@ -16,7 +16,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
             InitializeComponent();
             this.Text = String.Format("About {0}", AssemblyTitle);
             this.labelProduct.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("Version {0}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            this.labelVersion.Text = String.Format("Version {0}", AssemblyInformationVersion);
         }
 
         #endregion
@@ -50,6 +50,24 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     }
                 }
                 return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+            }
+        }
+
+        public string AssemblyInformationVersion
+        {
+            get
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
+                if (attributes.Length > 0)
+                {
+                    AssemblyInformationalVersionAttribute titleAttribute = (AssemblyInformationalVersionAttribute)attributes[0];
+                    if (titleAttribute.InformationalVersion != "")
+                    {
+                        return titleAttribute.InformationalVersion;
+                    }
+                }
+
+                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
             }
         }
 
