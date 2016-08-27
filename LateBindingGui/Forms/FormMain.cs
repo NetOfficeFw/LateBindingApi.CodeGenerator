@@ -568,8 +568,6 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                             }
                         }
                     }
-
-                    MessageBox.Show("Done!");
                 }
                 else
                 {
