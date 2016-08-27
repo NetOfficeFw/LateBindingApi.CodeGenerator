@@ -47,6 +47,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
     <Compile Include="Analyzer.cs" />
     <Compile Include="ICodeGenerator.cs" />
     <Compile Include="MethodHandler.cs" />

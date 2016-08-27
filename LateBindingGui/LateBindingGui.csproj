@@ -196,6 +196,9 @@
       <DependentUpon>FormTypeLibBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="..\Shared\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\AliasGrid\AliasGridControl.resx">
       <DependentUpon>AliasGridControl.cs</DependentUpon>

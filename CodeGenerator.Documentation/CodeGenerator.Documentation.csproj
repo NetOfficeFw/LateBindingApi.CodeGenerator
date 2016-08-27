@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
     <Compile Include="CustomMethodManager.cs" />
     <Compile Include="FakedEnumeratorManager.cs" />
     <Compile Include="FakedPropertyManager.cs" />
