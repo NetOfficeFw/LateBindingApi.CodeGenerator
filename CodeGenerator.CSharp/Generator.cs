@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -646,8 +647,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         public static int CompareSupportByVersion(string x, string y)
         {
-            double val1 = Convert.ToDouble(x);
-            double val2 = Convert.ToDouble(y);
+            double val1 = Double.Parse(x, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            double val2 = Double.Parse(y, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
 
             if (val1 > val2)
                 return 1;
