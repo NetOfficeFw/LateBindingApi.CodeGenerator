@@ -64,9 +64,10 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(427, 333);
+            this.buttonCancel.Location = new System.Drawing.Point(1276, 638);
+            this.buttonCancel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(77, 22);
+            this.buttonCancel.Size = new System.Drawing.Size(154, 42);
             this.buttonCancel.TabIndex = 21;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -75,9 +76,10 @@
             // buttonOkay
             // 
             this.buttonOkay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOkay.Location = new System.Drawing.Point(344, 333);
+            this.buttonOkay.Location = new System.Drawing.Point(1110, 638);
+            this.buttonOkay.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonOkay.Name = "buttonOkay";
-            this.buttonOkay.Size = new System.Drawing.Size(77, 22);
+            this.buttonOkay.Size = new System.Drawing.Size(154, 42);
             this.buttonOkay.TabIndex = 20;
             this.buttonOkay.Text = "Ok";
             this.buttonOkay.UseVisualStyleBackColor = true;
@@ -85,28 +87,31 @@
             // 
             // textBoxFolder
             // 
-            this.textBoxFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxFolder.Location = new System.Drawing.Point(53, 21);
+            this.textBoxFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxFolder.Location = new System.Drawing.Point(106, 40);
+            this.textBoxFolder.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.textBoxFolder.Name = "textBoxFolder";
-            this.textBoxFolder.Size = new System.Drawing.Size(391, 20);
+            this.textBoxFolder.Size = new System.Drawing.Size(1200, 31);
             this.textBoxFolder.TabIndex = 22;
             // 
             // labelFolder
             // 
             this.labelFolder.AutoSize = true;
-            this.labelFolder.Location = new System.Drawing.Point(11, 24);
+            this.labelFolder.Location = new System.Drawing.Point(22, 46);
+            this.labelFolder.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.labelFolder.Name = "labelFolder";
-            this.labelFolder.Size = new System.Drawing.Size(36, 13);
+            this.labelFolder.Size = new System.Drawing.Size(73, 25);
             this.labelFolder.TabIndex = 23;
             this.labelFolder.Text = "Folder";
             // 
             // buttonFolder
             // 
             this.buttonFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonFolder.Location = new System.Drawing.Point(459, 19);
+            this.buttonFolder.Location = new System.Drawing.Point(1340, 37);
+            this.buttonFolder.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonFolder.Name = "buttonFolder";
-            this.buttonFolder.Size = new System.Drawing.Size(45, 23);
+            this.buttonFolder.Size = new System.Drawing.Size(90, 44);
             this.buttonFolder.TabIndex = 24;
             this.buttonFolder.Text = "...";
             this.buttonFolder.UseVisualStyleBackColor = true;
@@ -118,9 +123,10 @@
             this.labelNotes.AutoSize = true;
             this.labelNotes.BackColor = System.Drawing.SystemColors.Info;
             this.labelNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelNotes.Location = new System.Drawing.Point(53, 338);
+            this.labelNotes.Location = new System.Drawing.Point(106, 648);
+            this.labelNotes.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.labelNotes.Name = "labelNotes";
-            this.labelNotes.Size = new System.Drawing.Size(259, 15);
+            this.labelNotes.Size = new System.Drawing.Size(523, 27);
             this.labelNotes.TabIndex = 27;
             this.labelNotes.Text = "Click OK to generate a solution with available options";
             // 
@@ -130,9 +136,10 @@
             this.checkBoxOpenFolder.AutoSize = true;
             this.checkBoxOpenFolder.Checked = true;
             this.checkBoxOpenFolder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxOpenFolder.Location = new System.Drawing.Point(53, 310);
+            this.checkBoxOpenFolder.Location = new System.Drawing.Point(106, 598);
+            this.checkBoxOpenFolder.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxOpenFolder.Name = "checkBoxOpenFolder";
-            this.checkBoxOpenFolder.Size = new System.Drawing.Size(157, 17);
+            this.checkBoxOpenFolder.Size = new System.Drawing.Size(311, 29);
             this.checkBoxOpenFolder.TabIndex = 28;
             this.checkBoxOpenFolder.Text = "open created solution folder";
             this.checkBoxOpenFolder.UseVisualStyleBackColor = true;
@@ -140,9 +147,10 @@
             // checkBoxConvertOptionals
             // 
             this.checkBoxConvertOptionals.AutoSize = true;
-            this.checkBoxConvertOptionals.Location = new System.Drawing.Point(53, 160);
+            this.checkBoxConvertOptionals.Location = new System.Drawing.Point(106, 308);
+            this.checkBoxConvertOptionals.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxConvertOptionals.Name = "checkBoxConvertOptionals";
-            this.checkBoxConvertOptionals.Size = new System.Drawing.Size(183, 17);
+            this.checkBoxConvertOptionals.Size = new System.Drawing.Size(362, 29);
             this.checkBoxConvertOptionals.TabIndex = 29;
             this.checkBoxConvertOptionals.Text = "convert optional params to object";
             this.checkBoxConvertOptionals.UseVisualStyleBackColor = true;
@@ -152,9 +160,10 @@
             this.checkBoxConvertToCamel.AutoSize = true;
             this.checkBoxConvertToCamel.Checked = true;
             this.checkBoxConvertToCamel.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxConvertToCamel.Location = new System.Drawing.Point(53, 193);
+            this.checkBoxConvertToCamel.Location = new System.Drawing.Point(106, 371);
+            this.checkBoxConvertToCamel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxConvertToCamel.Name = "checkBoxConvertToCamel";
-            this.checkBoxConvertToCamel.Size = new System.Drawing.Size(185, 17);
+            this.checkBoxConvertToCamel.Size = new System.Drawing.Size(370, 29);
             this.checkBoxConvertToCamel.TabIndex = 30;
             this.checkBoxConvertToCamel.Text = "always camel case for parameters";
             this.checkBoxConvertToCamel.UseVisualStyleBackColor = true;
@@ -162,9 +171,10 @@
             // buttonWhyOptionals
             // 
             this.buttonWhyOptionals.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyOptionals.Location = new System.Drawing.Point(242, 158);
+            this.buttonWhyOptionals.Location = new System.Drawing.Point(484, 304);
+            this.buttonWhyOptionals.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonWhyOptionals.Name = "buttonWhyOptionals";
-            this.buttonWhyOptionals.Size = new System.Drawing.Size(48, 21);
+            this.buttonWhyOptionals.Size = new System.Drawing.Size(96, 40);
             this.buttonWhyOptionals.TabIndex = 31;
             this.buttonWhyOptionals.Text = "Why?";
             this.buttonWhyOptionals.UseVisualStyleBackColor = true;
@@ -173,9 +183,10 @@
             // buttonWhyCamel
             // 
             this.buttonWhyCamel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyCamel.Location = new System.Drawing.Point(242, 189);
+            this.buttonWhyCamel.Location = new System.Drawing.Point(484, 363);
+            this.buttonWhyCamel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonWhyCamel.Name = "buttonWhyCamel";
-            this.buttonWhyCamel.Size = new System.Drawing.Size(48, 21);
+            this.buttonWhyCamel.Size = new System.Drawing.Size(96, 40);
             this.buttonWhyCamel.TabIndex = 32;
             this.buttonWhyCamel.Text = "Why?";
             this.buttonWhyCamel.UseVisualStyleBackColor = true;
@@ -184,13 +195,13 @@
             // buttonWhyRef
             // 
             this.buttonWhyRef.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyRef.Location = new System.Drawing.Point(485, 156);
+            this.buttonWhyRef.Location = new System.Drawing.Point(970, 300);
+            this.buttonWhyRef.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonWhyRef.Name = "buttonWhyRef";
-            this.buttonWhyRef.Size = new System.Drawing.Size(48, 21);
+            this.buttonWhyRef.Size = new System.Drawing.Size(96, 40);
             this.buttonWhyRef.TabIndex = 34;
             this.buttonWhyRef.Text = "Why?";
             this.buttonWhyRef.UseVisualStyleBackColor = true;
-            this.buttonWhyRef.Visible = false;
             this.buttonWhyRef.Click += new System.EventHandler(this.buttonWhyRef_Click);
             // 
             // checkBoxRemoveRef
@@ -198,13 +209,13 @@
             this.checkBoxRemoveRef.AutoSize = true;
             this.checkBoxRemoveRef.Checked = true;
             this.checkBoxRemoveRef.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxRemoveRef.Location = new System.Drawing.Point(296, 160);
+            this.checkBoxRemoveRef.Location = new System.Drawing.Point(592, 308);
+            this.checkBoxRemoveRef.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxRemoveRef.Name = "checkBoxRemoveRef";
-            this.checkBoxRemoveRef.Size = new System.Drawing.Size(183, 17);
+            this.checkBoxRemoveRef.Size = new System.Drawing.Size(367, 29);
             this.checkBoxRemoveRef.TabIndex = 33;
             this.checkBoxRemoveRef.Text = "remove ref attribute in parameters";
             this.checkBoxRemoveRef.UseVisualStyleBackColor = true;
-            this.checkBoxRemoveRef.Visible = false;
             // 
             // comboBoxFramework
             // 
@@ -217,26 +228,29 @@
             ".NET Framework 3.5",
             ".NET Framework 4.0",
             ".NET Framework 4.5"});
-            this.comboBoxFramework.Location = new System.Drawing.Point(53, 247);
+            this.comboBoxFramework.Location = new System.Drawing.Point(106, 475);
+            this.comboBoxFramework.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.comboBoxFramework.Name = "comboBoxFramework";
-            this.comboBoxFramework.Size = new System.Drawing.Size(176, 21);
+            this.comboBoxFramework.Size = new System.Drawing.Size(348, 33);
             this.comboBoxFramework.TabIndex = 35;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(50, 231);
+            this.label1.Location = new System.Drawing.Point(100, 444);
+            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(201, 13);
+            this.label1.Size = new System.Drawing.Size(412, 25);
             this.label1.TabIndex = 36;
             this.label1.Text = "Select Framework (make sure is installed)";
             // 
             // buttonWhyFramework
             // 
             this.buttonWhyFramework.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyFramework.Location = new System.Drawing.Point(242, 246);
+            this.buttonWhyFramework.Location = new System.Drawing.Point(484, 473);
+            this.buttonWhyFramework.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonWhyFramework.Name = "buttonWhyFramework";
-            this.buttonWhyFramework.Size = new System.Drawing.Size(48, 21);
+            this.buttonWhyFramework.Size = new System.Drawing.Size(96, 40);
             this.buttonWhyFramework.TabIndex = 37;
             this.buttonWhyFramework.Text = "Info";
             this.buttonWhyFramework.UseVisualStyleBackColor = true;
@@ -245,13 +259,13 @@
             // buttonWhyDocu
             // 
             this.buttonWhyDocu.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonWhyDocu.Location = new System.Drawing.Point(485, 188);
+            this.buttonWhyDocu.Location = new System.Drawing.Point(970, 362);
+            this.buttonWhyDocu.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonWhyDocu.Name = "buttonWhyDocu";
-            this.buttonWhyDocu.Size = new System.Drawing.Size(48, 21);
+            this.buttonWhyDocu.Size = new System.Drawing.Size(96, 40);
             this.buttonWhyDocu.TabIndex = 39;
             this.buttonWhyDocu.Text = "Why?";
             this.buttonWhyDocu.UseVisualStyleBackColor = true;
-            this.buttonWhyDocu.Visible = false;
             this.buttonWhyDocu.Click += new System.EventHandler(this.buttonWhyDocu_Click);
             // 
             // checkBoxCreateDocu
@@ -259,13 +273,13 @@
             this.checkBoxCreateDocu.AutoSize = true;
             this.checkBoxCreateDocu.Checked = true;
             this.checkBoxCreateDocu.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateDocu.Location = new System.Drawing.Point(296, 192);
+            this.checkBoxCreateDocu.Location = new System.Drawing.Point(592, 369);
+            this.checkBoxCreateDocu.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxCreateDocu.Name = "checkBoxCreateDocu";
-            this.checkBoxCreateDocu.Size = new System.Drawing.Size(150, 17);
+            this.checkBoxCreateDocu.Size = new System.Drawing.Size(296, 29);
             this.checkBoxCreateDocu.TabIndex = 38;
             this.checkBoxCreateDocu.Text = "create xml  documentation";
             this.checkBoxCreateDocu.UseVisualStyleBackColor = true;
-            this.checkBoxCreateDocu.Visible = false;
             // 
             // checkBoxAddTestApplication
             // 
@@ -273,9 +287,10 @@
             this.checkBoxAddTestApplication.AutoSize = true;
             this.checkBoxAddTestApplication.Checked = true;
             this.checkBoxAddTestApplication.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(53, 287);
+            this.checkBoxAddTestApplication.Location = new System.Drawing.Point(106, 554);
+            this.checkBoxAddTestApplication.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxAddTestApplication.Name = "checkBoxAddTestApplication";
-            this.checkBoxAddTestApplication.Size = new System.Drawing.Size(299, 17);
+            this.checkBoxAddTestApplication.Size = new System.Drawing.Size(601, 29);
             this.checkBoxAddTestApplication.TabIndex = 40;
             this.checkBoxAddTestApplication.Text = "add a Windows Forms Application as test client to solution";
             this.checkBoxAddTestApplication.UseVisualStyleBackColor = true;
@@ -285,9 +300,10 @@
             this.checkBoxSignAssemblies.AutoSize = true;
             this.checkBoxSignAssemblies.Checked = true;
             this.checkBoxSignAssemblies.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSignAssemblies.Location = new System.Drawing.Point(53, 47);
+            this.checkBoxSignAssemblies.Location = new System.Drawing.Point(106, 90);
+            this.checkBoxSignAssemblies.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxSignAssemblies.Name = "checkBoxSignAssemblies";
-            this.checkBoxSignAssemblies.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxSignAssemblies.Size = new System.Drawing.Size(201, 29);
             this.checkBoxSignAssemblies.TabIndex = 43;
             this.checkBoxSignAssemblies.Text = "Sign assemblies";
             this.checkBoxSignAssemblies.UseVisualStyleBackColor = true;
@@ -295,9 +311,10 @@
             // buttonKeyFiles
             // 
             this.buttonKeyFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonKeyFiles.Location = new System.Drawing.Point(459, 65);
+            this.buttonKeyFiles.Location = new System.Drawing.Point(1340, 125);
+            this.buttonKeyFiles.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonKeyFiles.Name = "buttonKeyFiles";
-            this.buttonKeyFiles.Size = new System.Drawing.Size(45, 23);
+            this.buttonKeyFiles.Size = new System.Drawing.Size(90, 44);
             this.buttonKeyFiles.TabIndex = 46;
             this.buttonKeyFiles.Text = "...";
             this.buttonKeyFiles.UseVisualStyleBackColor = true;
@@ -306,19 +323,21 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 70);
+            this.label2.Location = new System.Drawing.Point(22, 135);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(36, 13);
+            this.label2.Size = new System.Drawing.Size(73, 25);
             this.label2.TabIndex = 45;
             this.label2.Text = "Folder";
             // 
             // textBoxKeyFiles
             // 
-            this.textBoxKeyFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxKeyFiles.Location = new System.Drawing.Point(53, 67);
+            this.textBoxKeyFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxKeyFiles.Location = new System.Drawing.Point(106, 129);
+            this.textBoxKeyFiles.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.textBoxKeyFiles.Name = "textBoxKeyFiles";
-            this.textBoxKeyFiles.Size = new System.Drawing.Size(391, 20);
+            this.textBoxKeyFiles.Size = new System.Drawing.Size(1200, 31);
             this.textBoxKeyFiles.TabIndex = 44;
             this.textBoxKeyFiles.Text = "C:\\NetOffice\\KeyFiles";
             // 
@@ -327,20 +346,22 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.radioButtonSyntaxFakeProgrammingLanguage);
             this.groupBox1.Controls.Add(this.radioButtonSyntaxTrueProgrammingLanguage);
-            this.groupBox1.Location = new System.Drawing.Point(312, 158);
+            this.groupBox1.Location = new System.Drawing.Point(1162, 304);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(134, 90);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox1.Size = new System.Drawing.Size(268, 173);
             this.groupBox1.TabIndex = 47;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Syntax Optimization";
-            this.groupBox1.Visible = false;
             // 
             // radioButtonSyntaxFakeProgrammingLanguage
             // 
             this.radioButtonSyntaxFakeProgrammingLanguage.AutoSize = true;
-            this.radioButtonSyntaxFakeProgrammingLanguage.Location = new System.Drawing.Point(27, 58);
+            this.radioButtonSyntaxFakeProgrammingLanguage.Location = new System.Drawing.Point(54, 112);
+            this.radioButtonSyntaxFakeProgrammingLanguage.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.radioButtonSyntaxFakeProgrammingLanguage.Name = "radioButtonSyntaxFakeProgrammingLanguage";
-            this.radioButtonSyntaxFakeProgrammingLanguage.Size = new System.Drawing.Size(64, 17);
+            this.radioButtonSyntaxFakeProgrammingLanguage.Size = new System.Drawing.Size(119, 29);
             this.radioButtonSyntaxFakeProgrammingLanguage.TabIndex = 1;
             this.radioButtonSyntaxFakeProgrammingLanguage.Text = "VB.NET";
             this.radioButtonSyntaxFakeProgrammingLanguage.UseVisualStyleBackColor = true;
@@ -349,9 +370,10 @@
             // 
             this.radioButtonSyntaxTrueProgrammingLanguage.AutoSize = true;
             this.radioButtonSyntaxTrueProgrammingLanguage.Checked = true;
-            this.radioButtonSyntaxTrueProgrammingLanguage.Location = new System.Drawing.Point(27, 31);
+            this.radioButtonSyntaxTrueProgrammingLanguage.Location = new System.Drawing.Point(54, 60);
+            this.radioButtonSyntaxTrueProgrammingLanguage.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.radioButtonSyntaxTrueProgrammingLanguage.Name = "radioButtonSyntaxTrueProgrammingLanguage";
-            this.radioButtonSyntaxTrueProgrammingLanguage.Size = new System.Drawing.Size(39, 17);
+            this.radioButtonSyntaxTrueProgrammingLanguage.Size = new System.Drawing.Size(70, 29);
             this.radioButtonSyntaxTrueProgrammingLanguage.TabIndex = 0;
             this.radioButtonSyntaxTrueProgrammingLanguage.TabStop = true;
             this.radioButtonSyntaxTrueProgrammingLanguage.Text = "C#";
@@ -360,9 +382,10 @@
             // buttonDocLinks
             // 
             this.buttonDocLinks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDocLinks.Location = new System.Drawing.Point(459, 115);
+            this.buttonDocLinks.Location = new System.Drawing.Point(1340, 221);
+            this.buttonDocLinks.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonDocLinks.Name = "buttonDocLinks";
-            this.buttonDocLinks.Size = new System.Drawing.Size(45, 23);
+            this.buttonDocLinks.Size = new System.Drawing.Size(90, 44);
             this.buttonDocLinks.TabIndex = 51;
             this.buttonDocLinks.Text = "...";
             this.buttonDocLinks.UseVisualStyleBackColor = true;
@@ -371,19 +394,21 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 120);
+            this.label3.Location = new System.Drawing.Point(22, 231);
+            this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(23, 13);
+            this.label3.Size = new System.Drawing.Size(47, 25);
             this.label3.TabIndex = 50;
             this.label3.Text = "File";
             // 
             // textBoxDocLinkFile
             // 
-            this.textBoxDocLinkFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxDocLinkFile.Location = new System.Drawing.Point(53, 117);
+            this.textBoxDocLinkFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxDocLinkFile.Location = new System.Drawing.Point(106, 225);
+            this.textBoxDocLinkFile.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.textBoxDocLinkFile.Name = "textBoxDocLinkFile";
-            this.textBoxDocLinkFile.Size = new System.Drawing.Size(391, 20);
+            this.textBoxDocLinkFile.Size = new System.Drawing.Size(1200, 31);
             this.textBoxDocLinkFile.TabIndex = 49;
             this.textBoxDocLinkFile.Text = "C:\\NetOffice\\ReferenceIndex2.xml";
             // 
@@ -392,19 +417,20 @@
             this.checkBoxAddDocumentationLinks.AutoSize = true;
             this.checkBoxAddDocumentationLinks.Checked = true;
             this.checkBoxAddDocumentationLinks.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddDocumentationLinks.Location = new System.Drawing.Point(53, 97);
+            this.checkBoxAddDocumentationLinks.Location = new System.Drawing.Point(106, 187);
+            this.checkBoxAddDocumentationLinks.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.checkBoxAddDocumentationLinks.Name = "checkBoxAddDocumentationLinks";
-            this.checkBoxAddDocumentationLinks.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxAddDocumentationLinks.Size = new System.Drawing.Size(201, 29);
             this.checkBoxAddDocumentationLinks.TabIndex = 48;
             this.checkBoxAddDocumentationLinks.Text = "Sign assemblies";
             this.checkBoxAddDocumentationLinks.UseVisualStyleBackColor = true;
             // 
             // FormConfigDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(526, 380);
+            this.ClientSize = new System.Drawing.Size(1474, 729);
             this.Controls.Add(this.buttonDocLinks);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBoxDocLinkFile);
@@ -433,10 +459,12 @@
             this.Controls.Add(this.textBoxFolder);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOkay);
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(1500, 800);
             this.Name = "FormConfigDialog";
-            this.Padding = new System.Windows.Forms.Padding(9);
+            this.Padding = new System.Windows.Forms.Padding(18, 17, 18, 17);
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
