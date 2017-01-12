@@ -227,8 +227,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                 select a).FirstOrDefault();
 
             string guidString = "";
-            System.Windows.Forms.MessageBox.Show("UNTESTED");
-            if (libNode.Element("Name").Value == "DAO")
+            //System.Windows.Forms.MessageBox.Show("UNTESTED");
+            if (libNode.Attribute("Name").Value == "DAO")
             {
                 guidString = "new Guid(\"" + XmlConvert.DecodeName(libNode.Attribute("GUID").Value) + "\"), new Guid(\"4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28\")";
             }
