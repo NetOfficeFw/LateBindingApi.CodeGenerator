@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using LateBindingApi.CodeGenerator.ComponentAnalyzer;
 using NLog;
+
+using LateBindingApi.CodeGenerator.CSharp;
 
 namespace LateBindingApi.CodeGenerator.CodeGen
 {
     class Program
     {
         private static readonly Logger Log = LogManager.GetLogger(nameof(Program));
+        private static ManualResetEvent wait = new ManualResetEvent(false);
 
         public static void Main(string[] args)
         {
@@ -18,9 +25,61 @@ namespace LateBindingApi.CodeGenerator.CodeGen
                 Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
             }
 
+            Log.Info("Loading project file...");
+
+            var analyzer = new Analyzer();
+
+            var sw = Stopwatch.StartNew();
+            analyzer.LoadProject(@"c:\dev\github\NetOfficeFw\ref\NetOffice 1.7.4.xml");
+            sw.Stop();
+
+            Log.Info($@"Project file loaded in {sw.Elapsed} ({sw.ElapsedMilliseconds}ms).");
+
+
+            var outFolder = Path.GetFullPath(options.OutputFolder);
+            if (!Directory.Exists(outFolder))
+            {
+                Directory.CreateDirectory(outFolder);
+            }
+
+            var csSettings = new Settings();
+            csSettings.Folder = outFolder;
+            csSettings.LinkFilePath = @"c:\dev\github\NetOfficeFw\ref\ReferenceIndex2.xml";
+            csSettings.SignPath = @"c:\dev\github\NetOfficeFw\NetOffice-old\KeyFiles\4.5";
+            csSettings.Framework = "4.5";
+
+            csSettings.AddDocumentationLinks = true;
+            csSettings.AddTestApp = false;
+            csSettings.ConvertOptionalsToObject = false;
+            csSettings.ConvertParamNamesToCamelCase = true;
+            csSettings.CreateXmlDocumentation = true;
+            csSettings.OpenFolder = true;
+            csSettings.RemoveRefAttribute = true;
+            csSettings.UseSigning = true;
+            csSettings.VBOptimization = false;
+
             Log.Info($@"Generating code to '{options.OutputFolder}'");
+
+            CSharpGenerator.Settings = csSettings;
+            var generator = new CSharpGenerator();
+            generator.Progress += Generator_Progress;
+            generator.Finish += Generator_Finish;
+            generator.Generate(analyzer.Document);
+            wait.WaitOne();
+
             Log.Info("Done.");
             Console.ReadKey();
+        }
+
+        private static void Generator_Progress(string message)
+        {
+            Log.Warn(message);
+        }
+
+        private static void Generator_Finish(TimeSpan elapsedTime)
+        {
+            Log.Info($@"Code generated in {elapsedTime} ({elapsedTime.TotalMilliseconds}ms).");
+            wait.Set();
         }
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -34,6 +34,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _settings;
             }
+            set { _settings = value; }
         }
 
         #endregion
