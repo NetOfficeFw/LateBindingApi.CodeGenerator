@@ -9,6 +9,7 @@ using System.Xml.Schema;
 using System.Xml.Linq;
 using System.ComponentModel;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text.RegularExpressions;
 using TypeLibInformation;
 using TLI = TypeLibInformation;
 
@@ -20,9 +21,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     public class Analyzer
     {
         #region Fields
+        private static readonly Regex XmlInvalidControlChars = new Regex("[\x00-\x1f]", RegexOptions.Compiled);
 
         private readonly string  _documentVersion = "0.8";
-        
+
         TLIApplication           _typeLibApplication;
         XDocument                _document;
         XmlSchemaSet             _schemaSet;
@@ -1410,16 +1412,43 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if (null == memberNode)
             {
+                var itemName = itemMember.Name;
+                var itemValue = itemMember.Value;
+                var itemStringValue = itemValue as string;
+                if (itemStringValue != null)
+                {
+                    itemValue = FixXmlInvalidChars(itemStringValue);
+                }
+
                 memberNode = new XElement("Member",
                                 new XElement("RefLibraries"),
-                                new XAttribute("Name", itemMember.Name),
+                                new XAttribute("Name", itemName),
                                 new XAttribute("Type", TypeDescriptor.FormattedType(itemMember.ReturnType,false)),
-                                new XAttribute("Value", itemMember.Value));
+                                new XAttribute("Value", itemValue));
                  
                 membersNode.Add(memberNode);
             }
 
             return memberNode;
+        }
+
+        private string FixXmlInvalidChars(string itemStringValue)
+        {
+            return XmlInvalidControlChars.Replace(itemStringValue, InvalidXmlCharsReplacer);
+        }
+
+        private static string InvalidXmlCharsReplacer(Match match)
+        {
+            var value = match.Value[0];
+            switch (value)
+            {
+                case '\t':
+                case '\n':
+                case '\r':
+                    return match.Value;
+                default:
+                    return "&#" + ((int)value).ToString("X4") + ";";
+            }
         }
 
         /// <summary>
