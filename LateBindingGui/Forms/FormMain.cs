@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
+using System.Threading;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
  
@@ -22,6 +23,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
         Analyzer       _comAnalyzer = new Analyzer();
         ICodeGenerator _generator;
         string         _commandLine;
+        CancellationTokenSource _generatorCancellationTokenSource;
         
         #endregion
 
@@ -195,10 +197,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     _generator = formBrowser.Selected;
                     if (DialogResult.OK == _generator.ShowConfigDialog(this))
                     {
-                        _generator.Progress += new ICodeGeneratorProgressHandler(generator_Progress);
+                        _generator.Progress = new Progress<string>(generator_Progress);
                         SetGui(false);
-                        var elapsed = await _generator.Generate(_comAnalyzer.Document);
-                        generator_Finish(elapsed);
+                        using (_generatorCancellationTokenSource = new CancellationTokenSource())
+                        {
+                            var token = this._generatorCancellationTokenSource.Token;
+                            var elapsed = await _generator.Generate(_comAnalyzer.Document, token);
+                            generator_Finish(elapsed);
+                        }
                     }
                 }
             }
@@ -380,8 +386,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     _comAnalyzer.Abort();
 
                 // abort async generate operation
-                if ((null != _generator) && (true == _generator.IsAlive))
-                    _generator.Abort();
+                _generatorCancellationTokenSource?.Cancel(true);
             }
             catch (Exception throwedException)
             {

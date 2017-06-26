@@ -68,15 +68,15 @@ namespace LateBindingApi.CodeGenerator.CodeGen
 
             CSharpGenerator.Settings = csSettings;
             var generator = new CSharpGenerator();
-            generator.Progress += Generator_Progress;
-            var elapsedTime = await generator.Generate(analyzer.Document);
+            generator.Progress = new Progress<string>(GeneratorProgress);
+            var elapsedTime = await generator.Generate(analyzer.Document, CancellationToken.None);
             Log.Info($@"Code generated in {elapsedTime} ({elapsedTime.TotalMilliseconds}ms).");
 
             Log.Info("Done.");
             Console.ReadKey();
         }
 
-        private static void Generator_Progress(string message)
+        private static void GeneratorProgress(string message)
         {
             Log.Warn(message);
         }
