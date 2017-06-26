@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
 
@@ -15,15 +18,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
     {
         #region Fields
 
-        DateTime _startTimeOperation;
         static Settings _settings;
         static XDocument _document;
         static DubletteManager _dublettes;
         static DerivedManager _derives;
         static FakedEnumeratorManager _enumerators;
         static CustomMethodManager _customMethods;
-        ThreadJob _job = new ThreadJob();
-         
+
         #endregion
 
         #region Properties
@@ -34,6 +35,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _settings;
             }
+            set { _settings = value; }
         }
 
         #endregion
@@ -42,39 +44,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         public CSharpGenerator()
         {
-            _job.DoWork += new System.Threading.ThreadStart(_job_DoWork);
-            _job.RunWorkerCompleted += new ThreadCompletedEventHandler(_job_RunWorkerCompleted);
         }
 
-        void _job_RunWorkerCompleted()
+        private void DoUpdate(string message, CancellationToken token)
         {
-            if (null != Finish)
-            {
-                TimeSpan ts = DateTime.Now - _startTimeOperation;
-                Finish(ts);
-            }
-        }
-
-        private void DoUpdate(string message)
-        {
-            if (null != Progress)
-                Progress(message);
+            token.ThrowIfCancellationRequested();
+            Progress?.Report(message);
         }
 
         #endregion
-               
+
         #region ICodeGenerator Members
-
-        public event ICodeGeneratorProgressHandler Progress;
-        public event ICodeGeneratorFinishHandler Finish;
-
-        public bool IsAlive
-        {
-            get
-            {
-                return _job.IsAlive;
-            }
-        }
 
         public string Name
         {
@@ -100,10 +80,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
-        public void Abort()
-        {
-            _job.Abort(); 
-        }
+        public IProgress<string> Progress { get; set; }
 
         public DialogResult ShowConfigDialog(Control parentDialog)
         {
@@ -118,11 +95,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return dr;
         }
 
-        public void Generate(XDocument document)
+        public Task<TimeSpan> Generate(XDocument document, CancellationToken token)
         {
             _document = document;
-            _job.Start();
-            _startTimeOperation = DateTime.Now;
+            return Task.Run(() =>
+                    {
+                        var sw = Stopwatch.StartNew();
+                        this._job_DoWork(token);
+                        sw.Stop();
+
+                        return sw.Elapsed;
+                    }, token);
         }
 
         private XDocument CreateWorkingCopy()
@@ -160,36 +143,36 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
         }
 
-        void _job_DoWork()
+        void _job_DoWork(CancellationToken token)
         {
-            DoUpdate("Create Copy");
+            this.DoUpdate("Create Copy", token);
             XElement solution = CreateWorkingCopy().Element("LateBindingApi.CodeGenerator.Document").Element("Solution");
 
-            DoUpdate("Scan for duplicated interfaces");
+            this.DoUpdate("Scan for duplicated interfaces", token);
             _dublettes = new DubletteManager(this, solution.Document);
             _dublettes.ScanForDublettes();
 
-            DoUpdate("Scan for derived interfaces");
+            this.DoUpdate("Scan for derived interfaces", token);
             _derives = new DerivedManager(this, solution.Document);
             _derives.ScanForDerived();
 
-            DoUpdate("Scan for missed enumerators");
+            this.DoUpdate("Scan for missed enumerators", token);
             _enumerators = new FakedEnumeratorManager(this, _document);
             _enumerators.ScanForMissedEnumerators();
             
-            DoUpdate("Scan for optional parameter methods");
+            this.DoUpdate("Scan for optional parameter methods", token);
             _customMethods = new CustomMethodManager(this, _document);
             _customMethods.ScanForOptionalMethods();
 
-            DoUpdate("Scan for name conflicts");
+            this.DoUpdate("Scan for name conflicts", token);
             ConflictManager conflictManager = new ConflictManager(this, _document);
             conflictManager.ScanForConflicts();
              
-            DoUpdate("Scan for CoClasses with multiple inherites");
+            this.DoUpdate("Scan for CoClasses with multiple inherites", token);
             InheritedInterfaceManager inheritedManager = new InheritedInterfaceManager(this, _document);
             inheritedManager.ValidateMultipleCoClassInherited();
 
-            DoUpdate("Create root folder");
+            this.DoUpdate("Create root folder", token);
             string solutionFolder = System.IO.Path.Combine(_settings.Folder, solution.Attribute("Name").Value);
             PathApi.ClearCreateFolder(solutionFolder);
 
@@ -202,7 +185,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
  
-                DoUpdate("Create project " + project.Attribute("Name").Value);
+                this.DoUpdate("Create project " + project.Attribute("Name").Value, token);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
@@ -228,7 +211,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
             }
             
-            DoUpdate("Create Solution");
+            this.DoUpdate("Create Solution", token);
             string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);
             SolutionApi.SaveSolutionFile(_settings, solutionFolder, solutionFile, solution);

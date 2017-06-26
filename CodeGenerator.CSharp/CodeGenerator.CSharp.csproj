@@ -101,7 +101,6 @@
       <SubType>Form</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TestClient\Program.cs" />
-    <Compile Include="ThreadJob.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CodeGenerator.ComponentAnalyzer\CodeGenerator.ComponentAnalyzer.csproj">

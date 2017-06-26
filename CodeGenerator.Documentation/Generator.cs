@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
 using LateBindingApi.CodeGenerator.CSharp;
@@ -16,7 +19,6 @@ namespace LateBindingApi.CodeGenerator.Documentation
 
         DateTime _startTimeOperation;
         Settings _settings;
-        ThreadJob _job = new ThreadJob();
         static FakedEnumeratorManager _enumerators;
         static CustomMethodManager _customMethods;
         static CustomPropertyManager _customProperties;
@@ -29,23 +31,11 @@ namespace LateBindingApi.CodeGenerator.Documentation
 
         public DocuGenerator()
         {
-            _job.DoWork += new System.Threading.ThreadStart(_job_DoWork);
-            _job.RunWorkerCompleted += new ThreadCompletedEventHandler(_job_RunWorkerCompleted);
-        }
-
-        void _job_RunWorkerCompleted()
-        {
-            if (null != Finish)
-            {
-                TimeSpan ts = DateTime.Now - _startTimeOperation;
-                Finish(ts);
-            }
         }
 
         private void DoUpdate(string message)
         {
-            if (null != Progress)
-                Progress(message);
+            Progress?.Report(message);
         }
 
         private string GetLibraryVersion(string key)
@@ -386,18 +376,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
             }
         }
 
-        public bool IsAlive
-        {
-            get 
-            {
-                return _job.IsAlive;
-            }
-        }
-
-        public void Abort()
-        {
-            _job.Abort(); 
-        }
+        public IProgress<string> Progress { get; set; }
 
         public System.Windows.Forms.DialogResult ShowConfigDialog(System.Windows.Forms.Control parentDialog)
         {
@@ -412,11 +391,17 @@ namespace LateBindingApi.CodeGenerator.Documentation
                 return dr;
         }
 
-        public void Generate(XDocument document)
+        public Task<TimeSpan> Generate(XDocument document, CancellationToken token)
         {
             _document = document;
-            _job.Start();
-            _startTimeOperation = DateTime.Now;
+            return Task.Run(() =>
+                {
+                    var sw = Stopwatch.StartNew();
+                    this._job_DoWork();
+                    sw.Stop();
+
+                    return sw.Elapsed;
+                }, token);
         }
 
         internal static XElement GetInterfaceOrClassFromKey(string key)
@@ -444,10 +429,6 @@ namespace LateBindingApi.CodeGenerator.Documentation
 
             throw new Exception("key not found " + key);
         }
-
-        public event ICodeGeneratorProgressHandler Progress;
-
-        public event ICodeGeneratorFinishHandler Finish;
 
         #endregion
     }

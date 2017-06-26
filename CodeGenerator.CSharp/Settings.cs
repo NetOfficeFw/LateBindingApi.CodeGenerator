@@ -26,7 +26,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #region Properties
 
-        public bool VBOptimization{get;internal set;}
+        public bool VBOptimization{get;set;}
 
         public string SignPath
         {
@@ -34,7 +34,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _signPath;
             }
-            internal set
+            set
             {
                 _signPath = value;
             }
@@ -46,7 +46,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _linkFilePath;
             }
-            internal set
+            set
             {
                 _linkFilePath = value;
             }
@@ -58,7 +58,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _addDocumentationLinks;
             }
-            internal set
+            set
             {
                 _addDocumentationLinks = value;
             }
@@ -70,7 +70,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _useSigning;
             }
-            internal set
+            set
             {
                 _useSigning = value;
             }
@@ -82,7 +82,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _addTestApp;
             }
-            internal set
+            set
             {
                 _addTestApp = value;
             }
@@ -94,7 +94,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _createDocu;
             }
-            internal set
+            set
             {
                 _createDocu = value;
             }
@@ -106,7 +106,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _convertOptionalsToObject;
             }
-            internal set
+            set
             {
                 _convertOptionalsToObject = value;
             }
@@ -118,7 +118,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _convertParamNamesToCamelCase;
             }
-            internal set
+            set
             {
                 _convertParamNamesToCamelCase = value;
             }
@@ -130,7 +130,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _removeRefAttribute;
             }
-            internal set
+            set
             {
                 _removeRefAttribute = value;
             }
@@ -142,7 +142,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _framework;
             }
-            internal set
+            set
             {
                 _framework = value;
             }
@@ -154,7 +154,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _folder;
             }
-            internal set
+            set
             {
                 _folder = value;
             }
@@ -166,7 +166,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 return _openFolder;
             }
-            internal set
+            set
             {
                 _openFolder = value;
             }
