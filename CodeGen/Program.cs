@@ -59,7 +59,7 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             csSettings.ConvertOptionalsToObject = false;
             csSettings.ConvertParamNamesToCamelCase = true;
             csSettings.CreateXmlDocumentation = true;
-            csSettings.OpenFolder = true;
+            csSettings.OpenFolder = false;
             csSettings.RemoveRefAttribute = true;
             csSettings.UseSigning = true;
             csSettings.VBOptimization = false;
