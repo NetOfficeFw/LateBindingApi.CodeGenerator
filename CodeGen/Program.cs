@@ -36,33 +36,32 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             var analyzer = new Analyzer();
 
             var sw = Stopwatch.StartNew();
-            analyzer.LoadProject(@"d:\dev\github\NetOfficeFw\NetOffice-ReferenceApi\NetOffice 1.7.4.xml");
+            analyzer.LoadProject(options.ProjectFile);
             sw.Stop();
 
             Log.Info($@"Project file loaded in {sw.Elapsed} ({sw.ElapsedMilliseconds}ms).");
 
-
-            var outFolder = Path.GetFullPath(options.OutputFolder);
-            if (!Directory.Exists(outFolder))
+            if (Directory.Exists(options.OutputFolder))
             {
-                Directory.CreateDirectory(outFolder);
+                Directory.Delete(options.OutputFolder, recursive: true);
             }
 
             var csSettings = new Settings();
-            csSettings.Folder = outFolder;
-            csSettings.LinkFilePath = @"d:\dev\github\NetOfficeFw\NetOffice-ReferenceApi\ReferenceIndex2.xml";
-            csSettings.SignPath = @"c:\dev\github\NetOfficeFw\NetOffice-old\KeyFiles\4.5";
+            csSettings.Folder = options.OutputFolder;
+            csSettings.LinkFilePath = options.ReferenceFile;
+            csSettings.SignPath = options.KeyFilesFolder;
             csSettings.Framework = "4.5";
 
             csSettings.AddDocumentationLinks = true;
-            csSettings.AddTestApp = false;
             csSettings.ConvertOptionalsToObject = false;
             csSettings.ConvertParamNamesToCamelCase = true;
             csSettings.CreateXmlDocumentation = true;
-            csSettings.OpenFolder = false;
             csSettings.RemoveRefAttribute = true;
             csSettings.UseSigning = true;
+
             csSettings.VBOptimization = false;
+            csSettings.AddTestApp = false;
+            csSettings.OpenFolder = false;
 
             Log.Info($@"Generating code to '{options.OutputFolder}'");
 
