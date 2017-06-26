@@ -207,10 +207,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         }
                     }
                 }
-                if (!String.IsNullOrEmpty(paramDoku2))
-                {
-                    Console.WriteLine("stop");
-                }
+
                 method += "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
 
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
