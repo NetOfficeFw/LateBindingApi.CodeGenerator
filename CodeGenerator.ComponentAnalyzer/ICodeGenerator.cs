@@ -4,11 +4,11 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 {
     public delegate void ICodeGeneratorProgressHandler(string message);
-    public delegate void ICodeGeneratorFinishHandler(TimeSpan elapsedTime); 
 
     public interface ICodeGenerator
     {
@@ -33,16 +33,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// generates given document to solution
         /// </summary>
         /// <param name="document"></param>
-        void Generate(XDocument document);
+        Task<TimeSpan> Generate(XDocument document);
 
         /// <summary>
         /// progress information from worker thread
         /// </summary>
         event ICodeGeneratorProgressHandler Progress;
-        
-        /// <summary>
-        /// operation is completed
-        /// </summary>
-        event ICodeGeneratorFinishHandler Finish;
     }
 }

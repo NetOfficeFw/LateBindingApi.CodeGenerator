@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml;
 using System.Linq;
+using System.Threading.Tasks;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
 
@@ -15,7 +17,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
     {
         #region Fields
 
-        DateTime _startTimeOperation;
         static Settings _settings;
         static XDocument _document;
         static DubletteManager _dublettes;
@@ -44,16 +45,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
         public CSharpGenerator()
         {
             _job.DoWork += new System.Threading.ThreadStart(_job_DoWork);
-            _job.RunWorkerCompleted += new ThreadCompletedEventHandler(_job_RunWorkerCompleted);
-        }
-
-        void _job_RunWorkerCompleted()
-        {
-            if (null != Finish)
-            {
-                TimeSpan ts = DateTime.Now - _startTimeOperation;
-                Finish(ts);
-            }
         }
 
         private void DoUpdate(string message)
@@ -67,7 +58,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
         #region ICodeGenerator Members
 
         public event ICodeGeneratorProgressHandler Progress;
-        public event ICodeGeneratorFinishHandler Finish;
 
         public bool IsAlive
         {
@@ -119,11 +109,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return dr;
         }
 
-        public void Generate(XDocument document)
+        public Task<TimeSpan> Generate(XDocument document)
         {
             _document = document;
-            _job.Start();
-            _startTimeOperation = DateTime.Now;
+            return Task.Run(() =>
+                    {
+                        var sw = Stopwatch.StartNew();
+                        this._job_DoWork();
+                        sw.Stop();
+
+                        return sw.Elapsed;
+                    });
         }
 
         private XDocument CreateWorkingCopy()

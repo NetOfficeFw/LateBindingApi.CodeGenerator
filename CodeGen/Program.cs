@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
 using NLog;
 
@@ -12,12 +14,16 @@ namespace LateBindingApi.CodeGenerator.CodeGen
     class Program
     {
         private static readonly Logger Log = LogManager.GetLogger(nameof(Program));
-        private static ManualResetEvent wait = new ManualResetEvent(false);
 
         public static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledException);
 
+            MainAsync(args).GetAwaiter().GetResult();
+        }
+
+        private static async Task MainAsync(string[] args)
+        {
             Options options;
             if (!Options.TryParse(args, out options))
             {
@@ -30,7 +36,7 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             var analyzer = new Analyzer();
 
             var sw = Stopwatch.StartNew();
-            analyzer.LoadProject(@"c:\dev\github\NetOfficeFw\ref\NetOffice 1.7.4.xml");
+            analyzer.LoadProject(@"d:\dev\github\NetOfficeFw\NetOffice-ReferenceApi\NetOffice 1.7.4.xml");
             sw.Stop();
 
             Log.Info($@"Project file loaded in {sw.Elapsed} ({sw.ElapsedMilliseconds}ms).");
@@ -44,7 +50,7 @@ namespace LateBindingApi.CodeGenerator.CodeGen
 
             var csSettings = new Settings();
             csSettings.Folder = outFolder;
-            csSettings.LinkFilePath = @"c:\dev\github\NetOfficeFw\ref\ReferenceIndex2.xml";
+            csSettings.LinkFilePath = @"d:\dev\github\NetOfficeFw\NetOffice-ReferenceApi\ReferenceIndex2.xml";
             csSettings.SignPath = @"c:\dev\github\NetOfficeFw\NetOffice-old\KeyFiles\4.5";
             csSettings.Framework = "4.5";
 
@@ -63,9 +69,8 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             CSharpGenerator.Settings = csSettings;
             var generator = new CSharpGenerator();
             generator.Progress += Generator_Progress;
-            generator.Finish += Generator_Finish;
-            generator.Generate(analyzer.Document);
-            wait.WaitOne();
+            var elapsedTime = await generator.Generate(analyzer.Document);
+            Log.Info($@"Code generated in {elapsedTime} ({elapsedTime.TotalMilliseconds}ms).");
 
             Log.Info("Done.");
             Console.ReadKey();
@@ -74,12 +79,6 @@ namespace LateBindingApi.CodeGenerator.CodeGen
         private static void Generator_Progress(string message)
         {
             Log.Warn(message);
-        }
-
-        private static void Generator_Finish(TimeSpan elapsedTime)
-        {
-            Log.Info($@"Code generated in {elapsedTime} ({elapsedTime.TotalMilliseconds}ms).");
-            wait.Set();
         }
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)

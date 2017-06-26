@@ -185,7 +185,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 
         }
 
-        private void menuItemGenerateCode_Click(object sender, EventArgs e)
+        private async void menuItemGenerateCode_Click(object sender, EventArgs e)
         {
             try
             {
@@ -196,9 +196,9 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     if (DialogResult.OK == _generator.ShowConfigDialog(this))
                     {
                         _generator.Progress += new ICodeGeneratorProgressHandler(generator_Progress);
-                        _generator.Finish += new ICodeGeneratorFinishHandler(generator_Finish);
                         SetGui(false);
-                        _generator.Generate(_comAnalyzer.Document);
+                        var elapsed = await _generator.Generate(_comAnalyzer.Document);
+                        generator_Finish(elapsed);
                     }
                 }
             }
