@@ -1,6 +1,6 @@
 # Late Binding API Code Generator
 
-![version: 0.8.1](http://img.shields.io/badge/version-0.8.1-68217a.svg)
+![version: 0.9.0-alpha](https://img.shields.io/badge/version-0.9.0--alpha-68217a.svg)
 [![AppVeyor](https://img.shields.io/appveyor/ci/jozefizso/latebindingapi-codegenerator.svg)](https://ci.appveyor.com/project/jozefizso/latebindingapi-codegenerator)
 
 Creates .NET proxy components from COM+ Type Libraries. 
