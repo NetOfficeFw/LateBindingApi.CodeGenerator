@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -329,25 +330,34 @@ namespace LateBindingApi.CodeGenerator.CSharp
  
         internal static string GetProjectApiPath()
         {
-            if (System.Diagnostics.Debugger.IsAttached)
+            var workingDir = Environment.CurrentDirectory;
+            string rootSolutionDir = null;
+            do
             {
-                string projectPath = Application.StartupPath;
-                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("\\"));
-                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("\\"));
-                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("\\"));
+                var solutionFile = Path.Combine(workingDir, "LateBindingApi.sln");
+                if (File.Exists(solutionFile))
+                {
+                    rootSolutionDir = workingDir;
+                }
+                else
+                {
+                    workingDir = Path.GetDirectoryName(workingDir);
+                }
 
-                projectPath = System.IO.Path.Combine(projectPath, "NetOffice");
-                if (!System.IO.Directory.Exists(projectPath))
-                    throw (new System.IO.DirectoryNotFoundException(projectPath));
-                return projectPath;
-            }
-            else
+            } while (rootSolutionDir == null && workingDir != null);
+
+            if (rootSolutionDir == null)
             {
-                string projectPath = System.IO.Path.Combine(Application.StartupPath, "NetOffice");
-                if (!System.IO.Directory.Exists(projectPath))
-                    throw (new System.IO.DirectoryNotFoundException(projectPath));
-                return projectPath;
+                throw new InvalidOperationException($"Failed to find path to NetOffice project. Base working path: '{Environment.CurrentDirectory}'. Ensure the LateBindingApi.sln file exists in a parent directory.");
             }
+
+            var projectPath = Path.Combine(rootSolutionDir, "NetOffice");
+            if (!Directory.Exists(projectPath))
+            {
+                throw new InvalidOperationException($"Failed to find path to NetOffice project. Directory '{projectPath} does not exists.");
+            }
+
+            return projectPath;
         }
 
         internal static string FirstCharLower(string expression)
