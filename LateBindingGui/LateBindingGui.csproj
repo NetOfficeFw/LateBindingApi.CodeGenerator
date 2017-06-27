@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{52CE03D1-62AD-4FF9-9BD5-A8310D877A4C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LateBindingApi.CodeGenerator.WFApplication</RootNamespace>
+    <AssemblyName>LateBindingGui</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\AliasGrid\AliasGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\AliasGrid\AliasGridControl.Designer.cs">
+      <DependentUpon>AliasGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ClassGrid\ClassGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ClassGrid\ClassGridControl.Designer.cs">
+      <DependentUpon>ClassGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ConstantGrid\ConstantGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ConstantGrid\ConstantGridControl.Designer.cs">
+      <DependentUpon>ConstantGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EnumGrid\EnumGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EnumGrid\EnumGridControl.Designer.cs">
+      <DependentUpon>EnumGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InheritedGrid\InheritedGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InheritedGrid\InheritedGridControl.Designer.cs">
+      <DependentUpon>InheritedGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\InterfaceGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\InterfaceGridControl.Designer.cs">
+      <DependentUpon>InterfaceGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\MethodsGrid\MethodsGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\MethodsGrid\MethodsGridControl.Designer.cs">
+      <DependentUpon>MethodsGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\ParametersGrid\ParametersGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\ParametersGrid\ParametersGridControl.Designer.cs">
+      <DependentUpon>ParametersGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\PropertiesGrid\PropertiesGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\InterfaceGrid\PropertiesGrid\PropertiesGridControl.Designer.cs">
+      <DependentUpon>PropertiesGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LibraryGrid\LibraryGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LibraryGrid\LibraryGridControl.Designer.cs">
+      <DependentUpon>LibraryGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.Designer.cs">
+      <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ModulGrid\ModulGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ModulGrid\ModulGridControl.Designer.cs">
+      <DependentUpon>ModulGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ProjectGrid\ProjectGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ProjectGrid\ProjectGridControl.Designer.cs">
+      <DependentUpon>ProjectGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RecordGrid\RecordGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\RecordGrid\RecordGridControl.Designer.cs">
+      <DependentUpon>RecordGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SolutionGrid\SolutionGridControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SolutionGrid\SolutionGridControl.Designer.cs">
+      <DependentUpon>SolutionGridControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SourceEdit\SourceEditControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SourceEdit\SourceEditControl.Designer.cs">
+      <DependentUpon>SourceEditControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TypeLibBrowser\ListViewItemComparer.cs" />
+    <Compile Include="Controls\TypeLibBrowser\TypeLibRegistry.cs" />
+    <Compile Include="Controls\TypeLibBrowser\RegistryEntries.cs" />
+    <Compile Include="Controls\TypeLibBrowser\RegistryEntry.cs" />
+    <Compile Include="Controls\TypeLibBrowser\RegistryKey.cs" />
+    <Compile Include="Controls\TypeLibBrowser\RegistryKeys.cs" />
+    <Compile Include="Controls\TypeLibBrowser\TypeLibBrowserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TypeLibBrowser\TypeLibBrowserControl.Designer.cs">
+      <DependentUpon>TypeLibBrowserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormAbout.designer.cs">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormGeneratorBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormGeneratorBrowser.Designer.cs">
+      <DependentUpon>FormGeneratorBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormMain.designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormNetOffice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormNetOffice.Designer.cs">
+      <DependentUpon>FormNetOffice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormShowError.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormShowError.designer.cs">
+      <DependentUpon>FormShowError.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormStatistics.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormStatistics.Designer.cs">
+      <DependentUpon>FormStatistics.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormTypeLibBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormTypeLibBrowser.designer.cs">
+      <DependentUpon>FormTypeLibBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="..\Shared\AssemblySharedInfo.cs">
+      <Link>Properties\AssemblySharedInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\AliasGrid\AliasGridControl.resx">
+      <DependentUpon>AliasGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ClassGrid\ClassGridControl.resx">
+      <DependentUpon>ClassGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ConstantGrid\ConstantGridControl.resx">
+      <DependentUpon>ConstantGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EnumGrid\EnumGridControl.resx">
+      <DependentUpon>EnumGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InheritedGrid\InheritedGridControl.resx">
+      <DependentUpon>InheritedGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InterfaceGrid\InterfaceGridControl.resx">
+      <DependentUpon>InterfaceGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InterfaceGrid\MethodsGrid\MethodsGridControl.resx">
+      <DependentUpon>MethodsGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InterfaceGrid\ParametersGrid\ParametersGridControl.resx">
+      <DependentUpon>ParametersGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\InterfaceGrid\PropertiesGrid\PropertiesGridControl.resx">
+      <DependentUpon>PropertiesGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LibraryGrid\LibraryGridControl.resx">
+      <DependentUpon>LibraryGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LibraryTreeBrowser\LibraryTreeBrowserControl.resx">
+      <DependentUpon>LibraryTreeBrowserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ModulGrid\ModulGridControl.resx">
+      <DependentUpon>ModulGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ProjectGrid\ProjectGridControl.resx">
+      <DependentUpon>ProjectGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\RecordGrid\RecordGridControl.resx">
+      <DependentUpon>RecordGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SolutionGrid\SolutionGridControl.resx">
+      <DependentUpon>SolutionGridControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SourceEdit\SourceEditControl.resx">
+      <DependentUpon>SourceEditControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TypeLibBrowser\TypeLibBrowserControl.resx">
+      <DependentUpon>TypeLibBrowserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormGeneratorBrowser.resx">
+      <DependentUpon>FormGeneratorBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormNetOffice.resx">
+      <DependentUpon>FormNetOffice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormShowError.resx">
+      <DependentUpon>FormShowError.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormStatistics.resx">
+      <DependentUpon>FormStatistics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTypeLibBrowser.resx">
+      <DependentUpon>FormTypeLibBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeGenerator.ComponentAnalyzer\CodeGenerator.ComponentAnalyzer.csproj">
+      <Project>{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}</Project>
+      <Name>CodeGenerator.ComponentAnalyzer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CodeGenerator.CSharp\CodeGenerator.CSharp.csproj">
+      <Project>{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}</Project>
+      <Name>CodeGenerator.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CodeGenerator.Documentation\CodeGenerator.Documentation.csproj">
+      <Project>{AF4B9AAC-9EAE-4DD4-A0F7-FABE2AE13358}</Project>
+      <Name>CodeGenerator.Documentation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -10,13 +10,35 @@ The classes in the generated solution are accessing the COM Server with late bin
 This project is a helper for NetOffice library that provides version independent access to Microsoft Office.
 
 
+## Generating NetOffice Source Code
+
+[NetOffice][netoffice] source code is generated using LateBinding Code Generator from a project file.
+NetOffice project files (named like `NetOffice 1.7.3.xml`) are XML documents with information about
+all type libraries in Microsoft Office applications.
+
+Use can use command line tool `codegen.exe` to regenerate NetOffice code:
+
+```
+codegen.exe --project "NetOffice 1.7.3.xml" --ref "RerefenceIndex2.xml" --keyfiles "KeyFiles\4.5" --output "build"
+```
+
+You will need these files:
+
+* **NetOffice 1.7.3.xml** - NetOffice project file
+* **RerefenceIndex2.xml** - index file with links to MSDN documentation pages
+* **KeyFiles\4.5** - a KeyFiles folder which contains all `.snk` files which are used to sign NetOffice assemblies
+
+
 ## Required Software
 
-Requires the free Microsoft TypeLib API ActiveX library (TLBINF32.DLL) to compile.
+To analyze COM+ type libraries, you need the free Microsoft TypeLib API ActiveX library (TLBINF32.DLL).
+If the library is not registered on your system, use these commands in elevated command prompt:
 
-Please, see the `LateBindingApi.CodeGenerator.ComponentAnalyzer\TLBINF32.DLL` file.
-Copy it to any directory and register it using `regsvr32.exe`.
-You can now refresh TLI reference in ComponentAnalyzer project or re-open the project.
+```
+> nuget restore
+> cd packages\TypeLibInformation.1.1.0\tools
+> regsvr32.exe /s /i TlbInf32.dll
+```
 
 
 ## Development
@@ -31,3 +53,5 @@ The `master` branch contains stable release codebase. Use the `develop` branch t
 Late Binding API Code Generator source code is license under [Microsoft Public License (Ms-PL)](LICENSE.txt)
 
 This repository is based on [LateBindingApi.CodeGenerator](https://latebindingapi.codeplex.com/) source code.
+
+[netoffice]: https://github.com/NetOfficeFw/NetOffice
