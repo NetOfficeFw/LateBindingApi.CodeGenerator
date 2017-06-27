@@ -12,11 +12,14 @@ This project is a helper for NetOffice library that provides version independent
 
 ## Required Software
 
-Requires the free Microsoft TypeLib API ActiveX library (TLBINF32.DLL) to compile.
+To analyze COM+ type libraries, you need the free Microsoft TypeLib API ActiveX library (TLBINF32.DLL).
+If the library is not registered on your system, use these commands in elevated command prompt:
 
-Please, see the `LateBindingApi.CodeGenerator.ComponentAnalyzer\TLBINF32.DLL` file.
-Copy it to any directory and register it using `regsvr32.exe`.
-You can now refresh TLI reference in ComponentAnalyzer project or re-open the project.
+```
+> nuget restore
+> cd packages\TypeLibInformation.1.1.0\tools
+> regsvr32.exe /s /i TlbInf32.dll
+```
 
 
 ## Development
