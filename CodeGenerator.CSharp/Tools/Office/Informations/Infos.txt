@@ -12,7 +12,7 @@ namespace NetOffice.OfficeApi.Tools.Informations
         #region Fields
 
         private object _lock;
-        private CommonUtils _owner;
+        private Utils.CommonUtils _owner;
         private AssemblyInfo _assemblyInfo;
         private AppDomainInfo _appDomainInfo;
         private EnvironmentInfo _environmentInfo;
@@ -26,7 +26,7 @@ namespace NetOffice.OfficeApi.Tools.Informations
         /// Creates an instance of the class
         /// </summary>
         /// <param name="owner">owner instance</param>
-        internal Infos(CommonUtils owner)
+        internal Infos(Utils.CommonUtils owner)
         {
             if (null == owner)
                 throw new ArgumentNullException("owner");
@@ -105,7 +105,7 @@ namespace NetOffice.OfficeApi.Tools.Informations
         /// <summary>
         /// Owner Instance
         /// </summary>
-        internal CommonUtils Owner
+        internal Utils.CommonUtils Owner
         {
             get
             {
@@ -121,7 +121,7 @@ namespace NetOffice.OfficeApi.Tools.Informations
         /// Called from DiagnosticPairCollection to add custom system informations
         /// </summary>
         /// <param name="diagnostics">sender instance</param>
-        protected internal void GetCustomInformations(DiagnosticPairCollection diagnostics)
+        protected internal virtual void GetCustomInformations(DiagnosticPairCollection diagnostics)
         { 
         
         }

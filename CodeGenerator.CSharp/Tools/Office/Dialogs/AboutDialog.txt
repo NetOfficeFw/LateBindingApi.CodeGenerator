@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -45,8 +46,8 @@ namespace NetOffice.OfficeApi.Tools.Dialogs
             InitializeComponent();
             _headerCaption = String.IsNullOrEmpty(headerCaption) ? _emptyValue : headerCaption;
             labelAbout.Text = String.IsNullOrEmpty(headerCaption) ? _emptyValue : headerCaption;
-            labelAssemblyTitleVersion.Text = String.Format("{0} {1}", assemblyTitle, String.IsNullOrEmpty(assemblyVersion) ? _emptyValue : assemblyVersion);
-            labelCopyright.Text = String.IsNullOrEmpty(copyrightHint) ? _emptyValue : copyrightHint;
+            labelAssemblyTitleVersion.Text = String.Format("{0} {1}", assemblyTitle, String.IsNullOrWhiteSpace(assemblyVersion) ? _emptyValue : assemblyVersion);
+            labelCopyright.Text = String.IsNullOrWhiteSpace(copyrightHint) ? _emptyValue : copyrightHint;
             if (!String.IsNullOrEmpty(companyUrl))
             {
                 linkLabelCompany.Text = String.IsNullOrEmpty(companyTextUrl) ? companyUrl : companyTextUrl;

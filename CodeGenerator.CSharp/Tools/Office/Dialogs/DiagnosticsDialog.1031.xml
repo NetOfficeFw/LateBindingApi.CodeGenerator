@@ -15,7 +15,7 @@
     <String>
       <Name>buttonClipboardCopy</Name>
       <Value>In die Zwischenablage kopieren</Value>
-    </String>
+    </String>    
     <String>
       <Name>buttonClose</Name>
       <Value>Schliessen</Value>
@@ -23,6 +23,6 @@
     <String>
       <Name>labelAssemblyInfo</Name>
       <Value>Systeminformationen</Value>
-    </String>
+    </String>    
   </String>
 </Dialog>
