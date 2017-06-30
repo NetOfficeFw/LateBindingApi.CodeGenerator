@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NetOffice</RootNamespace>
     <AssemblyName>NetOffice</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -31,8 +31,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,7 +44,6 @@
     <RegisterForComInterop>false</RegisterForComInterop>
     <DocumentationFile>bin\Debug\NetOffice.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -56,14 +54,12 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\NetOffice.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>NetOffice_v4.0.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -73,24 +69,62 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ComRegExportCallAttribute.cs" />
+    <Compile Include="Attributes\ComRegisterCallAttribute.cs" />
+    <Compile Include="Attributes\ComUnregisterCallAttribute.cs.cs" />
+    <Compile Include="COMDynamicObject.cs" />
+    <Compile Include="COMDynamicObjectExpandableObjectConverter.cs" />
     <Compile Include="COMObjectExpandableObjectConverter.cs" />
+    <Compile Include="COMObjectFaults.cs" />
+    <Compile Include="InstanceTypeNameResolver.cs" />
+    <Compile Include="Misc\SelfDiagnostics.cs" />
+    <Compile Include="Tools\DontRegisterAddinAttribute.cs" />
+    <Compile Include="DynamicObjectEntity.cs" />
+    <Compile Include="EntityAvailableResolver.cs" />
+    <Compile Include="Tools\ForceInitializeAttribute.cs" />
+    <Compile Include="Tools\ICOMAddin.cs" />
+    <Compile Include="Tools\WndUtils\Win32Window.cs" />
+    <Compile Include="UnderlyingTypeNameResolver.cs" />
+    <Compile Include="Interfaces\ICOMObject.cs" />
+    <Compile Include="Interfaces\ICOMObjectDisposable.cs" />
+    <Compile Include="Interfaces\ICOMObjectEvents.cs" />
+    <Compile Include="Interfaces\ICOMObjectProxy.cs" />
+    <Compile Include="Interfaces\ICOMObjectTable.cs" />
+    <Compile Include="Interfaces\ICOMObjectTableDisposable.cs" />
     <Compile Include="Core.cs" />
-    <Compile Include="CurrentAppDomain.cs" />
-    <Compile Include="DebugConsoleMode.cs" />
-    <Compile Include="NamedPipes\ClientPipeConnection.cs" />
-    <Compile Include="NamedPipes\InterProcessConnectionState.cs" />
-    <Compile Include="NamedPipes\NamedPipeNative.cs" />
-    <Compile Include="NamedPipes\NamedPipeWrapper.cs" />
-    <Compile Include="NamedPipes\PipeClient.cs" />
-    <Compile Include="NamedPipes\PipeConnection.cs" />
-    <Compile Include="NamedPipes\PipeHandle.cs" />
+    <Compile Include="Loader\CurrentAppDomain.cs" />
+    <Compile Include="Misc\SortableBindingList.cs" />
+    <Compile Include="ProxyInformation.cs" />
+    <Compile Include="ProxyService.cs" />
+    <Compile Include="QuitCaller.cs" />
+    <Compile Include="RunningWindowTable.cs" />
+    <Compile Include="RunningWindowTable.Nested.cs" />
+    <Compile Include="Tools\IDisposableState.cs" />
+    <Compile Include="Tools\LockbackAttribute.cs" />
+    <Compile Include="Tools\CodebaseAttribute.cs" />
+    <Compile Include="Tools\OfficeRegisterKeyState.cs" />
+    <Compile Include="Tools\OfficeUnRegisterKeyState.cs" />
+    <Compile Include="Tools\OnErrorHandler.cs" />
+    <Compile Include="Tools\ProgrammableAttribute.cs" />
+    <Compile Include="Tools\RegExport.cs" />
+    <Compile Include="Tools\RegExportFunctionAttribute.cs" />
+    <Compile Include="Tools\RegExportHandler.cs" />
+    <Compile Include="Tools\RegisterErrorHandler.cs" />
+    <Compile Include="Tools\RegisterHandler.cs" />
+    <Compile Include="Tools\InstallScope.cs" />
+    <Compile Include="Tools\TimestampAttribute.cs" />
+    <Compile Include="Tools\UnRegisterHandler.cs" />
+    <Compile Include="Tools\WndUtils\ChildWindowBatchEnumerator.cs" />
+    <Compile Include="Tools\WndUtils\Win32.cs" />
+    <Compile Include="Trace\DebugConsoleMode.cs" />
+    <Compile Include="Misc\IDisposableEnumeration.cs" />
+    <Compile Include="Trace\PerformanceTrace.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SharedOutputMode.cs" />
-    <Compile Include="Tools\AttributeHelper.cs" />
+    <Compile Include="Tools\AttributeReflector.cs" />
     <Compile Include="Tools\COMAddinAttribute.cs" />
     <Compile Include="Attributes\CustomEnumeratorAttribute.cs" />
     <Compile Include="Attributes\CustomMethodAttribute.cs" />
@@ -105,13 +139,13 @@
     <Compile Include="Tools\TweakAttribute.cs" />
     <Compile Include="Tools\Tweaks.cs" />
     <Compile Include="Tools\UnRegisterFunctionAttribute.cs" />
-    <Compile Include="CacheOptions.cs" />
-    <Compile Include="DebugConsole.cs" />
+    <Compile Include="Settings\CacheOptions.cs" />
+    <Compile Include="Trace\DebugConsole.cs" />
     <Compile Include="Attributes\EntityTypeAttribute.cs" />
-    <Compile Include="DependentAssembly.cs" />
-    <Compile Include="EntityNotSupportedException.cs" />
-    <Compile Include="ExceptionMessageHandling.cs" />
-    <Compile Include="NetOfficeException.cs" />
+    <Compile Include="Loader\DependentAssembly.cs" />
+    <Compile Include="Exceptions\EntityNotSupportedException.cs" />
+    <Compile Include="Settings\ExceptionMessageHandling.cs" />
+    <Compile Include="Exceptions\NetOfficeException.cs" />
     <Compile Include="OnDisposeEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="COMObject.cs" />
@@ -119,16 +153,19 @@
     <Compile Include="Invoker.cs" />
     <Compile Include="RetryMessageFilter.cs" />
     <Compile Include="RunningObjectTable.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Settings\Settings.cs" />
     <Compile Include="SinkHelper.cs" />
     <Compile Include="Attributes\SupportByVersionAttribute.cs" />
     <Compile Include="Interfaces\IEventBinding.cs" />
     <Compile Include="SupportEntityType.cs" />
     <Compile Include="Tools\COMAddinEventHandler.cs" />
     <Compile Include="Tools\IDTExtensibility2.cs" />
-    <Compile Include="Utils.cs" />
-    <Compile Include="WndUtils\WindowEnumerator.cs" />
-    <Compile Include="WndUtils\ExcelApplicationWindow.cs" />
+    <Compile Include="Tools\WndUtils\ChildWindowEnumerator.cs" />
+    <Compile Include="Misc\Utils.cs" />
+    <Compile Include="Tools\WndUtils\WindowEnumerator.cs" />
+    <Compile Include="Tools\WndUtils\ExcelApplicationWindow.cs" />
+    <Compile Include="Tools\WndUtils\ProcessElevation.cs" />
+    <Compile Include="UriConvert.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -154,6 +191,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="NetOffice_v4.0.snk" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
