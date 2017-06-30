@@ -22,8 +22,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if (settings.Framework == "4.0")
             {
-                solutionFile = solutionFile.Replace("%FormatVersion%", "11.00");
-                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual C# Express 2010");
+                solutionFile = solutionFile.Replace("%FormatVersion%", "12.00");
+                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual Studio 14\r\nVisualStudioVersion = 14.0.23107.0\r\nMinimumVisualStudioVersion = 10.0.40219.1");
             }
             else
             {
@@ -38,7 +38,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 newProjectLine = newProjectLine.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
 
                 string depends = "\tProjectSection(ProjectDependencies) = postProject\r\n";
-                foreach (var item in solution.Element("Projects").Elements("Project"))                
+                foreach (var item in solution.Element("Projects").Elements("Project"))
                 {
                     string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
                     depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(item.Attribute("Key").Value));
@@ -48,7 +48,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 projects += newProjectLine;
 
                 string newConfig = _buildConfig.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
-                configs += newConfig; 
+                configs += newConfig;
             }
 
             foreach (var project in solution.Element("Projects").Elements("Project"))
@@ -69,15 +69,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                         where a.Attribute("Key").Value.Equals(projKey)
                                         select a).FirstOrDefault();
                     string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
-                    depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(projNode.Attribute("Key").Value));               
+                    depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(projNode.Attribute("Key").Value));
                 }
-                 
+
                 if (project.Element("RefProjects").Elements("RefProject").Count() > 0)
                     depends += "\tEndProjectSection\r\n";
 
                 newProjectLine = newProjectLine.Replace("%Depend%", depends);
                 projects += newProjectLine;
-               
+
                 string newConfig = _buildConfig.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
                 configs += newConfig;
             }
@@ -87,7 +87,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string newConfig2 = _buildConfig.Replace("%Key%", "65442327-D01F-4ECB-8C39-6D5C7622A80F");
             configs += newConfig2;
-            
+
             solutionFile = solutionFile.Replace("%Projects%", projects);
             solutionFile = solutionFile.Replace("%Config%", configs);
             return solutionFile;
@@ -138,7 +138,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 System.IO.File.Copy(file, newFilePath);
             }
 
-            
+
             if (!System.IO.Directory.Exists(path + "\\Tools"))
                 System.IO.Directory.CreateDirectory(path + "\\Tools");
             files = System.IO.Directory.GetFiles(projectApiPath + "\\Tools");
@@ -225,7 +225,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             projectFile = projectFile.Replace("%Framework%", "v" + settings.Framework);
 
             string projectPath = System.IO.Path.Combine(path, "ClientApplication");
-            PathApi.CreateFolder(projectPath); 
+            PathApi.CreateFolder(projectPath);
             string projectFilePath = System.IO.Path.Combine(projectPath, "ClientApplication.csproj");
             System.IO.File.WriteAllText(projectFilePath, projectFile, Encoding.UTF8);
 
