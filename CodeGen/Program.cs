@@ -72,7 +72,11 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             Log.Info($@"Code generated in {elapsedTime} ({elapsedTime.TotalMilliseconds}ms).");
 
             Log.Info("Done.");
-            Console.ReadKey();
+
+            if (Debugger.IsAttached)
+            {
+                Console.ReadKey();
+            }
         }
 
         private static void GeneratorProgress(string message)
