@@ -61,7 +61,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _accessCommonUtilsContent)
-                    _accessCommonUtilsContent = RessourceApi.ReadString("Tools.Access.CommonUtils.txt");
+                    _accessCommonUtilsContent = RessourceApi.ReadString("Tools.Access.Utils.CommonUtils.txt");
                 return _accessCommonUtilsContent;
             }
         }
@@ -131,7 +131,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _excelCommonUtilsContent)
-                    _excelCommonUtilsContent = RessourceApi.ReadString("Tools.Excel.CommonUtils.txt");
+                    _excelCommonUtilsContent = RessourceApi.ReadString("Tools.Excel.Utils.CommonUtils.txt");
                 return _excelCommonUtilsContent;
             }
         }
@@ -227,7 +227,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeCommonUtilsContent)
-                    _officeCommonUtilsContent = RessourceApi.ReadString("Tools.Office.CommonUtils.txt");
+                    _officeCommonUtilsContent = RessourceApi.ReadString("Tools.Office.Utils.CommonUtils.txt");
                 return _officeCommonUtilsContent;
             }
         }
@@ -397,7 +397,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _outlookCommonUtilsContent)
-                    _outlookCommonUtilsContent = RessourceApi.ReadString("Tools.Outlook.CommonUtils.txt");
+                    _outlookCommonUtilsContent = RessourceApi.ReadString("Tools.Outlook.Utils.CommonUtils.txt");
                 return _outlookCommonUtilsContent;
             }
         }
@@ -434,7 +434,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _pointCommonUtilsContent)
-                    _pointCommonUtilsContent = RessourceApi.ReadString("Tools.PowerPoint.CommonUtils.txt");
+                    _pointCommonUtilsContent = RessourceApi.ReadString("Tools.PowerPoint.Utils.CommonUtils.txt");
                 return _pointCommonUtilsContent;
             }
         }
@@ -493,7 +493,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _projectCommonUtilsContent)
-                    _projectCommonUtilsContent = RessourceApi.ReadString("Tools.Project.CommonUtils.txt");
+                    _projectCommonUtilsContent = RessourceApi.ReadString("Tools.Project.Utils.CommonUtils.txt");
                 return _projectCommonUtilsContent;
             }
         }
@@ -530,7 +530,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _wordCommonUtilsContent)
-                    _wordCommonUtilsContent = RessourceApi.ReadString("Tools.Word.CommonUtils.txt");
+                    _wordCommonUtilsContent = RessourceApi.ReadString("Tools.Word.Utils.CommonUtils.txt");
                 return _wordCommonUtilsContent;
             }
         }
