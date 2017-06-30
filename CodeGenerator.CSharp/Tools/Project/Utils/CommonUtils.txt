@@ -2,16 +2,14 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
-using System.Security.Principal;
 
-namespace NetOffice.MSProjectApi.Tools
+namespace NetOffice.MSProjectApi.Tools.Utils
 {
     /// <summary>
     /// Various helper for common tasks
     /// </summary>
-    public class CommonUtils : NetOffice.OfficeApi.Tools.CommonUtils
+    public class CommonUtils : NetOffice.OfficeApi.Tools.Utils.CommonUtils
     {
         #region Fields
 
@@ -62,6 +60,33 @@ namespace NetOffice.MSProjectApi.Tools
         internal CommonUtils(NetOffice.Tools.COMAddinBase owner, bool isAutomation, Assembly ownerAssembly) : base(owner, isAutomation, ownerAssembly)
         {
 
+        }
+
+        /// <summary>
+        /// Creates an instance of the class
+        /// </summary>
+        /// <param name="owner">addin owner</param>
+        /// <param name="ownerType">type information from addin owner</param>
+        /// <param name="isAutomation">indicates the host application is currently in automation</param>
+        /// <param name="ownerAssembly">owner application</param>
+        internal CommonUtils(NetOffice.Tools.COMAddinBase owner, Type ownerType, bool isAutomation, Assembly ownerAssembly) : base(owner, ownerType, isAutomation, ownerAssembly)
+        {
+
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Encapsulate the owner application to make accessible for child utils
+        /// </summary>
+        public new MSProjectApi.Application OwnerApplication
+        {
+            get
+            {
+                return base.OwnerApplication as MSProjectApi.Application;
+            }
         }
 
         #endregion
