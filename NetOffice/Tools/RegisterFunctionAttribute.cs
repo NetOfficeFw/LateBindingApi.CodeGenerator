@@ -33,6 +33,7 @@ namespace NetOffice.Tools
     /// <summary>
     /// Parameter for Register/Unregister Methods
     /// </summary>
+    [System.Runtime.InteropServices.Guid("D8FAB9D7-10D1-4AA3-8DBA-D9CCA8C4CE9B")]
     public enum RegisterCall
     {
         /// <summary>
@@ -54,7 +55,7 @@ namespace NetOffice.Tools
     /// <summary>
     /// Mark a static method as Register method. the method need the following signature public void Register(Type type, RegisterCall callType)
     /// </summary>
-    [System.AttributeUsage(System.AttributeTargets.Method)]
+    [System.AttributeUsage(System.AttributeTargets.Method, AllowMultiple = false)]
     public class RegisterFunctionAttribute : System.Attribute
     {
         /// <summary>
