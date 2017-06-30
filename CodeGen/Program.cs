@@ -50,7 +50,7 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             csSettings.Folder = options.OutputFolder;
             csSettings.LinkFilePath = options.ReferenceFile;
             csSettings.SignPath = options.KeyFilesFolder;
-            csSettings.Framework = "4.5";
+            csSettings.Framework = "4.0";
 
             csSettings.AddDocumentationLinks = true;
             csSettings.ConvertOptionalsToObject = false;
