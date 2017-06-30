@@ -7,17 +7,18 @@ using System.Text;
 using System.Security.Principal;
 using NetOffice.PowerPointApi.Tools.Utils;
 
-namespace NetOffice.PowerPointApi.Tools
+namespace NetOffice.PowerPointApi.Tools.Utils
 {
     /// <summary>
     /// Various helper for common tasks
     /// </summary>
-    public class CommonUtils : NetOffice.OfficeApi.Tools.CommonUtils
+    public class CommonUtils : NetOffice.OfficeApi.Tools.Utils.CommonUtils
     {
         #region Fields
 
         private PowerPointApi.Application _ownerApplication;
         private FileUtils _fileUtils;
+        private ApplicationUtils _appUtils;
 
         #endregion
 
@@ -66,6 +67,18 @@ namespace NetOffice.PowerPointApi.Tools
 
         }
 
+        /// <summary>
+        /// Creates an instance of the class
+        /// </summary>
+        /// <param name="owner">addin owner</param>
+        /// <param name="ownerType">type information from addin owner</param>
+        /// <param name="isAutomation">indicates the host application is currently in automation</param>
+        /// <param name="ownerAssembly">owner application</param>
+        internal CommonUtils(NetOffice.Tools.COMAddinBase owner, Type ownerType, bool isAutomation, Assembly ownerAssembly) : base(owner, ownerType, isAutomation, ownerAssembly)
+        {
+
+        }
+
         #endregion
 
         #region Properties
@@ -83,9 +96,42 @@ namespace NetOffice.PowerPointApi.Tools
             }
         }
 
+        /// <summary>
+        /// Application related utils
+        /// </summary>
+        public ApplicationUtils Application
+        {
+            get
+            {
+                if (null == _appUtils)
+                    _appUtils = OnCreateApplicationUtils();
+                return _appUtils;
+            }
+        }
+
+        /// <summary>
+        /// Encapsulate the owner application to make accessible for child utils
+        /// </summary>
+        public new PowerPointApi.Application OwnerApplication
+        {
+            get
+            {
+                return base.OwnerApplication as PowerPointApi.Application;
+            }
+        }
+
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Creates an instance of ApplicationUtils
+        /// </summary>
+        /// <returns>instance of ApplicationUtils</returns>
+        protected internal virtual ApplicationUtils OnCreateApplicationUtils()
+        {
+            return new ApplicationUtils(this);
+        }
 
         /// <summary>
         /// Creates an instance of FileUtils
