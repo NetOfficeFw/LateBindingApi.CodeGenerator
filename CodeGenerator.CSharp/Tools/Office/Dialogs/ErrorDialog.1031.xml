@@ -11,11 +11,11 @@
     <String>
       <Name>ErrorMessage</Name>
       <Value>Es ist keine Fehlerbeschreibung verfügbar.</Value>
-    </String>
+    </String>    
     <String>
       <Name>Message</Name>
       <Value>Beschreibung</Value>
-    </String>
+    </String>    
     <String>
       <Name>Type</Name>
       <Value>Typ</Value>
@@ -27,7 +27,7 @@
     <String>
       <Name>buttonShowDetails</Name>
       <Value>Fehlerprotokoll anzeigen</Value>
-    </String>
+    </String>    
     <String>
       <Name>buttonClipboardCopy</Name>
       <Value>In die Zwischenablage kopieren</Value>
