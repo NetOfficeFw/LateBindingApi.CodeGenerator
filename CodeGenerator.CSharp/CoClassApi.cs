@@ -400,7 +400,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 line += "\t\tprivate event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value +
                    "EventHandler _" + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
 
-                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByVersion " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") +
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByVersion " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "").Replace("15 16", "15,16") +
                     "\r\n" + "\t\t/// </summary>\r\n";
 
                 if (CSharpGenerator.Settings.AddDocumentationLinks)
