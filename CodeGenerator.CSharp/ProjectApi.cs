@@ -174,7 +174,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
 
                 string signAssemblyItem = "  <ItemGroup>\r\n" +
-                    "    <None Include=\"" + snkFilename + "\">" + "\r\n" +
+                    "    <None Include=\"" + snkFilename + "\" />" + "\r\n" +
                     "  </ItemGroup>";
                 projectFile = projectFile.Replace("%SignAssemblyFile%", signAssemblyItem);
             }
