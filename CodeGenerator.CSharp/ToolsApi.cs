@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -559,151 +560,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _wordFileUtilsContent;
 
         #endregion
-
-        internal static string ConvertAccessToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
-        {
-            string file1 = AccessCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
-
-            int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            string file2 = AccessTaskPaneContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
-
-            PathApi.CreateFolder(faceFolder + "\\Utils");
-
-            string file3 = AccessCommonUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CommonUtils.cs"), file3);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CommonUtils.cs" + "\" />" + "\r\n";
-
-            string file4 = AccessDocumentFormatContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\DocumentFormat.cs"), file4);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "DocumentFormat.cs" + "\" />" + "\r\n";
-
-            string file5 = AccessFileUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\FileUtils.cs"), file5);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "FileUtils.cs" + "\" />" + "\r\n";
-
-            return result;
-        }
-
-        internal static string ConvertExcelToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
-        {
-            string file1 = ExcelCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
-
-            int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            string file2 = ExcelTaskPaneContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
-
-            PathApi.CreateFolder(faceFolder + "\\Utils");
-
-            string file3 = ExcelCommonUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CommonUtils.cs"), file3);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CommonUtils.cs" + "\" />" + "\r\n";
-
-            string file4 = ExcelDocumentFormatContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\DocumentFormat.cs"), file4);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "DocumentFormat.cs" + "\" />" + "\r\n";
-
-            string file5 = ExcelFileUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\FileUtils.cs"), file5);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "FileUtils.cs" + "\" />" + "\r\n";
-
-            return result;
-        }
-
-        internal static string ConvertVisioToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
-        {
-            string file1 = VisioCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
-
-            int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            return result;
-        }
-
         internal static string ConvertOfficeToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
         {
-            string file1 = OfficeCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
+            string result = ConvertToolsToFiles("Office", faceFolder);
 
             int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            string file2 = OfficeTaskPaneContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
-
-            string file3 = OfficeCustomTaskPaneCollectionContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CustomTaskPaneCollection.cs"), file3);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CustomTaskPaneCollection.cs" + "\" />" + "\r\n";
-
-            string file4 = OfficeAttributeContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "MultiRegisterAttribute.cs"), file4);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "MultiRegisterAttribute.cs" + "\" />" + "\r\n";
 
             PathApi.CreateFolder(faceFolder + "\\Dialogs");
-            PathApi.CreateFolder(faceFolder + "\\Informations");
-            PathApi.CreateFolder(faceFolder + "\\Utils");
-
-            string file5 = OfficeCommonUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CommonUtils.cs"), file5);            
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CommonUtils.cs" + "\" />" + "\r\n";
-
-            string file6 = OfficeColorUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\ColorUtils.cs"), file6);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "ColorUtils.cs" + "\" />" + "\r\n";
-
-            string file7 = OfficeDialogUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\DialogUtils.cs"), file7);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "DialogUtils.cs" + "\" />" + "\r\n";
-
-            string file8 = OfficeImageUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\ImageUtils.cs"), file8);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "ImageUtils.cs" + "\" />" + "\r\n";
-
-            string file9 = OfficeResourceUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\ResourceUtils.cs"), file9);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "ResourceUtils.cs" + "\" />" + "\r\n";
-
-            string file10 = OfficeTrayUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayUtils.cs"), file10);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "TrayUtils.cs" + "\" />" + "\r\n";
-
-            string file11 = OfficeAppDomainInfoContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Informations\\AppDomainInfo.cs"), file11);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Informations\\" + "AppDomainInfo.cs" + "\" />" + "\r\n";
-
-            string file12 = OfficeAssemblyInfoContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Informations\\AssemblyInfo.cs"), file12);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Informations\\" + "AssemblyInfo.cs" + "\" />" + "\r\n";
-
-            string file13 = OfficeDiagnosticPairContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Informations\\DiagnosticPair.cs"), file13);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Informations\\" + "DiagnosticPair.cs" + "\" />" + "\r\n";
-
-            string file14 = OfficeDiagnosticPairCollectionContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Informations\\DiagnosticPairCollection.cs"), file14);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Informations\\" + "DiagnosticPairCollection.cs" + "\" />" + "\r\n";
-
-            string file15 = OfficeEnvironmentInfoContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Informations\\EnvironmentInfo.cs"), file15);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Informations\\" + "EnvironmentInfo.cs" + "\" />" + "\r\n";
-
-            string file16 = OfficeHostInfoContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Informations\\HostInfo.cs"), file16);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Informations\\" + "HostInfo.cs" + "\" />" + "\r\n";
-
-            string file17 = OfficeInfosContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Informations\\Infos.cs"), file17);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Informations\\" + "Infos.cs" + "\" />" + "\r\n";
 
             string file18 = RessourceApi.ReadString("Tools.Office.Dialogs.DialogLayoutSettings.txt");
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\DialogLayoutSettings.cs"), file18);
@@ -768,144 +631,66 @@ namespace LateBindingApi.CodeGenerator.CSharp
                        "\t\t\t<DependentUpon>" + "ToolsDialog.cs" + "</DependentUpon>" + "\r\n" +
                        "\t\t</Compile>" + "\r\n";
 
-
             result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "ToolsDialog.resx" + "\">" + "\r\n" +
                    "\t\t\t<DependentUpon>" + "ToolsDialog.cs" + "</DependentUpon>" + "\r\n" +
                    "\t\t</EmbeddedResource>" + "\r\n";
 
-
-
-            return result;   
-        }
-
-          
-        internal static string ConvertOutlookToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
-        {
-            string file1 = OutlookCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
-
-            int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            string file2 = OutlookTaskPaneContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
-
-            string file3 = OutlookCommonUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CommonUtils.cs"), file3);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CommonUtils.cs" + "\" />" + "\r\n";
- 
             return result;
         }
-
-        internal static string ConvertPowerPointToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
-        {
-            string file1 = PowerPointCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
-
-            int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            string file2 = PowerPointTaskPaneContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
-
-            PathApi.CreateFolder(faceFolder + "\\Utils");
-
-            string file3 = PointCommonUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CommonUtils.cs"), file3);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CommonUtils.cs" + "\" />" + "\r\n";
-
-            string file4 = PointDocumentFormatContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\DocumentFormat.cs"), file4);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "DocumentFormat.cs" + "\" />" + "\r\n";
-
-            string file5 = PointFileUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\FileUtils.cs"), file5);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "FileUtils.cs" + "\" />" + "\r\n";
-
-            return result;
-        }
-
-        internal static string ConvertProjectToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
-        {
-            string file1 = ProjectCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
-
-            int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            string file2 = ProjectTaskPaneContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
-
-            string file3 = ProjectCommonUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CommonUtils.cs"), file3);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CommonUtils.cs" + "\" />" + "\r\n";
-
-            return result;
-        }
-
-        internal static string ConvertWordToolsToFiles(XElement projectNode, Settings settings, string faceFolder)
-        {
-            string file1 = WordCOMAddinContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "COMAddin.cs"), file1);
-
-            int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "COMAddin.cs" + "\" />" + "\r\n";
-
-            string file2 = WordTaskPaneContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "ITaskPane.cs"), file2);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "ITaskPane.cs" + "\" />" + "\r\n";
-
-            PathApi.CreateFolder(faceFolder + "\\Utils");
-
-            string file3 = WordCommonUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "CommonUtils.cs"), file3);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "CommonUtils.cs" + "\" />" + "\r\n";
-
-            string file4 = WordDocumentFormatContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\DocumentFormat.cs"), file4);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "DocumentFormat.cs" + "\" />" + "\r\n";
-
-            string file5 = WordFileUtilsContent;
-            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\FileUtils.cs"), file5);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\" + "FileUtils.cs" + "\" />" + "\r\n";
-
-            return result;
-        }          
 
         internal static string ConvertToolsToFiles(XElement projectNode,  Settings settings, string solutionFolder)
         {
-            if(!IsTarget(projectNode.Attribute("Name").Value))
+            var projectName = projectNode.Attribute("Name").Value;
+            if(!IsTarget(projectName))
                 return "";
 
-            string faceFolder = System.IO.Path.Combine(solutionFolder, projectNode.Attribute("Name").Value);
+            string faceFolder = System.IO.Path.Combine(solutionFolder, projectName);
             faceFolder = System.IO.Path.Combine(faceFolder, "Tools");
             if (false == System.IO.Directory.Exists(faceFolder))
                 System.IO.Directory.CreateDirectory(faceFolder);
 
-            switch (projectNode.Attribute("Name").Value)            
+            switch (projectName)
             {
                 case "Access":
-                    return ConvertAccessToolsToFiles(projectNode, settings, faceFolder);
                 case "Excel":
-                    return ConvertExcelToolsToFiles(projectNode, settings, faceFolder);
+                case "Outlook":
+                case "PowerPoint":
+                case "Visio":
+                case "Word":
+                    return ConvertToolsToFiles(projectName, faceFolder);
                 case "MSProject":
-                    return ConvertProjectToolsToFiles(projectNode, settings, faceFolder);
+                    return ConvertToolsToFiles("Project", faceFolder);
                 case "Office":
                     return ConvertOfficeToolsToFiles(projectNode, settings, faceFolder);
-                case "Outlook":
-                    return ConvertOutlookToolsToFiles(projectNode, settings, faceFolder);
-                case "PowerPoint":
-                    return ConvertPowerPointToolsToFiles(projectNode, settings, faceFolder);
-                case "Visio":
-                    return ConvertVisioToolsToFiles(projectNode, settings, faceFolder);
-                case "Word":
-                    return ConvertWordToolsToFiles(projectNode, settings, faceFolder);
                 default:
-                    throw new ArgumentOutOfRangeException(projectNode.Attribute("Name").Value);
+                    throw new ArgumentOutOfRangeException(projectName);
             }
+        }
+
+        internal static string ConvertToolsToFiles(string projectName, string faceFolder)
+        {
+            var resources = RessourceApi.GetToolsForApplication(projectName);
+
+            int i = faceFolder.LastIndexOf("\\");
+            var facePath = faceFolder.Substring(i + 1);
+            var result = new StringBuilder(1024);
+
+            foreach (var toolResource in resources)
+            {
+                var filename = Path.ChangeExtension(toolResource.Filename, ".cs");
+
+                var targetPath = Path.Combine(faceFolder, filename);
+                var targetDirectory = Path.GetDirectoryName(targetPath);
+                if (!Directory.Exists(targetDirectory))
+                {
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
+                File.AppendAllText(targetPath, toolResource.Content, Encoding.UTF8);
+                result.AppendLine("\t\t<Compile Include=\"" + facePath + "\\" + filename + "\" />");
+            }
+
+            return result.ToString();
         }
     }
 }

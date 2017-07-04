@@ -47,6 +47,7 @@
     </Compile>
     <Compile Include="AliasApi.cs" />
     <Compile Include="CoClassApi.cs" />
+    <Compile Include="ResourceToolInfo.cs" />
     <Compile Include="ToolsApi.cs" />
     <EmbeddedResource Include="CoClass\EventHelper.txt" />
     <EmbeddedResource Include="Event\Interface.txt" />

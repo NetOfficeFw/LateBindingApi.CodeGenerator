@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
@@ -36,6 +38,44 @@ namespace LateBindingApi.CodeGenerator.CSharp
             catch (Exception exception)
             {
                 throw (exception);
+            }
+        }
+
+        internal static IEnumerable<ResourceToolInfo> GetToolsForApplication(string applicationName)
+        {
+            string namespacePrefix = "LateBindingApi.CodeGenerator.CSharp.Tools." + applicationName;
+            string namespacePrefixDialogs = "LateBindingApi.CodeGenerator.CSharp.Tools." + applicationName + ".Dialogs";
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var allResources = assembly.GetManifestResourceNames();
+
+            var toolsResources = allResources.Where(name =>
+                name.StartsWith(namespacePrefix, StringComparison.OrdinalIgnoreCase)
+                && name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)
+                && !name.StartsWith(namespacePrefixDialogs, StringComparison.OrdinalIgnoreCase)
+                );
+
+            foreach (var resource in toolsResources)
+            {
+                var filename = resource.Substring(namespacePrefix.Length + 1);
+                using (var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(resource)))
+                {
+                    var content = reader.ReadToEnd();
+
+                    var sb = new StringBuilder(filename);
+                    int dot;
+                    while ((dot = filename.IndexOf('.')) != filename.LastIndexOf('.'))
+                    {
+                        sb[dot] = '\\';
+                        filename = sb.ToString();
+                    }
+
+                    var info = new ResourceToolInfo();
+                    info.Filename = filename;
+                    info.Content = content;
+
+                    yield return info;
+                }
             }
         }
 
