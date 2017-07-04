@@ -163,14 +163,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (true == settings.UseSigning)
             {
                 string projectName = project.Attribute("Name").Value;
-                string keyFile = System.IO.Path.Combine(settings.SignPath, settings.Framework + "\\" + projectName + "Api_v" + settings.Framework + ".snk");
+                var snkFilename = projectName + "Api_v" + settings.Framework + ".snk";
+                string keyFile = System.IO.Path.Combine(settings.SignPath, settings.Framework + "\\" + snkFilename);
                 if (System.IO.File.Exists(keyFile))
                 {
                     string projectPath = System.IO.Path.Combine(solutionPath, projectName);
-                    string copyKeyFile = System.IO.Path.Combine(projectPath, projectName + "Api_v" + settings.Framework + ".snk");
+                    string copyKeyFile = System.IO.Path.Combine(projectPath, snkFilename);
                     PathApi.CreateFolder(projectPath);
                     System.IO.File.Copy(keyFile, copyKeyFile);
                 }
+
+                string signAssemblyItem = "  <ItemGroup>\r\n" +
+                    "    <None Include=\"" + snkFilename + "\">" + "\r\n" +
+                    "  </ItemGroup>";
+                projectFile = projectFile.Replace("%SignAssemblyFile%", signAssemblyItem);
             }
             else
             {
@@ -181,6 +187,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string lastString = projectFile.Substring(lastPos + "</AssemblyOriginatorKeyFile>".Length);
 
                 projectFile = firstString + lastString;
+                projectFile = projectFile.Replace("%SignAssemblyFile%", "");
             }
             return projectFile;
         }
