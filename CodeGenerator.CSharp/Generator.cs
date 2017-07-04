@@ -237,6 +237,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     return "String";
                 case "byte":
                     return "Byte";
+                case "float":
+                    return "Single";
                 default:
                     return fullTypeName;
             }
