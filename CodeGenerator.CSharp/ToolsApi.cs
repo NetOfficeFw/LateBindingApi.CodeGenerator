@@ -637,6 +637,26 @@ namespace LateBindingApi.CodeGenerator.CSharp
                    "\t\t\t<DependentUpon>" + "ToolsDialog.cs" + "</DependentUpon>" + "\r\n" +
                    "\t\t</EmbeddedResource>" + "\r\n";
 
+
+            baseFile = RessourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.cstxt");
+            baseDesign = RessourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.Designer.cstxt");
+            baseRes = RessourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.rtxt");
+            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.cs"), baseFile, Encoding.UTF8);
+            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.designer.cs"), baseDesign, Encoding.UTF8);
+            System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.resx"), baseRes, Encoding.UTF8);
+
+            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.cs" + "\">" + "\r\n" +
+                      "\t\t\t<SubType>Form</SubType>" + "\r\n" +
+                      "\t\t</Compile>" + "\r\n";
+
+            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.designer.cs" + "\">" + "\r\n" +
+                      "\t\t\t<DependentUpon>" + "TrayMenuMonitorItemControl.cs" + "</DependentUpon>" + "\r\n" +
+                      "\t\t</Compile>" + "\r\n";
+
+            result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.resx" + "\">" + "\r\n" +
+                      "\t\t\t<DependentUpon>" + "TrayMenuMonitorItemControl.cs" + "</DependentUpon>" + "\r\n" +
+                      "\t\t</EmbeddedResource>" + "\r\n";
+
             return result;
         }
 
