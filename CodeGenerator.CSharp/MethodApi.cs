@@ -635,7 +635,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string GetEarlyBindMethodSignatur(XElement paramsNode)
         {
-            string result = paramsNode.Element("ReturnValue").Attribute("Type").Value + " " + paramsNode.Parent.Attribute("Name").Value + "(";
+            var returnType = paramsNode.Element("ReturnValue").Attribute("Type").Value;
+            if (returnType == "COMVariant")
+            {
+                returnType = "object";
+            }
+
+            string result = returnType + " " + paramsNode.Parent.Attribute("Name").Value + "(";
             foreach (XElement itemParam in paramsNode.Elements("Parameter"))
             {
                 string isRef = "";
@@ -646,9 +652,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string marshalAs = itemParam.Attribute("MarshalAs").Value;
                 if ("" != marshalAs)
                     marshalAs = ", MarshalAs(" + marshalAs + ")]";
+                else
+                    marshalAs += "]";
 
                 if (("true" == itemParam.Attribute("IsComProxy").Value) || ("COMObject" == itemParam.Attribute("Type").Value) ||
-                    ("COMObject" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
+                    ("COMVariant" == itemParam.Attribute("Type").Value) || ("object" == itemParam.Attribute("Type").Value))
                 {
                     par += marshalAs + " object " + itemParam.Attribute("Name").Value;
                 }
