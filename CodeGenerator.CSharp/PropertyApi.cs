@@ -691,7 +691,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     methodBody += tabSpace + "object returnItem = Invoker.PropertyGet(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
                     if (typeName == "COMObject")
                     {
-                        methodBody += tabSpace + "COMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                        methodBody += tabSpace + "ICOMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this," + objectArrayField + "returnItem);\r\n";
                         methodBody += "%modifiers%";
                         methodBody += tabSpace + "return newObject;\r\n";
                     }
@@ -699,9 +699,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     {
                         methodBody += tabSpace + "if((null != returnItem) && (returnItem is MarshalByRefObject))\r\n" + tabSpace + "{\r\n";
                         if ("" == objectArrayField)
-                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "\tICOMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         else
-                            methodBody += tabSpace + "\tCOMObject" + arrayField + " newObject = NetOffice.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "\tICOMObject" + arrayField + " newObject = NetOffice.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         methodBody += "\t%modifiers%";
                         methodBody += tabSpace + "return newObject;\r\n";
                         methodBody += tabSpace + "}\r\n";
@@ -715,7 +715,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         // library type
                         if ("true" == returnValue.Attribute("IsArray").Value)
                         {
-                            methodBody += tabSpace + "COMObject[] newObject = Factory.CreateObjectArrayFromComProxy(this," + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "ICOMObject[] newObject = Factory.CreateObjectArrayFromComProxy(this," + objectArrayField + "returnItem);\r\n";
                             methodBody += tabSpace + fullTypeName + " returnArray = new " + CSharpGenerator.GetQualifiedType(returnValue) + "[newObject.Length];\r\n";
                             methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
                             methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
