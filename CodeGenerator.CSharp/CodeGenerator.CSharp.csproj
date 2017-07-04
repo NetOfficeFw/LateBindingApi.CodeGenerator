@@ -247,8 +247,8 @@
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuLabelItem.txt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuLinkLabelItem.txt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuMonitorItem.txt" />
-    <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuMonitorItemControl.Designer.txt" />
-    <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuMonitorItemControl.txt" />
+    <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuMonitorItemControl.Designer.cstxt" />
+    <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuMonitorItemControl.cstxt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuOpeningHandlerEventHandler.txt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuProgressItem.txt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuSeparatorItem.txt" />
