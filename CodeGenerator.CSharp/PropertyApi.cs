@@ -726,8 +726,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         {
                             bool isFromIgnoreProject = CSharpGenerator.IsFromIgnoreProject(returnValue); 
                             bool isDuplicated =  CSharpGenerator.IsDuplicatedReturnValue(returnValue);
-                            bool isDerived = CSharpGenerator.IsDerivedReturnValue(returnValue);  
-                            if((true == isFromIgnoreProject) && (false == isDuplicated) )
+                            bool isDerived = CSharpGenerator.IsDerivedReturnValue(returnValue);
+
+                            // HACK: special handling for stdole.Font class
+                            if ((true == isFromIgnoreProject) && (false == isDuplicated) || fullTypeName == "stdole.Font")
                             {
                                 methodBody += tabSpace + fullTypeName + " newObject = Factory.CreateObjectFromComProxy(this," + objectArrayField + "returnItem) as " + fullTypeName + ";\r\n";
                                 methodBody += "%modifiers%";
