@@ -14,6 +14,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                    + "      <Name>%Name%Api</Name>\r\n"
                                                    + "    </ProjectReference>\r\n";
 
+        private static readonly string[] DefaultSystemLibsImport = { "System", "System.Xml" };
+
+        private static readonly Dictionary<string, string[]> AdditionalLibsImport = new Dictionary<string, string[]>
+        {
+            { "Office", new [] { "System.Data", "System.Drawing", "System.Windows.Forms" } },
+            { "Excel", new [] { "System.Data", "System.Drawing", "System.Windows.Forms" } },
+            { "PowerPoint", new [] { "System.Windows.Forms" } },
+            { "Word", new [] { "System.Drawing" } }
+        };
+
         private static XElement GetLibraryNode(XElement project)
         { 
             string name = project.Attribute("Name").Value;
@@ -100,7 +110,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string ReplaceProjectAttributes(string solutionPath, string projectFile, Settings settings, XElement project, string enumIncludes,
                                         string constIncludes, string faceIncludes, string dispatchIncludes, string classesIncludes, 
-                                                         string eventIncludes, string modulesInclude, string recordsInclude, string toolsInclude, string factoryInclude)
+                                                         string eventIncludes, string modulesInclude, string recordsInclude, string toolsInclude, string factoryInclude, string referencedLibraries)
         {
 
             if("4.0" == settings.Framework)
@@ -110,6 +120,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             projectFile = projectFile.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
             projectFile = projectFile.Replace("%Name%", project.Attribute("Name").Value + "Api");
+            projectFile = projectFile.Replace("%ReferencedLibraries%", referencedLibraries);
             projectFile = projectFile.Replace("%ConstInclude%", constIncludes);
             projectFile = projectFile.Replace("%EnumInclude%", enumIncludes);
             projectFile = projectFile.Replace("%FaceInclude%", faceIncludes);
@@ -289,6 +300,27 @@ namespace LateBindingApi.CodeGenerator.CSharp
             PathApi.CreateFolder(projectPath);
             string projectFilePath = System.IO.Path.Combine(projectPath, projectName + "Api.csproj");
             System.IO.File.WriteAllText(projectFilePath, projectFile, Encoding.UTF8);
+        }
+
+        public static string GetReferencedLibraries(XElement project, Settings settings, string solutionFolder)
+        {
+            var projectName = project.Attribute("Name").Value;
+
+            var referenced = new List<string>(DefaultSystemLibsImport);
+            string[] additionalReferences;
+            if (AdditionalLibsImport.TryGetValue(projectName, out additionalReferences))
+            {
+                referenced.AddRange(additionalReferences);
+                referenced.Sort(StringComparer.Ordinal);
+            }
+            
+            var sb = new StringBuilder(1024);
+            foreach (var libraryName in referenced)
+            {
+                sb.AppendLine($@"    <Reference Include=""{libraryName}"" />");
+            }
+
+            return sb.ToString();
         }
     }
 }
