@@ -1,5 +1,16 @@
 ﻿		#region Type Information
 
+        /// <summary>
+        /// Instance Type
+        /// </summary>
+        public override Type InstanceType
+        {
+            get
+            {
+                return LateBindingApiWrapperType;
+            }
+        }
+
         private static Type _type;
 
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
