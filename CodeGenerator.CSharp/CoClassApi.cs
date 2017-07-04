@@ -13,6 +13,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                       + "using NetRuntimeSystem = System;\r\n"
                                       + "using System.ComponentModel;\r\n"
                                       + "using NetOffice;\r\n"
+                                      + "using NetOffice.Misc;\r\n"
+                                      + "\r\n"
                                       + "namespace %namespace%\r\n"
                                       + "{\r\n";
 
@@ -25,12 +27,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _disposeOverride;
 
         private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t///</summary>\r\n";
-        
+
         private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n";
 
         private static string _classConstructor;
-        
+
         private static string _classEventBinding;
 
         internal static string ConvertCoClassesToFiles(XElement projectNode, XElement classesNode, Settings settings, string solutionFolder)
@@ -83,7 +85,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             construct = construct.Replace("%ProgId%", projectNode.Attribute("Name").Value + "." + classNode.Attribute("Name").Value);
             construct = construct.Replace("%Component%", projectNode.Attribute("Name").Value);
             construct = construct.Replace("%Class%", classNode.Attribute("Name").Value);
-             
+
             if (null == _disposeOverride)
                 _disposeOverride = RessourceApi.ReadString("CoClass.Dispose.txt");
 
@@ -167,7 +169,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement inInterface = GetItemByKey(projectNode, refNode);
             if (inInterface.Parent.Parent == faceNode.Parent.Parent)
             {
-                // same project               
+                // same project
                 retList += inInterface.Attribute("Name").Value;
             }
             else
@@ -259,7 +261,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             return result;
         }
-        
+
         private static string GetDelegates(XElement projectNode, XElement faceNode)
         {
             List<string> methodNames = new List<string>();
@@ -279,12 +281,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         }
                     }
                     if (false == found)
-                    { 
+                    {
                         delegateResult += "\t" + GetDelegateSignatur(faceNode.Attribute("Name").Value, itemMethod) + "\r\n";
                         methodNames.Add(itemMethod.Attribute("Name").Value);
                     }
                 }
-            }  
+            }
             return delegateResult;
         }
 
@@ -398,7 +400,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 line += "\t\tprivate event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value +
                    "EventHandler _" + itemNode.Attribute("Name").Value + "Event;\r\n\r\n";
 
-                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByVersion " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") + 
+                line += "\t\t/// <summary>\r\n" + "\t\t/// SupportByVersion " + projectNode.Attribute("Name").Value + " " + versionAttributeString.Replace(",", " ").Replace("\"", "") +
                     "\r\n" + "\t\t/// </summary>\r\n";
 
                 if (CSharpGenerator.Settings.AddDocumentationLinks)
@@ -427,13 +429,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string field = itemNode.Attribute("Name").Value + "Event";
 
-                line += "\t\tpublic event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value + 
+                line += "\t\tpublic event " + faceNode.Attribute("Name").Value + "_" + itemNode.Attribute("Name").Value +
                     "EventHandler " + itemNode.Attribute("Name").Value + "Event\r\n" + "\t\t{\r\n" +
                     "\t\t\tadd\r\n\t\t\t{\r\n" + "\t\t\t\tCreateEventBridge();\r\n" + "\t\t\t\t" + "_" + field + " += value;" + "\r\n" + "\t\t\t}\r\n" + "\t\t\tremove\r\n" +
                     "\t\t\t{\r\n\t\t\t\t" + "_" + field + " -= value;" + "\r\n\t\t\t}\r\n" +
                     "\t\t}\r\n\r\n";
             }
-            
+
             result += line;
             result += "\t\t#endregion\r\n";
             return result;
