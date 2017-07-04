@@ -39,14 +39,14 @@
 		///<param name="factory">current used factory core</param>
 		///<param name="parentObject">object there has created the proxy</param>
         ///<param name="comProxy">inner wrapped COM proxy</param>
-		public %name%(Core factory, COMObject parentObject, object comProxy) : base(factory, parentObject, comProxy)
+		public %name%(Core factory, ICOMObject parentObject, object comProxy) : base(factory, parentObject, comProxy)
 		{
 			%callQuitInDispose%%setGlobalInstance%
 		}
 
         ///<param name="parentObject">object there has created the proxy</param>
         ///<param name="comProxy">inner wrapped COM proxy</param>
-		public %name%(COMObject parentObject, object comProxy) : base(parentObject, comProxy)
+		public %name%(ICOMObject parentObject, object comProxy) : base(parentObject, comProxy)
 		{
 			%callQuitInDispose%%setGlobalInstance%
 		}
@@ -56,7 +56,7 @@
         ///<param name="comProxy">inner wrapped COM proxy</param>
         ///<param name="comProxyType">Type of inner wrapped COM proxy"</param>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-		public %name%(Core factory, COMObject parentObject, object comProxy, NetRuntimeSystem.Type comProxyType) : base(factory, parentObject, comProxy, comProxyType)
+		public %name%(Core factory, ICOMObject parentObject, object comProxy, NetRuntimeSystem.Type comProxyType) : base(factory, parentObject, comProxy, comProxyType)
 		{
 			%callQuitInDispose%
 		}
@@ -65,14 +65,14 @@
         ///<param name="comProxy">inner wrapped COM proxy</param>
         ///<param name="comProxyType">Type of inner wrapped COM proxy"</param>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-		public %name%(COMObject parentObject, object comProxy, NetRuntimeSystem.Type comProxyType) : base(parentObject, comProxy, comProxyType)
+		public %name%(ICOMObject parentObject, object comProxy, NetRuntimeSystem.Type comProxyType) : base(parentObject, comProxy, comProxyType)
 		{
 			%callQuitInDispose%
 		}
 		
 		///<param name="replacedObject">object to replaced. replacedObject are not usable after this action</param>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
-		public %name%(COMObject replacedObject) : base(replacedObject)
+		public %name%(ICOMObject replacedObject) : base(replacedObject)
 		{
 			%callQuitInDispose%
 		}
