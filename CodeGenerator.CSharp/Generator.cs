@@ -189,6 +189,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 this.DoUpdate("Create project " + project.Attribute("Name").Value, token);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
+                string referencedLibraries = ProjectApi.GetReferencedLibraries(project, _settings, solutionFolder);
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
                 string faceIncludes = InterfaceApi.ConvertInterfacesToFiles(project, project.Element("Interfaces"), _settings, solutionFolder);
@@ -206,7 +207,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
                 projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
                                         faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, toolsInclude, 
-                                        factoryInclude);
+                                        factoryInclude, referencedLibraries);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
