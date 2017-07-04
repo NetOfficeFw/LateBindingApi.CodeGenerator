@@ -78,7 +78,7 @@
 		}
 		
 		///<summary>
-        ///creates a new instance of %name% 
+        /// Creates a new instance of %name% 
         ///</summary>		
 		public %name%():base("%ProgId%")
 		{
@@ -86,7 +86,7 @@
 		}
 		
 		///<summary>
-        ///creates a new instance of %name%
+        /// Creates a new instance of %name%
         ///</summary>
         ///<param name="progId">registered ProgID</param>
 		public %name%(string progId):base(progId)
@@ -99,12 +99,12 @@
 		#region Static CoClass Methods
 
 		/// <summary>
-        /// returns all running %ProgId% objects from the running object table(ROT)
+        /// Returns all running %ProgId% objects from the environment/system
         /// </summary>
         /// <returns>an %ProgId% array</returns>
 		public static NetOffice.%Component%Api.%Class%[] GetActiveInstances()
 		{		
-			NetRuntimeSystem.Collections.Generic.List<object> proxyList = NetOffice.RunningObjectTable.GetActiveProxiesFromROT("%Component%","%Class%");
+			IDisposableEnumeration proxyList = NetOffice.ProxyService.GetActiveInstances("%Component%","%Class%");
 			NetRuntimeSystem.Collections.Generic.List<NetOffice.%Component%Api.%Class%> resultList = new NetRuntimeSystem.Collections.Generic.List<NetOffice.%Component%Api.%Class%>();
 			foreach(object proxy in proxyList)
 				resultList.Add( new NetOffice.%Component%Api.%Class%(null, proxy) );
@@ -112,12 +112,12 @@
 		}
 
 		/// <summary>
-        /// returns a running %ProgId% object from the running object table(ROT). the method takes the first element from the table
+        /// Returns a running %ProgId% object from the environment/system.
         /// </summary>
         /// <returns>an %ProgId% object or null</returns>
 		public static NetOffice.%Component%Api.%Class% GetActiveInstance()
 		{
-			object proxy = NetOffice.RunningObjectTable.GetActiveProxyFromROT("%Component%","%Class%", false);
+			object proxy  = NetOffice.ProxyService.GetActiveInstance("%Component%","%Class%", false);
 			if(null != proxy)
 				return new NetOffice.%Component%Api.%Class%(null, proxy);
 			else
@@ -125,13 +125,13 @@
 		}
 
 		/// <summary>
-        /// returns a running %ProgId% object from the running object table(ROT).  the method takes the first element from the table
+        /// Returns a running %ProgId% object from the environment/system. 
         /// </summary>
 	    /// <param name="throwOnError">throw an exception if no object was found</param>
         /// <returns>an %ProgId% object or null</returns>
 		public static NetOffice.%Component%Api.%Class% GetActiveInstance(bool throwOnError)
 		{
-			object proxy = NetOffice.RunningObjectTable.GetActiveProxyFromROT("%Component%","%Class%", throwOnError);
+			object proxy  = NetOffice.ProxyService.GetActiveInstance("%Component%","%Class%", throwOnError);
 			if(null != proxy)
 				return new NetOffice.%Component%Api.%Class%(null, proxy);
 			else
