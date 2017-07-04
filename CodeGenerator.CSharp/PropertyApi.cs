@@ -701,7 +701,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         if ("" == objectArrayField)
                             methodBody += tabSpace + "\tICOMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         else
-                            methodBody += tabSpace + "\tICOMObject" + arrayField + " newObject = NetOffice.Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
+                            methodBody += tabSpace + "\tICOMObject" + arrayField + " newObject = Factory.CreateObject" + arrayName + "FromComProxy(this, " + objectArrayField + "returnItem);\r\n";
                         methodBody += "\t%modifiers%";
                         methodBody += tabSpace + "return newObject;\r\n";
                         methodBody += tabSpace + "}\r\n";
