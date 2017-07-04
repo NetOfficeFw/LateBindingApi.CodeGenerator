@@ -277,12 +277,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if (faceName == "FormatConditions" && faceNode.Parent.Parent.Attribute("Name").Value == "Excel")
             {
-                content = content.Replace("%enumerable%", " ,IEnumerable<" + "object" + ">");
+                targetReturnType = "object";
             }
-            else
-            {
-                content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
-            }
+
+            content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
 
             versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
             if (HasCustomAttribute(enumNode))
