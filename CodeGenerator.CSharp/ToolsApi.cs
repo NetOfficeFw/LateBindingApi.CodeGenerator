@@ -587,6 +587,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string lang1033 = String.Format("{0}{1}", item, ".1033.xml");
 
                 string contentFile = RessourceApi.ReadString("Tools.Office.Dialogs." + item + ".txt");
+                string contentLang1031 = RessourceApi.ReadString("Tools.Office.Dialogs." + lang1031);
+                string contentLang1033 = RessourceApi.ReadString("Tools.Office.Dialogs." + lang1033);
                 string contentDesignerFile = RessourceApi.ReadString("Tools.Office.Dialogs." + item + ".Designer.txt");
                 string contentResFile = RessourceApi.ReadString("Tools.Office.Dialogs." + item + ".rtxt");
 
@@ -608,8 +610,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                        "\t\t\t<DependentUpon>" + item + ".cs" + "</DependentUpon>" + "\r\n" +
                        "\t\t</EmbeddedResource>" + "\r\n";
 
-                System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + lang1031), contentFile);
-                System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + lang1033), contentFile);
+                System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + lang1031), contentLang1031);
+                System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + lang1033), contentLang1033);
 
                 result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + lang1031 + "\"/>" + "\r\n";
                 result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + lang1033 + "\"/>" + "\r\n";
