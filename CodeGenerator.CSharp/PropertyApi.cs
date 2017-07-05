@@ -553,6 +553,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     result = result.Replace("%%", "");
             }
 
+            // HACK: special handling for Moniker getter as it conflicts with class Moniker
+            if (name == "Moniker")
+            {
+                return result;
+            }
 
             if (isOptionalConflicted)
             {
