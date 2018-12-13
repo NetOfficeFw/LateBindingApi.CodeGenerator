@@ -17,14 +17,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal DerivedManager(CSharpGenerator parent, XDocument document)
         {
             _parent = parent;
-            _document = document;   
+            _document = document;
         }
 
         public void ScanForDerived()
         {
             _derived = new XDocument();
             _derived.Add(new XElement("Document"));
-            
+
             ScanForDerived("DispatchInterfaces", "Interface");
             ScanForDerived("Interfaces", "Interface");
             ScanForDerived("CoClasses", "CoClass");
@@ -42,8 +42,15 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 foreach (XElement itemRef in itemFace.Element("Inherited").Elements("Ref"))
                 {
                     string key = itemRef.Attribute("Key").Value;
-                    XElement face = CSharpGenerator.GetInterfaceOrClassFromKey(key);
-                    AddType(face);
+                    try
+                    {
+                        XElement face = CSharpGenerator.GetInterfaceOrClassFromKey(key);
+                        AddType(face);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to find derived type with key '{key}'. Skipping the type...");
+                    }
                 }
             }
         }
@@ -63,7 +70,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private XElement GetTypeByName(XElement projectNode, string name)
         {
-        
+
             XElement node = (from a in projectNode.Element("DispatchInterfaces").Elements("Interface")
                              where a.Attribute("Name").Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)
                              select a).FirstOrDefault();
@@ -85,7 +92,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null != node)
                 return node;
 
-            throw new Exception("name not found " + name);           
+            throw new Exception("name not found " + name);
         }
 
         private bool HasAttriute(XElement node, string attributeName)
@@ -102,8 +109,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private XElement GetProjectNode(XElement returnValue)
         {
             XElement projectNode = returnValue.Parent;
-            while (projectNode.Name != "Project")            
-                projectNode = projectNode.Parent;            
+            while (projectNode.Name != "Project")
+                projectNode = projectNode.Parent;
 
             return projectNode;
         }
@@ -119,7 +126,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 XElement projectNode = GetProjectNode(returnValue);
                 XElement interfaceNode = GetTypeByName(projectNode, returnValue.Attribute("Type").Value as string);
                 string id = interfaceNode.Attribute("Key").Value;
-                return IsDerived(id);                    
+                return IsDerived(id);
             }
             else
             {
