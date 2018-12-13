@@ -8,6 +8,7 @@ using LateBindingApi.CodeGenerator.ComponentAnalyzer;
 using NLog;
 
 using LateBindingApi.CodeGenerator.CSharp;
+using LibGit2Sharp;
 
 namespace LateBindingApi.CodeGenerator.CodeGen
 {
@@ -41,9 +42,19 @@ namespace LateBindingApi.CodeGenerator.CodeGen
 
             Log.Info($@"Project file loaded in {sw.Elapsed} ({sw.ElapsedMilliseconds}ms).");
 
-            if (Directory.Exists(options.OutputFolder))
+            if (!Directory.Exists(options.OutputFolder))
             {
-                Directory.Delete(options.OutputFolder, recursive: true);
+                Directory.CreateDirectory(options.OutputFolder);
+            }
+
+            if (!Directory.Exists(Path.Combine(options.OutputFolder, ".git")))
+            {
+                Repository.Init(options.OutputFolder);
+            }
+            
+            if (Directory.Exists(Path.Combine(options.OutputFolder, "NetOffice")))
+            {
+                Directory.Delete(Path.Combine(options.OutputFolder, "NetOffice"), recursive: true);
             }
 
             var csSettings = new Settings();
@@ -70,6 +81,20 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             generator.Progress = new Progress<string>(GeneratorProgress);
             var elapsedTime = await generator.Generate(analyzer.Document, CancellationToken.None);
             Log.Info($@"Code generated in {elapsedTime} ({elapsedTime.TotalMilliseconds}ms).");
+
+            using (var repo = new Repository(options.OutputFolder))
+            {
+                Commands.Stage(repo, "*");
+
+                var date = DateTimeOffset.Now;
+                var datetime = date.ToLocalTime().LocalDateTime.ToLongDateString();
+                var unix = date.ToUnixTimeSeconds();
+
+                var signature = new Signature("Jozef Izso", "jozef.izso@gmail.com", date);
+                var commit = repo.Commit($"NetOffice build at {unix} ({datetime})", signature, signature);
+
+                Log.Info($"Build output commited. {commit.Sha}");
+            }
 
             Log.Info("Done.");
 
