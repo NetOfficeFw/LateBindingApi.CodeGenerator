@@ -16,15 +16,10 @@ namespace LateBindingApi.CodeGenerator.CodeGen
     {
         private static readonly Logger Log = LogManager.GetLogger(nameof(Program));
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledException);
 
-            MainAsync(args).GetAwaiter().GetResult();
-        }
-
-        private static async Task MainAsync(string[] args)
-        {
             Options options;
             if (!Options.TryParse(args, out options))
             {
