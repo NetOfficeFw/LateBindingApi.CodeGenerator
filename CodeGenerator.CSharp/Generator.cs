@@ -59,7 +59,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         public string Name
         {
-            get 
+            get
             {
                 return "C#";
             }
@@ -110,14 +110,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         private XDocument CreateWorkingCopy()
-        {            
+        {
             XDocument document = new XDocument(_document);
             return document;
         }
 
         internal static  XDocument LinkFileDocument
         {
-            get 
+            get
             {
                 if (null == _linkFileDocument)
                     _linkFileDocument = XDocument.Load(Settings.LinkFilePath);
@@ -160,7 +160,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             this.DoUpdate("Scan for missed enumerators", token);
             _enumerators = new FakedEnumeratorManager(this, _document);
             _enumerators.ScanForMissedEnumerators();
-            
+
             this.DoUpdate("Scan for optional parameter methods", token);
             _customMethods = new CustomMethodManager(this, _document);
             _customMethods.ScanForOptionalMethods();
@@ -168,7 +168,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             this.DoUpdate("Scan for name conflicts", token);
             ConflictManager conflictManager = new ConflictManager(this, _document);
             conflictManager.ScanForConflicts();
-             
+
             this.DoUpdate("Scan for CoClasses with multiple inherites", token);
             InheritedInterfaceManager inheritedManager = new InheritedInterfaceManager(this, _document);
             inheritedManager.ValidateMultipleCoClassInherited();
@@ -185,7 +185,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
- 
+
                 this.DoUpdate("Create project " + project.Attribute("Name").Value, token);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
@@ -201,31 +201,31 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string toolsInclude = ToolsApi.ConvertToolsToFiles(project, _settings, solutionFolder);
 
-                string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);                
+                string classesIncludes = CoClassApi.ConvertCoClassesToFiles(project, project.Element("CoClasses"), _settings, solutionFolder);
                 string factoryInclude = ProjectApi.SaveFactoryFile(solutionFolder, project);
 
                 assemblyInfo = ProjectApi.ReplaceAssemblyAttributes(_settings, solutionFolder, assemblyInfo, project, typeDefsInclude);
                 projectFile = ProjectApi.ReplaceProjectAttributes(solutionFolder, projectFile, _settings, project, enumIncludes, constIncludes,
-                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, toolsInclude, 
+                                        faceIncludes, dispatchIncludes, classesIncludes, eventIncludes, modulesInclude, recordsInclude, toolsInclude,
                                         factoryInclude, referencedLibraries);
 
                 ProjectApi.SaveAssemblyInfoFile(solutionFolder, assemblyInfo, project);
                 ProjectApi.SaveProjectFile(solutionFolder, projectFile, project);
             }
-            
+
             this.DoUpdate("Create Solution", token);
             string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);
             SolutionApi.SaveSolutionFile(_settings, solutionFolder, solutionFile, solution);
-                
+
             SolutionApi.SaveApiProject(_settings, GetProjectApiPath(), solutionFolder);
 
             if (true == _settings.OpenFolder)
                 System.Diagnostics.Process.Start(solutionFolder);
         }
- 
+
         #endregion
-    
+
         #region Static Methods
 
         internal static string ConvertTypeToConvertCall(string fullTypeName)
@@ -252,7 +252,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static bool IsDuplicated(string id)
         {
-            return _dublettes.IsDuplicated(id);   
+            return _dublettes.IsDuplicated(id);
         }
 
         internal static bool IsDerivedReturnValue(XElement returnValue)
@@ -298,8 +298,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 return targetNode;
             }
             else
-            { 
-            
+            {
+
             }
             return null;
                                // _x0037_9b19a83-a79f-446c-9b7e-9b595e918e40
@@ -327,10 +327,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if (null != node)
                 return node;
-            
+
             throw new Exception("key not found " + key);
         }
- 
+
         internal static string GetProjectApiPath()
         {
             var workingDir = Environment.CurrentDirectory;
@@ -432,6 +432,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         XElement projectNode = (from a in value.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
                                                 where a.Attribute("Key").Value.Equals(refProjectKey)
                                                 select a).FirstOrDefault();
+
+                        // TODO: Implement logging
+                        if (projectNode == null)
+                        {
+                            var isEnum = value.Attribute("IsEnum").Value;
+                            var isExternal = value.Attribute("IsExternal").Value;
+                            var isComProxy = value.Attribute("IsComProxy").Value;
+
+                            Console.WriteLine($"Failed to find project configuration for key {refProjectKey}. Type='{type}', IsComProxy={isComProxy}, IsExternal={isExternal}, IsEnum={isEnum}");
+                            return "";
+                        }
+
                         return projectNode.Attribute("Namespace").Value + ".Enums.";
                     }
                 }
@@ -450,6 +462,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         XElement projectNode = (from a in value.Document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
                                                 where a.Attribute("Key").Value.Equals(refProjectKey)
                                                 select a).FirstOrDefault();
+
+                        // TODO: Implement logging
+                        if (projectNode == null)
+                        {
+                            var isExternal = value.Attribute("IsExternal").Value;
+                            var isComProxy = value.Attribute("IsComProxy").Value;
+
+                            Console.WriteLine($"Failed to find project configuration for key {refProjectKey}. Type='{type}', IsComProxy={isComProxy}, IsExternal={isExternal}");
+                            return "";
+                        }
                         return projectNode.Attribute("Namespace").Value + ".";
                     }
                 }
@@ -487,7 +509,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (!found)
                 list.Add(value);
         }
-        
+
         /// <summary>
         /// returns support libary versions for entityNode
         /// </summary>
@@ -654,7 +676,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return 0;
         }
 
-         
+
 
         /// <summary>
         /// returns support libary versions for entityNode as string
@@ -678,7 +700,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             foreach (string versionAttribute in listVersions)
                 res += versionAttribute + ",";
-             
+
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
