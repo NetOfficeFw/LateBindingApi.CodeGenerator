@@ -66,7 +66,7 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             csSettings.UseSigning = true;
 
             csSettings.VBOptimization = false;
-            csSettings.AddTestApp = false;
+            csSettings.AddTestApp = true;
             csSettings.OpenFolder = false;
 
             Log.Info($@"Generating code to '{options.OutputFolder}'");
