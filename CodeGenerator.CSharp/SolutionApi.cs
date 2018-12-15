@@ -23,7 +23,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (settings.Framework == "4.0")
             {
                 solutionFile = solutionFile.Replace("%FormatVersion%", "12.00");
-                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual Studio 14\r\nVisualStudioVersion = 14.0.23107.0\r\nMinimumVisualStudioVersion = 10.0.40219.1");
+                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual Studio 14\r\nVisualStudioVersion = 14.0.25420.1\r\nMinimumVisualStudioVersion = 10.0.40219.1");
             }
             else
             {
