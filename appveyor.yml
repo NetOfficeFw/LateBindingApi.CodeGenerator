@@ -3,7 +3,7 @@
 # AppVeyor configuration
 #
 
-version: '0.9.0.{build}-alpha'
+version: '0.9.1.{build}-alpha'
 
 branches:
   except:
@@ -19,8 +19,8 @@ configuration:
 assembly_info:
   patch: true
   file: AssemblySharedInfo.cs
-  assembly_version: '0.9.0.{build}'
-  assembly_file_version: '0.9.0.{build}'
+  assembly_version: '0.9.1.{build}'
+  assembly_file_version: '0.9.1.{build}'
   assembly_informational_version: '{version} ({branch})'
 
 before_build:
