@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NetOffice.Tools
 {
@@ -47,7 +45,11 @@ namespace NetOffice.Tools
         /// <summary>
         ///  the error is occured in protected virtual Factory CreateFactory()
         /// </summary>
-        CreateFactory = 7
+        CreateFactory = 7,
 
+        /// <summary>
+        /// the error is occured while NetOffice try to create the custom addin object instance
+        /// </summary>
+        CreateCustomAddinInstance = 8        
     }
 }

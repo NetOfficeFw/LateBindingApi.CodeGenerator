@@ -15,69 +15,6 @@ namespace NetOffice
         #region Nested
 
         /// <summary>
-        /// Message Added delegate
-        /// </summary>
-        /// <param name="sender">sender instance</param>
-        /// <param name="message">new message</param>
-        public delegate void MessageAddedHandler(DebugConsole sender, ConsoleMessage message);
-
-        /// <summary>
-        /// Message Removed delegate
-        /// </summary>
-        /// <param name="sender">sender instance</param>
-        /// <param name="message">removed message</param>
-        /// <param name="index">former message index</param>
-        public delegate void MessageRemovedHandler(DebugConsole sender, ConsoleMessage message, int index);
-
-        /// <summary>
-        /// Message Clear delegate
-        /// </summary>
-        /// <param name="sender">sender instance</param>
-        public delegate void MessageClearHandler(DebugConsole sender);
-
-        /// <summary>
-        /// Bindable list wrapper
-        /// </summary>
-        /// <typeparam name="T">T as any</typeparam>
-        public class TypedList<T> : List<T>, ITypedList where T :class
-        {
-            /// <summary>
-            /// Creates an instance of the class
-            /// </summary>
-            public TypedList()
-            {  
-            }
-
-            /// <summary>
-            /// Creates an instance of the class
-            /// </summary>
-            /// <param name="list">list to copy</param>
-            public TypedList(IList<T> list) : base(list)
-            {
-            }
-
-            /// <summary>
-            /// Returns informations about T
-            /// </summary>
-            /// <param name="listAccessors">attributes</param>
-            /// <returns>type description</returns>
-            public PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors)
-            {
-                return TypeDescriptor.GetProperties(typeof(T));
-            }
-
-            /// <summary>
-            /// Unsupported
-            /// </summary>
-            /// <param name="listAccessors"></param>
-            /// <returns></returns>
-            public string GetListName(PropertyDescriptor[] listAccessors)
-            {
-                return String.Empty;
-            }
-        }
-
-        /// <summary>
         /// Console Message Kind
         /// </summary>
         public enum MessageKind
@@ -139,6 +76,15 @@ namespace NetOffice
             /// Kind of given message
             /// </summary>
             public MessageKind Kind { get; private set; }
+
+            /// <summary>
+            /// Returns a System.String that represents the instance
+            /// </summary>
+            /// <returns></returns>
+            public override string ToString()
+            {
+                return Message;
+            }
         }
 
         /// <summary>
@@ -157,7 +103,7 @@ namespace NetOffice
             {
                 PipeName = pipeName;
                 Text = text;
-                Error = error;                
+                Error = error;
                 DisableSharedOutput = disableSharedOutput;
             }
 
@@ -196,15 +142,38 @@ namespace NetOffice
             public bool DisableSharedOutput { get; set; }
         }
 
+        /// <summary>
+        /// Message Added delegate
+        /// </summary>
+        /// <param name="sender">sender instance</param>
+        /// <param name="message">new message</param>
+        public delegate void MessageAddedHandler(DebugConsole sender, ConsoleMessage message);
+
+        /// <summary>
+        /// Message Removed delegate
+        /// </summary>
+        /// <param name="sender">sender instance</param>
+        /// <param name="message">removed message</param>
+        /// <param name="index">former message index</param>
+        public delegate void MessageRemovedHandler(DebugConsole sender, ConsoleMessage message, int index);
+
+        /// <summary>
+        /// Message Clear delegate
+        /// </summary>
+        /// <param name="sender">sender instance</param>
+        public delegate void MessageClearHandler(DebugConsole sender);
+
         #endregion
 
         #region Fields
 
-        private static object _thisLock = new object();
+        private static DebugConsole _default;
+
+        private object _thisLock = new object();
 
         private static object _sharedLock = new object();
         
-        private TypedList<ConsoleMessage> _messageList = new TypedList<ConsoleMessage>();
+        private List<ConsoleMessage> _messageList = new List<ConsoleMessage>();
 
         private string _name = "";
 
@@ -293,8 +262,7 @@ namespace NetOffice
 
             }
         }
-        private static DebugConsole _default;
-
+      
         /// <summary>
         /// Name of the Console instance
         /// </summary>
@@ -377,8 +345,8 @@ namespace NetOffice
         /// <summary>
         /// Write log message
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="args"></param>
+        /// <param name="message">given message as any</param>
+        /// <param name="args">message arguments</param>
         public void WriteLine(string message, params object[] args)
         {
             lock (_thisLock)
@@ -425,7 +393,17 @@ namespace NetOffice
         /// <summary>
         /// Write log message
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="any">given object as any</param>
+        public void WriteLine(object any)
+        {
+            string message = null != any ? any.ToString() : "<null>";
+            WriteLine(message);
+        }
+
+        /// <summary>
+        /// Write log message
+        /// </summary>
+        /// <param name="message">given message as any</param>
         public void WriteLine(string message)
         {
             lock (_thisLock)
@@ -452,12 +430,11 @@ namespace NetOffice
                         // do nothing
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("Unkown Log Mode.");
+                        throw new ArgumentOutOfRangeException("Unknown Log Mode.");
                 }
 
                 TryWritePipe(output);
-            }
-    
+            }    
         }
 
         /// <summary>
@@ -481,7 +458,7 @@ namespace NetOffice
         private void AppendToLogFile(string message)
         {
             if (null == FileName)
-                throw new NetOfficeException("FileName not set.");
+                throw new NetOfficeException("Filename not set.");
 
             System.IO.File.AppendAllText(FileName, message + Environment.NewLine, Encoding.UTF8);
         }
@@ -540,7 +517,7 @@ namespace NetOffice
             _messageList.Add(message);
             RaiseMessageAdded(message);
 
-            if (_messageList.Count >= 1010)
+            if (_messageList.Count >= 110)
             {
                 while (_messageList.Count >= 1000)
                 {

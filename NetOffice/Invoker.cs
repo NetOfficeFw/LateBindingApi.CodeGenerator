@@ -4,11 +4,13 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Text;
+using NetOffice.Exceptions;
+using NetOffice.Availity;
 
 namespace NetOffice
 {
     /// <summary>
-    /// Invoke helper functions
+    /// Invokes ICOMObject instances
     /// </summary>
     public class Invoker
     {
@@ -105,8 +107,8 @@ namespace NetOffice
 
         #endregion
 
-        #region Method
-
+        #region Method Invokes
+        
         /// <summary>
         /// Perform method as latebind call without parameters 
         /// </summary>
@@ -137,23 +139,61 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
               
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Method);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
+            }
+            catch (Exception throwedException)
+            {             
+                Console.WriteException(throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray), 
+                    throwedException);
+            }
+        }
+
+        /// <summary>
+        /// Perform method as latebind call with parameters
+        /// </summary>
+        /// <param name="comObject">target object</param>
+        /// <param name="name">name of method</param>
+        /// <param name="paramsArray">array with parameters</param> 
+        /// <param name="value">value to be set</param>
+        public void Method(ICOMObject comObject, string name, object[] paramsArray, object value)
+        {
+            try
+            {
+                ValidateComObjectIsAlive(comObject);
+
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
+
+                object[] newParamsArray = new object[paramsArray.Length + 1];
+                for (int i = 0; i < paramsArray.Length; i++)
+                    newParamsArray[i] = paramsArray[i];
+                newParamsArray[newParamsArray.Length - 1] = ValidateParam(value);
+
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertySet);
+
+                comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, newParamsArray, Settings.Default.ThreadCulture);
+
+                if (measureStarted)
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, value);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -168,20 +208,21 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Method);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray), 
+                    throwedException);
             }
         }
 
@@ -199,8 +240,9 @@ namespace NetOffice
                 Type type = null;
 
                 ICOMObject wrapperInstance = comObject as ICOMObject;
-                if (null != wrapperInstance && wrapperInstance.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                if (null != wrapperInstance)
+                    ValidateComObjectIsAlive(wrapperInstance);
+
                 if (null != wrapperInstance)
                 {
                     target = wrapperInstance.UnderlyingObject;
@@ -214,17 +256,19 @@ namespace NetOffice
 
                 bool measureStarted = false;
                 if(null != wrapperInstance)
-                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name, PerformanceTrace.CallType.Method);
+                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 type.InvokeMember(name, BindingFlags.InvokeMethod, null, target, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -239,23 +283,24 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Method);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.Default.ThreadCulture, null);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -269,25 +314,26 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, null, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method), 
+                    throwedException);
             }
         }
 
@@ -301,26 +347,27 @@ namespace NetOffice
         public object MethodReturn(ICOMObject comObject, string name, object[] paramsArray)
         {
             try
-            {                
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+            {
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -336,22 +383,23 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
                
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Name, comObject.InstanceType.Name, name);
                 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -367,31 +415,32 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.Default.ThreadCulture, null);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
                 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
         #endregion
 
-        #region Method (BindingFlags.InvokeMethod)
+        #region Method (BindingFlags.InvokeMethod) Invokes
 
         /// <summary>
         /// Perform method as latebind call without parameters 
@@ -423,23 +472,24 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
                 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Method);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -454,20 +504,21 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Method);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray), 
+                    throwedException);
             }
         }
 
@@ -485,8 +536,9 @@ namespace NetOffice
                 Type type = null;
 
                 ICOMObject wrapperInstance = comObject as ICOMObject;
-                if (null != wrapperInstance && wrapperInstance.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                if (null != wrapperInstance)
+                    ValidateComObjectIsAlive(wrapperInstance);
+
                 if (null != wrapperInstance)
                 {
                     target = wrapperInstance.UnderlyingObject;
@@ -500,17 +552,19 @@ namespace NetOffice
 
                 bool measureStarted = false;
                 if (null != wrapperInstance)
-                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name, PerformanceTrace.CallType.Method);
+                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 type.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, target, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -525,23 +579,24 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.Default.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.Default.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Method);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Method);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.Default.ThreadCulture, null);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
             }
             catch (Exception throwedException)
             {
                 DebugConsole.Default.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -555,25 +610,26 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, null, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method),
+                    throwedException);
             }
         }
 
@@ -588,25 +644,26 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
                 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -622,22 +679,23 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
@@ -653,31 +711,32 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Method)))
-                    throw new EntityNotSupportedException(string.Format("Method {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Method)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.Function);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.Function);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.InvokeMethod | BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.Default.ThreadCulture, null);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
                 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new MethodCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.Method, paramsArray),
+                    throwedException);
             }
         }
 
         #endregion
 
-        #region Property
+        #region Property Invokes
 
         /// <summary>
         /// Perform property get as latebind call with return value
@@ -693,8 +752,9 @@ namespace NetOffice
                 Type type = null;
 
                 ICOMObject wrapperInstance = comObject as ICOMObject;
-                if (null != wrapperInstance && wrapperInstance.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                if (null != wrapperInstance)
+                    ValidateComObjectIsAlive(wrapperInstance);
+
                 if (null != wrapperInstance)
                 {
                     target = wrapperInstance.UnderlyingObject;
@@ -708,19 +768,21 @@ namespace NetOffice
 
                 bool measureStarted = false;
                 if (null != wrapperInstance)
-                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name, PerformanceTrace.CallType.PropertyGet);
+                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name, PerformanceTrace.CallType.PropertyGet);
 
                 object returnValue = type.InvokeMember(name, BindingFlags.GetProperty, null, target, null, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertyGetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertyGet), 
+                    throwedException);
             }
         }
 
@@ -734,25 +796,26 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
              
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertyGet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertyGet);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, null, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertyGetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertyGet), 
+                    throwedException);
             }
         }
 
@@ -771,9 +834,10 @@ namespace NetOffice
                 Type type = null;
 
                 ICOMObject wrapperInstance = comObject as ICOMObject;
-                if (null != wrapperInstance && wrapperInstance.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
-                if(null != wrapperInstance)
+                if (null != wrapperInstance)
+                    ValidateComObjectIsAlive(wrapperInstance);
+
+                if (null != wrapperInstance)
                 {
                     target = wrapperInstance.UnderlyingObject;
                     type = wrapperInstance.UnderlyingType;
@@ -786,19 +850,21 @@ namespace NetOffice
 
                 bool measureStarted = false;
                 if(null != wrapperInstance)
-                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name, PerformanceTrace.CallType.PropertyGet);
+                    measureStarted = Settings.PerformanceTrace.StartMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name, PerformanceTrace.CallType.PropertyGet);
 
                 object returnValue = type.InvokeMember(name, BindingFlags.GetProperty, null, target, paramsArray, Settings.Default.ThreadCulture);
              
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceComponentName, wrapperInstance.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(wrapperInstance.InstanceType.Namespace, wrapperInstance.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertyGetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertyGet),
+                    throwedException);
             }
         }
         
@@ -813,25 +879,26 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertyGet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertyGet);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertyGetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertyGet, paramsArray),
+                    throwedException);
             }
         }
 
@@ -847,22 +914,23 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertyGet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertyGet);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, Settings.Default.ThreadCulture);
                 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertyGetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertyGet, paramsArray), 
+                    throwedException);
             }
         }
 
@@ -878,25 +946,26 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertyGet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertyGet);
 
                 object returnValue = comObject.UnderlyingType.InvokeMember(name, BindingFlags.GetProperty, null, comObject.UnderlyingObject, paramsArray, paramModifiers, Settings.Default.ThreadCulture, null);
               
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name);
 
                 return returnValue;
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertyGetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertyGet, paramsArray),
+                    throwedException);
             }
         }
 
@@ -911,28 +980,29 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
 
                 object[] newParamsArray = new object[paramsArray.Length + 1];
                 for (int i = 0; i < paramsArray.Length; i++)
                     newParamsArray[i] = paramsArray[i];
-                newParamsArray[newParamsArray.Length - 1] = value;
+                newParamsArray[newParamsArray.Length - 1] = ValidateParam(value);
               
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertySet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertySet);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, newParamsArray, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, value);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, value);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertySetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertySet, paramsArray),
+                    throwedException);
             }
         }
 
@@ -948,28 +1018,29 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
 
                 object[] newParamsArray = new object[paramsArray.Length + 1];
                 for (int i = 0; i < paramsArray.Length; i++)
                     newParamsArray[i] = paramsArray[i];
                 newParamsArray[newParamsArray.Length - 1] = value;
               
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertySet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertySet);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, newParamsArray, paramModifiers, Settings.Default.ThreadCulture, null);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, value);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, value);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertySetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertySet, paramsArray), 
+                    throwedException);
             }
         }
 
@@ -983,23 +1054,24 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
              
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertySet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertySet);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[] { value }, Settings.Default.ThreadCulture);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, value);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, value);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertySetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertySet),
+                    throwedException);
             }
         }
 
@@ -1014,23 +1086,24 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
               
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertySet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertySet);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, new object[] { value }, paramModifiers, Settings.Default.ThreadCulture, null);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, value);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, value);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertySetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertySet), 
+                    throwedException);
             }
         }
 
@@ -1045,23 +1118,24 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
                 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertySet);
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertySet);
 
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, value, paramModifiers, Settings.Default.ThreadCulture, null);
 
                 if (measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, value);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, value);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertySetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertySet), 
+                    throwedException);
             }
         }
 
@@ -1075,35 +1149,36 @@ namespace NetOffice
         {
             try
             {
-                if (comObject.IsDisposed)
-                    throw new ObjectDisposedException("COMObject");
+                ValidateComObjectIsAlive(comObject);
 
-                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportEntityType.Property)))
-                    throw new EntityNotSupportedException(string.Format("Property {0} is not available.", name));
+                if ((Settings.EnableSafeMode) && (!comObject.EntityIsAvailable(name, SupportedEntityType.Property)))
+                    throw new EntityNotSupportedException(name);
 
-                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, PerformanceTrace.CallType.PropertySet);
-
+                bool measureStarted = Settings.PerformanceTrace.StartMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, PerformanceTrace.CallType.PropertySet);
+                
                 comObject.UnderlyingType.InvokeMember(name, BindingFlags.SetProperty, null, comObject.UnderlyingObject, value, Settings.Default.ThreadCulture);
 
                 if(measureStarted)
-                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceComponentName, comObject.InstanceName, name, value);
+                    Settings.PerformanceTrace.StopMeasureTime(comObject.InstanceType.Namespace, comObject.InstanceType.Name, name, value);
             }
             catch (Exception throwedException)
             {
                 Console.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new PropertySetCOMException(
+                    ExceptionMessageBuilder.GetExceptionMessage(throwedException, comObject, name, CallType.PropertySet), 
+                    throwedException);
             }
         }
 
         #endregion
-
+        
         #region Parameters
 
         /// <summary>
         /// Create parameter modifiers array
         /// </summary>
         /// <param name="isRef">parameter is given as ref(ByRef in Visual Basic)</param>
-        /// <returns></returns>
+        /// <returns>ParameterModifier array</returns>
         public static ParameterModifier[] CreateParamModifiers(params bool[] isRef)
         {
             if (null != isRef)
@@ -1131,7 +1206,7 @@ namespace NetOffice
                 ICOMObject comObject = param as ICOMObject;
                 if (!Object.ReferenceEquals(comObject, null))
                     param = comObject.UnderlyingObject;
-                else if (param.GetType().IsEnum)
+                else if (param is Enum)
                     param = Convert.ToInt32(param);
 
                 return param;
@@ -1176,7 +1251,9 @@ namespace NetOffice
             catch (Exception throwedException)
             {
                 DebugConsole.Default.WriteException(throwedException);
-                throw new System.Runtime.InteropServices.COMException(GetExceptionMessage(throwedException), throwedException);
+                throw new System.Runtime.InteropServices.COMException(
+                    ExceptionMessageBuilder.GetDefaultExceptionMessage(),
+                    throwedException);
             }
         }
 
@@ -1240,35 +1317,16 @@ namespace NetOffice
 
         #endregion
 
-        #region Privates
+        #region Methods
 
-        private static string GetExceptionMessage(Exception throwedException)
+        /// <summary>
+        /// Throws an ObjectDisposedException if given ICOMObject instance is already disposed.
+        /// </summary>
+        /// <param name="comObject">ICOMObject instance as any</param>
+        private static void ValidateComObjectIsAlive(ICOMObject comObject)
         {
-            switch (Settings.Default.UseExceptionMessage)
-            {
-                case ExceptionMessageHandling.CopyInnerExceptionMessageToTopLevelException:
-
-                    string message = string.Empty;
-                    while (throwedException.InnerException != null)
-                    {
-                        message = throwedException.Message;
-                        throwedException = throwedException.InnerException;
-                    }
-                    return message;
-
-                case ExceptionMessageHandling.CopyAllInnerExceptionMessagesToTopLevelException:
-
-                    string messageSummary = string.Empty;
-                    while (throwedException.InnerException != null)
-                    {
-                        messageSummary += throwedException.Message + Environment.NewLine;
-                        throwedException = throwedException.InnerException;
-                    }
-                    return messageSummary;
-
-                default:
-                    throw new NetOfficeException("ArgumentOutOfRange:Settings.CopyInnerExceptionMessage");
-            }
+            if (comObject.IsDisposed || comObject.IsCurrentlyDisposing)
+                throw new ObjectDisposedException("comObject");
         }
 
         #endregion

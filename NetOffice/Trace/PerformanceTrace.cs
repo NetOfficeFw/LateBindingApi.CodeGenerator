@@ -1,181 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace NetOffice
 {
     /// <summary>
-    /// Performance Trace Options
-    /// </summary>
-    public class PerformanceTraceSetting
-    {
-        #region Fields
-
-        private int _intervalMS = 1000;
-        private bool _enabled = false;
-
-        #endregion
-
-        #region Ctor
-
-        internal PerformanceTraceSetting(string entityName, string methodName)
-        {
-            EntityName = entityName;
-            MethodName = methodName;
-        }
-
-        internal PerformanceTraceSetting(string entityName, string methodName, int intervalMS)
-        {
-            EntityName = entityName;
-            MethodName = methodName;
-            IntervalMS = intervalMS;
-        }
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Alert limit in milliseconds. Default:1000
-        /// If a calling method or property need more(or equal) time as specified here, the alert event is fired
-        /// </summary>
-        public int IntervalMS
-        {
-            get
-            {
-                return _intervalMS;
-            }
-            set
-            {
-                if (value < 0)
-                    value = 0;
-                _intervalMS = value;
-            }
-        }
-
-        /// <summary>
-        /// Enable or disable trace alert
-        /// </summary>
-        public bool Enabled
-        {
-            get
-            {
-                return _enabled;
-            }
-            set
-            {
-                if (_enabled != value)
-                    _enabled = value;
-            }
-        }
-
-        internal string EntityName { get; private set; }
-
-        internal string MethodName { get; private set; }
-
-        internal DateTime LastCallTime { get; set; }
-
-        internal PerformanceTrace.CallType LastCallType { get; set; }
-
-        #endregion
-    }
-
-    internal class PerformanceTraceSettingCollection : List<PerformanceTraceSetting>
-    {
-        internal PerformanceTraceSettingCollection()
-        {
-            WildCard = new PerformanceTraceSetting( "*", "*");
-        }
-
-        internal PerformanceTraceSetting WildCard { get; private set; }
-
-        internal PerformanceTraceSetting this[string entityName]
-        {
-            get
-            {
-                foreach (var item in this)
-                {
-                    if (item.EntityName == entityName && item.MethodName == "*")
-                        return item;
-                }
-                PerformanceTraceSetting newItem = new PerformanceTraceSetting(entityName, "*");
-                Add(newItem);
-                return newItem;
-            }
-        }
-
-        internal PerformanceTraceSetting this[string entityName, string methodName]
-        {
-            get
-            {
-                foreach (var item in this)
-                {
-                    if (item.EntityName == entityName && item.MethodName == methodName)
-                        return item;
-                }
-                PerformanceTraceSetting newItem = new PerformanceTraceSetting(entityName, methodName);
-                Add(newItem);
-                return newItem;
-            }
-        }
-
-        internal IEnumerable<PerformanceTraceSetting> GetTargetEnabledSettings(string entityName, string methodName)
-        {
-            List<PerformanceTraceSetting> list = null;
-
-            if (WildCard.Enabled)
-            {
-                list = new List<PerformanceTraceSetting>();
-                list.Add(WildCard);
-            }
-
-            foreach (var item in this)
-            {
-                if (item.Enabled && item.EntityName == entityName && (item.MethodName == methodName || item.MethodName == "*"))
-                {
-                    if (null == list)
-                        list = new List<PerformanceTraceSetting>();
-                    list.Add(item);
-                }
-            }
-
-            if (null == list)
-                return new PerformanceTraceSetting[0];
-            else
-                return list;
-        }
-
-        internal bool TryStartMeasureTime(string entityName, string methodName, PerformanceTrace.CallType callType)
-        {
-            bool result = false;
-            DateTime now = DateTime.Now;
-
-            if (WildCard.Enabled)
-            {
-                WildCard.LastCallTime = now;
-                WildCard.LastCallType = callType;
-                result = true;
-            }
-            
-            foreach (var item in this)
-            {
-                if (item.Enabled && item.EntityName == entityName && (item.MethodName == methodName || item.MethodName == "*"))
-                {
-                    item.LastCallTime = now;
-                    item.LastCallType = callType;
-                    result = true;
-                }
-            }
-
-            return result;
-        }
-    }
-
-    /// <summary>
     /// Call Level Performance Tracer
     /// </summary>
-    public class PerformanceTrace
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class PerformanceTrace : IEnumerable<KeyValuePair<string, PerformanceTraceSettingCollection>>
     {
         #region Nested
 
@@ -279,6 +114,7 @@ namespace NetOffice
 
         private object _lock;
         private Dictionary<string, PerformanceTraceSettingCollection> _repository;
+        private bool _enabled;
 
         #endregion
 
@@ -288,6 +124,13 @@ namespace NetOffice
         {
             _lock = new object();
             _repository = new Dictionary<string, PerformanceTraceSettingCollection>();
+        }
+
+        internal PerformanceTrace(Action<string> onPropertyChanged)
+        {
+            _lock = new object();
+            _repository = new Dictionary<string, PerformanceTraceSettingCollection>();
+            OnPropertyChanged = onPropertyChanged;
         }
 
         #endregion
@@ -310,6 +153,26 @@ namespace NetOffice
         #region Properties
 
         /// <summary>
+        /// Enable or disable the performance trace system
+        /// </summary>
+        [Description("Enable or disable the performance trace system"), DefaultValue(false), Category("PerformanceTrace")]
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                if (value != _enabled)
+                { 
+                    _enabled = value;
+                    OnPropertyChanged?.Invoke("PerformanceTrace.Enabled");
+                }
+            }
+        }
+
+        /// <summary>
         /// Returns performances settings instance for a NetOffice component
         /// </summary>
         /// <param name="componentName">name of the component. for example:ExcelApi</param>
@@ -328,6 +191,7 @@ namespace NetOffice
                     {
                         list = new PerformanceTraceSettingCollection();
                         _repository.Add(componentName, list);
+                        OnPropertyChanged?.Invoke("PerformanceTrace.Item");
                     }
 
                     return list.WildCard;
@@ -357,6 +221,7 @@ namespace NetOffice
                     {
                         list = new PerformanceTraceSettingCollection();
                         _repository.Add(componentName, list);
+                        OnPropertyChanged?.Invoke("PerformanceTrace.Item");
                     }
 
                     return list[entityName];
@@ -389,12 +254,18 @@ namespace NetOffice
                     {
                         list = new PerformanceTraceSettingCollection();
                         _repository.Add(componentName, list);
+                        OnPropertyChanged?.Invoke("PerformanceTrace.Item");
                     }
 
                     return list[entityName, methodName];
                 }
             }
         }
+        
+        /// <summary>
+        /// Occurs when a property value changes
+        /// </summary>
+        private Action<string> OnPropertyChanged { get; set; }
 
         #endregion
 
@@ -413,9 +284,16 @@ namespace NetOffice
 
         internal bool StartMeasureTime(string componentName, string entityName, string methodName, CallType callType)
         {
+            if (!Enabled)
+                return false;
+
             PerformanceTraceSettingCollection list = null;
             if (_repository.TryGetValue(componentName, out list))
-                return list.TryStartMeasureTime(entityName, methodName, callType);
+            {
+               
+                bool result = list.TryStartMeasureTime(entityName, methodName, callType);
+                return result;
+            }
             else
                 return false;
         }
@@ -440,6 +318,28 @@ namespace NetOffice
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region IEnumerable
+
+        /// <summary>
+        /// Sequence of all traces
+        /// </summary>
+        /// <returns>sequence</returns>
+        public IEnumerator<KeyValuePair<string, PerformanceTraceSettingCollection>> GetEnumerator()
+        {
+            return _repository.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Sequence of all traces
+        /// </summary>
+        /// <returns>sequence</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _repository.GetEnumerator();
         }
 
         #endregion
