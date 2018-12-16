@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using NetOffice;
+using NetOffice.Attributes;
 using NetOffice.Tools;
 using Visio = NetOffice.VisioApi;
 
@@ -52,11 +53,16 @@ namespace NetOffice.VisioApi.Tools
         /// Host Application Instance
         /// </summary>
         protected Visio.Application Application { get; private set; }
-        
-		/// <summary>
+
+        /// <summary>
+        /// Custom addin object if created
+        /// </summary>
+        protected internal object CustomObject { get; private set; }
+
+        /// <summary>
         /// Cached Error Method Delegate
         /// </summary>
-		private MethodInfo ErrorMethod { get; set; }
+        private MethodInfo ErrorMethod { get; set; }
 
 		/// <summary>
         /// Cached Register Error Method Delegate
@@ -120,10 +126,44 @@ namespace NetOffice.VisioApi.Tools
             ForceInitializeAttribute attribute = AttributeReflector.GetForceInitializeAttribute(Type);
             if (null != attribute)
             {
-                core.Settings.EnableDebugOutput = attribute.EnableDebugOutput;
+                core.Settings.EnableMoreDebugOutput = attribute.EnableMoreDebugOutput;
                 core.CheckInitialize();
             }
             return core;
+        }
+
+        /// <summary>
+        /// Returns an instance to publish them as addin custom object.
+        /// External code like vba can access this object if instance is available as COM component.
+        /// This object is available as Appplication.COMAddins(?).Object
+        /// </summary>
+        /// <returns>addin instance object or null(Nothing in Visual Basic)</returns>
+        protected virtual object OnCreateObjectInstance()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Try to create a custom addin object instance
+        /// </summary>
+        /// <param name="addInInst">given instance from OnConnection event</param>
+        private void TryCreateCustomObject(object addInInst)
+        {
+            try
+            {
+                CustomObject = OnCreateObjectInstance();
+                if (null != CustomObject)
+                {
+                    object[] param = new object[1];
+                    param[0] = CustomObject;
+                    addInInst.GetType().InvokeMember("Object", NetRuntimeSystem.Reflection.BindingFlags.SetProperty, null, addInInst, param);
+                }
+            }
+            catch (NetRuntimeSystem.Exception exception)
+            {
+                Factory.Console.WriteException(exception);
+                OnError(ErrorMethodKind.CreateCustomAddinInstance, exception);
+            }
         }
 
         /// <summary>
@@ -269,42 +309,90 @@ namespace NetOffice.VisioApi.Tools
 
         #region IDTExtensibility2 Members
 
-        void IDTExtensibility2.OnStartupComplete(ref Array custom)
+        void NetOffice.Tools.Native.IDTExtensibility2.OnStartupComplete(ref Array custom)
         {
-            LoadingTimeElapsed = (DateTime.Now - _creationTime);
-            Roots = OnCreateRoots();
-            RaiseOnStartupComplete(ref custom);
+            try
+            {
+                LoadingTimeElapsed = (DateTime.Now - _creationTime);
+                Roots = OnCreateRoots();
+                RaiseOnStartupComplete(ref custom);
+            }
+            catch (Exception exception)
+            {
+                Factory.Console.WriteException(exception);
+                OnError(ErrorMethodKind.OnStartupComplete, exception);
+            }
         }
 
-        void IDTExtensibility2.OnConnection(object application, ext_ConnectMode ConnectMode, object AddInInst, ref Array custom)
+        void NetOffice.Tools.Native.IDTExtensibility2.OnConnection(object application, ext_ConnectMode ConnectMode, object AddInInst, ref Array custom)
         {
-			this.Application = new Visio.Application(null, application);          
-            RaiseOnConnection(this.Application, ConnectMode, AddInInst, ref custom);
+            try
+            {
+                this.Application = new Visio.Application(null, application);
+                TryCreateCustomObject(AddInInst);
+                RaiseOnConnection(this.Application, ConnectMode, AddInInst, ref custom);
+            }
+            catch (System.Exception exception)
+            {
+                Factory.Console.WriteException(exception);
+                OnError(ErrorMethodKind.OnConnection, exception);
+            }
         }
 
-        void IDTExtensibility2.OnDisconnection(ext_DisconnectMode RemoveMode, ref Array custom)
+        void NetOffice.Tools.Native.IDTExtensibility2.OnDisconnection(ext_DisconnectMode RemoveMode, ref Array custom)
         {
-            RaiseOnDisconnection(RemoveMode, ref custom);
+            try
+            {
+                try
+                {
+                    RaiseOnDisconnection(RemoveMode, ref custom);
+                }
+                catch (NetRuntimeSystem.Exception exception)
+                {
+                    NetOffice.DebugConsole.Default.WriteException(exception);
+                }
 
-             try
-			 { 
-				 if (!Application.IsDisposed)
-                    Application.Dispose();
-			 }
-			 catch(NetRuntimeSystem.Exception exception)
-			 {
-				 NetOffice.DebugConsole.Default.WriteException(exception);
-			 }	
+                try
+                {
+                    if (!Application.IsDisposed)
+                        Application.Dispose();
+                }
+                catch (NetRuntimeSystem.Exception exception)
+                {
+                    NetOffice.DebugConsole.Default.WriteException(exception);
+                }
+            }
+            catch (System.Exception exception)
+            {
+                Factory.Console.WriteException(exception);
+                OnError(ErrorMethodKind.OnDisconnection, exception);
+            }
         }
 
-        void IDTExtensibility2.OnAddInsUpdate(ref Array custom)
+        void NetOffice.Tools.Native.IDTExtensibility2.OnAddInsUpdate(ref Array custom)
         {
-            RaiseOnAddInsUpdate(ref custom);
+            try
+            {
+                RaiseOnAddInsUpdate(ref custom);
+            }
+            catch (System.Exception exception)
+            {
+                Factory.Console.WriteException(exception);
+                OnError(ErrorMethodKind.OnAddInsUpdate, exception);
+            }
         }
 
-        void IDTExtensibility2.OnBeginShutdown(ref Array custom)
+        void NetOffice.Tools.Native.IDTExtensibility2.OnBeginShutdown(ref Array custom)
         {
-            RaiseOnBeginShutdown(ref custom);
+            try
+            {
+                RaiseOnBeginShutdown(ref custom);
+            }
+            catch (System.Exception exception)
+            {
+                Factory.Console.WriteException(exception);
+                OnError(ErrorMethodKind.OnBeginShutdown, exception);
+            }
         }
 
         #endregion
@@ -332,7 +420,12 @@ namespace NetOffice.VisioApi.Tools
         [ComRegisterFunctionAttribute, Browsable(false), EditorBrowsable( EditorBrowsableState.Never)]
         public static void RegisterFunction(Type type)
         {
-            RegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, InstallScope.System, OfficeRegisterKeyState.NeedToCreate);
+            if (null == type)
+                throw new ArgumentNullException("type");
+            if (null != type.GetCustomAttribute<DontRegisterAddinAttribute>())
+                return;
+
+            COMAddinRegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, InstallScope.System, OfficeRegisterKeyState.NeedToCreate);
         }
 
         /// <summary>
@@ -342,7 +435,12 @@ namespace NetOffice.VisioApi.Tools
         [ComUnregisterFunctionAttribute, Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
         public static void UnregisterFunction(Type type)
         {
-            UnRegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, InstallScope.System, OfficeUnRegisterKeyState.NeedToDelete);
+            if (null == type)
+                throw new ArgumentNullException("type");
+            if (null != type.GetCustomAttribute<DontRegisterAddinAttribute>())
+                return;
+
+            COMAddinUnRegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, InstallScope.System, OfficeUnRegisterKeyState.NeedToDelete);
         }
 
         /// <summary>
@@ -356,10 +454,13 @@ namespace NetOffice.VisioApi.Tools
         {
             if (null == type)
                 throw new ArgumentNullException("type");
+            if (null != type.GetCustomAttribute<DontRegisterAddinAttribute>())
+                return;
+
             InstallScope currentScope = (InstallScope)scope;
             OfficeRegisterKeyState currentKeyState = (OfficeRegisterKeyState)keyState;
 
-            RegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, currentScope, currentKeyState);
+            COMAddinRegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, currentScope, currentKeyState);
         }
 
         /// <summary>
@@ -373,10 +474,13 @@ namespace NetOffice.VisioApi.Tools
         {
             if (null == type)
                 throw new ArgumentNullException("type");
+            if (null != type.GetCustomAttribute<DontRegisterAddinAttribute>())
+                return;
+
             InstallScope currentScope = (InstallScope)scope;
             OfficeUnRegisterKeyState currentKeyState = (OfficeUnRegisterKeyState)keyState;
 
-            UnRegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, currentScope, currentKeyState);
+            COMAddinUnRegisterHandler.Proceed(type, new string[] { _addinOfficeRegistryKey }, currentScope, currentKeyState);
         }
 
         /// <summary>

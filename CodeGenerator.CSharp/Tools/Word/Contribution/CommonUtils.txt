@@ -1,10 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Text;
 
-namespace NetOffice.MSProjectApi.Tools.Utils
+namespace NetOffice.WordApi.Tools.Contribution
 {
     /// <summary>
     /// Various helper for common tasks
@@ -13,7 +10,9 @@ namespace NetOffice.MSProjectApi.Tools.Utils
     {
         #region Fields
 
-        private MSProjectApi.Application _ownerApplication;
+        private WordApi.Application _ownerApplication;
+        private FileUtils _fileUtils;
+        private ApplicationUtils _applicationUtils;
 
         #endregion
 
@@ -23,7 +22,7 @@ namespace NetOffice.MSProjectApi.Tools.Utils
         /// Creates an instance of the application
         /// </summary>
         /// <param name="application">owner application</param>
-        public CommonUtils(MSProjectApi.Application application) : base(application)
+        public CommonUtils(WordApi.Application application): base(application)
         {
             _ownerApplication = application;
         }
@@ -33,7 +32,7 @@ namespace NetOffice.MSProjectApi.Tools.Utils
         /// </summary>
         /// <param name="application">owner application</param>
         /// <param name="ownerAssembly">owner assembly</param>
-        public CommonUtils(MSProjectApi.Application application, Assembly ownerAssembly) : base(application, ownerAssembly)
+        public CommonUtils(WordApi.Application application, Assembly ownerAssembly) : base(application, ownerAssembly)
         {
             if (null == application)
                 throw new ArgumentNullException("application");
@@ -79,14 +78,62 @@ namespace NetOffice.MSProjectApi.Tools.Utils
         #region Properties
 
         /// <summary>
-        /// Encapsulate the owner application to make accessible for child utils
+        /// File related utils
         /// </summary>
-        public new MSProjectApi.Application OwnerApplication
+        public FileUtils File
         {
             get
             {
-                return base.OwnerApplication as MSProjectApi.Application;
+                if (null == _fileUtils)
+                    _fileUtils = OnCreateFileUtils();
+                return _fileUtils;
             }
+        }
+
+        /// <summary>
+        /// Application related utils
+        /// </summary>
+        public ApplicationUtils Application
+        {
+            get 
+            {
+                if (null == _applicationUtils)
+                    _applicationUtils = OnCreateApplicationUtils();
+                return _applicationUtils;
+            }
+        }
+
+        /// <summary>
+        /// Encapsulate the owner application to make accessible for child utils
+        /// </summary>
+        public new WordApi.Application OwnerApplication
+        {
+            get
+            {
+                return base.OwnerApplication as WordApi.Application;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Creates an instance of FileUtils
+        /// </summary>
+        /// <returns>instance of FileUtils</returns>
+        protected internal virtual FileUtils OnCreateFileUtils()
+        {
+            return new FileUtils(this);
+        }
+
+        /// <summary>
+        /// Creates an instance of ApplicationUtils
+        /// </summary>
+        /// <returns>instance of ApplicationUtils</returns>
+        protected internal virtual ApplicationUtils OnCreateApplicationUtils()
+        {
+            return new ApplicationUtils(this);
         }
 
         #endregion

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Text;
 
-namespace NetOffice.MSProjectApi.Tools.Utils
+namespace NetOffice.ExcelApi.Tools.Contribution
 {
     /// <summary>
     /// Various helper for common tasks
@@ -13,7 +10,8 @@ namespace NetOffice.MSProjectApi.Tools.Utils
     {
         #region Fields
 
-        private MSProjectApi.Application _ownerApplication;
+        private ExcelApi.Application _ownerApplication;
+        private FileUtils _fileUtils; 
 
         #endregion
 
@@ -23,7 +21,7 @@ namespace NetOffice.MSProjectApi.Tools.Utils
         /// Creates an instance of the application
         /// </summary>
         /// <param name="application">owner application</param>
-        public CommonUtils(MSProjectApi.Application application) : base(application)
+        public CommonUtils(ExcelApi.Application application) : base(application)
         {
             _ownerApplication = application;
         }
@@ -33,7 +31,7 @@ namespace NetOffice.MSProjectApi.Tools.Utils
         /// </summary>
         /// <param name="application">owner application</param>
         /// <param name="ownerAssembly">owner assembly</param>
-        public CommonUtils(MSProjectApi.Application application, Assembly ownerAssembly) : base(application, ownerAssembly)
+        public CommonUtils(ExcelApi.Application application, Assembly ownerAssembly) : base(application, ownerAssembly)
         {
             if (null == application)
                 throw new ArgumentNullException("application");
@@ -57,7 +55,7 @@ namespace NetOffice.MSProjectApi.Tools.Utils
         /// <param name="owner">addin owner</param>
         /// <param name="isAutomation">indicates the host application is currently in automation</param>
         /// <param name="ownerAssembly">owner application</param>
-        internal CommonUtils(NetOffice.Tools.COMAddinBase owner, bool isAutomation, Assembly ownerAssembly) : base(owner, isAutomation, ownerAssembly)
+        internal CommonUtils(NetOffice.Tools.COMAddinBase owner, bool isAutomation, Assembly ownerAssembly)  : base(owner, isAutomation, ownerAssembly)
         {
 
         }
@@ -79,14 +77,40 @@ namespace NetOffice.MSProjectApi.Tools.Utils
         #region Properties
 
         /// <summary>
-        /// Encapsulate the owner application to make accessible for child utils
+        /// File related utils
         /// </summary>
-        public new MSProjectApi.Application OwnerApplication
+        public FileUtils File
         {
             get
             {
-                return base.OwnerApplication as MSProjectApi.Application;
+                if (null == _fileUtils)
+                    _fileUtils = OnCreateFileUtils();
+                return _fileUtils;
             }
+        }
+
+        /// <summary>
+        /// Encapsulate the owner application to make accessible for child utils
+        /// </summary>
+        public new ExcelApi.Application OwnerApplication
+        {
+            get
+            {
+                return base.OwnerApplication as ExcelApi.Application;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Creates an instance of FileUtils
+        /// </summary>
+        /// <returns>instance of FileUtils</returns>
+        protected internal virtual FileUtils OnCreateFileUtils()
+        {
+            return new FileUtils(this);
         }
 
         #endregion
