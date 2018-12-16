@@ -1,34 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using NetOffice.Exceptions;
 
 namespace NetOffice
 {
     /// <summary>
     /// Represents a managed/wrapped COM proxy implementation 
     /// </summary>
-    public interface ICOMObject : ICOMObjectTable, ICOMObjectProxy, ICOMObjectTableDisposable, ICOMObjectEvents, ICOMObjectDisposable
+    public interface ICOMObject : ICOMObjectProxy, ICOMObjectDisposable, ICOMObjectTable, ICOMObjectTableDisposable, ICOMObjectEvents, ICOMObjectAvaility, ICloneable
     {
         /// <summary>
-        /// Returns information the proxy provides a method or property with given name at runtime
+        /// Monitor Lock
         /// </summary>
-        /// <param name="name">name of the enitity</param>
-        /// <returns>true if available, otherwise false</returns>
-        bool EntityIsAvailable(string name);
-
-        /// <summary>
-        /// Returns information the proxy provides a method or property with given name at runtime
-        /// </summary>
-        /// <param name="name">name of the enitity</param>
-        /// <param name="searchType">indicate the kind of pr0operty</param>
-        /// <returns>true if available, otherwise false</returns>
-        bool EntityIsAvailable(string name, SupportEntityType searchType);
-
-        /// <summary>
-        /// The associated console
-        /// </summary>
-        DebugConsole Console { get; }
+        object SyncRoot { get; }
 
         /// <summary>
         /// The associated factory
@@ -44,5 +27,18 @@ namespace NetOffice
         /// The associated settings
         /// </summary>
         Settings Settings { get; }
+
+        /// <summary>
+        /// The associated console
+        /// </summary>
+        DebugConsole Console { get; }
+
+        /// <summary>
+        /// Clone instance as target type of T
+        /// </summary>
+        /// <typeparam name="T">any other type to convert</typeparam>
+        /// <returns>cloned instance</returns>
+        /// <exception cref="CloneException">An unexpected error occurs.</exception>
+        T To<T>() where T : class, ICOMObject;
     }
 }
