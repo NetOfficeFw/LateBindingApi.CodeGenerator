@@ -59,7 +59,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             System.IO.File.AppendAllText(fileName, newEnum);
 
             int i = classFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + classFolder.Substring(i + 1) + "\\" + classNode.Attribute("Name").Value + ".cs" + "\" />";
+            string result = "    <Compile Include=\"" + classFolder.Substring(i + 1) + "\\" + classNode.Attribute("Name").Value + ".cs" + "\" />";
             return result;
         }
 

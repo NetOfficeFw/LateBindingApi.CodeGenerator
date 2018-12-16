@@ -281,7 +281,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string assemblyFilePath = System.IO.Path.Combine(projectPath, fileName);
             System.IO.File.WriteAllText(assemblyFilePath, factoryFile, Encoding.UTF8);
             int i = assemblyFilePath.LastIndexOf("\\");
-            return "\t\t<Compile Include=\"" +  "Utils\\" + fileName + "\" />";
+            return "    <Compile Include=\"" +  "Utils\\" + fileName + "\" />";
         }
 
         internal static void SaveAssemblyInfoFile(string path, string assemblyFile, XElement project)
