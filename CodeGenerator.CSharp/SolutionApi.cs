@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text;
@@ -119,118 +121,23 @@ namespace LateBindingApi.CodeGenerator.CSharp
             System.IO.File.WriteAllText(solutionFilePath, solutionFile, Encoding.UTF8);
         }
 
-        internal static void SaveApiProject(Settings settings, string projectApiPath, string path)
+        internal static void CopyNetOfficeProject(Settings settings, string sourceProjectPath, string targetPath)
         {
-            path = System.IO.Path.Combine(path, "NetOffice");
-            if (!System.IO.Directory.Exists(path))
-                System.IO.Directory.CreateDirectory(path);
+            targetPath = Path.Combine(targetPath, "NetOffice");
+            var sourceDir = new DirectoryInfo(sourceProjectPath);
 
-            string[] files = System.IO.Directory.GetFiles(projectApiPath);
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path, fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
+            sourceDir.CopyTo(targetPath);
 
-            if (!System.IO.Directory.Exists(path + "\\Interfaces"))
-                System.IO.Directory.CreateDirectory(path + "\\Interfaces");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Interfaces");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Interfaces", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
+            var binDir = Path.Combine(targetPath, "bin");
+            var objDir = Path.Combine(targetPath, "obj");
 
-            if (!System.IO.Directory.Exists(path + "\\Attributes"))
-                System.IO.Directory.CreateDirectory(path + "\\Attributes");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Attributes");
-            foreach (string file in files)
+            try
             {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Attributes", fileName);
-                System.IO.File.Copy(file, newFilePath);
+                Directory.Delete(binDir, true);
+                Directory.Delete(objDir, true);
             }
-
-            if (!System.IO.Directory.Exists(path + "\\Tools"))
-                System.IO.Directory.CreateDirectory(path + "\\Tools");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Tools");
-            foreach (string file in files)
+            catch (Exception)
             {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Tools", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
-
-            if (!System.IO.Directory.Exists(path + "\\Tools\\WndUtils"))
-                System.IO.Directory.CreateDirectory(path + "\\Tools\\WndUtils");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Tools\\WndUtils");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Tools\\WndUtils", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
-
-            if (!System.IO.Directory.Exists(path + "\\Exceptions"))
-                System.IO.Directory.CreateDirectory(path + "\\Exceptions");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Exceptions");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Exceptions", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
-
-            if (!System.IO.Directory.Exists(path + "\\Loader"))
-                System.IO.Directory.CreateDirectory(path + "\\Loader");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Loader");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Loader", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
-            
-            if (!System.IO.Directory.Exists(path + "\\Misc"))
-                System.IO.Directory.CreateDirectory(path + "\\Misc");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Misc");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Misc", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
-
-            if (!System.IO.Directory.Exists(path + "\\Settings"))
-                System.IO.Directory.CreateDirectory(path + "\\Settings");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Settings");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Settings", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
-
-            if (!System.IO.Directory.Exists(path + "\\Trace"))
-                System.IO.Directory.CreateDirectory(path + "\\Trace");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Trace");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Trace", fileName);
-                System.IO.File.Copy(file, newFilePath);
-            }
-
-            if (!System.IO.Directory.Exists(path + "\\Properties"))
-            System.IO.Directory.CreateDirectory(path + "\\Properties");
-            files = System.IO.Directory.GetFiles(projectApiPath + "\\Properties");
-            foreach (string file in files)
-            {
-                string fileName = System.IO.Path.GetFileName(file);
-                string newFilePath = System.IO.Path.Combine(path + "\\Properties", fileName);
-                System.IO.File.Copy(file, newFilePath);
             }
         }
 

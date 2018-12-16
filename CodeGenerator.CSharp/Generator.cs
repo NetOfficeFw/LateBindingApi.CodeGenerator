@@ -218,7 +218,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);
             SolutionApi.SaveSolutionFile(_settings, solutionFolder, solutionFile, solution);
 
-            SolutionApi.SaveApiProject(_settings, GetProjectApiPath(), solutionFolder);
+            SolutionApi.CopyNetOfficeProject(_settings, GetProjectApiPath(), solutionFolder);
 
             if (true == _settings.OpenFolder)
                 System.Diagnostics.Process.Start(solutionFolder);
