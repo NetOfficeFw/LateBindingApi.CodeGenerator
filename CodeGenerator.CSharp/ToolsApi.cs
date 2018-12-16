@@ -570,11 +570,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string file18 = RessourceApi.ReadString("Tools.Office.Dialogs.DialogLayoutSettings.txt");
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\DialogLayoutSettings.cs"), file18, Encoding.UTF8);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "DialogLayoutSettings.cs" + "\" />" + "\r\n";
+            result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "DialogLayoutSettings.cs" + "\" />" + "\r\n";
 
             string file19 = RessourceApi.ReadString("Tools.Office.Dialogs.DialogLocalizationSettings.txt");
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\DialogLocalizationSettings.cs"), file19, Encoding.UTF8);
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "DialogLocalizationSettings.cs" + "\" />" + "\r\n";
+            result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "DialogLocalizationSettings.cs" + "\" />" + "\r\n";
 
 
             string[] dialogs = new string[] { "AboutDialog", "DiagnosticsDialog", "ErrorDialog", "RichTextDialog"};
@@ -597,24 +597,24 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + item +".resx"), contentResFile, Encoding.UTF8);
 
 
-                result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + item + ".cs" + "\">" + "\r\n" +
-                            "\t\t\t<SubType>Form</SubType>" + "\r\n" +
-                            "\t\t</Compile>" + "\r\n";
+                result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + item + ".cs" + "\">" + "\r\n" +
+                            "      <SubType>Form</SubType>" + "\r\n" +
+                            "    </Compile>" + "\r\n";
 
-                result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + item + ".designer.cs" + "\">" + "\r\n" +
-                           "\t\t\t<DependentUpon>" +  item + ".cs" + "</DependentUpon>" + "\r\n" +
-                           "\t\t</Compile>" + "\r\n";
+                result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + item + ".designer.cs" + "\">" + "\r\n" +
+                           "      <DependentUpon>" +  item + ".cs" + "</DependentUpon>" + "\r\n" +
+                           "    </Compile>" + "\r\n";
 
 
-                result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + item + ".resx" + "\">" + "\r\n" +
-                       "\t\t\t<DependentUpon>" + item + ".cs" + "</DependentUpon>" + "\r\n" +
-                       "\t\t</EmbeddedResource>" + "\r\n";
+                result += "    <EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + item + ".resx" + "\">" + "\r\n" +
+                       "      <DependentUpon>" + item + ".cs" + "</DependentUpon>" + "\r\n" +
+                       "    </EmbeddedResource>" + "\r\n";
 
                 System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + lang1031), contentLang1031, Encoding.UTF8);
                 System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + lang1033), contentLang1033, Encoding.UTF8);
 
-                result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + lang1031 + "\"/>" + "\r\n";
-                result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + lang1033 + "\"/>" + "\r\n";
+                result += "    <EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + lang1031 + "\"/>" + "\r\n";
+                result += "    <EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + lang1033 + "\"/>" + "\r\n";
             }
 
 
@@ -625,17 +625,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\ToolsDialog.designer.cs"), baseDesign, Encoding.UTF8);
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\ToolsDialog.resx"), baseRes, Encoding.UTF8);
 
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "ToolsDialog.cs" + "\">" + "\r\n" +
-            "\t\t\t<SubType>Form</SubType>" + "\r\n" +
-            "\t\t</Compile>" + "\r\n";
+            result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "ToolsDialog.cs" + "\">" + "\r\n" +
+            "      <SubType>Form</SubType>" + "\r\n" +
+            "    </Compile>" + "\r\n";
 
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "ToolsDialog.designer.cs" + "\">" + "\r\n" +
-                       "\t\t\t<DependentUpon>" + "ToolsDialog.cs" + "</DependentUpon>" + "\r\n" +
-                       "\t\t</Compile>" + "\r\n";
+            result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "ToolsDialog.designer.cs" + "\">" + "\r\n" +
+                       "      <DependentUpon>" + "ToolsDialog.cs" + "</DependentUpon>" + "\r\n" +
+                       "    </Compile>" + "\r\n";
 
-            result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "ToolsDialog.resx" + "\">" + "\r\n" +
-                   "\t\t\t<DependentUpon>" + "ToolsDialog.cs" + "</DependentUpon>" + "\r\n" +
-                   "\t\t</EmbeddedResource>" + "\r\n";
+            result += "    <EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "ToolsDialog.resx" + "\">" + "\r\n" +
+                   "      <DependentUpon>" + "ToolsDialog.cs" + "</DependentUpon>" + "\r\n" +
+                   "    </EmbeddedResource>" + "\r\n";
 
 
             baseFile = RessourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.cstxt");
@@ -645,17 +645,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.designer.cs"), baseDesign, Encoding.UTF8);
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.resx"), baseRes, Encoding.UTF8);
 
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.cs" + "\">" + "\r\n" +
-                      "\t\t\t<SubType>Form</SubType>" + "\r\n" +
-                      "\t\t</Compile>" + "\r\n";
+            result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.cs" + "\">" + "\r\n" +
+                      "      <SubType>Form</SubType>" + "\r\n" +
+                      "    </Compile>" + "\r\n";
 
-            result += "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.designer.cs" + "\">" + "\r\n" +
-                      "\t\t\t<DependentUpon>" + "TrayMenuMonitorItemControl.cs" + "</DependentUpon>" + "\r\n" +
-                      "\t\t</Compile>" + "\r\n";
+            result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.designer.cs" + "\">" + "\r\n" +
+                      "      <DependentUpon>" + "TrayMenuMonitorItemControl.cs" + "</DependentUpon>" + "\r\n" +
+                      "    </Compile>" + "\r\n";
 
-            result += "\t\t<EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.resx" + "\">" + "\r\n" +
-                      "\t\t\t<DependentUpon>" + "TrayMenuMonitorItemControl.cs" + "</DependentUpon>" + "\r\n" +
-                      "\t\t</EmbeddedResource>" + "\r\n";
+            result += "    <EmbeddedResource Include=\"" + faceFolder.Substring(i + 1) + "\\Utils\\TrayMenuUtils\\" + "TrayMenuMonitorItemControl.resx" + "\">" + "\r\n" +
+                      "      <DependentUpon>" + "TrayMenuMonitorItemControl.cs" + "</DependentUpon>" + "\r\n" +
+                      "    </EmbeddedResource>" + "\r\n";
 
             return result;
         }
@@ -709,7 +709,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
 
                 File.AppendAllText(targetPath, toolResource.Content, Encoding.UTF8);
-                result.AppendLine("\t\t<Compile Include=\"" + facePath + "\\" + filename + "\" />");
+                result.AppendLine("    <Compile Include=\"" + facePath + "\\" + filename + "\" />");
             }
 
             return result.ToString();

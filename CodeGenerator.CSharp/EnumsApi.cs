@@ -36,7 +36,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             System.IO.File.AppendAllText(fileName, newEnum);
 
             int i = enumFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + enumFolder.Substring(i + 1) + "\\" + enumNode.Attribute("Name").Value + ".cs" + "\" />";
+            string result = "    <Compile Include=\"" + enumFolder.Substring(i + 1) + "\\" + enumNode.Attribute("Name").Value + ".cs" + "\" />";
             return result;
         }
 

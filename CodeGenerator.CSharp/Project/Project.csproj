@@ -38,16 +38,7 @@
 %ReferencedLibraries%  </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    %FactoryInclude%
-    %ConstInclude%
-    %EnumInclude%
-    %FaceInclude%
-    %DispatchInclude%
-    %ClassesInclude%
-    %EventInclude%
-    %ModulesInclude%
-    %RecordsInclude%
-    %ToolsInclude%
+%FactoryInclude%%ConstInclude%%EnumInclude%%FaceInclude%%DispatchInclude%%ClassesInclude%%EventInclude%%ModulesInclude%%RecordsInclude%%ToolsInclude%
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="stdole">
@@ -59,8 +50,7 @@
       <Isolated>False</Isolated>
     </COMReference>
   </ItemGroup>
-%ProjectRefInclude%
-%SignAssemblyFile%
+%ProjectRefInclude%%SignAssemblyFile%
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

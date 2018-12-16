@@ -17,7 +17,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _interfaceFile = RessourceApi.ReadString("Event.Interface.txt");
 
             string faceFolder = System.IO.Path.Combine(solutionFolder, projectNode.Attribute("Name").Value);
-            faceFolder = System.IO.Path.Combine(faceFolder, "EventInterfaces");
+            faceFolder = System.IO.Path.Combine(faceFolder, "Events");
             if (false == System.IO.Directory.Exists(faceFolder))
                 System.IO.Directory.CreateDirectory(faceFolder);
 
@@ -46,7 +46,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             System.IO.File.AppendAllText(fileName, newEnum);
 
             int i = faceFolder.LastIndexOf("\\");
-            string result = "\t\t<Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + faceNode.Attribute("Name").Value + ".cs" + "\" />";
+            string result = "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + faceNode.Attribute("Name").Value + ".cs" + "\" />";
             return result;
         }
 
