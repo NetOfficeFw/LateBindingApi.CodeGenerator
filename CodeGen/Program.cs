@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -77,23 +78,30 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             var elapsedTime = await generator.Generate(analyzer.Document, CancellationToken.None);
             Log.Info($@"Code generated in {elapsedTime} ({elapsedTime.TotalMilliseconds}ms).");
 
-            using (var repo = new Repository(options.OutputFolder))
+            try
             {
-                Commands.Stage(repo, "*");
+                using (var repo = new Repository(options.OutputFolder))
+                {
+                    Commands.Stage(repo, "*");
 
-                var date = DateTimeOffset.Now;
-                var datetime = date.ToLocalTime().LocalDateTime.ToLongDateString();
-                var unix = date.ToUnixTimeSeconds();
+                    var date = DateTimeOffset.Now;
+                    var datetime = date.ToLocalTime().LocalDateTime.ToLongDateString();
+                    var unix = date.ToUnixTimeSeconds();
 
-                var signature = new Signature("Jozef Izso", "jozef.izso@gmail.com", date);
-                var commit = repo.Commit($"NetOffice build at {unix} ({datetime})", signature, signature);
+                    var signature = new Signature("Jozef Izso", "jozef.izso@gmail.com", date);
+                    var commit = repo.Commit($"NetOffice build at {unix} ({datetime})", signature, signature);
 
-                Log.Info($"Build output commited. {commit.Sha}");
+                    Log.Info($"Build output commited. {commit.Sha}");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to commit build output. Error: {e.Message}");
             }
 
             Log.Info("Done.");
 
-            if (Debugger.IsAttached)
+            //if (Debugger.IsAttached)
             {
                 Console.ReadKey();
             }
