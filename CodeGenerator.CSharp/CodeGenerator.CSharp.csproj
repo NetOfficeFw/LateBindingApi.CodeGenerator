@@ -98,12 +98,15 @@
     <EmbeddedResource Include="TestClient\Program.cs" />
     <EmbeddedResource Include="Tools\Access\COMAddin.txt" />
     <EmbeddedResource Include="Tools\Access\ITaskPane.txt" />
-    <EmbeddedResource Include="Tools\Access\Utils\DocumentFormat.txt" />
-    <EmbeddedResource Include="Tools\Access\Utils\FileUtils.txt" />
+    <EmbeddedResource Include="Tools\Access\Contribution\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\Access\Contribution\FileUtils.txt" />
     <EmbeddedResource Include="Tools\Excel\COMAddin.txt" />
     <EmbeddedResource Include="Tools\Excel\ITaskPane.txt" />
-    <EmbeddedResource Include="Tools\Excel\Utils\DocumentFormat.txt" />
-    <EmbeddedResource Include="Tools\Excel\Utils\FileUtils.txt" />
+    <EmbeddedResource Include="Tools\Excel\RealtimeDataServer.txt" />
+    <EmbeddedResource Include="Tools\Excel\Attributes\COMRtdServerAttribute.txt" />
+    <EmbeddedResource Include="Tools\Excel\Contribution\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\Excel\Contribution\FileUtils.txt" />
+    <EmbeddedResource Include="Tools\Excel\Exceptions\COMRtdServerException.txt" />
     <EmbeddedResource Include="Tools\Office\COMAddin.txt" />
     <EmbeddedResource Include="Tools\Office\CustomTaskPaneCollection.txt" />
     <EmbeddedResource Include="Tools\Office\Dialogs\AboutDialog.1031.xml" />
@@ -148,18 +151,28 @@
     <EmbeddedResource Include="Tools\Office\Utils\ResourceUtils.txt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayUtils.txt" />
     <EmbeddedResource Include="Tools\Outlook\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\Outlook\FormRegionAttribute.txt" />
+    <EmbeddedResource Include="Tools\Outlook\FormRegionEventHandler.txt" />
     <EmbeddedResource Include="Tools\Outlook\ITaskPane.txt" />
+    <EmbeddedResource Include="Tools\Outlook\OlCustomUIAttribute.txt" />
+    <EmbeddedResource Include="Tools\Outlook\OlRibbonType.txt" />
+    <EmbeddedResource Include="Tools\Outlook\OpenFormRegion.txt" />
+    <EmbeddedResource Include="Tools\Outlook\OutlookErrorMethodKind.txt" />
+    <EmbeddedResource Include="Tools\Outlook\RequireShutdownNotificationAttribute.txt" />
     <EmbeddedResource Include="Tools\PowerPoint\COMAddin.txt" />
     <EmbeddedResource Include="Tools\PowerPoint\ITaskPane.txt" />
-    <EmbeddedResource Include="Tools\PowerPoint\Utils\DocumentFormat.txt" />
-    <EmbeddedResource Include="Tools\PowerPoint\Utils\FileUtils.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\Contribution\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\Contribution\FileUtils.txt" />
     <EmbeddedResource Include="Tools\Project\COMAddin.txt" />
     <EmbeddedResource Include="Tools\Project\ITaskPane.txt" />
     <EmbeddedResource Include="Tools\Visio\COMAddin.txt" />
     <EmbeddedResource Include="Tools\Word\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\Word\DocumentInspectorAttribute.txt" />
+    <EmbeddedResource Include="Tools\Word\DocumentInspectorBase.txt" />
     <EmbeddedResource Include="Tools\Word\ITaskPane.txt" />
-    <EmbeddedResource Include="Tools\Word\Utils\DocumentFormat.txt" />
-    <EmbeddedResource Include="Tools\Word\Utils\FileUtils.txt" />
+    <EmbeddedResource Include="Tools\Word\ToolsDocumentInspector.txt" />
+    <EmbeddedResource Include="Tools\Word\Contribution\DocumentFormat.txt" />
+    <EmbeddedResource Include="Tools\Word\Contribution\FileUtils.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CodeGenerator.ComponentAnalyzer\CodeGenerator.ComponentAnalyzer.csproj">
@@ -217,8 +230,8 @@
     <EmbeddedResource Include="Interface\FakedClassConstructor.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Tools\Access\Utils\CommonUtils.txt" />
-    <EmbeddedResource Include="Tools\Excel\Utils\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Access\Contribution\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Excel\Contribution\CommonUtils.txt" />
     <EmbeddedResource Include="Tools\Office\ApplicationIdentifiers.txt" />
     <EmbeddedResource Include="Tools\Office\CustomTaskPaneHandler.txt" />
     <EmbeddedResource Include="Tools\Office\IOfficeCOMAddin.txt" />
@@ -256,18 +269,31 @@
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuStubItems.txt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuTextboxItem.txt" />
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayToolTipIcon.txt" />
-    <EmbeddedResource Include="Tools\Outlook\OlCustomUIAttribute.txt" />
-    <EmbeddedResource Include="Tools\Outlook\Utils\ApplicationUtils.txt" />
-    <EmbeddedResource Include="Tools\Outlook\Utils\CommonUtils.txt" />
-    <EmbeddedResource Include="Tools\Outlook\Utils\OutlookDialogUtils.txt" />
-    <EmbeddedResource Include="Tools\PowerPoint\Utils\ApplicationUtils.txt" />
-    <EmbeddedResource Include="Tools\PowerPoint\Utils\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\ApplicationUtils.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\OutlookDialogUtils.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\Contribution\ApplicationUtils.txt" />
+    <EmbeddedResource Include="Tools\PowerPoint\Contribution\CommonUtils.txt" />
     <EmbeddedResource Include="Tools\Project\Utils\CommonUtils.txt" />
-    <EmbeddedResource Include="Tools\Word\Utils\ApplicationUtils.txt" />
-    <EmbeddedResource Include="Tools\Word\Utils\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Word\Contribution\ApplicationUtils.txt" />
+    <EmbeddedResource Include="Tools\Word\Contribution\CommonUtils.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Tools\Office\Utils\TrayMenuUtils\TrayMenuMonitorItemControl.rtxt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Outlook\Contribution\Security\Automation.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\Security\ClickStrategy.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\Security\Rect.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\Security\SecurityDialog.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\Security\SecurityDialogCheckBox.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\Security\SecurityDialogLeftButton.txt" />
+    <EmbeddedResource Include="Tools\Outlook\Contribution\Security\User32.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Tools\Publisher\COMAddin.txt" />
+    <EmbeddedResource Include="Tools\Publisher\Contribution\CommonUtils.txt" />
+    <EmbeddedResource Include="Tools\Publisher\ITaskPane.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
