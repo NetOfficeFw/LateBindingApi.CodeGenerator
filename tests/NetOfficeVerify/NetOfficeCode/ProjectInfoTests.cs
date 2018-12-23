@@ -40,7 +40,7 @@ namespace NetOfficeVerify.NetOfficeCode
             // nop
 
             // Assert
-            FileAssert.AreEqual(sourceCodeFile, generatedFile);
+            FileAssertEx.AreEqual(sourceCodeFile, generatedFile);
         }
     }
 }
