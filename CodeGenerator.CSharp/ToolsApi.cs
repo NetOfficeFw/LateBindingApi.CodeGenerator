@@ -677,6 +677,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 case "Excel":
                 case "Outlook":
                 case "PowerPoint":
+                case "Publisher":
                 case "Visio":
                 case "Word":
                     return ConvertToolsToFiles(projectName, faceFolder);
