@@ -138,6 +138,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 case "MSProject":
                 case "Visio":
                 case "Office":
+                //case "Publisher":
                     return true;
                 default:
                     return false;
