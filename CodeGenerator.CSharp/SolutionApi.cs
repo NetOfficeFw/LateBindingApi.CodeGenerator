@@ -11,7 +11,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class SolutionApi
     {
-        internal static readonly string _projectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%Api\", \"%Name%\\%Name%Api.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
+        internal static readonly string _projectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%Api\", \"%Name%\\%Name%Api.csproj\", \"{%Key%}\"\r\nEndProject\r\n";
 
         internal static readonly string _buildConfig = "\t\t{%Key%}.Debug|Any CPU.ActiveCfg = Debug|Any CPU\r\n"
                                                      + "\t\t{%Key%}.Debug|Any CPU.Build.0 = Debug|Any CPU\r\n"
@@ -36,18 +36,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if (true == settings.AddTestApp)
             {
-                string testProjectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\", \"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\n%Depend%EndProject\r\n";
+                string testProjectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\", \"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\nEndProject\r\n";
                 string newProjectLine = testProjectLine.Replace("%Name%", "ClientApplication");
                 newProjectLine = newProjectLine.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
 
-                string depends = "\tProjectSection(ProjectDependencies) = postProject\r\n";
-                foreach (var item in solution.Element("Projects").Elements("Project"))
-                {
-                    string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
-                    depends += line.Replace("%Key%", CSharpGenerator.ValidateGuid(item.Attribute("Key").Value));
-                }
-                depends += "\tEndProjectSection\r\n";
-                newProjectLine = newProjectLine.Replace("%Depend%", depends);
                 projects += newProjectLine;
 
                 string newConfig = _buildConfig.Replace("%Key%", "DF73F99F-DFC0-42D1-9EDF-AD7D890C53D5");
@@ -62,31 +54,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string projectName = project.Attribute("Name").Value;
                 string newProjectLine = _projectLine.Replace("%Name%", projectName);
                 newProjectLine = newProjectLine.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
-                string depends = "";
-                foreach (var item in project.Element("RefProjects").Elements("RefProject"))
-                {
-                    string projKey = item.Attribute("Key").Value;
-                    XElement projNode = (from a in solution.Element("Projects").Elements("Project")
-                                        where a.Attribute("Key").Value.Equals(projKey)
-                                        select a).FirstOrDefault();
-
-                    // skip referenced project which are ignored by generator
-                    if ("true" == projNode.Attribute("Ignore").Value)
-                        continue;
-
-                    string line = "\t\t" + "{%Key%} = {%Key%}" + "\r\n";
-                    string refProjectGuid = CSharpGenerator.ValidateGuid(projNode.Attribute("Key").Value);
-                    depends += line.Replace("%Key%", refProjectGuid);
-                }
-
-                if (!String.IsNullOrEmpty(depends))
-                {
-                    depends = "\tProjectSection(ProjectDependencies) = postProject\r\n"
-                            + depends
-                            + "\tEndProjectSection\r\n";
-                }
-
-                newProjectLine = newProjectLine.Replace("%Depend%", depends);
                 projects += newProjectLine;
 
                 string newConfig = _buildConfig.Replace("%Key%", CSharpGenerator.ValidateGuid(project.Attribute("Key").Value));
