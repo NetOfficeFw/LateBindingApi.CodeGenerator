@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using NetOffice;
+using NetOffice.Attributes;
 
 /*
     Contains the following Type Libraries:
@@ -21,10 +22,10 @@ using NetOffice;
 [assembly: PrimaryInteropAssembly(1, 0)]
 [assembly: ImportedFromTypeLib("%ImportedTypeLibName%")]
 [assembly: Guid("%ImportedTypeLibGuid%")]
-[assembly: NetOfficeAssemblyAttribute("1.7.4.0")]
+[assembly: NetOfficeAssemblyAttribute("1.7.4.1")]
 //%DependencyInclude%
 
 /*
 Alias Table
-
+ 
 %AliasInclude%*/
