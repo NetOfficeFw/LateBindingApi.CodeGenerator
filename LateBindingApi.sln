@@ -19,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{018340BA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSplitter", "DataSplitter\DataSplitter.csproj", "{C68EA9B4-2C5A-4529-A7A3-6BA4ABC5A799}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2FFE1566-48DA-44F0-AF34-E41130B467A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetOfficeVerify", "tests\NetOfficeVerify\NetOfficeVerify.csproj", "{9D5CB3BD-B240-461B-B0C7-0A33961C9AFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,15 +57,21 @@ Global
 		{C68EA9B4-2C5A-4529-A7A3-6BA4ABC5A799}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C68EA9B4-2C5A-4529-A7A3-6BA4ABC5A799}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C68EA9B4-2C5A-4529-A7A3-6BA4ABC5A799}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D5CB3BD-B240-461B-B0C7-0A33961C9AFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D5CB3BD-B240-461B-B0C7-0A33961C9AFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D5CB3BD-B240-461B-B0C7-0A33961C9AFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D5CB3BD-B240-461B-B0C7-0A33961C9AFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C68EA9B4-2C5A-4529-A7A3-6BA4ABC5A799} = {018340BA-CCF3-496A-B44B-89B7C89F1063}
+		{9D5CB3BD-B240-461B-B0C7-0A33961C9AFD} = {2FFE1566-48DA-44F0-AF34-E41130B467A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7AD1630-A68E-436D-96A1-C99C65D81ED9}
+		SolutionGuid = {3C9DCCFD-A2B6-40D9-A910-98EED517128A}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = b33594cf-1c7b-4712-bfb0-1276a237553e
