@@ -21,7 +21,7 @@ namespace NetOfficeVerify.NetOfficeCode
             // nop
 
             // Assert
-            FileAssert.AreEqual(goldSolutionFile, generatedSolutionFile);
+            FileAssertEx.AreEqual(goldSolutionFile, generatedSolutionFile);
         }
     }
 }
