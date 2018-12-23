@@ -577,7 +577,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
 
-            result += "[SupportByVersionAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            result += "[SupportByVersion(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
 
