@@ -77,33 +77,33 @@
 			%callQuitInDispose%
 		}
 		
-		///<summary>
+		/// <summary>
         /// Creates a new instance of %name% 
-        ///</summary>		
+        /// </summary>		
 		public %name%():base("%ProgId%")
 		{
 			%callQuitInDispose%%setGlobalInstance%
 		}
 		
-		///<summary>
+		/// <summary>
         /// Creates a new instance of %name%
-        ///</summary>
+        /// </summary>
         ///<param name="progId">registered ProgID</param>
 		public %name%(string progId):base(progId)
 		{
 			%callQuitInDispose%%setGlobalInstance%
 		}
 %disposeGlobalInstance%
-		#endregion
+        #endregion
 
-		#region Static CoClass Methods
+        #region Static CoClass Methods
 
 		/// <summary>
-        /// Returns all running %ProgId% objects from the environment/system
+        /// Returns all running %ProgId% instances from the environment/system
         /// </summary>
-        /// <returns>an %ProgId% array</returns>
+        /// <returns>%ProgId% sequence</returns>
 		public static NetOffice.%Component%Api.%Class%[] GetActiveInstances()
-		{		
+		{
 			IDisposableEnumeration proxyList = NetOffice.ProxyService.GetActiveInstances("%Component%","%Class%");
 			NetRuntimeSystem.Collections.Generic.List<NetOffice.%Component%Api.%Class%> resultList = new NetRuntimeSystem.Collections.Generic.List<NetOffice.%Component%Api.%Class%>();
 			foreach(object proxy in proxyList)
