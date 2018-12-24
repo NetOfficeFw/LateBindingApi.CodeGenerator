@@ -28,7 +28,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t///</summary>\r\n";
 
-        private static string _classHeader = "\t[EntityTypeAttribute(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
+        private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n";
 
         private static string _classConstructor;
