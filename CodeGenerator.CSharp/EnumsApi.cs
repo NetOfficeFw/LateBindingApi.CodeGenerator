@@ -70,7 +70,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             result += between2;
             result += "\t" + enumAttributes + Environment.NewLine;
-            result += "\t[EntityTypeAttribute(EntityType.IsEnum)]\r\n" + "\tpublic enum " + name + Environment.NewLine + "\t{" + Environment.NewLine;
+            result += "\t[EntityType(EntityType.IsEnum)]\r\n" + "\tpublic enum " + name + Environment.NewLine + "\t{" + Environment.NewLine;
             
             int countOfMembers =  enumNode.Element("Members").Elements("Member").Count();
             int i = 1;
