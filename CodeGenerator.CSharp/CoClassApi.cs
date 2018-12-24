@@ -26,7 +26,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _disposeOverride;
 
-        private static string _classDesc = "\t///<summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t///</summary>\r\n";
+        private static string _classDesc = "\t/// <summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t/// </summary>\r\n";
+        private static string _classRemarks = "\t/// <remarks> MSDN Online: %docLink% </remarks>\r\n";
 
         private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n";
@@ -74,7 +75,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
 
             if (ImplentsAnEventInterface(projectNode, classNode))
-                header = header.Replace("%eventBindingInterface%", ",IEventBinding");
+                header = header.Replace("%eventBindingInterface%", ", IEventBinding");
             else
                 header = header.Replace("%eventBindingInterface%", "");
 
@@ -107,7 +108,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string sinkHelperIds = GetSinkHelperIds(projectNode, classNode);
             string sinkHelperSetActive = GetSinkHelperSetActiveSink(projectNode, classNode);
 
-            string docLink = "";
+            string docLink = null;
             if (CSharpGenerator.Settings.AddDocumentationLinks)
             {
                 string projectName = projectNode.Attribute("Name").Value;
@@ -117,11 +118,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                          where a.Element("Name").Value.Equals(classNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
                                          select a).FirstOrDefault();
                     if (null != linkNode)
-                        docLink = "\r\n\t" + "/// MSDN Online Documentation: " + linkNode.Element("Link").Value;
+                    {
+                        // TODO: Remove old code
+                        //docLink = "\r\n\t" + "/// MSDN Online Documentation: " + linkNode.Element("Link").Value;
+                        docLink = linkNode.Element("Link")?.Value;
+                    }
                 }
             }
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", classNode) + docLink);
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", classNode));
+            if (!String.IsNullOrEmpty(docLink))
+            {
+                string classRemarks = _classRemarks.Replace("%docLink%", docLink);
+                classDesc += classRemarks;
+            }
 
             _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
 
