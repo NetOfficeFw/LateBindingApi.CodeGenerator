@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Linq;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using TypeLibInformation;
@@ -986,7 +987,16 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             foreach (var item in pars.Elements("Parameter"))
             {
                 if ("" != item.Attribute("TypeKey").Value)
-                    item.Attribute("Type").Value = GetNodeByKey(item.Attribute("TypeKey")).Attribute("Name").Value;
+                {
+                    try
+                    {
+                        item.Attribute("Type").Value = GetNodeByKey(item.Attribute("TypeKey")).Attribute("Name").Value;
+                    }
+                    catch (ArgumentException e)
+                    {
+                        Debug.WriteLine("Failed to load type name for TypeKey='{0}' in Project='{1}'", item.Attribute("TypeKey").Value, item.Ancestors("Project").First().Attribute("Name").Value);
+                    }
+                }
 
                 if ("GUID" == item.Attribute("Type").Value)
                     item.Attribute("Type").Value = "Guid";
@@ -998,7 +1008,16 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 if ("void" != returnValue.Attribute("Type").Value)
                 {
                     if ("" != returnValue.Attribute("TypeKey").Value)
-                        returnValue.Attribute("Type").Value = GetNodeByKey(returnValue.Attribute("TypeKey")).Attribute("Name").Value;
+                    {
+                        try
+                        {
+                            returnValue.Attribute("Type").Value = GetNodeByKey(returnValue.Attribute("TypeKey")).Attribute("Name").Value;
+                        }
+                        catch (ArgumentException e)
+                        {
+                            Debug.WriteLine("Failed to load type name for TypeKey='{0}' in Project='{1}'", returnValue.Attribute("TypeKey").Value, returnValue.Ancestors("Project")?.FirstOrDefault()?.Attribute("Name")?.Value);
+                        }
+                    }
 
                     if ("GUID" == returnValue.Attribute("Type").Value)
                         returnValue.Attribute("Type").Value = "Guid";
@@ -1049,7 +1068,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     return face;
 
             }
-            throw (new ArgumentOutOfRangeException("key not found"));
+            throw new ArgumentOutOfRangeException(nameof(attKey), $"Failed to find node with key '{attKey.Value}'.");
         }
 
         /// <summary>
