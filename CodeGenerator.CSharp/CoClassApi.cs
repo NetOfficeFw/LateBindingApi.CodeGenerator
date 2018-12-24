@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
-    internal static class CoClassApi
+    public static class CoClassApi
     {
         private static string _fileHeader = ""
                                       + "using System;\r\n"
@@ -300,7 +300,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return delegateResult;
         }
 
-        private static string GetDelegateSignature(string className, XElement methodNode)
+        public static string GetDelegateSignature(string className, XElement methodNode)
         {
             string result = "public delegate void " + className + "_" + methodNode.Attribute("Name").Value + "EventHandler" + "(";
             foreach (XElement itemParam in methodNode.Element("Parameters").Elements("Parameter"))
@@ -309,18 +309,31 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == itemParam.Attribute("IsRef").Value)
                     isRef = "ref ";
 
+                string parameterName = itemParam.Attribute("Name").Value;
+                if (parameterName.StartsWith("xml", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameterName = "xml" + parameterName.Substring(3);
+                }
+                else if (parameterName.StartsWith("msg", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameterName = "msg" + parameterName.Substring(3);
+                }
+                {
+                    parameterName = Char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
+                }
+
                 string par = "";
                 if(EventApi.IsStruct(itemParam))
                 {
-                    par = isRef + "object" + " " + itemParam.Attribute("Name").Value;
+                    par = isRef + "object" + " " + parameterName;
                 }
                 else if (("true" == itemParam.Attribute("IsComProxy").Value) && ("object" == itemParam.Attribute("Type").Value))
                 {
-                    par = isRef + "COMObject" + " " + itemParam.Attribute("Name").Value;
+                    par = isRef + "COMObject" + " " + parameterName;
                 }
                 else
                 {
-                    par = isRef + CSharpGenerator.GetQualifiedType(itemParam) + " " + itemParam.Attribute("Name").Value;
+                    par = isRef + CSharpGenerator.GetQualifiedType(itemParam) + " " + parameterName;
                 }
 
                 result += par + ", ";

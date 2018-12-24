@@ -5,11 +5,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9D5CB3BD-B240-461B-B0C7-0A33961C9AFD}</ProjectGuid>
+    <ProjectGuid>{DD0E39E3-D744-4DF1-A1B6-21F7A00E84AF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NetOfficeVerify</RootNamespace>
-    <AssemblyName>NetOfficeVerify</AssemblyName>
+    <RootNamespace>CodeGenerator.UnitTests</RootNamespace>
+    <AssemblyName>CodeGenerator.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -39,7 +39,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,22 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiffMatchPatch.cs" />
-    <Compile Include="FileAssertEx.cs" />
-    <Compile Include="NetOfficeCode\Office\OfficeCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\Excel\ExcelCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\Access\AccessCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\PowerPoint\PowerPointCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\Visio\VisioCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\Publisher\PublisherCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\Outlook\OutlookCoClassTests.cs" />
-    <Compile Include="ProjectTestContext.cs" />
-    <Compile Include="GeneratorTestContext.cs" />
-    <Compile Include="NetOfficeCode\AssemblyInfoTests.cs" />
-    <Compile Include="NetOfficeCode\ProjectInfoTests.cs" />
-    <Compile Include="NetOfficeCode\Word\WordCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\SolutionFileTests.cs" />
+    <Compile Include="CoClassApiTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CodeGenerator.CSharp\CodeGenerator.CSharp.csproj">
+      <Project>{c11edd01-1d48-4daa-a1a5-bb062ec202e4}</Project>
+      <Name>CodeGenerator.CSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

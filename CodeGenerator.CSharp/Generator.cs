@@ -415,7 +415,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string GetQualifiedNamespace(XElement value)
         {
             XElement parentProject = value;
-            while (parentProject.Name != "Project")
+            while (parentProject != null && parentProject.Name != "Project")
                 parentProject = parentProject.Parent;
 
             string type = value.Attribute("Type").Value;
