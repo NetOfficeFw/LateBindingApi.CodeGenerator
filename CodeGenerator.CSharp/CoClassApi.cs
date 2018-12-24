@@ -292,7 +292,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     }
                     if (false == found)
                     {
-                        delegateResult += "\t" + GetDelegateSignatur(faceNode.Attribute("Name").Value, itemMethod) + "\r\n";
+                        delegateResult += "\t" + GetDelegateSignature(faceNode.Attribute("Name").Value, itemMethod) + "\r\n";
                         methodNames.Add(itemMethod.Attribute("Name").Value);
                     }
                 }
@@ -300,7 +300,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return delegateResult;
         }
 
-        private static string GetDelegateSignatur(string className, XElement methodNode)
+        private static string GetDelegateSignature(string className, XElement methodNode)
         {
             string result = "public delegate void " + className + "_" + methodNode.Attribute("Name").Value + "EventHandler" + "(";
             foreach (XElement itemParam in methodNode.Element("Parameters").Elements("Parameter"))
