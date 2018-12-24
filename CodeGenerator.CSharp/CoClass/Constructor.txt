@@ -2,8 +2,8 @@
 		
 		private NetRuntimeSystem.Runtime.InteropServices.ComTypes.IConnectionPoint _connectPoint;
 		private string _activeSinkId;
-		private NetRuntimeSystem.Type _thisType;
-%sinkHelperDefine%	
+        private static Type _type;
+%sinkHelperDefine%
 		#endregion
 
 		#region Type Information
@@ -11,6 +11,7 @@
         /// <summary>
         /// Instance Type
         /// </summary>
+		[EditorBrowsable(EditorBrowsableState.Advanced), Browsable(false), Category("NetOffice"), CoreOverridden]
         public override Type InstanceType
         {
             get
@@ -18,9 +19,10 @@
                 return LateBindingApiWrapperType;
             }
         }
-
-        private static Type _type;
-		
+        
+        /// <summary>
+        /// Type Cache
+        /// </summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         public static Type LateBindingApiWrapperType
         {
