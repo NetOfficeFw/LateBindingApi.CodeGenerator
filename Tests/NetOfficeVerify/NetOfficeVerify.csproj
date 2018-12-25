@@ -54,6 +54,7 @@
     <Compile Include="NetOfficeCode\Excel\ExcelCoClassTests.cs" />
     <Compile Include="NetOfficeCode\Access\AccessCoClassTests.cs" />
     <Compile Include="NetOfficeCode\PowerPoint\PowerPointCoClassTests.cs" />
+    <Compile Include="NetOfficeCode\EnumUtil.cs" />
     <Compile Include="NetOfficeCode\Visio\VisioCoClassTests.cs" />
     <Compile Include="NetOfficeCode\Publisher\PublisherCoClassTests.cs" />
     <Compile Include="NetOfficeCode\Outlook\OutlookCoClassTests.cs" />
@@ -67,6 +68,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CodeGenerator.CSharp\CodeGenerator.CSharp.csproj">
+      <Project>{C11EDD01-1D48-4DAA-A1A5-BB062EC202E4}</Project>
+      <Name>CodeGenerator.CSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

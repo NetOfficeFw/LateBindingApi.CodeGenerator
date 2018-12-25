@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Text;
@@ -17,24 +18,25 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string ConvertEnumsToFiles(XElement projectNode, XElement enumsNode, Settings settings, string solutionFolder)
         {
-            string enumFolder = System.IO.Path.Combine(solutionFolder, projectNode.Attribute("Name").Value);
-            enumFolder = System.IO.Path.Combine(enumFolder, "Enums");
-            if (false == System.IO.Directory.Exists(enumFolder))
-                System.IO.Directory.CreateDirectory(enumFolder);
+            string projectName = projectNode.Attribute("Name").Value;
+            string enumFolder = Path.Combine(solutionFolder, projectName, "Enums");
+            DirectoryEx.EnsureDirectory(enumFolder);
             
             string result = "";
             foreach (XElement enumNode in enumsNode.Elements("Enum"))
+            {
                 result += ConvertEnumToFile(settings, projectNode, enumNode, enumFolder) + "\r\n";
+            }
 
             return result;
         }
 
         private static string ConvertEnumToFile(Settings settings, XElement projectNode, XElement enumNode, string enumFolder)
         {
-            string fileName = System.IO.Path.Combine(enumFolder, enumNode.Attribute("Name").Value + ".cs");
+            string fileName = Path.Combine(enumFolder, enumNode.Attribute("Name").Value + ".cs");
 
             string newEnum = ConvertEnumToString(settings, projectNode, enumNode);
-            System.IO.File.AppendAllText(fileName, newEnum);
+            File.AppendAllText(fileName, newEnum, Constants.UTF8WithBOM);
 
             int i = enumFolder.LastIndexOf("\\");
             string result = "    <Compile Include=\"" + enumFolder.Substring(i + 1) + "\\" + enumNode.Attribute("Name").Value + ".cs" + "\" />";
