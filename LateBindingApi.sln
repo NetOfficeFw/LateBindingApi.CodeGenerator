@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetOfficeVerify", "tests\Ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator.UnitTests", "Tests\CodeGenerator.UnitTests\CodeGenerator.UnitTests.csproj", "{DD0E39E3-D744-4DF1-A1B6-21F7A00E84AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBinding", "LateBinding\LateBinding.csproj", "{1D79D802-6632-4A22-B962-7202E0FA19BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{DD0E39E3-D744-4DF1-A1B6-21F7A00E84AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD0E39E3-D744-4DF1-A1B6-21F7A00E84AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD0E39E3-D744-4DF1-A1B6-21F7A00E84AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D79D802-6632-4A22-B962-7202E0FA19BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D79D802-6632-4A22-B962-7202E0FA19BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D79D802-6632-4A22-B962-7202E0FA19BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D79D802-6632-4A22-B962-7202E0FA19BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

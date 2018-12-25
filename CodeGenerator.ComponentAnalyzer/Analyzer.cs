@@ -79,7 +79,9 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 return _schema;
             }
         }
-      
+
+        public string DefaultLibraryVersion { get; set; }
+
         #endregion
 
         #region Construction
@@ -195,8 +197,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="message"></param>
         private void DoUpdate(string message)
         {
-            if (null != Update)
-                Update(this, message);
+            Update?.Invoke(this, message);
         }
 
         #endregion
@@ -545,6 +546,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             foreach (string file in files)
             {
                 // load typelib and add to list
+                DoUpdate($"Loading file '{file}'.");
                 TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(file);
                 listReturn.Add(libInfo);
 
@@ -613,6 +615,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if (null == node)
             {
+                var version = DefaultLibraryVersion ?? libInfo.Name.Substring(0, 2).ToUpper() + "1";
                 node = new XElement("Library",
                             new XAttribute("Name", libInfo.Name),
                             new XAttribute("File", libInfo.ContainingFile),
@@ -623,7 +626,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                             new XAttribute("Minor", libInfo.MinorVersion.ToString()),
                             new XAttribute("LCID", libInfo.LCID),
                             new XAttribute("Description", TypeDescriptor.GetTypeLibDescription(libInfo)),
-                            new XAttribute("Version", libInfo.Name.Substring(0, 2).ToUpper() + "1"),
+                            new XAttribute("Version", version),
                             new XAttribute("SysKind", Convert.ToInt32(libInfo.SysKind)));
 
                 var components = (_document.Descendants("Libraries")).FirstOrDefault();
