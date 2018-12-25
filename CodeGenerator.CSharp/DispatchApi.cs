@@ -10,15 +10,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
     internal static class DispatchApi
     {
         private static string _fileHeader = ""
+                                      + "using System.Collections;\r\n"
+                                      + "using System.Collections.Generic;\r\n"
                                       + "using System;\r\n"
                                       + "using NetRuntimeSystem = System;\r\n"
-                                      + "using System.Runtime.InteropServices;\r\n"
-                                      + "using System.Runtime.CompilerServices;\r\n"
                                       + "using System.ComponentModel;\r\n"
-                                      + "using System.Reflection;\r\n"
-                                      + "using System.Collections.Generic;\r\n"
-                                      + "%enumerableSpace%"
-                                      + "using NetOffice;\r\n"
+                                      + "using NetOffice.Attributes;\r\n"
+                                      + "using NetOffice.CollectionsGeneric;\r\n"
+                                      + "%enumerableSpace%\r\n"
                                       + "namespace %namespace%\r\n"
                                       + "{%fakedClass%\r\n";
 

@@ -11,6 +11,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _fileHeader = ""
                                             + "using System;\r\n"
                                             + "using NetOffice;\r\n"
+                                            + "using NetOffice.Attributes;\r\n"
                                             + "namespace %namespace%\r\n"
                                             + "{\r\n";
 

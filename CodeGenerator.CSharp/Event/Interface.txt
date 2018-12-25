@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using NetOffice;
+using NetOffice.Attributes;
 
 namespace %namespace%
 {	

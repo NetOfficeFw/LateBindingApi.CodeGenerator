@@ -12,7 +12,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                      + "using System;\r\n"
                                      + "using NetRuntimeSystem = System;\r\n"
                                      + "using System.ComponentModel;\r\n"
-                                     + "using NetOffice;\r\n"
+                                     + "using NetOffice.Attributes;\r\n"
                                      + "namespace %namespace%.GlobalHelperModules\r\n"
                                      + "{\r\n";
 
