@@ -6,6 +6,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     public static class DirectoryExtensions
     {
+        public static void CopyTo(string source, string target, bool overwiteFiles = true)
+        {
+            CopyTo(new DirectoryInfo(source), new DirectoryInfo(target), overwiteFiles);
+        }
+
         public static void CopyTo(this DirectoryInfo source, string target, bool overwiteFiles = true)
         {
             CopyTo(source, new DirectoryInfo(target), overwiteFiles);
@@ -21,6 +26,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             foreach (var sourceFile in source.GetFiles())
                 sourceFile.CopyTo(Path.Combine(target.FullName, sourceFile.Name), overwiteFiles);
+        }
+    }
+
+    public static class DirectoryEx
+    {
+        public static void EnsureDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
     }
 }

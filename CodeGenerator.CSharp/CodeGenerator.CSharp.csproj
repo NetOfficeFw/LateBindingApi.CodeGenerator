@@ -47,6 +47,7 @@
     </Compile>
     <Compile Include="AliasApi.cs" />
     <Compile Include="CoClassApi.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DirectoryExtensions.cs" />
     <Compile Include="ResourceToolInfo.cs" />
     <Compile Include="ToolsApi.cs" />
