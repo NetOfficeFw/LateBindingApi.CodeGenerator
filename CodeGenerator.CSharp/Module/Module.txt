@@ -1,18 +1,44 @@
 ﻿		#region Fields
 
-		private static COMObject _instance;
+		private static ICOMObject _instance;
 
-        internal static COMObject Instance
+        #endregion
+
+        #region Internal Properties
+
+        internal static ICOMObject Instance
         {
-	        get
-	        {
-		        return _instance;
-	        }
-	        set
-	        {
-		        if( (null == value) || (null == _instance) )
-			        _instance = value;				
-        	}
+            get
+            {
+                return _instance;
+            }
+            set
+            {
+                if ((null == value) || (null == _instance))
+                    _instance = value;
+            }
         }
 
-		#endregion
+        internal static Core Factory
+		{
+			get
+			{
+				if(null != _instance)
+					 return _instance.Factory;
+			else
+				return Core.Default;
+			}
+		}
+
+		internal static Invoker Invoker
+		{
+			get
+			{
+				if(null != _instance)
+					 return _instance.Invoker;
+			else
+				return Invoker.Default;
+			}
+		}
+
+        #endregion

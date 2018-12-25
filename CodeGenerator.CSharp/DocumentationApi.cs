@@ -35,7 +35,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         /// <summary>
-        /// SupportByVersionArray 
+        /// SupportByVersionArray
         /// </summary>
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
@@ -77,7 +77,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 typeName += " " + itemParameter.Attribute("Name").Value;
                 string defaultInfo = "";
-                
+
                 if (itemParameter.Attribute("HasDefaultValue").Value == "true")
                 {
                     defaultInfo = " = " + itemParameter.Attribute("DefaultValue").Value;
@@ -87,9 +87,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             return result;
         }
-  
+
         /// <summary>
-        /// SupportByVersionArray 
+        /// SupportByVersionArray
         /// </summary>
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
@@ -100,12 +100,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         /// <summary>
-        /// SupportByVersionArray 
+        /// SupportByVersionArray
         /// </summary>
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode, bool generateGetSet, string additional="")
+        internal static string CreateParameterDocumentation(int numberOfTabSpace, XElement parametersNode, bool generateGetSet, string additional="", string remarks = null)
         {
             List<string> listVersions = new List<string>();
 
@@ -116,7 +116,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = "";
             string tabSpace = CSharpGenerator.TabSpace(numberOfTabSpace);
             string retValueType = CSharpGenerator.GetQualifiedType(parametersNode.Element("ReturnValue"));
-            
+
             string[] SupportByVersion = CSharpGenerator.GetSupportByVersionArray(parametersNode);
             string libs = "/// SupportByVersion " + parentNode.Attribute("Name").Value + " ";
             foreach (string lib in SupportByVersion)
@@ -126,7 +126,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             foreach (string versionAttribute in listVersions)
                 libs += versionAttribute + ", ";
-             
 
             libs = libs.Substring(0, libs.Length - 2);
 
@@ -153,6 +152,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 summary += tabSpace + "/// </summary>\r\n";
             }
             result += summary;
+            if (!String.IsNullOrEmpty(remarks))
+            {
+                result += tabSpace + "/// <remarks>" + remarks + "</remarks>\r\n";
+            }
 
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
             {
