@@ -490,7 +490,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             string tabSpace = "";
             for (int i = 1; i <= number; i++)
-                tabSpace += "\t";
+                tabSpace += "    ";
             return tabSpace;
         }
 
@@ -544,17 +544,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
         }
 
         /// <summary>
-        /// returns support libary versions for entityNode
+        /// Generates code for [SupportByVersion] attribute for current entityNode.
+        /// It will list all supported libary versions for entityNode in the attribute.
         /// </summary>
-        /// <param name="entityNode"></param>
-        /// <returns></returns>
+        /// <returns>[SupportByVersion("ProjectName", 1, 2, 3)]</returns>
         internal static string GetSupportByVersionAttribute(XElement entityNode)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
-            string result = "";
             List<string> listVersions = new List<string>();
             string versions = "";
 
@@ -577,7 +576,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (versions.Substring(versions.Length - 1) == ",")
                 versions = versions.Substring(0, versions.Length - 1);
 
-            result += "[SupportByVersion(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            string result = "[SupportByVersion(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
 
@@ -640,7 +639,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// </summary>
         /// <param name="entityNode"></param>
         /// <returns></returns>
-        internal static string GetSupportByVersion(string tabSpace, XElement entityNode)
+        internal static string GetSupportByVersion(XElement entityNode)
         {
             List<string> listVersions = new List<string>();
 
@@ -661,7 +660,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (res.Substring(res.Length - 1) == ",")
                 res = res.Substring(0, res.Length - 1);
 
-            return tabSpace + "SupportByVersion " + "" + parentNode.Attribute("Name").Value + ", " + res;
+            return "SupportByVersion " + parentNode.Attribute("Name").Value + ", " + res;
         }
 
         public static int CompareSupportByVersion(string x, string y)

@@ -126,7 +126,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
             }
 
-            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", classNode));
+            string classDesc = _classDesc.Replace("%name%", classNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion(classNode));
             if (!String.IsNullOrEmpty(docLink))
             {
                 string classRemarks = _classRemarks.Replace("%docLink%", docLink);

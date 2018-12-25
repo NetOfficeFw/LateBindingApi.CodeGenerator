@@ -42,7 +42,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (("false" == faceNode.Attribute("IsEventInterface").Value) && (faceNode.Attribute("Name").Value != "_Global"))
                     result += ConvertInterfaceToFile(settings, projectNode, faceNode, faceFolder) + "\r\n";
             }
-               
+
             return result;
         }
 
@@ -95,7 +95,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value).Replace("%enumerableSpace%", "");
             result = result.Replace("%fakedClass%", "");
             string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByVersionString("", faceNode));
-         
+
             result += "\t#pragma warning disable\r\n";
             string version = CSharpGenerator.GetSupportByVersionAttribute(faceNode);
             header += "\t" + version + "\r\n";
@@ -120,12 +120,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
-            
+
             if (null == _fakedConstructor)
                 _fakedConstructor = RessourceApi.ReadString("Interface.FakedClassConstructor.txt");
 
             string name = faceNode.Attribute("Name").Value + "_";
-            
+
             string result = "\r\n\t///<summary>\r\n\t/// " + faceNode.Attribute("Name").Value + "\r\n\t///</summary>\r\n" +
              "\tpublic class " + name + " : " + GetInherited(projectNode, faceNode) + "\r\n\t{\r\n" + "" + _fakedConstructor.Replace("%fakeName%", name) + "\t}\r\n";
 
@@ -133,7 +133,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
              string methods = MethodApi.ConvertConflictMethodsLateBindToString(settings, faceNode.Element("Methods"));
 
              result = result.Replace("%InheritedFake%", properties + methods);
-             
+
             return result;
         }
 
@@ -141,7 +141,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             bool isNameConflicted = IsNameConflicted(faceNode);
             bool isOptionalConflicted = IsOptionalConflicted(faceNode);
- 
+
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
             string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(faceNode);
             string header = _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
@@ -153,11 +153,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             else
                 header = header.Replace("%inherited%", GetInherited(projectNode, faceNode));
-    
+
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-           
+
             string docLink = "";
             if (CSharpGenerator.Settings.AddDocumentationLinks)
             {
@@ -172,7 +172,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
             }
 
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", faceNode) + docLink);
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion(faceNode) + docLink);
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));
@@ -202,7 +202,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (true == hasEnumerator)
                 EnumerableApi.AddEnumerator(faceNode, ref content);
             else
-                EnumerableApi.RemoveEnumeratorMarker(ref content);  
+                EnumerableApi.RemoveEnumeratorMarker(ref content);
         }
 
         private static string GetInherited(XElement projectNode, XElement faceNode)
@@ -217,7 +217,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             XElement inInterface = GetItemByKey(projectNode, refNode);
             if (inInterface.Parent.Parent == faceNode.Parent.Parent)
             {
-                // same project               
+                // same project
                 retList += inInterface.Attribute("Name").Value;
             }
             else

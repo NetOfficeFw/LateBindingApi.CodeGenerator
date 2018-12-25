@@ -17,13 +17,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                        + "%enumerableSpace%\r\n"
                                        + "namespace %namespace%\r\n"
                                        + "{%fakedClass%\r\n";
-        
+
         private static string _classDesc = "\t///<summary>\r\n\t/// Interface %name% %RefLibs%\r\n\t///</summary>\r\n";
 
         private static string _classHeader = "\t[EntityType(EntityType.IsInterface)]\r\n" + "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
 
         private static string _classConstructor;
-        
+
         private static string _fakedConstructor;
 
         private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
@@ -125,7 +125,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _classConstructor)
                 _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
-           
+
             string docLink = "";
             if (CSharpGenerator.Settings.AddDocumentationLinks)
             {
@@ -140,7 +140,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
             }
 
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion("", faceNode) + docLink);
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion(faceNode) + docLink);
 
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));
@@ -205,14 +205,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             if (faceNode.Element("Inherited").Elements("Ref").Count() == 0)
                 return "COMObject";
-            
+
             string retList ="";
             // select last interface
             XElement refNode = faceNode.Element("Inherited").Elements("Ref").Last();
             XElement inInterface = GetItemByKey(projectNode, refNode);
             if (inInterface.Parent.Parent == faceNode.Parent.Parent)
             {
-                // same project               
+                // same project
                 retList += inInterface.Attribute("Name").Value;
             }
             else
@@ -227,7 +227,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static XElement GetItemByKey(XElement projectNode, XElement refEntity)
         {
             XElement solutionNode = projectNode.Parent.Parent;
-            string key = refEntity.Attribute("Key").Value; 
+            string key = refEntity.Attribute("Key").Value;
             foreach (var project in solutionNode.Element("Projects").Elements("Project"))
             {
                 var target = (from a in project.Element("Interfaces").Elements("Interface")
