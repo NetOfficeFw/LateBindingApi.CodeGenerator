@@ -13,6 +13,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                                + "using System;\r\n"
                                                + "using System.Runtime.InteropServices;\r\n"
                                                + "using NetOffice;\r\n"
+                                               + "using NetOffice.Attributes;\r\n"
                                                + "namespace %namespace%\r\n"
                                                + "{\r\n";
 
