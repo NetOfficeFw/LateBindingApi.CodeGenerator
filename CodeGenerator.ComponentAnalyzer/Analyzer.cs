@@ -130,7 +130,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 LoadEnums(types);
 
                 DoUpdate("Scan Moduls");
-                LoadModuls(types);
+                LoadModules(types);
 
                 DoUpdate("Scan TypeDefs");
                 LoadTypeDefs(types);
@@ -171,7 +171,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 DoUpdate("Validate Type Names");
                 ValidateTypeNames();
 
-                DoUpdate("Finsishing operations");
+                DoUpdate("Finishing operations");
                 ReleaseTypeLibrariesList(types);
                 Marshal.ReleaseComObject(_typeLibApplication);
                 _typeLibApplication = null;
@@ -201,8 +201,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         }
 
         #endregion
- 
+
         #region LoadSave Methods
+
+        public void LoadTypeLibraries(string path, bool addToCurrentProject, bool doAsync)
+        {
+            this.LoadTypeLibraries(new [] { path }, addToCurrentProject, doAsync);
+        }
 
         /// <summary>
         /// load type library informations to a LateBindingApi.CodeGenerator.Document
@@ -544,6 +549,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         {
             // check lib not exists in document
             string guid = Utils.EncodeGuid(libInfo.GUID);
+            DoUpdate($"Type library GUID: {libInfo.GUID}, encoded: {guid}");
+
             var node = (from a in _document.Descendants("Libraries").Elements("Library")
                         where a.Attribute("GUID").Value.Equals(guid) &&
                               a.Attribute("Name").Value.Equals(libInfo.Name) &&
@@ -795,7 +802,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
         }
  
-        private void LoadModuls(List<TypeLibInfo> list)
+        private void LoadModules(List<TypeLibInfo> list)
         {
             foreach (TypeLibInfo item in list)
             {
