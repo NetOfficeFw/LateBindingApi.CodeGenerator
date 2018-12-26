@@ -36,6 +36,11 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
             }
         }
 
+        public int ColumnsCount
+        {
+            get { return this.listViewTypeLibInfo.Columns.Count; }
+        }
+
         #endregion
 
         #region Construction
@@ -85,17 +90,24 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
                 foreach (RegistryKey itemSubKey in itemKey.Keys)
                 {
                     string version = itemSubKey.Name;
-                    string name = "";
+                    string guid = itemKey.Name;
+                    string description = "";
+                    string interopAssembly = "";
 
                     foreach (RegistryEntry entry in itemSubKey.Entries)
                     {
-                        if (entry.Name == "")
+                        switch (entry.Name)
                         {
-                            name = entry.Value.ToString();
+                            case "":
+                                description = entry.Value.ToString();
+                                break;
+                            case "PrimaryInteropAssemblyName":
+                                interopAssembly = entry.Value.ToString();
+                                break;
                         }
                     }
 
-                    if (true == FilterIsMatched(filterEnabled, name, filterText))
+                    if (true == FilterIsMatched(filterEnabled, description, filterText))
                     {
                         foreach (RegistryKey itemSubSubKey in itemSubKey.Keys)
                         {
@@ -106,8 +118,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
                                 foreach (RegistryKey itemSubSubSubKey in itemSubSubKey.Keys)
                                 {
                                     ListViewItem listItem = listViewTypeLibInfo.Items.Add(i.ToString());
-                                    listItem.SubItems.Add(name);
+                                    listItem.SubItems.Add(guid);
                                     listItem.SubItems.Add(version);
+                                    listItem.SubItems.Add(description);
+                                    listItem.SubItems.Add(interopAssembly);
                                     listItem.SubItems.Add(itemSubSubSubKey.Name);
                                     if (itemSubSubSubKey.Entries.Count > 0)
                                         listItem.SubItems.Add(itemSubSubSubKey.Entries[0].Value.ToString());
@@ -183,11 +197,11 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
 
         private void listViewTypeLibInfo_Resize(object sender, EventArgs e)
         {
-            listViewTypeLibInfo.Columns[0].Width = (this.Size.Width / 100) * 10;
-            listViewTypeLibInfo.Columns[1].Width = (this.Size.Width / 100) * 30;
-            listViewTypeLibInfo.Columns[2].Width = (this.Size.Width / 100) * 10;
-            listViewTypeLibInfo.Columns[3].Width = (this.Size.Width / 100) * 10;
-            listViewTypeLibInfo.Columns[4].Width = (this.Size.Width / 100) * 30;
+            //listViewTypeLibInfo.Columns[0].Width = (this.Size.Width / 100) * 10;
+            //listViewTypeLibInfo.Columns[1].Width = (this.Size.Width / 100) * 30;
+            //listViewTypeLibInfo.Columns[2].Width = (this.Size.Width / 100) * 10;
+            //listViewTypeLibInfo.Columns[3].Width = (this.Size.Width / 100) * 10;
+            //listViewTypeLibInfo.Columns[4].Width = (this.Size.Width / 100) * 30;
         }
 
         private void listViewTypeLibInfo_SelectedIndexChanged(object sender, EventArgs e)       
