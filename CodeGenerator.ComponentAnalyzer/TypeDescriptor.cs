@@ -1044,17 +1044,13 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             string minorVersion = libInfo.MinorVersion.ToString();
             string guid         = libInfo.GUID.ToString();
 
-            string description  = "<NoDescription>";
-            string version      = string.Format("{0}.{1}", majorVersion, minorVersion);
-            string regKey       = string.Format("TypeLib\\{0}\\{1}", guid, version);
+            string description = "";
+            string version     = string.Format("{0}.{1}", majorVersion, minorVersion);
+            string regKey      = string.Format("TypeLib\\{0}\\{1}", guid, version);
 
-            RegistryKey rk = Registry.ClassesRoot.OpenSubKey(regKey, false);
-            if (null != rk)
+            using (RegistryKey rk = Registry.ClassesRoot.OpenSubKey(regKey, false))
             {
-                string[] values = rk.GetValueNames();
-                if (values.Length > 0)
-                    description = rk.GetValue(values[0]) as string;
-                rk.Close();
+                description = rk?.GetValue(null) as string ?? "<NoDescription>";
             }
 
             return description;

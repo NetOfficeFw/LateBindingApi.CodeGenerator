@@ -86,8 +86,14 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.TypeLibBrowser
                 {
                     string version = itemSubKey.Name;
                     string name = "";
-                    if (itemSubKey.Entries.Count > 0)
-                        name = itemSubKey.Entries[0].Value.ToString();
+
+                    foreach (RegistryEntry entry in itemSubKey.Entries)
+                    {
+                        if (entry.Name == "")
+                        {
+                            name = entry.Value.ToString();
+                        }
+                    }
 
                     if (true == FilterIsMatched(filterEnabled, name, filterText))
                     {
