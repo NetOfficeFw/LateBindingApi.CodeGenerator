@@ -36,11 +36,12 @@ namespace LateBindingApi.CodeGenerator.WFApplication
 
         public string[] SelectedFiles
         {
-            get 
+            get
             {
+                int columnsCount = typeLibBrowserControl1.ColumnsCount;
                 string[] result = new string[typeLibBrowserControl1.SelectedItems.Count];
                 for (int i = 0; i < typeLibBrowserControl1.SelectedItems.Count; i++)
-                    result[i] = typeLibBrowserControl1.SelectedItems[i].SubItems[4].Text;
+                    result[i] = typeLibBrowserControl1.SelectedItems[i].SubItems[columnsCount-1].Text;
 
                 return result;
             }
