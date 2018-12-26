@@ -563,10 +563,34 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 paramName = ValidateParamName(paramName);
 
                 if (("true" == itemParam.Attribute("IsRef").Value) || ("true" == itemParam.Attribute("IsOut").Value))
-                    result += tabSpace + paramName + 
-                        " = (" + CSharpGenerator.GetQualifiedType(itemParam) +  isArray + 
-                        ")paramsArray[" + i.ToString() + "];\r\n";
-                
+                {
+                    string qualifiedType = CSharpGenerator.GetQualifiedType(itemParam);
+                    if (qualifiedType == "bool")
+                    {
+                        result += tabSpace + paramName + " = ToBoolean(paramsArray[" + i.ToString() + "]);\r\n";
+                    }
+                    else if (qualifiedType == "Int16")
+                    {
+                        result += tabSpace + paramName + " = ToInt16(paramsArray[" + i.ToString() + "]);\r\n";
+                    }
+                    else if (qualifiedType == "Int32")
+                    {
+                        result += tabSpace + paramName + " = ToInt32(paramsArray[" + i.ToString() + "]);\r\n";
+                    }
+                    else if (qualifiedType == "Single")
+                    {
+                        result += tabSpace + paramName + " = ToSingle(paramsArray[" + i.ToString() + "]);\r\n";
+                    }
+                    else if (qualifiedType == "string")
+                    {
+                        result += tabSpace + paramName + " = ToString(paramsArray[" + i.ToString() + "]);\r\n";
+                    }
+                    else
+                    {
+                        result += tabSpace + paramName +" = (" + qualifiedType + isArray + ")paramsArray[" + i.ToString() + "];\r\n";
+                    }
+                }
+
                 i++;
             }
 

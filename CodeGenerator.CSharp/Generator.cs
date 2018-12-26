@@ -486,7 +486,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return "";
         }
 
-        internal static string TabSpace(int number)
+        public static string TabSpace(int number)
         {
             string tabSpace = "";
             for (int i = 1; i <= number; i++)

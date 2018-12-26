@@ -12,16 +12,18 @@ namespace %namespace%
 	#region SinkPoint Interface
 
 	%supportby%
-	[ComImport, Guid("%guid%"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch), TypeLibType((short)0x1010)]
+    [InternalEntity(InternalEntityKind.ComEventInterface)]
+    [ComImport, Guid("%guid%"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch), TypeLibType((short)0x1010)]
 	public interface %name%
 	{
 %methods%	}
-	
-	#endregion
-	
-	#region SinkHelper
-	
-	[ComVisible(true), ClassInterface(ClassInterfaceType.None), TypeLibType(TypeLibTypeFlags.FHidden)]
+
+    #endregion
+
+    #region SinkHelper
+
+    [InternalEntity(InternalEntityKind.SinkHelper)]
+    [ComVisible(true), ClassInterface(ClassInterfaceType.None), TypeLibType(TypeLibTypeFlags.FHidden)]
 	public class %name%_SinkHelper : SinkHelper, %name%
 	{
 		#region Static
@@ -29,42 +31,18 @@ namespace %namespace%
 		public static readonly string Id = "%guid%";
 		
 		#endregion
-	
-		#region Fields
 
-		private IEventBinding	_eventBinding;
-        private COMObject		_eventClass;
-        
-		#endregion
-		
-		#region Construction
+		#region Ctor
 
-		public %name%_SinkHelper(COMObject eventClass, IConnectionPoint connectPoint): base(eventClass)
+		public %name%_SinkHelper(ICOMObject eventClass, IConnectionPoint connectPoint): base(eventClass)
 		{
-			_eventClass = eventClass;
-			_eventBinding = (IEventBinding)eventClass;
 			SetupEventBinding(connectPoint);
 		}
 		
 		#endregion
-		
-		#region Properties
 
-        internal Core Factory
-        {
-            get
-            {
-                if (null != _eventClass)
-                    return _eventClass.Factory;
-                else
-                    return Core.Default;
-            }
-        }
+		#region %name%
 
-        #endregion
-
-		#region %name% Members
-		
 %methodsImplement%		#endregion
 	}
 	
