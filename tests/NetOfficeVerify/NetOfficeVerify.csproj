@@ -54,7 +54,7 @@
     <Compile Include="NetOfficeCode\Excel\ExcelCoClassTests.cs" />
     <Compile Include="NetOfficeCode\Access\AccessCoClassTests.cs" />
     <Compile Include="NetOfficeCode\PowerPoint\PowerPointCoClassTests.cs" />
-    <Compile Include="NetOfficeCode\EnumUtil.cs" />
+    <Compile Include="NetOfficeCode\GeneratorUtils.cs" />
     <Compile Include="NetOfficeCode\Visio\VisioCoClassTests.cs" />
     <Compile Include="NetOfficeCode\Publisher\PublisherCoClassTests.cs" />
     <Compile Include="NetOfficeCode\Outlook\OutlookCoClassTests.cs" />
