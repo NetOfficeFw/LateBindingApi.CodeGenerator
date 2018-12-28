@@ -8,8 +8,10 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
-    internal static class EventApi
+    public static class EventApi
     {
+        public static readonly string FolderName = "Events";
+
         private static readonly string SinkArgumentTemplate = "[SinkArgument(\"{0}\", {1})]";
         private static readonly string NetOfficeNamespacePrefix = "NetOffice.";
 
@@ -20,7 +22,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _interfaceFile)
                 _interfaceFile = RessourceApi.ReadString("Event.Interface.txt");
 
-            string eventsFolder = Path.Combine(solutionFolder, projectNode.Attribute("Name").Value, "Events");
+            string eventsFolder = Path.Combine(solutionFolder, projectNode.Attribute("Name").Value, FolderName);
             DirectoryEx.EnsureDirectory(eventsFolder);
 
             string result = "";
