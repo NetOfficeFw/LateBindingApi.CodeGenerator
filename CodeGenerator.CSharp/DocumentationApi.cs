@@ -40,7 +40,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <param name="numberOfTabSpace"></param>
         /// <param name="parametersNode"></param>
         /// <returns></returns>
-        internal static string CreateParameterDocumentationForMethod(int numberOfTabSpace, string[] SupportByVersion, XElement parametersNode, string additional ="")
+        internal static string CreateParameterDocumentationForMethod(int numberOfTabSpace, string[] SupportByVersion, XElement parametersNode, string remarks)
         {
             XElement parentNode = parametersNode;
             while (parentNode.Name != "Project")
@@ -57,14 +57,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
             libs = libs.Substring(0, libs.Length - 2);
 
             string summary = tabSpace + "/// <summary>\r\n" + tabSpace + libs + "\r\n";
-            summary += tabSpace + "/// " + additional + "\r\n";
             summary += tabSpace + "/// </summary>\r\n";
+            if (!String.IsNullOrEmpty(remarks))
+            {
+                summary += tabSpace + "/// <remarks> " + remarks + " </remarks>\r\n";
+            }
 
             result += summary;
 
             foreach (XElement itemParameter in parametersNode.Elements("Parameter"))
             {
                 string typeName = CSharpGenerator.GetQualifiedType(itemParameter);
+                string parameterName = ParameterApi.ValidateParamName(itemParameter.Attribute("Name").Value);
 
                 if ("true" == itemParameter.Attribute("IsOptional").Value)
                     typeName = "optional " + typeName;
@@ -75,14 +79,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if ("true" == itemParameter.Attribute("IsArray").Value)
                     typeName += "[]";
 
-                typeName += " " + itemParameter.Attribute("Name").Value;
+                typeName += " " + parameterName;
                 string defaultInfo = "";
 
                 if (itemParameter.Attribute("HasDefaultValue").Value == "true")
                 {
                     defaultInfo = " = " + itemParameter.Attribute("DefaultValue").Value;
                 }
-                string line = tabSpace + "/// <param name=\"" +   ParameterApi.ValidateParamName(itemParameter.Attribute("Name").Value) + "\">" + typeName + defaultInfo + "</param>\r\n";
+                string line = tabSpace + "/// <param name=\"" + parameterName + "\">" + typeName + defaultInfo + "</param>\r\n";
                 result += line;
             }
             return result;

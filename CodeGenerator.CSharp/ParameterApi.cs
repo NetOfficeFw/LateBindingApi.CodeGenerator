@@ -398,7 +398,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
             else
             {
                 return parametersNode.Elements("Parameter").Count();
-            }          
+            }
+        }
+
+        internal static string CreateParametersCallString(Settings settings, XElement parametersNode)
+        {
+            return CreateParametersCallString(settings, parametersNode, true, true);
         }
 
         /// <summary>

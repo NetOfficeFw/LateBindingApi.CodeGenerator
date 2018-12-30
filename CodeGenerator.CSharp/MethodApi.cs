@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Text;
@@ -207,49 +208,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 string[] supportDocuArray = CSharpGenerator.GetSupportByVersionArray(itemParams);
 
-                // gibt es andere überladungen mit mehr parametern als dieser überladung und sind die überzählen alle optional?
-                // dann füge deren supportbylibray überladungen an
+                // Are there any other overloads with more parameters than this overload and all are optional?
+                // Then attach [SupportByAttribute] from those overloads.
                 List<XElement> otherOverloads = GetOverloadsWithMoreParameters(itemParams, methodNode.Elements("Parameters"));
                 foreach (XElement other in otherOverloads)
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
-                
-                string docLink = "";
-                if (CSharpGenerator.Settings.AddDocumentationLinks)
-                {
-                    XElement typeNode = GetTypeNode(methodNode);
-                    XElement projectNode = GetProjectNode(methodNode);
 
-                    string projectName = projectNode.Attribute("Name").Value;
-                    if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
-                    {
-                        XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
-                                                where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
-                                                select a).FirstOrDefault();
-                        
-                        if (null == typeDocNode && typeNode.Attribute("Name").Value.StartsWith("_"))
-                        {
-                            string typeName = typeNode.Attribute("Name").Value.Substring(1);
-                            typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
-                                           where a.Element("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
-                                           select a).FirstOrDefault();
-                        }
+                string docLink = GetDocumentationLink(methodNode);
 
-                        if (null != typeDocNode)
-                        {
-                            XElement linkNode = (from a in typeDocNode.Element("Methods").Elements("Method")
-                                                 where a.Element("Name").Value.Equals(methodNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
-                                                 select a).FirstOrDefault();
-
-                            if (null != linkNode)
-                                docLink = "MSDN Online Documentation: " + linkNode.Element("Link").Value;
-                        }
-                    }
-                }
-
+                string tabSpace = CSharpGenerator.TabSpace(2);
                 string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams, docLink);
                
                 string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
-
                 string method = "";
                 if (true == settings.CreateXmlDocumentation)
                     method = supportDocu;
@@ -257,13 +227,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
 
                 if (methodNode.Attribute("Hidden").Value.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                    method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+                    method += tabSpace + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
 
                 if (HasCustomAttribute(itemParams))
-                    method += "\t\t" + "[CustomMethodAttribute]" + "\r\n";
-                method += "\t\t" + supportAttribute + "\r\n";
+                    method += tabSpace + "[CustomMethod]" + "\r\n";
+                method += tabSpace + supportAttribute + "\r\n";
                 if ("this" == name)
-                    method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
+                    method += tabSpace + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if (valueReturn == "COMObject")
@@ -276,7 +246,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (!analyzeReturn)
                     valueReturn = "object";
 
-                method += "\t\tpublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
+                method += tabSpace + "public " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
                 string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true);
                 method = method.Replace("%params%", parameters);
 
@@ -291,6 +261,50 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             return result;
+        }
+
+        internal static string GetDocumentationLink(XElement methodNode)
+        {
+            if (!CSharpGenerator.Settings.AddDocumentationLinks)
+            {
+                return String.Empty;
+            }
+
+            string docLink = "";
+            XElement typeNode = GetTypeNode(methodNode);
+            XElement projectNode = GetProjectNode(methodNode);
+
+            string projectName = projectNode.Attribute("Name").Value;
+            if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+            {
+                XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer")
+                        .Element(projectName).Element("Types").Elements("Type")
+                    where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value,
+                        StringComparison.InvariantCultureIgnoreCase)
+                    select a).FirstOrDefault();
+
+                if (null == typeDocNode && typeNode.Attribute("Name").Value.StartsWith("_"))
+                {
+                    string typeName = typeNode.Attribute("Name").Value.Substring(1);
+                    typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer")
+                            .Element(projectName).Element("Types").Elements("Type")
+                        where a.Element("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+                }
+
+                if (null != typeDocNode)
+                {
+                    XElement linkNode = (from a in typeDocNode.Element("Methods").Elements("Method")
+                        where a.Element("Name").Value.Equals(methodNode.Attribute("Name").Value,
+                            StringComparison.InvariantCultureIgnoreCase)
+                        select a).FirstOrDefault();
+
+                    if (null != linkNode)
+                        docLink = "MSDN Online: " + linkNode.Element("Link").Value;
+                }
+            }
+
+            return docLink;
         }
 
         private static XElement GetTypeNode(XElement methodNode)
@@ -318,6 +332,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <returns></returns>
         internal static string ConvertMethodLateBindToString(Settings settings, XElement methodNode, bool interfaceHasEnumerator, bool hasDefaultItem)
         {
+            string tabSpace = CSharpGenerator.TabSpace(2);
             string result = "";
             string name = methodNode.Attribute("Name").Value;
             bool analyzeReturn = Convert.ToBoolean(methodNode.Attribute("AnalyzeReturn").Value);
@@ -345,37 +360,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 foreach (XElement other in otherOverloads)
                     supportDocuArray = DocumentationApi.AddParameterDocumentation(supportDocuArray, other);
 
-                string docLink = "";
-                if (CSharpGenerator.Settings.AddDocumentationLinks)
-                {
-                    XElement typeNode = GetTypeNode(methodNode);
-                    XElement projectNode = GetProjectNode(methodNode);
-                    string projectName = projectNode.Attribute("Name").Value;
-                    if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
-                    {
-                        XElement typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
-                                                where a.Element("Name").Value.Equals(typeNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
-                                                select a).FirstOrDefault();
-                        if (null == typeDocNode && typeNode.Attribute("Name").Value.StartsWith("_"))
-                        {
-                            string typeName = typeNode.Attribute("Name").Value.Substring(1);
-                            typeDocNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
-                                           where a.Element("Name").Value.Equals(typeName, StringComparison.InvariantCultureIgnoreCase)
-                                           select a).FirstOrDefault();
-                        }
-
-                        if (null != typeDocNode)
-                        {
-                            XElement linkNode = (from a in typeDocNode.Element("Methods").Elements("Method")
-                                                 where a.Element("Name").Value.Equals(methodNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
-                                                 select a).FirstOrDefault();
-
-                            if (null != linkNode)
-                                docLink = "MSDN Online Documentation: " + linkNode.Element("Link").Value;
-                        }
-                    }
-                }
-               
+                string docLink = GetDocumentationLink(methodNode);
 
                 string supportDocu = DocumentationApi.CreateParameterDocumentationForMethod(2, supportDocuArray, itemParams, docLink);
                 string supportAttribute = CSharpGenerator.GetSupportByVersionAttribute(supportDocuArray, itemParams);
@@ -387,13 +372,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
 
                 if(methodNode.Attribute("Hidden").Value.Equals("true",StringComparison.InvariantCultureIgnoreCase))
-                    method += "\t\t" + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
+                    method += tabSpace + "[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]" + "\r\n";
                
                 if (HasCustomAttribute(itemParams))
-                    method += "\t\t" + "[CustomMethodAttribute]" + "\r\n";
-                method += "\t\t" + supportAttribute + "\r\n";
+                    method += tabSpace + "[CustomMethod]" + "\r\n";
+                method += tabSpace + supportAttribute + "\r\n";
                 if ("this" == name)
-                    method += "\t\t" + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
+                    method += tabSpace + "[NetRuntimeSystem.Runtime.CompilerServices.IndexerName(\"Item\")]" + "\r\n";
 
                 string valueReturn = CSharpGenerator.GetQualifiedType(returnValue);
                 if (valueReturn == "COMObject")
@@ -404,7 +389,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 if (!analyzeReturn)
                     valueReturn = "object";
 
-                method += "\t\tpublic " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
+                method += tabSpace + "public " + valueReturn + " " + name + inParam + "%params%" + outParam + "\r\n\t\t{\r\n%methodbody%\t\t}\r\n";
                 string parameters = ParameterApi.CreateParametersPrototypeString(settings, itemParams, true, true);
                 method = method.Replace("%params%", parameters);
 
@@ -430,12 +415,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string CreateLateBindMethodBody(Settings settings, int numberOfRootTabs, XElement parametersNode, bool analyzeReturn)
         {
             string tabSpace      = CSharpGenerator.TabSpace(numberOfRootTabs);
-            string methodBody    = ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
+            string methodBody    = ""; //ParameterApi.CreateParametersSetArrayString(settings, numberOfRootTabs, parametersNode, true);
             XElement returnValue = parametersNode.Element("ReturnValue");
             string methodName    = parametersNode.Parent.Attribute("Name").Value;
             string typeName      = returnValue.Attribute("Type").Value;
  
             string fullTypeName = CSharpGenerator.GetQualifiedType(returnValue);
+            string parametersCode = ParameterApi.CreateParametersCallString(settings, parametersNode, true, true);
+            if (!String.IsNullOrEmpty(parametersCode))
+            {
+                parametersCode = ", " + parametersCode;
+            }
 
             if ("this" == methodName)
                 methodName = parametersNode.Parent.Attribute("Underlying").Value;
@@ -593,7 +583,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 else
                     invokeTarget = methodName;
 
-                methodBody += tabSpace + "Invoker.Method(this, \"" + invokeTarget + "\", paramsArray" + modifiers + ");\r\n";
+                methodBody += tabSpace + "Factory.ExecuteMethod(this, \"" + invokeTarget + "\"" + parametersCode + modifiers + ");\r\n";
                 methodBody += "%modifiers%";
 
                 if (true == ParameterApi.HasRefOrOutParamsParams(parametersNode, true))
