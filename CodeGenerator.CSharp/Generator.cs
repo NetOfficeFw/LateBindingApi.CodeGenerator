@@ -482,7 +482,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
             }
 
-
             return "";
         }
 
@@ -514,9 +513,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// <summary>
         /// returns support libary versions for entityNode
         /// </summary>
-        /// <param name="entityNode"></param>
-        /// <returns></returns>
-        internal static string GetSupportByVersionAttribute(string[] array, XElement entityNode)
+        internal static string GetSupportByVersionAttribute(string[] array, XElement entityNode, int space = 1)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
@@ -524,6 +521,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string result = "";
             string versions = "";
+            string separator = "," + new String(' ', space);
+            int separatorLength = separator.Length;
             List<string> listVersions = new List<string>();
 
             foreach (string item in array)
@@ -534,12 +533,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
             listVersions.Sort(CompareSupportByVersion);
 
             foreach (string versionAttribute in listVersions)
-                versions += versionAttribute + ",";
+                versions += versionAttribute + separator;
 
-            if (versions.Substring(versions.Length - 1) == ",")
-                versions = versions.Substring(0, versions.Length - 1);
+            if (versions.Substring(versions.Length - separatorLength) == separator)
+                versions = versions.Substring(0, versions.Length - separatorLength);
 
-            result += "[SupportByVersionAttribute(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
+            result += "[SupportByVersion(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;
         }
 
@@ -548,14 +547,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// It will list all supported libary versions for entityNode in the attribute.
         /// </summary>
         /// <returns>[SupportByVersion("ProjectName", 1, 2, 3)]</returns>
-        internal static string GetSupportByVersionAttribute(XElement entityNode)
+        internal static string GetSupportByVersionAttribute(XElement entityNode, int space = 1)
         {
             XElement parentNode = entityNode;
             while (parentNode.Name != "Project")
                 parentNode = parentNode.Parent;
 
-            List<string> listVersions = new List<string>();
             string versions = "";
+            string separator = "," + new String(' ', space);
+            int separatorLength = separator.Length;
+            List<string> listVersions = new List<string>();
 
             XElement refLibs = entityNode.Element("RefLibraries");
             foreach (XElement refLib in refLibs.Elements())
@@ -571,10 +572,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
             listVersions.Sort(CompareSupportByVersion);
 
             foreach (string versionAttribute in listVersions)
-                versions += versionAttribute + ",";
+                versions += versionAttribute + separator;
 
-            if (versions.Substring(versions.Length - 1) == ",")
-                versions = versions.Substring(0, versions.Length - 1);
+            if (versions.Substring(versions.Length - separatorLength) == separator)
+                versions = versions.Substring(0, versions.Length - separatorLength);
 
             string result = "[SupportByVersion(" + "\"" + parentNode.Attribute("Name").Value + "\", " + versions + ")]";
             return result;

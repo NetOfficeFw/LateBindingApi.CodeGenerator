@@ -280,7 +280,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 targetReturnType = "object";
             }
 
-            content = content.Replace("%enumerable%", " ,IEnumerable<" + targetReturnType + ">");
+            content = content.Replace("%enumerable%", ", IEnumerableProvider<" + targetReturnType + ">");
 
             versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
             if (HasCustomAttribute(enumNode))
