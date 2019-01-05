@@ -9,6 +9,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class ModuleApi
     {
+        public static readonly string FolderName = "Modules";
+
         private static string _fileHeader = "using System;\r\n"
                                           + "using NetRuntimeSystem = System;\r\n"
                                           + "using System.ComponentModel;\r\n"
@@ -31,9 +33,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string ConvertModulesToFiles(XElement projectNode, XElement facesNode, Settings settings, string solutionFolder)
         {
             string projectName = projectNode.Attribute("Name").Value;
-            string modulesFolder = Path.Combine(solutionFolder, projectName, "Modules");
-            if (false == Directory.Exists(modulesFolder))
-                Directory.CreateDirectory(modulesFolder);
+            string modulesFolder = Path.Combine(solutionFolder, projectName, FolderName);
+            DirectoryEx.EnsureDirectory(modulesFolder);
 
             string result = "";
             foreach (XElement moduleNode in facesNode.Elements("Module"))
@@ -54,13 +55,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string ConvertGlobalModuleToFile(Settings settings, XElement projectNode, XElement faceNode, string faceFolder)
         {
-            string fileName = Path.Combine(faceFolder, "Global" + ".cs");
+            string fileName = Path.Combine(faceFolder, "Global.cs");
 
             string newEnum = ConvertGlobalModuleToString(settings, projectNode, faceNode);
-            File.AppendAllText(fileName, newEnum);
+            File.WriteAllText(fileName, newEnum, Constants.UTF8WithBOM);
 
             int i = faceFolder.LastIndexOf("\\");
-            string result = "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "Global" + ".cs" + "\" />";
+            string result = "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + "Global.cs" + "\" />";
             return result;
         }
 
