@@ -497,7 +497,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                              methodBody += tabSpace + "for (int i = 0; i < newObject.Length; i++)\r\n";
                              methodBody += tabSpace + "\treturnArray[i] = newObject[i] as " + CSharpGenerator.GetQualifiedType(returnValue) + ";\r\n";
                              methodBody += "%modifiers%";
-                             methodBody += tabSpace + "return returnArray;\r\n";                            
+                             methodBody += tabSpace + "return returnArray;\r\n";
                         }
                         else
                         {       

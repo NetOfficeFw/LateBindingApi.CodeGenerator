@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -9,21 +10,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     internal static class DispatchApi
     {
-        private static string _fileHeader = ""
-                                      + "using System.Collections;\r\n"
-                                      + "using System.Collections.Generic;\r\n"
-                                      + "using System;\r\n"
-                                      + "using NetRuntimeSystem = System;\r\n"
-                                      + "using System.ComponentModel;\r\n"
-                                      + "using NetOffice.Attributes;\r\n"
-                                      + "using NetOffice.CollectionsGeneric;\r\n"
-                                      + "%enumerableSpace%\r\n"
-                                      + "namespace %namespace%\r\n"
-                                      + "{%fakedClass%\r\n";
+        public static readonly string FolderName = "DispatchInterfaces";
 
-        private static string _classDesc = "\t///<summary>\r\n\t/// DispatchInterface %name% %RefLibs%\r\n\t///</summary>\r\n";
+        private static string _fileHeader = "using System;\r\n"
+                                          + "using NetRuntimeSystem = System;\r\n"
+                                          + "using System.ComponentModel;\r\n"
+                                          + "using NetOffice.Attributes;\r\n"
+                                          + "%enumerableSpace%\r\n"
+                                          + "namespace %namespace%\r\n"
+                                          + "{%fakedClass%\r\n";
 
-        private static string _classHeader = "\t[EntityType(EntityType.IsDispatchInterface)]\r\n" + "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
+        private static string _classDesc = "\t/// <summary>\r\n\t/// DispatchInterface %name% %RefLibs%\r\n\t/// </summary>\r\n";
+
+        private static string _classHeader = "\t[EntityType(EntityType.IsDispatchInterface), BaseType]\r\n" + "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
 
         private static string _classConstructor;
 
@@ -31,10 +30,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string ConvertInterfacesToFiles(XElement projectNode, XElement facesNode, Settings settings, string solutionFolder)
         {
-            string faceFolder = System.IO.Path.Combine(solutionFolder, projectNode.Attribute("Name").Value);
-            faceFolder = System.IO.Path.Combine(faceFolder, "DispatchInterfaces");
-            if (false == System.IO.Directory.Exists(faceFolder))
-                System.IO.Directory.CreateDirectory(faceFolder);
+            string projectName = projectNode.Attribute("Name").Value;
+            string faceFolder = Path.Combine(solutionFolder, projectName, FolderName);
+            DirectoryEx.EnsureDirectory(faceFolder);
 
             string result = "";
             foreach (XElement faceNode in facesNode.Elements("Interface"))
@@ -48,10 +46,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string ConvertInterfaceToFile(Settings settings, XElement projectNode, XElement faceNode, string faceFolder)
         {
-            string fileName = System.IO.Path.Combine(faceFolder, faceNode.Attribute("Name").Value + ".cs");
+            string fileName = Path.Combine(faceFolder, faceNode.Attribute("Name").Value + ".cs");
 
             string newEnum = ConvertInterfaceToString(settings, projectNode, faceNode);
-            System.IO.File.AppendAllText(fileName, newEnum);
+            File.WriteAllText(fileName, newEnum, Constants.UTF8WithBOM);
 
             int i = faceFolder.LastIndexOf("\\");
             string result = "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\" + faceNode.Attribute("Name").Value + ".cs" + "\" />";
@@ -96,8 +94,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result = result.Replace("%fakedClass%", "");
             string header = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", CSharpGenerator.GetSupportByVersionString("", faceNode));
 
-            result += "\t#pragma warning disable\r\n";
-            string version = CSharpGenerator.GetSupportByVersionAttribute(faceNode);
+            result += "\t#pragma warning disable\r\n\r\n";
+            string version = CSharpGenerator.GetSupportByVersionAttribute(faceNode, 0);
             header += "\t" + version + "\r\n";
             string guid = XmlConvert.DecodeName(faceNode.Element("DispIds").Element("DispId").Attribute("Id").Value);
             header += "\t[ComImport, ComVisible(true), Guid(\"" + guid + "\"), TypeLibType((short) " + faceNode.Attribute("TypeLibType").Value + ")]\r\n";
@@ -143,9 +141,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             bool isOptionalConflicted = IsOptionalConflicted(faceNode);
 
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
-            string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(faceNode);
+            string attributes = "\t" + CSharpGenerator.GetSupportByVersionAttribute(faceNode, 0);
             string header = _classHeader.Replace("%name%", faceNode.Attribute("Name").Value);
-            header += "\t\t#pragma warning disable\r\n";
+            header += "\t\t#pragma warning disable\r\n\r\n";
 
             if (isNameConflicted || isOptionalConflicted)
             {
@@ -174,8 +172,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion(faceNode) + docLink);
 
+            settings.SupportByVersionSpacing = 0;
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
             string methods = MethodApi.ConvertMethodsLateBindToString(settings, faceNode.Element("Methods"));
+            settings.SupportByVersionSpacing = 1;
 
             result += classDesc;
             result += attributes + "\r\n";
@@ -192,7 +192,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             ScanEnumerable(faceNode, ref result);
 
             result += "\t\t#pragma warning restore\r\n";
-            result += "\t}\r\n}";
+            result += "\t}\r\n}\r\n";
             return result;
         }
 

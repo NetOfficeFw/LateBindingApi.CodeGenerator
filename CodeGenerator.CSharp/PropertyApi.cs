@@ -352,7 +352,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     method += DocumentationApi.CreateParameterDocumentation(2, itemParams, true, "", paramDoku2);
 
                 string tabSpace = CSharpGenerator.TabSpace(2);
-                method += tabSpace + CSharpGenerator.GetSupportByVersionAttribute(itemParams) + "\r\n";
+                method += tabSpace + CSharpGenerator.GetSupportByVersionAttribute(itemParams, settings.SupportByVersionSpacing) + "\r\n";
 
                 int paramsCountWithOptionals = ParameterApi.GetParamsCount(itemParams, true);
 
@@ -375,8 +375,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string paramDoku = DocumentationApi.CreateParameterDocumentation(2, itemParams).Substring(2);
 
 
-                string paramAttrib = tabSpace + CSharpGenerator.GetSupportByVersionAttribute(itemParams)+ "\r\n";
-                prototype = prototype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, paramDoku2 + "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams));
+                string paramAttrib = tabSpace + CSharpGenerator.GetSupportByVersionAttribute(itemParams, settings.SupportByVersionSpacing) + "\r\n";
+                prototype = prototype.Replace("%paramDocu%", DocumentationApi.CreateParameterDocumentation(2, itemParams, false, paramDoku2 + "\t\t/// Alias for get_" + name + "\r\n").Substring(2) + "\t\t" + CSharpGenerator.GetSupportByVersionAttribute(itemParams, settings.SupportByVersionSpacing));
 
                 if (true == settings.CreateXmlDocumentation)
                     paramAttrib = paramDoku + paramAttrib;

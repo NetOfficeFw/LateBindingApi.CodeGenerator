@@ -24,6 +24,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
+        public Settings()
+        {
+            this.SupportByVersionSpacing = 1;
+        }
+
         #region Properties
 
         public bool VBOptimization{get;set;}
@@ -171,6 +176,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _openFolder = value;
             }
         }
+
+        public int SupportByVersionSpacing { get; set; }
 
         #endregion
     }
