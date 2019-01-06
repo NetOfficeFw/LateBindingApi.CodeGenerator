@@ -206,24 +206,30 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return false;
         }
 
-        private static string GetThisReturnType(XElement faceNode, string defaultValue)
+        private static string GetThisReturnType(XElement faceNode, string defaultValue, out bool isEnumType)
         {
+            isEnumType = false;
+
             XElement thisNode = (from a in faceNode.Element("Properties").Elements("Property") where a.Attribute("Name").Value == "this" select a).FirstOrDefault();
             if(null == thisNode)
                 thisNode = (from a in faceNode.Element("Methods").Elements("Method") where a.Attribute("Name").Value == "this" select a).FirstOrDefault();
             if (null == thisNode)
                 return defaultValue;
 
-            if ("COMVariant" == thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value)
+            XElement returnValueElement = thisNode.Element("Parameters").Element("ReturnValue");
+            string returnType = returnValueElement.Attribute("Type").Value;
+            isEnumType = returnValueElement.Attribute("IsEnum").Value == "true";
+
+            if ("COMVariant" == returnType)
                 return "object";
-            if ("COMObject" == thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value)
+            if ("COMObject" == returnType)
                 return "object";
 
-            string qualifier = GetQualifier(faceNode, thisNode.Element("Parameters").Element("ReturnValue"));
+            string qualifier = GetQualifier(faceNode, returnValueElement);
             if (qualifier != "")
-                return qualifier + "." + thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value;
+                return qualifier + "." + returnType;
             else
-                return thisNode.Element("Parameters").Element("ReturnValue").Attribute("Type").Value;
+                return returnType;
         }
 
         internal static bool HasDefault(XElement entityNode)
@@ -267,7 +273,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string faceName = faceNode.Attribute("Name").Value;
             XElement enumNode = GetEnumNode(faceNode);
             XElement returnType = enumNode.Element("Parameters").Element("ReturnValue");
-            string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value);
+            bool isEnumType;
+            string targetReturnType = GetThisReturnType(faceNode, returnType.Attribute("Type").Value, out isEnumType);
             if (targetReturnType == "COMObject")
                 targetReturnType = "object";
 
@@ -313,7 +320,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         enumString = enumString.Replace("%ThisOrItem%", "Item(i+1)");
                 }
             }
-            else if(IsNativeScalarType(targetReturnType))
+            else if(IsNativeScalarType(targetReturnType) || isEnumType)
             {
                 enumString = NativeEnumeratorT.Replace("%version%", versionSummary + tabSpace + versionAttribute).Replace("%Type%", targetReturnType);
                 enumString += NativeEnumerator.Replace("%version%", versionSummary + tabSpace + versionAttribute);
