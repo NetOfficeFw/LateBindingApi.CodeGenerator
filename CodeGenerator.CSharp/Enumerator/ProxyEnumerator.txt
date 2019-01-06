@@ -1,7 +1,7 @@
 ﻿
         #region IEnumerable
 
-		%version%
+        %version%
 		IEnumerator NetRuntimeSystem.Collections.IEnumerable.GetEnumerator()
 		{
 			return NetOffice.Utils.GetProxyEnumeratorAs%Call%(this, %allowDynamicObject%);

@@ -282,10 +282,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             content = content.Replace("%enumerable%", ", IEnumerableProvider<" + targetReturnType + ">");
 
-            versionSummary = "/// <summary>\r\n" + "\t\t" + "/// "+ versionSummary + "\r\n";
+            string tabSpace = CSharpGenerator.TabSpace(2);
+            versionSummary = "/// <summary>\r\n" + tabSpace + "/// "+ versionSummary + "\r\n";
             if (HasCustomAttribute(enumNode))
-                versionSummary += "\t\t/// This is a custom enumerator from NetOffice\r\n";
-            versionSummary += "\t\t/// </summary>\r\n";
+                versionSummary += tabSpace + "/// This is a custom enumerator from NetOffice\r\n";
+            versionSummary += tabSpace + "/// </summary>\r\n";
 
             // get enumerator
             string enumString = "";
@@ -293,8 +294,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
             {
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
-                    enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + tabSpace + versionAttribute).Replace("%Type%", "object");
+                    enumString += FakedEnumerator.Replace("%version%", versionSummary + tabSpace + versionAttribute);
 
                     if (HasDefault(faceNode))
                         enumString = enumString.Replace("%ThisOrItem%", "this[i+1]");
@@ -303,8 +304,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 else
                 {
-                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
-                    enumString += FakedEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                    enumString = FakedEnumeratorT.Replace("%version%", versionSummary + tabSpace + versionAttribute).Replace("%Type%", targetReturnType);
+                    enumString += FakedEnumerator.Replace("%version%", versionSummary + tabSpace + versionAttribute);
 
                     if (HasDefault(faceNode))
                         enumString = enumString.Replace("%ThisOrItem%", "this[i+1]");
@@ -312,28 +313,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         enumString = enumString.Replace("%ThisOrItem%", "Item(i+1)");
                 }
             }
-            else if("true" == returnType.Attribute("IsComProxy").Value)
+            else if(IsNativeScalarType(targetReturnType))
             {
-                string enumeratorType = targetReturnType;
-                string allowDynamicObject = "false";
-
-                if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    enumeratorType = "object";
-                }
-
-                if (enumeratorType == "object")
-                {
-                    allowDynamicObject = "true";
-                }
-
-                enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", enumeratorType);
-                enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%allowDynamicObject%", allowDynamicObject);
+                enumString = NativeEnumeratorT.Replace("%version%", versionSummary + tabSpace + versionAttribute).Replace("%Type%", targetReturnType);
+                enumString += NativeEnumerator.Replace("%version%", versionSummary + tabSpace + versionAttribute);
             }
             else
             {
-                enumString = NativeEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
-                enumString += NativeEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                string allowDynamicObject = targetReturnType == "object" ? "true" : "false";
+
+                enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + tabSpace + versionAttribute).Replace("%Type%", targetReturnType);
+                enumString += ProxyEnumerator.Replace("%version%", versionSummary + tabSpace + versionAttribute).Replace("%allowDynamicObject%", allowDynamicObject);
             }
 
             // get call type
@@ -378,6 +368,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
             enumString = enumString.Replace("%Type%", type);
 
             content += enumString;
+        }
+
+        static bool IsNativeScalarType(string type)
+        {
+            switch (type)
+            {
+                case "Int32":
+                case "string":
+                case "Int16":
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

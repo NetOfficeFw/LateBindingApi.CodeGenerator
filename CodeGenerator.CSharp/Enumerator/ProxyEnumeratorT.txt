@@ -1,12 +1,12 @@
 ﻿
-       #region IEnumerable<%Type%>
+        #region IEnumerable<%Type%>
 
         %version%
-       public IEnumerator<%Type%> GetEnumerator()
-       {
-           NetRuntimeSystem.Collections.IEnumerable innerEnumerator = (this as NetRuntimeSystem.Collections.IEnumerable);
-           foreach (%Type% item in innerEnumerator)
-               yield return item;
-       }
+        public IEnumerator<%Type%> GetEnumerator()
+        {
+            NetRuntimeSystem.Collections.IEnumerable innerEnumerator = (this as NetRuntimeSystem.Collections.IEnumerable);
+            foreach (%Type% item in innerEnumerator)
+                yield return item;
+        }
 
-       #endregion
+        #endregion
