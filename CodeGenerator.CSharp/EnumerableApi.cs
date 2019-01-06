@@ -272,7 +272,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 targetReturnType = "object";
 
             string versionSummary = CSharpGenerator.GetSupportByVersionString("", enumNode);
-            string versionAttribute = CSharpGenerator.GetSupportByVersionAttribute(enumNode); 
+            string versionAttribute = CSharpGenerator.GetSupportByVersionAttribute(enumNode);
             content = content.Replace("%enumerableSpace%", "using System.Collections;\r\n");
 
             if (faceName == "FormatConditions" && faceNode.Parent.Parent.Attribute("Name").Value == "Excel")
@@ -314,16 +314,21 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
             else if("true" == returnType.Attribute("IsComProxy").Value)
             {
+                string enumeratorType = targetReturnType;
+                string allowDynamicObject = "false";
+
                 if (targetReturnType.Equals("COMObject", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", "object");
-                    enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);                    
+                    enumeratorType = "object";
                 }
-                else
+
+                if (enumeratorType == "object")
                 {
-                    enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", targetReturnType);
-                    enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute);
+                    allowDynamicObject = "true";
                 }
+
+                enumString = ProxyEnumeratorT.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%Type%", enumeratorType);
+                enumString += ProxyEnumerator.Replace("%version%", versionSummary + "\t\t" + versionAttribute).Replace("%allowDynamicObject%", allowDynamicObject);
             }
             else
             {
@@ -347,19 +352,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             // get type and check array
             string type = returnType.Attribute("Type").Value;
-           
+
             if(returnType.Attribute("IsComProxy").Value == "true")
                  type = "object";
 
             if("COMVariant" == type)
                 type = "object";
-        
+
             if ("true" == returnType.Attribute("IsArray").Value)
                 type += "[]";
 
             // get type qualifiers
             if (type != "object")
-            { 
+            {
                 string qualifier = GetQualifier(faceNode, returnType);
                 if(qualifier != "")
                     type = qualifier  + type;
@@ -402,7 +407,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     string refProjectKey = returnType.Element("ProjectKey").Value;
                     if ("" != refProjectKey)
-                    { 
+                    {
                         XElement projectNode = (from a in returnType.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Element("Projects").Elements("Project")
                                               where a.Attribute("Key").Value.Equals(refProjectKey)
                                               select a).FirstOrDefault();
