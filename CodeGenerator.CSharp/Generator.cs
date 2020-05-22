@@ -181,13 +181,17 @@ namespace LateBindingApi.CodeGenerator.CSharp
             var projects = _document.Descendants("Project");
             foreach (var project in projects)
             {
-                if ("true" == project.Attribute("Ignore").Value)
+                var projectName = project.Attribute("Name").Value;
+                if ("true" == project.Attribute("Ignore").Value || Settings.IgnoredProjects.Contains(projectName))
+                {
+                    this.DoUpdate($"Skipping ignored project {projectName}", token);
                     continue;
+                }
 
                 if(true == _settings.RemoveRefAttribute)
                     ProjectApi.RemoveRefAttribute(project);
 
-                this.DoUpdate("Create project " + project.Attribute("Name").Value, token);
+                this.DoUpdate("Create project " + projectName, token);
                 string projectFile = RessourceApi.ReadString("Project.Project.csproj");
                 string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
                 string referencedLibraries = ProjectApi.GetReferencedLibraries(project, _settings, solutionFolder);

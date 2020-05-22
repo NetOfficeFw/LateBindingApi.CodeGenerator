@@ -69,6 +69,7 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             csSettings.VBOptimization = false;
             csSettings.AddTestApp = true;
             csSettings.OpenFolder = false;
+            csSettings.IgnoredProjects = new [] { "Publisher" };
 
             Log.Info($@"Generating code to '{options.OutputFolder}'");
 

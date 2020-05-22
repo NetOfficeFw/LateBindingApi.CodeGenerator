@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
@@ -38,5 +39,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         public bool OpenFolder { get; set; }
 
         public int SupportByVersionSpacing { get; set; }
+
+        public IEnumerable<string> IgnoredProjects { get; set; }
     }
 }
