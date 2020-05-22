@@ -21,6 +21,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                           + "{%fakedClass%\r\n";
 
         private static string _classDesc = "\t/// <summary>\r\n\t/// DispatchInterface %name% %RefLibs%\r\n\t/// </summary>\r\n";
+        private static string _classRemarks = "\t/// <remarks> MSDN Online: %docLink% </remarks>\r\n";
 
         private static string _classHeader = "\t[EntityType(EntityType.IsDispatchInterface), BaseType]\r\n" + "\tpublic class %name% : %inherited%%enumerable%\r\n\t{\r\n";
 
@@ -166,11 +167,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                          where a.Element("Name").Value.Equals(faceNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
                                          select a).FirstOrDefault();
                     if (null != linkNode)
-                        docLink = "\r\n\t" + "/// MSDN Online Documentation: " + linkNode.Element("Link").Value;
+                        docLink = linkNode.Element("Link")?.Value;
                 }
             }
 
-            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion(faceNode) + docLink);
+            string classDesc = _classDesc.Replace("%name%", faceNode.Attribute("Name").Value).Replace("%RefLibs%", "\r\n\t/// " + CSharpGenerator.GetSupportByVersion(faceNode));
+            if (!String.IsNullOrEmpty(docLink))
+            {
+                string classRemarks = _classRemarks.Replace("%docLink%", docLink);
+                classDesc += classRemarks;
+            }
 
             settings.SupportByVersionSpacing = 0;
             string properties = PropertyApi.ConvertPropertiesLateBindToString(settings, faceNode.Element("Properties"));
@@ -254,7 +260,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     return target;
             }
 
-            throw (new ArgumentException("refEntity not found."));
+            throw (new ArgumentException($"refEntity '{key}' not found in project '{projectNode.Attribute("Name")?.Value}'."));
         }
     }
 }
