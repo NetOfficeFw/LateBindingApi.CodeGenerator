@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
+MinimumVisualStudioVersion = 15.0.28307.168
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LateBindingGui", "LateBindingGui\LateBindingGui.csproj", "{52CE03D1-62AD-4FF9-9BD5-A8310D877A4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator.ComponentAnalyzer", "CodeGenerator.ComponentAnalyzer\CodeGenerator.ComponentAnalyzer.csproj", "{CA3E99F4-3630-44E6-ACD1-D9D63E7E09E8}"
