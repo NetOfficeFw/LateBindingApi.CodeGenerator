@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace LateBinding
         private static readonly Logger Log = LogManager.GetLogger(nameof(Program));
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
-        public static async Task Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
@@ -27,13 +28,24 @@ namespace LateBinding
             }
 
             var (libraryVersion, libs) = GetLibrarySet(setId);
+
+            if (!CheckLibrariesExist(libs))
+            {
+                return 1;
+            }
+
             var sourcePath = Path.Combine(Environment.CurrentDirectory, "NetOffice.xml");
             var targetFilename = $"NetOffice-Office{setId}.xml";
             var targetPath = Path.Combine(Environment.CurrentDirectory, targetFilename);
 
             var comAnalyzer = new Analyzer();
             comAnalyzer.DefaultLibraryVersion = libraryVersion;
-            comAnalyzer.LoadProject(sourcePath);
+
+            if (File.Exists(sourcePath))
+            {
+                comAnalyzer.LoadProject(sourcePath);
+            }
+
             comAnalyzer.Update += (sender, message) => { Log.Info(message); };
             comAnalyzer.Finish += (timeElapsed) => { Log.Info($"Done loading library.\nTime: {timeElapsed}"); };
 
@@ -49,11 +61,31 @@ namespace LateBinding
 
             Log.Info("Done.");
 
-            //if (Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 Console.ReadKey();
             }
+
+            return 0;
         }
+
+        private static bool CheckLibrariesExist(IEnumerable<string> libraries)
+        {
+            foreach (var library in libraries)
+            {
+                if (!File.Exists(library))
+                {
+                    Log.Error($"Library {library} does not exists.");
+                    return false;
+                }
+
+                var filename = Path.GetFileName(library);
+                Log.Info($"Library {filename} exists at {library}");
+            }
+
+            return true;
+        }
+
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
