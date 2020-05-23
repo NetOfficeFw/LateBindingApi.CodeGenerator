@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
+using LateBindingApi.CodeGenerator.ComponentAnalyzer.Model;
 using TypeLibInformation;
 using TLI = TypeLibInformation;
 
@@ -249,6 +250,26 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     item.Attribute("IsOptional").Value = "true";
                 }
             }               
+        }
+
+        public IEnumerable<LibraryVersion> LoadLibraryVersions(OfficeProduct office)
+        {
+            var tli = new TLIApplication();
+
+            foreach (var library in office.Libraries)
+            {
+                var libInfo = tli.TypeLibInfoFromFile(library);
+
+                var libVersion = new LibraryVersion
+                {
+                    LibraryName = libInfo.Name,
+                    Version = office.VersionName,
+                    Major = libInfo.MajorVersion,
+                    Minor = libInfo.MinorVersion
+                };
+
+                yield return libVersion;
+            }
         }
 
         public void ScanFor15()

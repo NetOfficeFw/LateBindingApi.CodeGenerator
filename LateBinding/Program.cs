@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
+using LateBindingApi.CodeGenerator.ComponentAnalyzer.Model;
 using NLog;
 using NLog.Targets;
 
@@ -27,9 +28,9 @@ namespace LateBinding
                 setId = args[0];
             }
 
-            var (libraryVersion, libs) = GetLibrarySet(setId);
+            var office = GetLibrarySet(setId);
 
-            if (!CheckLibrariesExist(libs))
+            if (!CheckLibrariesExist(office.Libraries))
             {
                 return 1;
             }
@@ -39,25 +40,38 @@ namespace LateBinding
             var targetPath = Path.Combine(Environment.CurrentDirectory, targetFilename);
 
             var comAnalyzer = new Analyzer();
-            comAnalyzer.DefaultLibraryVersion = libraryVersion;
+            comAnalyzer.DefaultLibraryVersion = office.VersionName;
 
-            if (File.Exists(sourcePath))
+            var libraries = comAnalyzer.LoadLibraryVersions(office);
+
+            Console.WriteLine($"Product: {office.Name}");
+            Console.WriteLine($"Release: {office.ReleaseName}");
+            Console.WriteLine($"Version: {office.VersionName}");
+
+            foreach (var library in libraries.OrderBy(k => k.LibraryName))
             {
-                comAnalyzer.LoadProject(sourcePath);
+                Console.WriteLine($"  - Library: {library.LibraryName}");
+                Console.WriteLine($"    ProductVersion: {library.Version}");
+                Console.WriteLine($"    LibraryVersion: {library.Major}.{library.Minor}");
             }
 
-            comAnalyzer.Update += (sender, message) => { Log.Info(message); };
-            comAnalyzer.Finish += (timeElapsed) => { Log.Info($"Done loading library.\nTime: {timeElapsed}"); };
+            ////if (File.Exists(sourcePath))
+            ////{
+            ////    comAnalyzer.LoadProject(sourcePath);
+            ////}
 
-            try
-            {
-                comAnalyzer.LoadTypeLibraries(libs.ToArray(), true, false);
-                comAnalyzer.SaveProject(targetPath);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, $"Failed to load type library information.");
-            }
+            ////comAnalyzer.Update += (sender, message) => { Log.Info(message); };
+            ////comAnalyzer.Finish += (timeElapsed) => { Log.Info($"Done loading library.\nTime: {timeElapsed}"); };
+
+            ////try
+            ////{
+            ////    comAnalyzer.LoadTypeLibraries(office.Libraries.ToArray(), true, false);
+            ////    comAnalyzer.SaveProject(targetPath);
+            ////}
+            ////catch (Exception e)
+            ////{
+            ////    Log.Error(e, $"Failed to load type library information.");
+            ////}
 
             Log.Info("Done.");
 
@@ -93,7 +107,7 @@ namespace LateBinding
             Log.Error(ex, $"Unhandled exception in latebinding.exe (IsTerminating={e.IsTerminating}).");
         }
 
-        private static (string libraryVersion, IEnumerable<string> libs) GetLibrarySet(string id)
+        private static OfficeProduct GetLibrarySet(string id)
         {
             switch(id)
             {
@@ -106,7 +120,7 @@ namespace LateBinding
             }
         }
 
-        private static (string libraryVersion, IEnumerable<string> libs) GetMsOffice2013LibrarySet()
+        private static OfficeProduct GetMsOffice2013LibrarySet()
         {
             var access_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSACC.OLB";
             var excel_v2013 = @"C:\Program Files\Microsoft Office\Office15\EXCEL.EXE";
@@ -119,10 +133,19 @@ namespace LateBinding
             var word_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSWORD.OLB";
 
             var libs = new String[] { office_v2013, excel_v2013, word_v2013, outlook_v2013, powerpoint_v2013, access_v2013, msproject_v2013, visio_v2013, publisher_v2013 };
-            return ("15", libs);
+
+
+            var office2013 = new OfficeProduct
+            {
+                Name = "Microsoft Office 2013",
+                VersionName = "15",
+                ReleaseName = "2013",
+                Libraries = libs
+            };
+            return office2013;
         }
 
-        private static (string libraryVersion, IEnumerable<string> libs) GetMsOffice2016LibrarySet()
+        private static OfficeProduct GetMsOffice2016LibrarySet()
         {
             var officeLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\MSO.DLL";
             var vbIDELib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\VFS\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB";
@@ -134,8 +157,17 @@ namespace LateBinding
             var msProjectLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\Office16\MSPRJ.OLB";
 
             //var libs = new String[] { officeLib_v2016, excelLib_v2016, wordLib_v2016, outlookLib_v2016, powerPointLib_v2016, accessLib_v2016, msProjectLib_v2016, vbIDELib_v2016 };
-            var libs = new String[] { officeLib_v2016 };
-            return ("16", libs);
+            var libs = new String[] { officeLib_v2016, excelLib_v2016, wordLib_v2016, outlookLib_v2016, powerPointLib_v2016, accessLib_v2016, vbIDELib_v2016 };
+            //var libs = new String[] { officeLib_v2016 };
+
+            var office2016 = new OfficeProduct
+            {
+                Name = "Microsoft Office 2016",
+                VersionName = "16",
+                ReleaseName = "2016",
+                Libraries = libs
+            };
+            return office2016;
         }
     }
 }

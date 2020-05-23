@@ -53,6 +53,10 @@
     <Compile Include="Analyzer.cs" />
     <Compile Include="ICodeGenerator.cs" />
     <Compile Include="MethodHandler.cs" />
+    <Compile Include="Model\LibraryDependency.cs" />
+    <Compile Include="Model\LibraryVersion.cs" />
+    <Compile Include="Model\Library.cs" />
+    <Compile Include="Model\OfficeProduct.cs" />
     <Compile Include="ProjectFileFormatException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
