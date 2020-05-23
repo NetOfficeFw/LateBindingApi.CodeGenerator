@@ -76,9 +76,17 @@ namespace LateBinding
 
         private static (string libraryVersion, IEnumerable<string> libs) GetMsOffice2013LibrarySet()
         {
-            var officeLib_v2013 = @"C:\Program Files\Common Files\Microsoft Shared\OFFICE15\MSO.DLL";
+            var access_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSACC.OLB";
+            var excel_v2013 = @"C:\Program Files\Microsoft Office\Office15\EXCEL.EXE";
+            var msproject_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSPRJ.OLB";
+            var office_v2013 = @"C:\Program Files\Common Files\Microsoft Shared\OFFICE15\MSO.DLL";
+            var outlook_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSOUTL.OLB";
+            var powerpoint_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSPPT.OLB";
+            var publisher_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSPUB.TLB";
+            var visio_v2013 = @"C:\Program Files\Microsoft Office\Office15\VISLIB.DLL";
+            var word_v2013 = @"C:\Program Files\Microsoft Office\Office15\MSWORD.OLB";
 
-            var libs = new String[] { officeLib_v2013 };
+            var libs = new String[] { office_v2013, excel_v2013, word_v2013, outlook_v2013, powerpoint_v2013, access_v2013, msproject_v2013, visio_v2013, publisher_v2013 };
             return ("15", libs);
         }
 
