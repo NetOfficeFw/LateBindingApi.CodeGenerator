@@ -39,39 +39,26 @@ namespace LateBinding
             var targetFilename = $"NetOffice-Office{setId}.xml";
             var targetPath = Path.Combine(Environment.CurrentDirectory, targetFilename);
 
+            ////DumpOfficeVersions(office);
+
             var comAnalyzer = new Analyzer();
             comAnalyzer.DefaultLibraryVersion = office.VersionName;
-
-            var libraries = comAnalyzer.LoadLibraryVersions(office);
-
-            Console.WriteLine($"Product: {office.Name}");
-            Console.WriteLine($"Release: {office.ReleaseName}");
-            Console.WriteLine($"Version: {office.VersionName}");
-
-            foreach (var library in libraries.OrderBy(k => k.LibraryName))
+            if (File.Exists(sourcePath))
             {
-                Console.WriteLine($"  - Library: {library.LibraryName}");
-                Console.WriteLine($"    ProductVersion: {library.Version}");
-                Console.WriteLine($"    LibraryVersion: {library.Major}.{library.Minor}");
+                comAnalyzer.LoadProject(sourcePath);
             }
 
-            ////if (File.Exists(sourcePath))
-            ////{
-            ////    comAnalyzer.LoadProject(sourcePath);
-            ////}
+            comAnalyzer.Finish += (timeElapsed) => { Log.Info($"Done loading library.\nTime: {timeElapsed}"); };
 
-            ////comAnalyzer.Update += (sender, message) => { Log.Info(message); };
-            ////comAnalyzer.Finish += (timeElapsed) => { Log.Info($"Done loading library.\nTime: {timeElapsed}"); };
-
-            ////try
-            ////{
-            ////    comAnalyzer.LoadTypeLibraries(office.Libraries, true, false);
-            ////    comAnalyzer.SaveProject(targetPath);
-            ////}
-            ////catch (Exception e)
-            ////{
-            ////    Log.Error(e, $"Failed to load type library information.");
-            ////}
+            try
+            {
+                comAnalyzer.LoadTypeLibraries(office.Libraries, true, false);
+                comAnalyzer.SaveProject(targetPath);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Failed to load type library information.");
+            }
 
             Log.Info("Done.");
 
@@ -98,6 +85,25 @@ namespace LateBinding
             }
 
             return true;
+        }
+
+        private static void DumpOfficeVersions(OfficeProduct office)
+        {
+            var comAnalyzer = new Analyzer();
+            comAnalyzer.DefaultLibraryVersion = office.VersionName;
+
+            var libraries = comAnalyzer.LoadLibraryVersions(office);
+
+            Console.WriteLine($"Product: {office.Name}");
+            Console.WriteLine($"Release: {office.ReleaseName}");
+            Console.WriteLine($"Version: {office.VersionName}");
+
+            foreach (var library in libraries.OrderBy(k => k.LibraryName))
+            {
+                Console.WriteLine($"  - Library: {library.LibraryName}");
+                Console.WriteLine($"    ProductVersion: {library.Version}");
+                Console.WriteLine($"    LibraryVersion: {library.Major}.{library.Minor}");
+            }
         }
 
 
