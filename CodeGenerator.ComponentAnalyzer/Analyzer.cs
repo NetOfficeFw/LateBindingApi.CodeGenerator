@@ -35,7 +35,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         ThreadJob               _threadJob;
         bool                    _doAsync;
         bool                    _addToCurrentProject;
-        string[]                _files;
+        IEnumerable<string>     _files;
         TimeSpan                _timeElapsed;
 
         #endregion
@@ -216,7 +216,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="files">typelib paths</param>
         /// <param name="addToCurrentProject">dont clear old project</param>
-        public void LoadTypeLibraries(string[] files, bool addToCurrentProject, bool doAsync)
+        public void LoadTypeLibraries(IEnumerable<string> files, bool addToCurrentProject, bool doAsync)
         {
             _doAsync = doAsync;
             _files = files;
@@ -516,7 +516,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         /// <param name="files"></param>
         /// <returns>list of loaded typelib</returns>
-        private List<TypeLibInfo> LoadLibraries(string[] files)
+        private List<TypeLibInfo> LoadLibraries(IEnumerable<string> files)
         {
             List<TypeLibInfo> listReturn = new List<TypeLibInfo>();
 
