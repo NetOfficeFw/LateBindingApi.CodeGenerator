@@ -65,7 +65,7 @@ namespace LateBinding
 
             ////try
             ////{
-            ////    comAnalyzer.LoadTypeLibraries(office.Libraries.ToArray(), true, false);
+            ////    comAnalyzer.LoadTypeLibraries(office.Libraries, true, false);
             ////    comAnalyzer.SaveProject(targetPath);
             ////}
             ////catch (Exception e)
