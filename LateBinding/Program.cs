@@ -153,18 +153,18 @@ namespace LateBinding
 
         private static OfficeProduct GetMsOffice2016LibrarySet()
         {
-            var officeLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\MSO.DLL";
-            var vbIDELib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\VFS\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB";
-            var excelLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\Office16\EXCEL.EXE";
-            var wordLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\Office16\MSWORD.OLB";
-            var outlookLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\Office16\MSOUTL.OLB";
-            var powerPointLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\Office16\MSPPT.OLB";
-            var accessLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\Office16\MSACC.OLB";
-            var msProjectLib_v2016 = @"C:\Program Files (x86)\Microsoft Office\Root\Office16\MSPRJ.OLB";
+            var office_v2016 = @"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\MSO.DLL";
+            var vbIDE_v2016 = @"C:\Program Files\Microsoft Office\Root\VFS\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB";
+            var excel_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\EXCEL.EXE";
+            var word_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSWORD.OLB";
+            var outlook_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSOUTL.OLB";
+            var powerPoint_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSPPT.OLB";
+            var access_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSACC.OLB";
+            var msProject_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSPRJ.OLB";
+            var publisher_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSPUB.TLB";
+            var visio_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\VISLIB.DLL";
 
-            //var libs = new String[] { officeLib_v2016, excelLib_v2016, wordLib_v2016, outlookLib_v2016, powerPointLib_v2016, accessLib_v2016, msProjectLib_v2016, vbIDELib_v2016 };
-            var libs = new String[] { officeLib_v2016, excelLib_v2016, wordLib_v2016, outlookLib_v2016, powerPointLib_v2016, accessLib_v2016, vbIDELib_v2016 };
-            //var libs = new String[] { officeLib_v2016 };
+            var libs = new String[] { office_v2016, excel_v2016, word_v2016, outlook_v2016, powerPoint_v2016, access_v2016, msProject_v2016, vbIDE_v2016, publisher_v2016, visio_v2016 };
 
             var office2016 = new OfficeProduct
             {
