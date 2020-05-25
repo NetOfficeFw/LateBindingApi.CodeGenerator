@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using LateBindingApi.CodeGenerator.ComponentAnalyzer.Model;
+using NLog;
 using TypeLibInformation;
 using TLI = TypeLibInformation;
 
@@ -23,6 +24,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     public class Analyzer
     {
         #region Fields
+
+        private static Logger Log = LogManager.GetLogger(nameof(Analyzer));
         private static readonly Regex XmlInvalidControlChars = new Regex("[\x00-\x1f]", RegexOptions.Compiled);
 
         private readonly string  _documentVersion = "0.8";
@@ -182,6 +185,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             }
             catch (Exception throwedException)
             {
+                Log.Error(throwedException, "Failed to analyze type libraries.");
                 throw (throwedException);
             }
         }
@@ -198,6 +202,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="message"></param>
         private void DoUpdate(string message)
         {
+            Log.Info(message);
             Update?.Invoke(this, message);
         }
 
@@ -460,7 +465,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if ((null == dependLibNode) && ("Office" == refDependLib.Attribute("Name").Value))
             {
-                Console.WriteLine("Warning: Attempt Office Hotfix");
+                Log.Warn("Loading Office library using hotfix.");
+
                 dependLibNode = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Libraries").Elements("Library")
                                  where a.Attribute("Name").Value.Equals(name) &&
                                    a.Attribute("GUID").Value.Equals(guid) &&
@@ -543,6 +549,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         {
             foreach(var project in _document.Element("LateBindingApi.CodeGenerator.Document").Element("Solution").Elements("Projects").Elements("Project"))
             {
+                Log.Debug($"Project {project.Attribute("Name")}: updating references");
                 foreach (XElement refLib in project.Element("RefLibraries").Elements())
                 {
                     string refLibKey = refLib.Attribute("Key").Value;
@@ -619,7 +626,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         {
             // check lib not exists in document
             string guid = Utils.EncodeGuid(libInfo.GUID);
-            DoUpdate($"Type library GUID: {libInfo.GUID}, encoded: {guid}");
+            DoUpdate($"Type library {libInfo.Name} has GUID:{libInfo.GUID}, encoded: {guid}");
 
             var node = (from a in _document.Descendants("Libraries").Elements("Library")
                         where a.Attribute("GUID").Value.Equals(guid) &&
@@ -631,7 +638,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if ((node == null) && ("Office" == libInfo.Name))
             {
-                Console.WriteLine("Warning: Attempt Office Hotfix.");
+                Log.Warn("Loading Office library using hotfix.");
 
                 node = (from a in _document.Descendants("Libraries").Elements("Library")
                         where a.Attribute("GUID").Value.Equals(guid) &&
@@ -675,6 +682,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var consts = project.Elements("Constants").FirstOrDefault();
 
                 TLI.Constants constants = item.Constants;
+                Log.Debug($"Library {item.Name}, constants count={constants.Count} (filtering constants only)");
                 foreach (TLI.ConstantInfo itemConstant in constants)
                 {
                     if (itemConstant.TypeKind == TypeKinds.TKIND_MODULE)
@@ -716,6 +724,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var enums     = project.Elements("Enums").FirstOrDefault();
 
                 TLI.Constants constants = item.Constants;
+                Log.Debug($"Library {item.Name}, constants count={constants.Count} (filtering enums only)");
                 foreach (TLI.ConstantInfo itemConstant in constants)
                 {
                     if (itemConstant.TypeKind == TypeKinds.TKIND_ENUM)
@@ -822,6 +831,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var typedefs = project.Elements("TypeDefs").FirstOrDefault();
 
                 TLI.IntrinsicAliases itemTypeDefs = item.IntrinsicAliases;
+                Log.Debug($"Library {item.Name}, typedefs count={itemTypeDefs.Count}");
                 foreach (TLI.IntrinsicAliasInfo itemAlias in itemTypeDefs)
                 {
                     var modulNode = CreateAliasNode(typedefs, itemAlias);
@@ -845,6 +855,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var records = project.Elements("Records").FirstOrDefault();
 
                 TLI.Records itemRecords = item.Records;
+                Log.Debug($"Library {item.Name}, records count={itemRecords.Count}");
                 foreach (TLI.RecordInfo itemRecord in itemRecords)
                 {
                     var recordNode = CreateRecordNode(records, itemRecord);
@@ -880,6 +891,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var project = GetProjectNode(item.Name);
                 var moduls = project.Elements("Modules").FirstOrDefault();
                 TLI.Declarations itemModuls = item.Declarations;
+                Log.Debug($"Library {item.Name}, modules count={itemModuls.Count}");
                 foreach (TLI.DeclarationInfo itemModul in itemModuls)
                 {
                     var modulNode = CreateModulNode(moduls, itemModul);
@@ -928,6 +940,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var faces = project.Elements(wantedInterfaces).FirstOrDefault();
 
                 TLI.Interfaces interfaces = item.Interfaces;
+                Log.Debug($"Library {item.Name}, interfaces count={interfaces.Count}");
                 foreach (TLI.InterfaceInfo itemInterface in interfaces)
                 {
                     if (itemInterface.Name == "IAccessible")
@@ -994,6 +1007,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var classes = project.Elements("CoClasses").FirstOrDefault();
 
                 TLI.CoClasses itemClasses = item.CoClasses;
+                Log.Debug($"Library {item.Name}, coclasses count={itemClasses.Count}");
                 foreach (TLI.CoClassInfo itemClass in itemClasses)
                 {
                     var classNode = CreateCoClassNode(classes, itemClass);
@@ -1025,7 +1039,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     }
                     catch (ArgumentException e)
                     {
-                        Debug.WriteLine("Failed to load type name for TypeKey='{0}' in Project='{1}'", item.Attribute("TypeKey").Value, item.Ancestors("Project").First().Attribute("Name").Value);
+                        Log.Error(e, $"Failed to load type name for {item.Attribute("TypeKey")} in Project='{item.Ancestors("Project")?.FirstOrDefault()?.Attribute("Name")?.Value}'");
+                        //Debug.WriteLine("Failed to load type name for TypeKey='{0}' in Project='{1}'", item.Attribute("TypeKey").Value, item.Ancestors("Project").First().Attribute("Name").Value);
                     }
                 }
 
@@ -1046,7 +1061,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                         }
                         catch (ArgumentException e)
                         {
-                            Debug.WriteLine("Failed to load type name for TypeKey='{0}' in Project='{1}'", returnValue.Attribute("TypeKey").Value, returnValue.Ancestors("Project")?.FirstOrDefault()?.Attribute("Name")?.Value);
+                            Log.Error(e, $"Failed to load type name for {returnValue.Attribute("TypeKey")} in Project='{returnValue.Ancestors("Project")?.FirstOrDefault()?.Attribute("Name")?.Value}'");
+                            //Debug.WriteLine("Failed to load type name for TypeKey='{0}' in Project='{1}'", returnValue.Attribute("TypeKey").Value, returnValue.Ancestors("Project")?.FirstOrDefault()?.Attribute("Name")?.Value);
                         }
                     }
 
@@ -1120,7 +1136,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
             if ((null == library) && ("Office" == libInfo.Name))
             {
-                Console.WriteLine("Warning: Attempt Office Hotfix");
+                Log.Warn("Loading Office library using hotfix.");
+
                 library = (from a in _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Libraries").Elements("Library")
                            where a.Attribute("GUID").Value.Equals(guid) &&
                                  a.Attribute("Name").Value.Equals(libInfo.Name) &&
@@ -1661,6 +1678,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             bool found = false;
             string containingFile = "";
             
+            Log.Debug($"Detecting external dependencies for {members.Count} members.");
             foreach (MemberInfo itemMember in members)
             {
                 VarTypeInfo typeInfo = itemMember.ReturnType;             
@@ -1678,11 +1696,11 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                     }
 
                     if (false == found)
-                    {     
+                    {
+                        Log.Info($"Adding new external library as dependency. File={containingFile}");
                         TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
                         list.Add(libInfo);
                         AddTypeLibToDocument(libInfo);
-                        
                     }
                    
                     foreach (TypeLibInfo itemLib in list)
@@ -1710,6 +1728,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 }
                 
                 Parameters memberParams = itemMember.Parameters;
+                Log.Debug($"Detecting external dependencies for {memberParams.Count} parameters.");
                 foreach (ParameterInfo itemParam in memberParams)
                 {
                     VarTypeInfo paramTypeInfo = itemParam.VarTypeInfo;
@@ -1729,10 +1748,10 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
 
                          if (false == found)
                          {
+                            Log.Info($"Adding new external library as dependency. File={containingFile}");
                             TypeLibInfo libInfo = _typeLibApplication.TypeLibInfoFromFile(containingFile);
                             list.Add(libInfo);
                             AddTypeLibToDocument(libInfo);
-                           
                          }
 
                          foreach (TypeLibInfo itemLib in list)
@@ -1899,12 +1918,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var faces = project.Elements(want).FirstOrDefault();
 
                 TLI.Interfaces interfaces = item.Interfaces;
+                Log.Info($"Project {item.Name}: adding inherited interfaces for {interfaces.Count} interfaces");
                 foreach (TLI.InterfaceInfo itemInterface in interfaces)
                 {
                     List<InterfaceInfo> inheritedList = TypeDescriptor.GetInheritedInterfaces(itemInterface);
                     if (inheritedList.Count > 0)
                     {
                         XElement faceNode = GetInterfaceNode(item, itemInterface);
+                        Log.Debug($"Project {item.Name}, interface {itemInterface.Name}: processing {inheritedList.Count} inherited interfaces");
                         foreach (InterfaceInfo itemInherited in inheritedList)
                         {
                             XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
@@ -1928,6 +1949,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         private void UpdateEventInterfaces()
         {
             var classes = _document.Element("LateBindingApi.CodeGenerator.Document").Elements("Solution").Elements("Projects").Elements("Project").Descendants("CoClass");
+            Log.Debug($"Updating event for {classes?.Count()} classes");
             foreach (var itemClass in classes)
             {
                 var events = itemClass.Element("EventInterfaces");
@@ -1951,12 +1973,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var libraryNode = GetLibraryNode(itemLib);
 
                 TLI.CoClasses classes = itemLib.CoClasses;
+                Log.Info($"Project {itemLib.Name}: adding interfaces to {classes.Count} coclasses");
                 foreach (TLI.CoClassInfo itemClass in classes)
                 {
                     List<InterfaceInfo> inheritedList = TypeDescriptor.GetEventInterfaces(itemClass);
                     if (inheritedList.Count > 0)
                     {
                         XElement classNode = GetClassNode(itemLib, itemClass);
+                        Log.Debug($"Project {itemLib.Name}, coclass {itemClass.Name}: adding {inheritedList.Count} interfaces");
                         foreach (InterfaceInfo itemInherited in inheritedList)
                         {
                             XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
@@ -1986,12 +2010,14 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
                 var libraryNode = GetLibraryNode(itemLib);
 
                 TLI.CoClasses classes = itemLib.CoClasses;
+                Log.Info($"Project {itemLib.Name}: adding default interfaces to {classes.Count} coclasses");
                 foreach (TLI.CoClassInfo itemClass in classes)
                 {
                     List<InterfaceInfo> inheritedList = TypeDescriptor.GetDefaultInterfaces(itemClass);
                     if (inheritedList.Count > 0)
                     {
                         XElement classNode = GetClassNode(itemLib, itemClass);
+                        Log.Debug($"Project {itemLib.Name}, coclass {itemClass.Name}: adding {inheritedList.Count} interfaces");
                         foreach (InterfaceInfo itemInherited in inheritedList)
                         {
                             XElement inheritedInterface = GetInterfaceNodeFromInheritedInfo(itemInherited);
