@@ -22,7 +22,7 @@ namespace LateBinding
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-            var setId = "2016";
+            var setId = "365";
             if (args.Length == 1)
             {
                 setId = args[0];
@@ -121,6 +121,8 @@ namespace LateBinding
                     return GetMsOffice2013LibrarySet();
                 case "2016":
                     return GetMsOffice2016LibrarySet();
+                case "365":
+                    return GetMsOffice365LibrarySet();
                 default:
                     throw new ArgumentOutOfRangeException($"Unknown library set id '{id}'");
             }
@@ -174,6 +176,31 @@ namespace LateBinding
                 Libraries = libs
             };
             return office2016;
+        }
+
+        private static OfficeProduct GetMsOffice365LibrarySet()
+        {
+            var office_v2016 = @"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\MSO.DLL";
+            var vbIDE_v2016 = @"C:\Program Files\Microsoft Office\Root\VFS\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB";
+            var excel_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\EXCEL.EXE";
+            var word_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSWORD.OLB";
+            var outlook_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSOUTL.OLB";
+            var powerPoint_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSPPT.OLB";
+            var access_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSACC.OLB";
+            var msProject_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSPRJ.OLB";
+            var publisher_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\MSPUB.TLB";
+            var visio_v2016 = @"C:\Program Files\Microsoft Office\Root\Office16\VISLIB.DLL";
+
+            var libs = new String[] { office_v2016, excel_v2016, word_v2016, outlook_v2016, powerPoint_v2016, access_v2016, msProject_v2016, vbIDE_v2016, publisher_v2016, visio_v2016 };
+
+            var office365 = new OfficeProduct
+            {
+                Name = "Microsoft Office 365",
+                VersionName = "16.1",
+                ReleaseName = "2005",
+                Libraries = libs
+            };
+            return office365;
         }
     }
 }
