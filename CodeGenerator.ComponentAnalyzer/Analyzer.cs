@@ -242,7 +242,38 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <param name="fileName"></param>
         public void LoadProject(string fileName)
         {
-            _document = XDocument.Load(fileName);          
+            _document = XDocument.Load(fileName);
+            ValidateSchema();
+        }
+
+        /// <summary>
+        /// Load NetOffice project from data folder.
+        /// </summary>
+        /// <remarks>
+        /// The data folder must have one Libraries.xml file and multiple project files
+        /// (eg. Project.Word.xml, Project.Excel.xml). This is suitable for loading
+        /// NetOffice from the NetOffice-Data repository where data is split to multiple
+        /// files.
+        /// </remarks>
+        public void LoadProjectFolder(string path)
+        {
+            var xmlTemplateContent = Utils.ReadTextFileFromRessource("LateBindingApi.CodeGenerator.Document.xml");
+            var templateDoc = XDocument.Parse(xmlTemplateContent);
+
+            var librariesFile = Path.Combine(path, "Libraries.xml");
+            var librariesDoc = XDocument.Load(librariesFile);
+
+            templateDoc.Root.Element("Libraries").Add(librariesDoc.Root.Elements());
+
+            var projectFiles = Directory.EnumerateFiles(path, "Project*.xml");
+            foreach (var projectFile in projectFiles)
+            {
+                var projectDoc = XDocument.Load(projectFile);
+
+                templateDoc.Root.Element("Solution").Element("Projects").Add(projectDoc.Root);
+            }
+
+            _document = templateDoc;
             ValidateSchema();
         }
 

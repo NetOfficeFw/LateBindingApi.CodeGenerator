@@ -33,7 +33,14 @@ namespace LateBindingApi.CodeGenerator.CodeGen
             var analyzer = new Analyzer();
 
             var sw = Stopwatch.StartNew();
-            analyzer.LoadProject(options.ProjectFile);
+            if (Directory.Exists(options.ProjectFile))
+            {
+                analyzer.LoadProjectFolder(options.ProjectFile);
+            }
+            else
+            {
+                analyzer.LoadProject(options.ProjectFile);
+            }
             sw.Stop();
 
             Log.Info($@"Project file loaded in {sw.Elapsed} ({sw.ElapsedMilliseconds}ms).");
