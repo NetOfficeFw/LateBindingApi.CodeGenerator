@@ -12,13 +12,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
                                       + "using System;\r\n"
                                       + "using NetRuntimeSystem = System;\r\n"
                                       + "using System.ComponentModel;\r\n"
-                                      + "using NetOffice;\r\n"
-                                      + "using NetOffice.Misc;\r\n"
+                                      + "using NetOffice.Attributes;\r\n"
                                       + "\r\n"
                                       + "namespace %namespace%\r\n"
                                       + "{\r\n";
 
-        private static string _delegates = "\r\n\t#region Delegates\r\n\r\n" +
+        private static string _delegates = "\t#region Delegates\r\n\r\n" +
                                             "\t#pragma warning disable\r\n" +
                                             "%delegates%" +
                                             "\t#pragma warning restore\r\n" +
@@ -30,7 +29,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _classRemarks = "\t/// <remarks> MSDN Online: %docLink% </remarks>\r\n";
 
         private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
-                                             "\t\t#pragma warning disable\r\n";
+                                             "\t\t#pragma warning disable\r\n\r\n";
 
         private static string _classConstructor;
 
@@ -200,7 +199,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string type = inInterface.Attribute("Name").Value + "_SinkHelper";
                 string name = "_" + type.Substring(0, 1).ToLower() + type.Substring(1);
 
-                result += "\t\t" + type + " " + name + ";\r\n";
+                result += "\t\tprivate Events." + type + " " + name + ";\r\n";
             }
             return result;
         }
