@@ -170,7 +170,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string GetInherited(XElement projectNode, XElement faceNode)
         {
             if (faceNode.Element("Inherited").Elements("Ref").Count() == 0)
-                return "COMObject";
+                return "ICOMObject";
 
             string retList = "";
 
@@ -328,7 +328,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 }
                 else if (("true" == itemParam.Attribute("IsComProxy").Value) && ("object" == itemParam.Attribute("Type").Value))
                 {
-                    par = isRef + "COMObject" + " " + parameterName;
+                    par = isRef + "ICOMObject" + " " + parameterName;
                 }
                 else
                 {
