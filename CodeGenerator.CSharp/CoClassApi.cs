@@ -157,7 +157,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             result += _classEventBinding.Replace("%sinkHelperDispose%", sinkHelperDispose);
             result += "\t\t#pragma warning restore\r\n";
-            result += "\t}\r\n}";
+            result += "\t}\r\n}\r\n\r\n";
             return result;
         }
 
@@ -210,14 +210,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
             foreach (var item in faceNode.Element("EventInterfaces").Elements("Ref"))
             {
                 XElement inInterface = GetItemByKey(projectNode, item);
-                string type = inInterface.Attribute("Name").Value + "_SinkHelper.Id,";
+                string type = "Events." + inInterface.Attribute("Name").Value + "_SinkHelper.Id, ";
                 result += type;
             }
 
             if ("" != result)
             {
-                if ("," == result.Substring(result.Length - ",".Length))
-                    result = result.Substring(0, result.Length - ",".Length);
+                if (", " == result.Substring(result.Length - ", ".Length))
+                    result = result.Substring(0, result.Length - ", ".Length);
             }
             else
                 result = "null";
@@ -235,9 +235,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string type = inInterface.Attribute("Name").Value + "_SinkHelper";
                 string name = "_" + type.Substring(0, 1).ToLower() + type.Substring(1);
 
-                string ifLine = "\r\n\t\t\t" + "if(" + type + ".Id.Equals(_activeSinkId, StringComparison.InvariantCultureIgnoreCase))\r\n";
+                string ifLine = "\r\n\t\t\t" + "if(Events." + type + ".Id.Equals(_activeSinkId, StringComparison.InvariantCultureIgnoreCase))\r\n";
                 ifLine += "\t\t\t{\r\n";
-                ifLine += "\t\t\t\t" + name + " = new " + type + "(this, _connectPoint);\r\n";
+                ifLine += "\t\t\t\t" + name + " = new Events." + type + "(this, _connectPoint);\r\n";
                 ifLine += "\t\t\t\treturn;\r\n";
                 ifLine += "\t\t\t}\r\n";
 
