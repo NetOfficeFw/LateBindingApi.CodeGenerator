@@ -318,9 +318,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     parameterName = "msg" + parameterName.Substring(3);
                 }
-                {
-                    parameterName = Char.ToLowerInvariant(parameterName[0]) + parameterName.Substring(1);
-                }
+
+                parameterName = ParameterApi.ValidateParamName(parameterName);
 
                 string par = "";
                 if(EventApi.IsStruct(itemParam))
