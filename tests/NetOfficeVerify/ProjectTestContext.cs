@@ -52,7 +52,13 @@ namespace NetOfficeVerify
             if (diff.Count > 0)
             {
                 var delta = dmp.diff_prettyText(diff);
-                var msg = $"Delegates in file {this.ProjectName}\\Classes\\{filename} does not match the gold file definition.\n\n{delta}";
+                var batFilename = GenerateCommandFileForDiff(generatedFile, goldFile);
+
+                var msg = $"Delegates in file {this.ProjectName}\\Classes\\{filename} does not match the gold file definition.\n\n" +
+                          $"Run diff file:///{batFilename}\n\n" +
+                          $"Changes:\n" +
+                          $"{delta}\n\n" +
+                          $"Gold file: {goldFile}";
                 Assert.Fail(msg);
             }
         }
@@ -77,11 +83,21 @@ namespace NetOfficeVerify
                         break;
                     }
 
-                    sb.Append(line);
+                    sb.AppendLine(line);
                 }
             }
 
             return sb.ToString();
+        }
+
+        private string GenerateCommandFileForDiff(string generatedFile, string goldFile)
+        {
+            var batFilename = Path.Combine(Path.GetTempPath(), "run_diff_"+ Path.GetRandomFileName() + ".bat");
+
+            string commandLine = $@"WinMergeU.exe /u /e ""{generatedFile}"" ""{goldFile}""";
+            File.WriteAllText(batFilename, commandLine);
+
+            return batFilename;
         }
     }
 }
