@@ -318,6 +318,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 {
                     parameterName = "msg" + parameterName.Substring(3);
                 }
+                else if (parameterName.StartsWith("url", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameterName = "url" + parameterName.Substring(3);
+                }
 
                 parameterName = ParameterApi.ValidateParamName(parameterName);
 
