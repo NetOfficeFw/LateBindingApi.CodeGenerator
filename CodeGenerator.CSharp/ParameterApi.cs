@@ -8,7 +8,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 {
     public static class ParameterApi
     {
-        private static string[] _Keywords;
+        private static HashSet<string> _Keywords;
         
         /// <summary>
         /// call ValidateParameters for all method nodes
@@ -110,21 +110,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _Keywords)
             {
                 string res = RessourceApi.ReadString("Keywords.txt");
-                _Keywords =  res.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                _Keywords = new HashSet<string>(res.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
             }
 
             name = name.Substring(0, 1).ToLower() + name.Substring(1);
             
-            bool isInList = false;
-            foreach (string item in _Keywords)
-            {
-                if (item == name)
-                {
-                    isInList = true;
-                    break;
-                }
-            }
-            if (true == isInList)
+            if (_Keywords.Contains(name))
                 name = "_" + name;
 
             return name;
@@ -134,7 +125,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         /// spilt parameters nodes to optional and non-optional version
         /// remove doublettes and copy version attributes reflibs etc. from delete doublette to origin
         /// </summary>
-        /// <param name="methodsNode"></param>
+        /// <param name="methodNode"></param>
         internal static void xValidateParameters(XElement methodNode)
         {
             // create overloads
