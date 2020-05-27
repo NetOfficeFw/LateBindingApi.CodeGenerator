@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LateBindingApi.CodeGenerator.ComponentAnalyzer</RootNamespace>
     <AssemblyName>LateBindingApi.CodeGenerator.ComponentAnalyzer</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -50,9 +50,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="TlbInf32.Interop, Version=1.1.81.69, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TypeLibInformation.1.1.0\lib\net45\TlbInf32.Interop.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\packages\TypeLibInformation.1.1.0\lib\net35\TlbInf32.Interop.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
