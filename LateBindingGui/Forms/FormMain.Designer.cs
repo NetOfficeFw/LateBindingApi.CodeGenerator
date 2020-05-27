@@ -94,7 +94,7 @@
             this.menuItemLoadProject.Name = "menuItemLoadProject";
             this.menuItemLoadProject.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D1)));
             this.menuItemLoadProject.Size = new System.Drawing.Size(180, 22);
-            this.menuItemLoadProject.Text = "Load Project";
+            this.menuItemLoadProject.Text = "Load Project...";
             this.menuItemLoadProject.Click += new System.EventHandler(this.menuItemLoadProject_Click);
             // 
             // menuItemSaveProject
@@ -103,7 +103,7 @@
             this.menuItemSaveProject.Name = "menuItemSaveProject";
             this.menuItemSaveProject.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D2)));
             this.menuItemSaveProject.Size = new System.Drawing.Size(180, 22);
-            this.menuItemSaveProject.Text = "Save Project";
+            this.menuItemSaveProject.Text = "Save Project...";
             this.menuItemSaveProject.Click += new System.EventHandler(this.menuItemSaveProject_Click);
             // 
             // toolStripSeparator1
@@ -125,14 +125,14 @@
             this.menuItemStatistics});
             this.toolStripTypeLibraries.Name = "toolStripTypeLibraries";
             this.toolStripTypeLibraries.Size = new System.Drawing.Size(83, 20);
-            this.toolStripTypeLibraries.Text = "TypeLibraries";
+            this.toolStripTypeLibraries.Text = "Type Libraries";
             // 
             // menuItemLoadTypeLibrary
             // 
             this.menuItemLoadTypeLibrary.Name = "menuItemLoadTypeLibrary";
             this.menuItemLoadTypeLibrary.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D3)));
             this.menuItemLoadTypeLibrary.Size = new System.Drawing.Size(202, 22);
-            this.menuItemLoadTypeLibrary.Text = "Load TypeLibrary";
+            this.menuItemLoadTypeLibrary.Text = "Load Type Library...";
             this.menuItemLoadTypeLibrary.Click += new System.EventHandler(this.menuItemLoadTypeLibrary_Click);
             // 
             // menuItemStatistics
@@ -140,7 +140,7 @@
             this.menuItemStatistics.Name = "menuItemStatistics";
             this.menuItemStatistics.ShortcutKeys = System.Windows.Forms.Keys.F9;
             this.menuItemStatistics.Size = new System.Drawing.Size(202, 22);
-            this.menuItemStatistics.Text = "Statistik";
+            this.menuItemStatistics.Text = "Statistics...";
             this.menuItemStatistics.Click += new System.EventHandler(this.menuItemStatistics_Click);
             // 
             // toolStripGenerator
@@ -157,7 +157,7 @@
             this.menuItemGenerateCode.Name = "menuItemGenerateCode";
             this.menuItemGenerateCode.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D4)));
             this.menuItemGenerateCode.Size = new System.Drawing.Size(192, 22);
-            this.menuItemGenerateCode.Text = "Generate Code";
+            this.menuItemGenerateCode.Text = "Generate Code...";
             this.menuItemGenerateCode.Click += new System.EventHandler(this.menuItemGenerateCode_Click);
             // 
             // toolStripHelp
@@ -175,7 +175,7 @@
             // 
             this.websiteToolStripMenuItem.Name = "websiteToolStripMenuItem";
             this.websiteToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.websiteToolStripMenuItem.Text = "&Goto Homepage";
+            this.websiteToolStripMenuItem.Text = "&Open NetOffice Homepage...";
             this.websiteToolStripMenuItem.Click += new System.EventHandler(this.websiteToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
@@ -322,13 +322,13 @@
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(392, 17);
-            this.toolStripStatusLabel1.Text = "Use the menu item TypeLibaries/Load TypeLibrary to analyze a COM Component";
+            this.toolStripStatusLabel1.Text = "Use the menu item Type Libaries/Load Type Library... to analyze a COM component.";
             // 
             // toolStripNetOfficeCheats
             // 
             this.toolStripNetOfficeCheats.Name = "toolStripNetOfficeCheats";
             this.toolStripNetOfficeCheats.Size = new System.Drawing.Size(168, 22);
-            this.toolStripNetOfficeCheats.Text = "NetOffice Cheats";
+            this.toolStripNetOfficeCheats.Text = "NetOffice Cheats...";
             this.toolStripNetOfficeCheats.Click += new System.EventHandler(this.toolStripNetOfficeCheats_Click);
             // 
             // FormMain
