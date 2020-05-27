@@ -54,7 +54,7 @@
             this.buttonOkay.Name = "buttonOkay";
             this.buttonOkay.Size = new System.Drawing.Size(77, 22);
             this.buttonOkay.TabIndex = 16;
-            this.buttonOkay.Text = "Ok";
+            this.buttonOkay.Text = "OK";
             this.buttonOkay.UseVisualStyleBackColor = true;
             this.buttonOkay.Click += new System.EventHandler(this.buttonOkay_Click);
             // 
@@ -114,7 +114,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "TypeLibrary Browser";
+            this.Text = "Type Library Browser";
             this.ResumeLayout(false);
             this.PerformLayout();
 

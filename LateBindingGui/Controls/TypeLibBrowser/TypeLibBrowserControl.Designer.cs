@@ -155,7 +155,7 @@
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(619, 27);
             this.labelNotes.TabIndex = 26;
-            this.labelNotes.Text = "Note: Scan one or more Type Libraries is a long time operation.";
+            this.labelNotes.Text = "Note: Scaning one or more type libraries can take long time to finish.";
             // 
             // buttonLoadSelection
             // 
