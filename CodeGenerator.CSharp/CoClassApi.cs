@@ -65,6 +65,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string ConvertCoClassToString(XElement projectNode, XElement classNode)
         {
+            string projectName = projectNode.Attribute("Name").Value;
+            string eventsNamespace = EventApi.GetEventsNamespaceName(projectName);
+
             string result = _fileHeader.Replace("%namespace%", projectNode.Attribute("Namespace").Value);
             string delegates = _delegates.Replace("%delegates%", GetDelegates(projectNode, classNode));
             result += delegates;
@@ -101,17 +104,16 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
 
-            string sinkHelperDefine = GetSinkHelperDefine(projectNode, classNode);
+            string sinkHelperDefine = GetSinkHelperDefine(projectNode, classNode, eventsNamespace);
             construct = construct.Replace("%sinkHelperDefine%", sinkHelperDefine);
 
-            string sinkHelperIds = GetSinkHelperIds(projectNode, classNode);
-            string sinkHelperSetActive = GetSinkHelperSetActiveSink(projectNode, classNode);
+            string sinkHelperIds = GetSinkHelperIds(projectNode, classNode, eventsNamespace);
+            string sinkHelperSetActive = GetSinkHelperSetActiveSink(projectNode, classNode, eventsNamespace);
 
             string docLink = null;
             if (CSharpGenerator.Settings.AddDocumentationLinks)
             {
-                string projectName = projectNode.Attribute("Name").Value;
-                if (null != projectName && CSharpGenerator.IsRootProjectName(projectName))
+                if (CSharpGenerator.IsRootProjectName(projectName))
                 {
                     XElement linkNode = (from a in CSharpGenerator.LinkFileDocument.Element("NOBuildTools.ReferenceAnalyzer").Element(projectName).Element("Types").Elements("Type")
                                          where a.Element("Name").Value.Equals(classNode.Attribute("Name").Value, StringComparison.InvariantCultureIgnoreCase)
@@ -190,7 +192,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return retList;
         }
 
-        private static string GetSinkHelperDefine(XElement projectNode, XElement faceNode)
+        private static string GetSinkHelperDefine(XElement projectNode, XElement faceNode, string eventsNamespace)
         {
             string result = "";
             foreach (var item in faceNode.Element("EventInterfaces").Elements("Ref"))
@@ -199,18 +201,18 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string type = inInterface.Attribute("Name").Value + "_SinkHelper";
                 string name = "_" + type.Substring(0, 1).ToLower() + type.Substring(1);
 
-                result += "\t\tprivate Events." + type + " " + name + ";\r\n";
+                result += "\t\tprivate "+ eventsNamespace +"." + type + " " + name + ";\r\n";
             }
             return result;
         }
 
-        private static string GetSinkHelperIds(XElement projectNode, XElement faceNode)
+        private static string GetSinkHelperIds(XElement projectNode, XElement faceNode, string eventsNamespace)
         {
             string result = "";
             foreach (var item in faceNode.Element("EventInterfaces").Elements("Ref"))
             {
                 XElement inInterface = GetItemByKey(projectNode, item);
-                string type = "Events." + inInterface.Attribute("Name").Value + "_SinkHelper.Id, ";
+                string type = eventsNamespace + "." + inInterface.Attribute("Name").Value + "_SinkHelper.Id, ";
                 result += type;
             }
 
@@ -225,7 +227,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static string GetSinkHelperSetActiveSink(XElement projectNode, XElement faceNode)
+        private static string GetSinkHelperSetActiveSink(XElement projectNode, XElement faceNode, string eventsNamespace)
         {
             string result = "";
             foreach (var item in faceNode.Element("EventInterfaces").Elements("Ref"))
@@ -235,9 +237,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string type = inInterface.Attribute("Name").Value + "_SinkHelper";
                 string name = "_" + type.Substring(0, 1).ToLower() + type.Substring(1);
 
-                string ifLine = "\r\n\t\t\t" + "if(Events." + type + ".Id.Equals(_activeSinkId, StringComparison.InvariantCultureIgnoreCase))\r\n";
+                string ifLine = "\r\n\t\t\t" + "if("+ eventsNamespace +"." + type + ".Id.Equals(_activeSinkId, StringComparison.InvariantCultureIgnoreCase))\r\n";
                 ifLine += "\t\t\t{\r\n";
-                ifLine += "\t\t\t\t" + name + " = new Events." + type + "(this, _connectPoint);\r\n";
+                ifLine += "\t\t\t\t" + name + " = new "+ eventsNamespace +"." + type + "(this, _connectPoint);\r\n";
                 ifLine += "\t\t\t\treturn;\r\n";
                 ifLine += "\t\t\t}\r\n";
 

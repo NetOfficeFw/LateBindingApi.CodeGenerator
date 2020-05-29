@@ -12,8 +12,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
     {
         public static readonly string FolderName = "Events";
 
+        /// <summary>
+        /// Default value for namespace name is Events, expect for VBIDE project.
+        /// </summary>
+        public static readonly string NamespaceEvents_DefaultName = "Events";
+        /// <summary>
+        /// The VBIDE project requires the Events namespace to be named as EventInterfaces
+        /// becase it will clash with the Events class.
+        /// </summary>
+        public static readonly string NamespaceEvents_VBIDEProject = "EventInterfaces";
+
         private static readonly string SinkArgumentTemplate = "[SinkArgument(\"{0}\", {1})]";
         private static readonly string NetOfficeNamespacePrefix = "NetOffice.";
+
 
         private static string _interfaceFile;
 
@@ -22,6 +33,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _interfaceFile)
                 _interfaceFile = RessourceApi.ReadString("Event.Interface.txt");
 
+            string projectName = projectNode.Attribute("Name").Value;
+            var namespaceValue = GetEventsNamespaceName(projectName);
+
             string eventsFolder = Path.Combine(solutionFolder, projectNode.Attribute("Name").Value, FolderName);
             DirectoryEx.EnsureDirectory(eventsFolder);
 
@@ -29,23 +43,28 @@ namespace LateBindingApi.CodeGenerator.CSharp
             foreach (XElement faceNode in dispatchfacesNode.Elements("Interface"))
             {
                 if ("true" == faceNode.Attribute("IsEventInterface").Value)
-                    result += ConvertInterfaceToFile(settings, projectNode, faceNode, eventsFolder) + "\r\n";
+                    result += ConvertInterfaceToFile(settings, projectNode, faceNode, eventsFolder, namespaceValue) + "\r\n";
             }
 
             foreach (XElement faceNode in facesNode.Elements("Interface"))
             {
                 if ("true" == faceNode.Attribute("IsEventInterface").Value)
-                    result += ConvertInterfaceToFile(settings, projectNode, faceNode, eventsFolder) + "\r\n";
+                    result += ConvertInterfaceToFile(settings, projectNode, faceNode, eventsFolder, namespaceValue) + "\r\n";
             }
 
             return result;
         }
 
-        private static string ConvertInterfaceToFile(Settings settings, XElement projectNode, XElement faceNode, string faceFolder)
+        public static string GetEventsNamespaceName(string projectName)
+        {
+            return projectName == "VBIDE" ? NamespaceEvents_VBIDEProject : NamespaceEvents_DefaultName;
+        }
+
+        private static string ConvertInterfaceToFile(Settings settings, XElement projectNode, XElement faceNode, string faceFolder, string namespaceValue)
         {
             string fileName = Path.Combine(faceFolder, faceNode.Attribute("Name").Value + ".cs");
 
-            string newEnum = ConvertInterfaceToString(settings, projectNode, faceNode);
+            string newEnum = ConvertInterfaceToString(settings, projectNode, faceNode, namespaceValue);
             File.WriteAllText(fileName, newEnum, Constants.UTF8WithBOM);
 
             int i = faceFolder.LastIndexOf("\\");
@@ -53,9 +72,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode)
+        private static string ConvertInterfaceToString(Settings settings, XElement projectNode, XElement faceNode, string namespaceValue)
         {
-            var namespaceName = projectNode.Attribute("Namespace").Value + ".Events";
+            var namespaceName = projectNode.Attribute("Namespace").Value + "." + namespaceValue;
             string result = _interfaceFile.Replace("%namespace%", namespaceName);
             result = result.Replace("%supportby%", CSharpGenerator.GetSupportByVersionAttribute(faceNode));
             result = result.Replace("%name%", faceNode.Attribute("Name").Value);
