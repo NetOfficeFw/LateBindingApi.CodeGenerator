@@ -28,7 +28,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _classDesc = "\t/// <summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t/// </summary>\r\n";
         private static string _classRemarks = "\t/// <remarks> MSDN Online: %docLink% </remarks>\r\n";
 
-        private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)]\r\n" + "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
+        private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)]\r\n" +
+                                             "%EventSinkAttributes%" +
+                                             "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n\r\n";
 
         private static string _classConstructor;
@@ -80,6 +82,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 header = header.Replace("%eventBindingInterface%", ", IEventBinding");
             else
                 header = header.Replace("%eventBindingInterface%", "");
+
+            string eventSinkAttributes = GetSinkHelperAttributes(projectNode, classNode, eventsNamespace);
+            header = header.Replace("%EventSinkAttributes%", eventSinkAttributes);
 
 
             if (null == _classConstructor)
@@ -190,6 +195,45 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             return retList;
+        }
+
+        private static string GetSinkHelperAttributes(XElement projectNode, XElement faceNode, string eventsNamespace)
+        {
+            string result = "";
+            var eventInterfaces = faceNode.Element("EventInterfaces").Elements("Ref");
+
+            if (eventInterfaces.Any())
+            {
+                result += "\t[EventSink(";
+                foreach (var item in faceNode.Element("EventInterfaces").Elements("Ref"))
+                {
+                    XElement inInterface = GetItemByKey(projectNode, item);
+                    string type = inInterface.Attribute("Name").Value + "_SinkHelper";
+
+                    result += "typeof(" + eventsNamespace + "." + type + "), ";
+                }
+
+                if (", " == result.Substring(result.Length - ", ".Length))
+                    result = result.Substring(0, result.Length - ", ".Length);
+
+                result += ")]\r\n";
+
+                result += "\t[ComEventInterface(";
+                foreach (var item in faceNode.Element("EventInterfaces").Elements("Ref"))
+                {
+                    XElement inInterface = GetItemByKey(projectNode, item);
+                    string type = inInterface.Attribute("Name").Value;
+
+                    result += "typeof(" + eventsNamespace + "." + type + "), ";
+                }
+
+                if (", " == result.Substring(result.Length - ", ".Length))
+                    result = result.Substring(0, result.Length - ", ".Length);
+
+                result += ")]\r\n";
+            }
+
+            return result;
         }
 
         private static string GetSinkHelperDefine(XElement projectNode, XElement faceNode, string eventsNamespace)
