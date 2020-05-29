@@ -219,7 +219,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             this.DoUpdate("Create Solution", token);
-            string solutionFile = RessourceApi.ReadString("Solution.Solution.sln");
+            string solutionFile = RessourceApi.ReadString("Solution.Solution_sln.txt");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);
             SolutionApi.SaveSolutionFile(_settings, solutionFolder, solutionFile, solution);
 

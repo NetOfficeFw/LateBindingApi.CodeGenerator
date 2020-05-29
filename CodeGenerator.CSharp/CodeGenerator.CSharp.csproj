@@ -188,7 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Project\Project.csproj" />
-    <EmbeddedResource Include="Solution\Solution.sln" />
+    <EmbeddedResource Include="Solution\Solution_sln.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="HelpBox.resx">

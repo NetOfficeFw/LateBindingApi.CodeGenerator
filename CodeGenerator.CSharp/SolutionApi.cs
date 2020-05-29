@@ -22,18 +22,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             string projects = "";
             string configs = "";
-
-            if (settings.Framework == "4.0")
-            {
-                solutionFile = solutionFile.Replace("%FormatVersion%", "12.00");
-                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual Studio 14\r\nVisualStudioVersion = 14.0.25420.1\r\nMinimumVisualStudioVersion = 10.0.40219.1");
-            }
-            else
-            {
-                solutionFile = solutionFile.Replace("%FormatVersion%", "10.00");
-                solutionFile = solutionFile.Replace("%VisualStudio%", "Visual Studio 2008");
-            }
-
+            
             if (true == settings.AddTestApp)
             {
                 string testProjectLine = "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"%Name%\", \"%Name%\\%Name%.csproj\", \"{%Key%}\"\r\nEndProject\r\n";
