@@ -28,3 +28,11 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: Run Unit Tests (CodeGenerator)
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      CodeGenerator.UnitTests.dll
+    searchFolder: Tests\CodeGenerator.UnitTests\bin\$(buildConfiguration)
