@@ -56,7 +56,7 @@ namespace LateBindingApi.CodeGenerator.Documentation
 
         private void textBoxFolder_TextChanged(object sender, EventArgs e)
         {
-            buttonOkay.Enabled = (textBoxFolder.Text.Trim() != "");
+            buttonOk.Enabled = (textBoxFolder.Text.Trim() != "");
         }
 
         #endregion

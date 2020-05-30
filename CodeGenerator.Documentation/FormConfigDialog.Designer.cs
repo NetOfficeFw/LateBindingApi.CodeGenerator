@@ -2,14 +2,15 @@
 {
     partial class FormConfigDialog
     {
-        /// <summary>
-        /// Erforderliche Designervariable.
+        /// <summary> 
+        /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Verwendete Ressourcen bereinigen.
+        /// <summary> 
+        /// Clean up any resources being used.
         /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -19,16 +20,16 @@
             base.Dispose(disposing);
         }
 
-        #region Vom Windows Form-Designer generierter Code
+        #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Erforderliche Methode für die Designerunterstützung.
-        /// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.buttonOkay = new System.Windows.Forms.Button();
+            this.buttonOk = new System.Windows.Forms.Button();
             this.buttonFolder = new System.Windows.Forms.Button();
             this.labelFolder = new System.Windows.Forms.Label();
             this.textBoxFolder = new System.Windows.Forms.TextBox();
@@ -46,17 +47,17 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
-            // buttonOkay
+            // buttonOk
             // 
-            this.buttonOkay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOkay.Enabled = false;
-            this.buttonOkay.Location = new System.Drawing.Point(300, 77);
-            this.buttonOkay.Name = "buttonOkay";
-            this.buttonOkay.Size = new System.Drawing.Size(77, 22);
-            this.buttonOkay.TabIndex = 22;
-            this.buttonOkay.Text = "Ok";
-            this.buttonOkay.UseVisualStyleBackColor = true;
-            this.buttonOkay.Click += new System.EventHandler(this.buttonOkay_Click);
+            this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonOk.Enabled = false;
+            this.buttonOk.Location = new System.Drawing.Point(300, 77);
+            this.buttonOk.Name = "buttonOk";
+            this.buttonOk.Size = new System.Drawing.Size(77, 22);
+            this.buttonOk.TabIndex = 22;
+            this.buttonOk.Text = "OK";
+            this.buttonOk.UseVisualStyleBackColor = true;
+            this.buttonOk.Click += new System.EventHandler(this.buttonOkay_Click);
             // 
             // buttonFolder
             // 
@@ -97,7 +98,7 @@
             this.Controls.Add(this.labelFolder);
             this.Controls.Add(this.textBoxFolder);
             this.Controls.Add(this.buttonCancel);
-            this.Controls.Add(this.buttonOkay);
+            this.Controls.Add(this.buttonOk);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -115,7 +116,7 @@
         #endregion
 
         private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Button buttonOkay;
+        private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonFolder;
         private System.Windows.Forms.Label labelFolder;
         private System.Windows.Forms.TextBox textBoxFolder;
