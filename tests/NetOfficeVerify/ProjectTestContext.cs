@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using DiffMatchPatch;
 using NUnit.Framework;
@@ -8,12 +10,15 @@ namespace NetOfficeVerify
 {
     public abstract class ProjectTestContext
     {
+        public static readonly string GoldProjectBaseDir = @"c:\dev\github\NetOfficeFw\NetOffice-v1.7.4.3\Source\";
+        public static readonly string GeneratedProjectBaseDir = @"c:\dev\github\NetOfficeFw\LateBindingApi.CodeGenerator\out\NetOffice\";
+
         public ProjectTestContext(string projectName)
         {
             this.ProjectName = projectName;
 
-            this.GeneratedProjectDir = @"c:\dev\github\NetOfficeFw\LateBindingApi.CodeGenerator\out\NetOffice\" + projectName;
-            this.GoldProjectDir = @"c:\dev\github\NetOfficeFw\NetOffice-v1.7.4.3\Source\" + projectName;
+            this.GeneratedProjectDir = GeneratedProjectBaseDir + projectName;
+            this.GoldProjectDir = GoldProjectBaseDir + projectName;
         }
 
         /// <summary>
@@ -63,20 +68,64 @@ namespace NetOfficeVerify
             }
         }
 
+        protected void AssertDiff(string expectedText, string actualText, string goldFilePath, string generatedFilePath, string message)
+        {
+            var dmp = new diff_match_patch();
+            var diff = dmp.diff_main(expectedText, actualText);
+            dmp.diff_cleanupSemantic(diff);
+
+            if (diff.Count == 1)
+            {
+                if (diff[0].operation == Operation.EQUAL)
+                {
+                    // passed
+                    return;
+                }
+            }
+
+            if (diff.Count > 0)
+            {
+                if (diff.Where(d => d.operation != Operation.EQUAL).All(d => string.IsNullOrWhiteSpace(d.text)))
+                {
+                    Assert.Pass();
+                }
+
+                var delta = dmp.diff_prettyText(diff);
+                var batFilename = GenerateCommandFileForDiff(goldFilePath, generatedFilePath);
+
+                var msg = message + "\n\n" +
+                          $"Run diff file:///{batFilename}\n\n" +
+                          $"Changes:\n" +
+                          $"{delta}\n\n" +
+                          $"Gold file: {goldFilePath}";
+                Assert.Fail(msg);
+            }
+        }
+
         protected string GetDelegatesFromFile(string path)
+        {
+            return this.GetRegionFromFile(path, "#region Delegates");
+        }
+
+        protected string GetEventBindingRegionFromFile(string path)
+        {
+            return this.GetRegionFromFile(path, "#region IEventBinding");
+        }
+
+        protected string GetRegionFromFile(string path, string region)
         {
             var sb = new StringBuilder();
 
-            bool readDelegates = false;
+            bool read = false;
             foreach (var line in File.ReadLines(path))
             {
-                if (line.TrimStart().StartsWith("#region Delegates"))
+                if (line.TrimStart().StartsWith(region))
                 {
-                    readDelegates = true;
+                    read = true;
                     continue;
                 }
 
-                if (readDelegates)
+                if (read)
                 {
                     if (line.TrimStart().StartsWith("#endregion"))
                     {
@@ -90,7 +139,7 @@ namespace NetOfficeVerify
             return sb.ToString();
         }
 
-        private string GenerateCommandFileForDiff(string generatedFile, string goldFile)
+        protected string GenerateCommandFileForDiff(string generatedFile, string goldFile)
         {
             var batFilename = Path.Combine(Path.GetTempPath(), "run_diff_"+ Path.GetRandomFileName() + ".bat");
 
@@ -98,6 +147,14 @@ namespace NetOfficeVerify
             File.WriteAllText(batFilename, commandLine);
 
             return batFilename;
+        }
+
+        public static IEnumerable<string> ProjectCoClassFiles(string projectName)
+        {
+            var goldProjectDir = Path.Combine(GoldProjectBaseDir, projectName, "Classes");
+
+            var files = Directory.EnumerateFiles(goldProjectDir, "*.cs");
+            return files.Select(Path.GetFileName);
         }
     }
 }
