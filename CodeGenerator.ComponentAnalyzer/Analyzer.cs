@@ -2108,7 +2108,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             
             _document.RemoveNodes();
 
-            string xmlTemplateContent = Utils.ReadTextFileFromRessource("LateBindingApi.CodeGenerator.Document.xml");
+            string xmlTemplateContent = Utils.ReadTextFileFromResource("LateBindingApi.CodeGenerator.Document.xml");
             _document = XDocument.Parse(xmlTemplateContent);
 
             ValidateSchema();
@@ -2119,7 +2119,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         private void ValidateSchema()
         {
-            string xsdSchemaContent = Utils.ReadTextFileFromRessource("LateBindingApi.CodeGenerator.Document.xsd");
+            string xsdSchemaContent = Utils.ReadTextFileFromResource("LateBindingApi.CodeGenerator.Document.xsd");
           
             if (null == _schema)
                 _schema = _schemaSet.Add("http://latebindingapi.codeplex.com/XMLSchema.xsd", XmlReader.Create(new StringReader(xsdSchemaContent)));

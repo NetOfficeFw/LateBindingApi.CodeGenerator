@@ -11,26 +11,26 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
     /// </summary>
     internal static class Utils
     {   
-        #region Ressource Methods
+        #region Resource Methods
 
         /// <summary>
-        /// Read RessourceText
+        /// Read text from resource file.
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        internal static string ReadTextFileFromRessource(string ressourcePath)
+        internal static string ReadTextFileFromResource(string resourcePath)
         {
-            System.IO.Stream ressourceStream = null;
+            System.IO.Stream resourceStream = null;
             System.IO.StreamReader textStreamReader = null;
             try
             {
                 string assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-                ressourcePath = assemblyName + "." + ressourcePath;
-                ressourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(ressourcePath);
-                if (ressourceStream == null)
+                resourcePath = assemblyName + "." + resourcePath;
+                resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
+                if (resourceStream == null)
                     throw (new System.IO.IOException("Error accessing resource Stream."));
 
-                textStreamReader = new System.IO.StreamReader(ressourceStream);
+                textStreamReader = new System.IO.StreamReader(resourceStream);
                 if (textStreamReader == null)
                     throw (new System.IO.IOException("Error accessing resource File."));
 
@@ -45,8 +45,8 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             {
                 if(null!=textStreamReader)
                     textStreamReader.Close();
-                if (null != ressourceStream)
-                    ressourceStream.Close();
+                if (null != resourceStream)
+                    resourceStream.Close();
             }
         }
         

@@ -28,7 +28,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if(null == _proxyEnumerator)
-                    _proxyEnumerator = RessourceApi.ReadString("Enumerator.ProxyEnumerator.txt");
+                    _proxyEnumerator = ResourceApi.ReadString("Enumerator.ProxyEnumerator.txt");
                 return _proxyEnumerator;
             }
         }
@@ -38,7 +38,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _nativeEnumerator)
-                    _nativeEnumerator = RessourceApi.ReadString("Enumerator.NativeEnumerator.txt");
+                    _nativeEnumerator = ResourceApi.ReadString("Enumerator.NativeEnumerator.txt");
                 return _nativeEnumerator;
             }
         }
@@ -48,7 +48,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _fakedEnumerator)
-                    _fakedEnumerator = RessourceApi.ReadString("Enumerator.FakedEnumerator.txt");
+                    _fakedEnumerator = ResourceApi.ReadString("Enumerator.FakedEnumerator.txt");
                 return _fakedEnumerator;
             }
         }
@@ -58,7 +58,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _proxyEnumeratorT)
-                    _proxyEnumeratorT = RessourceApi.ReadString("Enumerator.ProxyEnumeratorT.txt");
+                    _proxyEnumeratorT = ResourceApi.ReadString("Enumerator.ProxyEnumeratorT.txt");
                 return _proxyEnumeratorT;
             }
         }
@@ -68,7 +68,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _nativeEnumeratorT)
-                    _nativeEnumeratorT = RessourceApi.ReadString("Enumerator.NativeEnumeratorT.txt");
+                    _nativeEnumeratorT = ResourceApi.ReadString("Enumerator.NativeEnumeratorT.txt");
                 return _nativeEnumeratorT;
             }
         }
@@ -78,7 +78,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _fakedEnumeratorT)
-                    _fakedEnumeratorT = RessourceApi.ReadString("Enumerator.FakedEnumeratorT.txt");
+                    _fakedEnumeratorT = ResourceApi.ReadString("Enumerator.FakedEnumeratorT.txt");
                 return _fakedEnumeratorT;
             }
         }

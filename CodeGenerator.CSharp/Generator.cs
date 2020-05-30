@@ -192,8 +192,8 @@ namespace LateBindingApi.CodeGenerator.CSharp
                     ProjectApi.RemoveRefAttribute(project);
 
                 this.DoUpdate("Create project " + projectName, token);
-                string projectFile = RessourceApi.ReadString("Project.Project.csproj");
-                string assemblyInfo = RessourceApi.ReadString("Project.AssemblyInfo.cs");
+                string projectFile = ResourceApi.ReadString("Project.Project.csproj");
+                string assemblyInfo = ResourceApi.ReadString("Project.AssemblyInfo.cs");
                 string referencedLibraries = ProjectApi.GetReferencedLibraries(project, _settings, solutionFolder);
                 string constIncludes = ConstantApi.ConvertConstantsToFiles(project, project.Element("Constants"), _settings, solutionFolder);
                 string enumIncludes = EnumsApi.ConvertEnumsToFiles(project, project.Element("Enums"), _settings, solutionFolder);
@@ -219,7 +219,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
             this.DoUpdate("Create Solution", token);
-            string solutionFile = RessourceApi.ReadString("Solution.Solution_sln.txt");
+            string solutionFile = ResourceApi.ReadString("Solution.Solution_sln.txt");
             solutionFile = SolutionApi.ReplaceSolutionAttributes(_settings, solutionFile, solution);
             SolutionApi.SaveSolutionFile(_settings, solutionFolder, solutionFile, solution);
 

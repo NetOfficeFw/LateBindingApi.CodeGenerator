@@ -109,7 +109,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             if (null == _Keywords)
             {
-                string res = RessourceApi.ReadString("Keywords.txt");
+                string res = ResourceApi.ReadString("Keywords.txt");
                 _Keywords = new HashSet<string>(res.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
             }
 

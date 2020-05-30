@@ -99,9 +99,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static void SaveTestClient(Settings settings, XElement solution, string path)
         {
-            string projectFile  = RessourceApi.ReadString("TestClient.ClientApplication.csproj");
-            string programFile  = RessourceApi.ReadString("TestClient.Program.cs");
-            string formFile     = RessourceApi.ReadString("TestClient.Form1.cs");
+            string projectFile  = ResourceApi.ReadString("TestClient.ClientApplication.csproj");
+            string programFile  = ResourceApi.ReadString("TestClient.Program.cs");
+            string formFile     = ResourceApi.ReadString("TestClient.Form1.cs");
 
             string projectRef = "    <ProjectReference Include=\"..\\%Name%\\%Name%Api.csproj\">\r\n"
                                                    + "      <Project>{%Key%}</Project>\r\n"

@@ -31,7 +31,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         internal static string ConvertInterfacesToFiles(XElement projectNode, XElement dispatchfacesNode, XElement facesNode, Settings settings, string solutionFolder)
         {
             if (null == _interfaceFile)
-                _interfaceFile = RessourceApi.ReadString("Event.Interface.txt");
+                _interfaceFile = ResourceApi.ReadString("Event.Interface.txt");
 
             string projectName = projectNode.Attribute("Name").Value;
             var namespaceValue = GetEventsNamespaceName(projectName);
