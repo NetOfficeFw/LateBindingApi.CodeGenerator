@@ -87,10 +87,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 isClonable = true;
             }
 
-            if (ImplementsAnEventInterface(projectNode, classNode))
+            bool hasEvents = ImplementsAnEventInterface(projectNode, classNode);
+            if (hasEvents)
             {
                 additionalInherited += ", IEventBinding";
-
             }
 
             header = header.Replace("%additionalInherited%", additionalInherited);
@@ -155,13 +155,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 classDesc += classRemarks;
             }
 
-            _classEventBinding = ResourceApi.ReadString("CoClass.EventHelper.txt");
-
-            _classEventBinding = _classEventBinding.Replace("%CompareIds%", sinkHelperIds);
-            _classEventBinding = _classEventBinding.Replace("%SetActiveSink%", sinkHelperSetActive);
-
-            string sinkHelperDispose = GetSinkHelperDispose(projectNode, classNode);
-
             string events = GetEvents(projectNode, classNode);
             construct += events;
 
@@ -175,10 +168,22 @@ namespace LateBindingApi.CodeGenerator.CSharp
             result += header;
             result += construct;
 
-            if (projectNode.Attribute("Name").Value == "Word" && classNode.Attribute("Name").Value == "Application")
-                _classEventBinding = _classEventBinding.Replace("= SinkHelper.GetConnectionPoint(this", "= SinkHelper.GetConnectionPoint2(this");
+            if (hasEvents)
+            {
+                _classEventBinding = ResourceApi.ReadString("CoClass.EventHelper.txt");
 
-            result += _classEventBinding.Replace("%sinkHelperDispose%", sinkHelperDispose);
+                _classEventBinding = _classEventBinding.Replace("%CompareIds%", sinkHelperIds);
+                _classEventBinding = _classEventBinding.Replace("%SetActiveSink%", sinkHelperSetActive);
+
+                string sinkHelperDispose = GetSinkHelperDispose(projectNode, classNode);
+
+                if (projectNode.Attribute("Name").Value == "Word" && classNode.Attribute("Name").Value == "Application")
+                    _classEventBinding = _classEventBinding.Replace("= SinkHelper.GetConnectionPoint(this",
+                        "= SinkHelper.GetConnectionPoint2(this");
+
+                result += _classEventBinding.Replace("%sinkHelperDispose%", sinkHelperDispose);
+            }
+
             if (isClonable)
             {
                 result += ResourceApi.ReadString("CoClass.CloneableApplication.txt");
