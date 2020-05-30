@@ -28,7 +28,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string _classDesc = "\t/// <summary>\r\n\t/// CoClass %name% %RefLibs%\r\n\t/// </summary>\r\n";
         private static string _classRemarks = "\t/// <remarks> MSDN Online: %docLink% </remarks>\r\n";
 
-        private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)]\r\n" +
+        private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)%moduleProviderAttribute%]\r\n" +
                                              "%EventSinkAttributes%" +
                                              "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n\r\n";
@@ -101,11 +101,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
             // the Application coclass represents the global module instance for a type library
             if ("Application" == classNode.Attribute("Name").Value)
             {
+                string comProgId = projectName + ".Application";
+                header = header.Replace("%moduleProviderAttribute%", ", ComProgId(\"" + comProgId + "\"), ModuleProvider(typeof(GlobalHelperModules.GlobalModule))");
                 construct = construct.Replace("%setGlobalInstance%", "\r\n\t\t\tGlobalHelperModules.GlobalModule.Instance = this;");
                 construct = construct.Replace("%disposeGlobalInstance%", _disposeOverride);
             }
             else
             {
+                header = header.Replace("%moduleProviderAttribute%", "");
                 construct = construct.Replace("%setGlobalInstance%", "");
                 construct = construct.Replace("%disposeGlobalInstance%", "");
             }
