@@ -79,10 +79,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string header = _classHeader.Replace("%name%", classNode.Attribute("Name").Value);
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
 
+            bool isClonable = false;
             string additionalInherited = "";
             if (classNode.Attribute("Name").Value == "Application")
             {
                 additionalInherited += ", ICloneable<Application>";
+                isClonable = true;
             }
 
             if (ImplementsAnEventInterface(projectNode, classNode))
@@ -177,8 +179,13 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 _classEventBinding = _classEventBinding.Replace("= SinkHelper.GetConnectionPoint(this", "= SinkHelper.GetConnectionPoint2(this");
 
             result += _classEventBinding.Replace("%sinkHelperDispose%", sinkHelperDispose);
+            if (isClonable)
+            {
+                result += ResourceApi.ReadString("CoClass.CloneableApplication.txt");
+            }
+
             result += "\t\t#pragma warning restore\r\n";
-            result += "\t}\r\n}\r\n\r\n";
+            result += "\t}\r\n}";
             return result;
         }
 
