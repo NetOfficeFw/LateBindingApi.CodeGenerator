@@ -174,6 +174,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = "";
             foreach (XElement faceNode in facesNode.Elements("Interface"))
             {
+                // ignore the _Global interface in a type library
                 if(("false" == faceNode.Attribute("IsEventInterface").Value) && (faceNode.Attribute("Name").Value != "_Global"))
                     result += ConvertInterfaceToFile(settings, projectNode, faceNode, faceFolder) + "\r\n";
             }

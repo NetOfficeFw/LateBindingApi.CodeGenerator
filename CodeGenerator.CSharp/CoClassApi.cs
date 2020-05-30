@@ -47,6 +47,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string result = "";
             foreach (XElement faceNode in classesNode.Elements("CoClass"))
             {
+                // ignore the Global coclass in a type library
                 if(faceNode.Attribute("Name").Value != "Global")
                     result += ConvertCoClassToFile(projectNode, faceNode, faceFolder) + "\r\n";
             }
@@ -97,6 +98,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             if (null == _disposeOverride)
                 _disposeOverride = ResourceApi.ReadString("CoClass.Dispose.txt");
 
+            // the Application coclass represents the global module instance for a type library
             if ("Application" == classNode.Attribute("Name").Value)
             {
                 construct = construct.Replace("%setGlobalInstance%", "\r\n\t\t\tGlobalHelperModules.GlobalModule.Instance = this;");
