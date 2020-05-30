@@ -157,5 +157,20 @@ namespace NetOfficeVerify.NetOfficeCode.Outlook
             // Arrange & Act & Assert
             this.VerifyCoClassDelegatesInFile(classFilename);
         }
+
+        [TestCaseSource(nameof(ProjectCoClassFiles), new object[] { "Outlook" })]
+        public void ClassesWithEventBindingInterface_EventBindingRegion_VerifyTheImplementationMatchesGoldFiles(string classFilename)
+        {
+            // Arrange
+            var goldFile = Path.Combine(this.GoldProjectDir, "Classes", classFilename);
+            var generatedFile = Path.Combine(this.GeneratedProjectDir, "Classes", classFilename);
+
+            // Act
+            var expected = GetEventBindingRegionFromFile(goldFile);
+            var actual = GetEventBindingRegionFromFile(generatedFile);
+
+            // Assert
+            AssertDiff(expected, actual, goldFile, generatedFile, $"IEventBinding region in file {this.ProjectName}\\Classes\\{classFilename} does not match the gold file definition.");
+        }
     }
 }
