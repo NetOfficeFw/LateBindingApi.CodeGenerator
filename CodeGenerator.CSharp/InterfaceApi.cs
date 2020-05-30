@@ -85,10 +85,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string CreateFakeInheritedClass(Settings settings, XElement projectNode, XElement faceNode)
         {
             if (null == _classConstructor)
-                _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
+                _classConstructor = ResourceApi.ReadString("Interface.Constructor.txt");
 
             if (null == _fakedConstructor)
-                _fakedConstructor = RessourceApi.ReadString("Interface.FakedClassConstructor.txt");
+                _fakedConstructor = ResourceApi.ReadString("Interface.FakedClassConstructor.txt");
 
             string name = faceNode.Attribute("Name").Value + "_";
 
@@ -123,7 +123,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
 
             if (null == _classConstructor)
-                _classConstructor = RessourceApi.ReadString("Interface.Constructor.txt");
+                _classConstructor = ResourceApi.ReadString("Interface.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", faceNode.Attribute("Name").Value);
 
             string docLink = "";

@@ -88,14 +88,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
 
             if (null == _classConstructor)
-                _classConstructor = RessourceApi.ReadString("CoClass.Constructor.txt");
+                _classConstructor = ResourceApi.ReadString("CoClass.Constructor.txt");
             string construct = _classConstructor.Replace("%name%", classNode.Attribute("Name").Value);
             construct = construct.Replace("%ProgId%", projectNode.Attribute("Name").Value + "." + classNode.Attribute("Name").Value);
             construct = construct.Replace("%Component%", projectNode.Attribute("Name").Value);
             construct = construct.Replace("%Class%", classNode.Attribute("Name").Value);
 
             if (null == _disposeOverride)
-                _disposeOverride = RessourceApi.ReadString("CoClass.Dispose.txt");
+                _disposeOverride = ResourceApi.ReadString("CoClass.Dispose.txt");
 
             if ("Application" == classNode.Attribute("Name").Value)
             {
@@ -139,7 +139,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 classDesc += classRemarks;
             }
 
-            _classEventBinding = RessourceApi.ReadString("CoClass.EventHelper.txt");
+            _classEventBinding = ResourceApi.ReadString("CoClass.EventHelper.txt");
 
             _classEventBinding = _classEventBinding.Replace("%CompareIds%", sinkHelperIds);
             _classEventBinding = _classEventBinding.Replace("%SetActiveSink%", sinkHelperSetActive);

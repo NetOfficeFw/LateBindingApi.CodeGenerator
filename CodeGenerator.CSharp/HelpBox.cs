@@ -24,7 +24,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             foreach (Control item in _parent.Controls)
                 item.Visible = false;
 
-            string helpText = RessourceApi.ReadString("Help.HelpText.txt");
+            string helpText = ResourceApi.ReadString("Help.HelpText.txt");
             richTextBoxMessage.Text = GetHelpMessage(helpText, messageId);
 
             _parent.Controls.Add(this);

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LateBindingApi.CodeGenerator.CSharp
 {
-    internal static class RessourceApi
+    internal static class ResourceApi
     {
         /// <summary>
         /// 
@@ -18,20 +18,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             string fileName = "LateBindingApi.CodeGenerator.CSharp." + path;
 
-            System.IO.Stream ressourceStream;
+            System.IO.Stream resourceStream;
             System.IO.StreamReader textStreamReader;
             try
             {
-                ressourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(fileName);
-                if (ressourceStream == null)
+                resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(fileName);
+                if (resourceStream == null)
                     throw (new System.IO.IOException("Error accessing resource Stream."));
 
-                textStreamReader = new System.IO.StreamReader(ressourceStream);
+                textStreamReader = new System.IO.StreamReader(resourceStream);
                 if (textStreamReader == null)
                     throw (new System.IO.IOException("Error accessing resource File."));
 
                 string text = textStreamReader.ReadToEnd();
-                ressourceStream.Close();
+                resourceStream.Close();
                 textStreamReader.Close();
                 return text;
             }
@@ -90,10 +90,10 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             resourceName = "LateBindingApi.CodeGenerator.CSharp." + resourceName;
 
-            System.IO.Stream ressourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-            byte[] binary = new byte[ressourceStream.Length];
-            ressourceStream.Read(binary, 0, binary.Length);
-            ressourceStream.Close();
+            System.IO.Stream resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+            byte[] binary = new byte[resourceStream.Length];
+            resourceStream.Read(binary, 0, binary.Length);
+            resourceStream.Close();
             return binary;
         }
     }

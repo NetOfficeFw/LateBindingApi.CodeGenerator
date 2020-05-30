@@ -269,7 +269,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 dependent = "[0]";
             }
 
-            string factoryFile = RessourceApi.ReadString("Project.ProjectInfo.txt");
+            string factoryFile = ResourceApi.ReadString("Project.ProjectInfo.txt");
             factoryFile = factoryFile.Replace("%AssemblyName%", projectName);
             factoryFile = factoryFile.Replace("%Namespace%", namespaceString);
             factoryFile = factoryFile.Replace("%GUID%", guidString);

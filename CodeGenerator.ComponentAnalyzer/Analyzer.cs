@@ -257,7 +257,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </remarks>
         public void LoadProjectFolder(string path)
         {
-            var xmlTemplateContent = Utils.ReadTextFileFromRessource("LateBindingApi.CodeGenerator.Document.xml");
+            var xmlTemplateContent = Utils.ReadTextFileFromResource("LateBindingApi.CodeGenerator.Document.xml");
             var templateDoc = XDocument.Parse(xmlTemplateContent);
 
             var librariesFile = Path.Combine(path, "Libraries.xml");
@@ -2090,7 +2090,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
             
             _document.RemoveNodes();
 
-            string xmlTemplateContent = Utils.ReadTextFileFromRessource("LateBindingApi.CodeGenerator.Document.xml");
+            string xmlTemplateContent = Utils.ReadTextFileFromResource("LateBindingApi.CodeGenerator.Document.xml");
             _document = XDocument.Parse(xmlTemplateContent);
 
             ValidateSchema();
@@ -2101,7 +2101,7 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// </summary>
         private void ValidateSchema()
         {
-            string xsdSchemaContent = Utils.ReadTextFileFromRessource("LateBindingApi.CodeGenerator.Document.xsd");
+            string xsdSchemaContent = Utils.ReadTextFileFromResource("LateBindingApi.CodeGenerator.Document.xsd");
           
             if (null == _schema)
                 _schema = _schemaSet.Add("http://latebindingapi.codeplex.com/XMLSchema.xsd", XmlReader.Create(new StringReader(xsdSchemaContent)));

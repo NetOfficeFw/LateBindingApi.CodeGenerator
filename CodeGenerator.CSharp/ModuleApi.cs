@@ -68,7 +68,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         private static string ConvertGlobalModuleToString(Settings settings, XElement projectNode, XElement moduleNode)
         {
             if (null == _instanceType)
-                _instanceType = RessourceApi.ReadString("Module.Module.txt");
+                _instanceType = ResourceApi.ReadString("Module.Module.txt");
 
             string namespaceName = projectNode.Attribute("Namespace").Value;
             string projectName = projectNode.Attribute("Name").Value;

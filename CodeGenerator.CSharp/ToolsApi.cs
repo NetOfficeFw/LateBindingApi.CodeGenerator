@@ -27,20 +27,20 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _customTaskPaneCollection)
-                    _customTaskPaneCollection = RessourceApi.ReadString("Tools.Office.CustomTaskPaneCollection.txt");
+                    _customTaskPaneCollection = ResourceApi.ReadString("Tools.Office.CustomTaskPaneCollection.txt");
                 return _customTaskPaneCollection;
             }
         }
         private static string _customTaskPaneCollection;
 
-        #region Access Ressources
+        #region Access Resources
 
         private static string AccessCOMAddinContent
         {
             get
             {
                 if (null == _accessCOMAddinContent)
-                    _accessCOMAddinContent = RessourceApi.ReadString("Tools.Access.COMAddin.txt");
+                    _accessCOMAddinContent = ResourceApi.ReadString("Tools.Access.COMAddin.txt");
                 return _accessCOMAddinContent;
             }
         }
@@ -51,7 +51,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _accessTaskPaneContent)
-                    _accessTaskPaneContent = RessourceApi.ReadString("Tools.Access.ITaskPane.txt");
+                    _accessTaskPaneContent = ResourceApi.ReadString("Tools.Access.ITaskPane.txt");
                 return _accessTaskPaneContent;
             }
         }
@@ -62,7 +62,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _accessCommonUtilsContent)
-                    _accessCommonUtilsContent = RessourceApi.ReadString("Tools.Access.Utils.CommonUtils.txt");
+                    _accessCommonUtilsContent = ResourceApi.ReadString("Tools.Access.Utils.CommonUtils.txt");
                 return _accessCommonUtilsContent;
             }
         }
@@ -73,7 +73,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _accessDocumentFormatContent)
-                    _accessDocumentFormatContent = RessourceApi.ReadString("Tools.Access.Utils.DocumentFormat.txt");
+                    _accessDocumentFormatContent = ResourceApi.ReadString("Tools.Access.Utils.DocumentFormat.txt");
                 return _accessDocumentFormatContent;
             }
         }
@@ -84,7 +84,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _accessFileUtilsContent)
-                    _accessFileUtilsContent = RessourceApi.ReadString("Tools.Access.Utils.FileUtils.txt");
+                    _accessFileUtilsContent = ResourceApi.ReadString("Tools.Access.Utils.FileUtils.txt");
                 return _accessFileUtilsContent;
             }
         }
@@ -92,14 +92,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
-        #region Excel Ressources
+        #region Excel Resources
 
         private static string ExcelCOMAddinContent
         {
             get
             {
                 if (null == _excelCOMAddinContent)
-                    _excelCOMAddinContent = RessourceApi.ReadString("Tools.Excel.COMAddin.txt");
+                    _excelCOMAddinContent = ResourceApi.ReadString("Tools.Excel.COMAddin.txt");
                 return _excelCOMAddinContent;
             }
         }
@@ -110,7 +110,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _excelCOMAddinDescriptorContent)
-                    _excelCOMAddinDescriptorContent = RessourceApi.ReadString("Tools.Excel.COMAddinTypeDescriptionProvider.txt");
+                    _excelCOMAddinDescriptorContent = ResourceApi.ReadString("Tools.Excel.COMAddinTypeDescriptionProvider.txt");
                 return _excelCOMAddinDescriptorContent;
             }
         }
@@ -121,7 +121,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _excelTaskPaneContent)
-                    _excelTaskPaneContent = RessourceApi.ReadString("Tools.Excel.ITaskPane.txt");
+                    _excelTaskPaneContent = ResourceApi.ReadString("Tools.Excel.ITaskPane.txt");
                 return _excelTaskPaneContent;
             }
         }
@@ -132,7 +132,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _excelCommonUtilsContent)
-                    _excelCommonUtilsContent = RessourceApi.ReadString("Tools.Excel.Utils.CommonUtils.txt");
+                    _excelCommonUtilsContent = ResourceApi.ReadString("Tools.Excel.Utils.CommonUtils.txt");
                 return _excelCommonUtilsContent;
             }
         }
@@ -143,7 +143,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _excelDocumentFormatContent)
-                    _excelDocumentFormatContent = RessourceApi.ReadString("Tools.Excel.Utils.DocumentFormat.txt");
+                    _excelDocumentFormatContent = ResourceApi.ReadString("Tools.Excel.Utils.DocumentFormat.txt");
                 return _excelDocumentFormatContent;
             }
         }
@@ -154,7 +154,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _excelFileUtilsContent)
-                    _excelFileUtilsContent = RessourceApi.ReadString("Tools.Excel.Utils.FileUtils.txt");
+                    _excelFileUtilsContent = ResourceApi.ReadString("Tools.Excel.Utils.FileUtils.txt");
                 return _excelFileUtilsContent;
             }
         }
@@ -162,14 +162,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
-        #region Visio Ressources
+        #region Visio Resources
 
         private static string VisioCOMAddinContent
         {
             get
             {
                 if (null == _visioCOMAddinContent)
-                    _visioCOMAddinContent = RessourceApi.ReadString("Tools.Visio.COMAddin.txt");
+                    _visioCOMAddinContent = ResourceApi.ReadString("Tools.Visio.COMAddin.txt");
                 return _visioCOMAddinContent;
             }
         }
@@ -177,14 +177,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
-        #region Office Ressources
+        #region Office Resources
 
         private static string OfficeAttributeContent
         {
             get
             {
                 if (null == _officeAttributeContent)
-                    _officeAttributeContent = RessourceApi.ReadString("Tools.Office.MultiRegisterAttribute.txt");
+                    _officeAttributeContent = ResourceApi.ReadString("Tools.Office.MultiRegisterAttribute.txt");
                 return _officeAttributeContent;
             }
         }
@@ -195,7 +195,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeCOMAddinContent)
-                    _officeCOMAddinContent = RessourceApi.ReadString("Tools.Office.COMAddin.txt");
+                    _officeCOMAddinContent = ResourceApi.ReadString("Tools.Office.COMAddin.txt");
                 return _officeCOMAddinContent;
             }
         }
@@ -206,7 +206,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeTaskPaneContent)
-                    _officeTaskPaneContent = RessourceApi.ReadString("Tools.Office.ITaskPane.txt");
+                    _officeTaskPaneContent = ResourceApi.ReadString("Tools.Office.ITaskPane.txt");
                 return _officeTaskPaneContent;
             }
         }
@@ -217,7 +217,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeCustomTaskPaneContent)
-                    _officeCustomTaskPaneContent = RessourceApi.ReadString("Tools.Office.CustomTaskPaneCollection.txt");
+                    _officeCustomTaskPaneContent = ResourceApi.ReadString("Tools.Office.CustomTaskPaneCollection.txt");
                 return _officeCustomTaskPaneContent;
             }
         }
@@ -228,7 +228,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeCommonUtilsContent)
-                    _officeCommonUtilsContent = RessourceApi.ReadString("Tools.Office.Utils.CommonUtils.txt");
+                    _officeCommonUtilsContent = ResourceApi.ReadString("Tools.Office.Utils.CommonUtils.txt");
                 return _officeCommonUtilsContent;
             }
         }
@@ -239,7 +239,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             { 
                 if(null == _officeColorUtilsContent)
-                    _officeColorUtilsContent = RessourceApi.ReadString("Tools.Office.Utils.ColorUtils.txt");
+                    _officeColorUtilsContent = ResourceApi.ReadString("Tools.Office.Utils.ColorUtils.txt");
                 return _officeColorUtilsContent;
             }
         }
@@ -250,7 +250,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeDialogUtilsContent)
-                    _officeDialogUtilsContent = RessourceApi.ReadString("Tools.Office.Utils.DialogUtils.txt");
+                    _officeDialogUtilsContent = ResourceApi.ReadString("Tools.Office.Utils.DialogUtils.txt");
                 return _officeDialogUtilsContent;
             }
         }
@@ -261,7 +261,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeImageUtilsContent)
-                    _officeImageUtilsContent = RessourceApi.ReadString("Tools.Office.Utils.ImageUtils.txt");
+                    _officeImageUtilsContent = ResourceApi.ReadString("Tools.Office.Utils.ImageUtils.txt");
                 return _officeImageUtilsContent;
             }
         }
@@ -272,7 +272,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeResourceUtilsContent)
-                    _officeResourceUtilsContent = RessourceApi.ReadString("Tools.Office.Utils.ResourceUtils.txt");
+                    _officeResourceUtilsContent = ResourceApi.ReadString("Tools.Office.Utils.ResourceUtils.txt");
                 return _officeResourceUtilsContent;
             }
         }
@@ -283,7 +283,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeTrayUtilsContent)
-                    _officeTrayUtilsContent = RessourceApi.ReadString("Tools.Office.Utils.TrayUtils.txt");
+                    _officeTrayUtilsContent = ResourceApi.ReadString("Tools.Office.Utils.TrayUtils.txt");
                 return _officeTrayUtilsContent;
             }
         }
@@ -294,7 +294,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get 
             {
                 if (null == _officeAppDomainInfoContent)
-                    _officeAppDomainInfoContent = RessourceApi.ReadString("Tools.Office.Informations.AppDomainInfo.txt");
+                    _officeAppDomainInfoContent = ResourceApi.ReadString("Tools.Office.Informations.AppDomainInfo.txt");
                 return _officeAppDomainInfoContent;
             }
         }
@@ -305,7 +305,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeAssemblyInfoContent)
-                    _officeAssemblyInfoContent = RessourceApi.ReadString("Tools.Office.Informations.AssemblyInfo.txt");
+                    _officeAssemblyInfoContent = ResourceApi.ReadString("Tools.Office.Informations.AssemblyInfo.txt");
                 return _officeAssemblyInfoContent;
             }
         }
@@ -316,7 +316,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get 
             {
                 if (null == _officeDiagnosticPairContent)
-                    _officeDiagnosticPairContent = RessourceApi.ReadString("Tools.Office.Informations.DiagnosticPair.txt");
+                    _officeDiagnosticPairContent = ResourceApi.ReadString("Tools.Office.Informations.DiagnosticPair.txt");
                 return _officeDiagnosticPairContent;
             }
         }
@@ -327,7 +327,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeDiagnosticPairCollectionContent)
-                    _officeDiagnosticPairCollectionContent = RessourceApi.ReadString("Tools.Office.Informations.DiagnosticPairCollection.txt");
+                    _officeDiagnosticPairCollectionContent = ResourceApi.ReadString("Tools.Office.Informations.DiagnosticPairCollection.txt");
                 return _officeDiagnosticPairCollectionContent;
             }
         }
@@ -338,7 +338,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeEnvrironmentInfoContent)
-                    _officeEnvrironmentInfoContent = RessourceApi.ReadString("Tools.Office.Informations.EnvironmentInfo.txt");
+                    _officeEnvrironmentInfoContent = ResourceApi.ReadString("Tools.Office.Informations.EnvironmentInfo.txt");
                 return _officeEnvrironmentInfoContent;
             }
         }
@@ -349,7 +349,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeHostInfoContent)
-                    _officeHostInfoContent = RessourceApi.ReadString("Tools.Office.Informations.HostInfo.txt");
+                    _officeHostInfoContent = ResourceApi.ReadString("Tools.Office.Informations.HostInfo.txt");
                 return _officeHostInfoContent;
             }
         }
@@ -360,7 +360,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _officeInfosContent)
-                    _officeInfosContent = RessourceApi.ReadString("Tools.Office.Informations.Infos.txt");
+                    _officeInfosContent = ResourceApi.ReadString("Tools.Office.Informations.Infos.txt");
                 return _officeInfosContent;
             }
 
@@ -369,14 +369,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
-        #region Outlook Ressources
+        #region Outlook Resources
 
         private static string OutlookCOMAddinContent
         {
             get
             {
                 if (null == _outlookCOMAddinContent)
-                    _outlookCOMAddinContent = RessourceApi.ReadString("Tools.Outlook.COMAddin.txt");
+                    _outlookCOMAddinContent = ResourceApi.ReadString("Tools.Outlook.COMAddin.txt");
                 return _outlookCOMAddinContent;
             }
         }
@@ -387,7 +387,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _outlookTaskPaneContent)
-                    _outlookTaskPaneContent = RessourceApi.ReadString("Tools.Outlook.ITaskPane.txt");
+                    _outlookTaskPaneContent = ResourceApi.ReadString("Tools.Outlook.ITaskPane.txt");
                 return _outlookTaskPaneContent;
             }
         }
@@ -398,7 +398,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _outlookCommonUtilsContent)
-                    _outlookCommonUtilsContent = RessourceApi.ReadString("Tools.Outlook.Utils.CommonUtils.txt");
+                    _outlookCommonUtilsContent = ResourceApi.ReadString("Tools.Outlook.Utils.CommonUtils.txt");
                 return _outlookCommonUtilsContent;
             }
         }
@@ -406,14 +406,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
-        #region PowerPoint Ressources
+        #region PowerPoint Resources
 
         private static string PowerPointCOMAddinContent
         {
             get
             {
                 if (null == _pointCOMAddinContent)
-                    _pointCOMAddinContent = RessourceApi.ReadString("Tools.PowerPoint.COMAddin.txt");
+                    _pointCOMAddinContent = ResourceApi.ReadString("Tools.PowerPoint.COMAddin.txt");
                 return _pointCOMAddinContent;
             }
         }
@@ -424,7 +424,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _pointTaskPaneContent)
-                    _pointTaskPaneContent = RessourceApi.ReadString("Tools.PowerPoint.ITaskPane.txt");
+                    _pointTaskPaneContent = ResourceApi.ReadString("Tools.PowerPoint.ITaskPane.txt");
                 return _pointTaskPaneContent;
             }
         }
@@ -435,7 +435,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _pointCommonUtilsContent)
-                    _pointCommonUtilsContent = RessourceApi.ReadString("Tools.PowerPoint.Utils.CommonUtils.txt");
+                    _pointCommonUtilsContent = ResourceApi.ReadString("Tools.PowerPoint.Utils.CommonUtils.txt");
                 return _pointCommonUtilsContent;
             }
         }
@@ -446,7 +446,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _pointDocumentFormatContent)
-                    _pointDocumentFormatContent = RessourceApi.ReadString("Tools.PowerPoint.Utils.DocumentFormat.txt");
+                    _pointDocumentFormatContent = ResourceApi.ReadString("Tools.PowerPoint.Utils.DocumentFormat.txt");
                 return _pointDocumentFormatContent;
             }
         }
@@ -457,7 +457,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _pointFileUtilsContent)
-                    _pointFileUtilsContent = RessourceApi.ReadString("Tools.PowerPoint.Utils.FileUtils.txt");
+                    _pointFileUtilsContent = ResourceApi.ReadString("Tools.PowerPoint.Utils.FileUtils.txt");
                 return _pointFileUtilsContent;
             }
         }
@@ -465,14 +465,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
-        #region Project Ressources
+        #region Project Resources
 
         private static string ProjectCOMAddinContent
         {
             get
             {
                 if (null == _projectCOMAddinContent)
-                    _projectCOMAddinContent = RessourceApi.ReadString("Tools.Project.COMAddin.txt");
+                    _projectCOMAddinContent = ResourceApi.ReadString("Tools.Project.COMAddin.txt");
                 return _projectCOMAddinContent;
             }
         }
@@ -483,7 +483,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _projectTaskPaneContent)
-                    _projectTaskPaneContent = RessourceApi.ReadString("Tools.Project.ITaskPane.txt");
+                    _projectTaskPaneContent = ResourceApi.ReadString("Tools.Project.ITaskPane.txt");
                 return _projectTaskPaneContent;
             }
         }
@@ -494,7 +494,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _projectCommonUtilsContent)
-                    _projectCommonUtilsContent = RessourceApi.ReadString("Tools.Project.Utils.CommonUtils.txt");
+                    _projectCommonUtilsContent = ResourceApi.ReadString("Tools.Project.Utils.CommonUtils.txt");
                 return _projectCommonUtilsContent;
             }
         }
@@ -502,14 +502,14 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         #endregion
 
-        #region Word Ressources
+        #region Word Resources
 
         private static string WordCOMAddinContent
         {
             get
             {
                 if (null == _wordCOMAddinContent)
-                    _wordCOMAddinContent = RessourceApi.ReadString("Tools.Word.COMAddin.txt");
+                    _wordCOMAddinContent = ResourceApi.ReadString("Tools.Word.COMAddin.txt");
                 return _wordCOMAddinContent;
             }
         }
@@ -520,7 +520,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _wordTaskPaneContent)
-                    _wordTaskPaneContent = RessourceApi.ReadString("Tools.Word.ITaskPane.txt");
+                    _wordTaskPaneContent = ResourceApi.ReadString("Tools.Word.ITaskPane.txt");
                 return _wordTaskPaneContent;
             }
         }
@@ -531,7 +531,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _wordCommonUtilsContent)
-                    _wordCommonUtilsContent = RessourceApi.ReadString("Tools.Word.Utils.CommonUtils.txt");
+                    _wordCommonUtilsContent = ResourceApi.ReadString("Tools.Word.Utils.CommonUtils.txt");
                 return _wordCommonUtilsContent;
             }
         }
@@ -542,7 +542,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _wordDocumentFormatContent)
-                    _wordDocumentFormatContent = RessourceApi.ReadString("Tools.Word.Utils.DocumentFormat.txt");
+                    _wordDocumentFormatContent = ResourceApi.ReadString("Tools.Word.Utils.DocumentFormat.txt");
                 return _wordDocumentFormatContent;
             }
         }
@@ -553,7 +553,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             get
             {
                 if (null == _wordFileUtilsContent)
-                    _wordFileUtilsContent = RessourceApi.ReadString("Tools.Word.Utils.FileUtils.txt");
+                    _wordFileUtilsContent = ResourceApi.ReadString("Tools.Word.Utils.FileUtils.txt");
                 return _wordFileUtilsContent;
             }
         }
@@ -568,11 +568,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             PathApi.CreateFolder(faceFolder + "\\Dialogs");
 
-            string file18 = RessourceApi.ReadString("Tools.Office.Dialogs.DialogLayoutSettings.txt");
+            string file18 = ResourceApi.ReadString("Tools.Office.Dialogs.DialogLayoutSettings.txt");
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\DialogLayoutSettings.cs"), file18, Encoding.UTF8);
             result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "DialogLayoutSettings.cs" + "\" />" + "\r\n";
 
-            string file19 = RessourceApi.ReadString("Tools.Office.Dialogs.DialogLocalizationSettings.txt");
+            string file19 = ResourceApi.ReadString("Tools.Office.Dialogs.DialogLocalizationSettings.txt");
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\DialogLocalizationSettings.cs"), file19, Encoding.UTF8);
             result += "    <Compile Include=\"" + faceFolder.Substring(i + 1) + "\\Dialogs\\" + "DialogLocalizationSettings.cs" + "\" />" + "\r\n";
 
@@ -586,11 +586,11 @@ namespace LateBindingApi.CodeGenerator.CSharp
                 string lang1031 = String.Format("{0}{1}", item, ".1031.xml");
                 string lang1033 = String.Format("{0}{1}", item, ".1033.xml");
 
-                string contentFile = RessourceApi.ReadString("Tools.Office.Dialogs." + item + ".txt");
-                string contentLang1031 = RessourceApi.ReadString("Tools.Office.Dialogs." + lang1031);
-                string contentLang1033 = RessourceApi.ReadString("Tools.Office.Dialogs." + lang1033);
-                string contentDesignerFile = RessourceApi.ReadString("Tools.Office.Dialogs." + item + ".Designer.txt");
-                string contentResFile = RessourceApi.ReadString("Tools.Office.Dialogs." + item + ".rtxt");
+                string contentFile = ResourceApi.ReadString("Tools.Office.Dialogs." + item + ".txt");
+                string contentLang1031 = ResourceApi.ReadString("Tools.Office.Dialogs." + lang1031);
+                string contentLang1033 = ResourceApi.ReadString("Tools.Office.Dialogs." + lang1033);
+                string contentDesignerFile = ResourceApi.ReadString("Tools.Office.Dialogs." + item + ".Designer.txt");
+                string contentResFile = ResourceApi.ReadString("Tools.Office.Dialogs." + item + ".rtxt");
 
                 System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + item +".cs"), contentFile, Encoding.UTF8);
                 System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\" + item + ".designer.cs"), contentDesignerFile, Encoding.UTF8);
@@ -618,9 +618,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
             }
 
 
-            string baseFile = RessourceApi.ReadString("Tools.Office.Dialogs.ToolsDialog.txt");
-            string baseDesign = RessourceApi.ReadString("Tools.Office.Dialogs.ToolsDialog.Designer.txt");
-            string baseRes = RessourceApi.ReadString("Tools.Office.Dialogs.ToolsDialog.rtxt");
+            string baseFile = ResourceApi.ReadString("Tools.Office.Dialogs.ToolsDialog.txt");
+            string baseDesign = ResourceApi.ReadString("Tools.Office.Dialogs.ToolsDialog.Designer.txt");
+            string baseRes = ResourceApi.ReadString("Tools.Office.Dialogs.ToolsDialog.rtxt");
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\ToolsDialog.cs"), baseFile, Encoding.UTF8);
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\ToolsDialog.designer.cs"), baseDesign, Encoding.UTF8);
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Dialogs\\ToolsDialog.resx"), baseRes, Encoding.UTF8);
@@ -638,9 +638,9 @@ namespace LateBindingApi.CodeGenerator.CSharp
                    "    </EmbeddedResource>" + "\r\n";
 
 
-            baseFile = RessourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.cstxt");
-            baseDesign = RessourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.Designer.cstxt");
-            baseRes = RessourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.rtxt");
+            baseFile = ResourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.cstxt");
+            baseDesign = ResourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.Designer.cstxt");
+            baseRes = ResourceApi.ReadString("Tools.Office.Utils.TrayMenuUtils.TrayMenuMonitorItemControl.rtxt");
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.cs"), baseFile, Encoding.UTF8);
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.designer.cs"), baseDesign, Encoding.UTF8);
             System.IO.File.AppendAllText(System.IO.Path.Combine(faceFolder, "Utils\\TrayMenuUtils\\TrayMenuMonitorItemControl.resx"), baseRes, Encoding.UTF8);
@@ -692,7 +692,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         internal static string ConvertToolsToFiles(string projectName, string faceFolder)
         {
-            var resources = RessourceApi.GetToolsForApplication(projectName);
+            var resources = ResourceApi.GetToolsForApplication(projectName);
 
             int i = faceFolder.LastIndexOf("\\");
             var facePath = faceFolder.Substring(i + 1);
