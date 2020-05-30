@@ -79,7 +79,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string header = _classHeader.Replace("%name%", classNode.Attribute("Name").Value);
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
 
-            if (ImplentsAnEventInterface(projectNode, classNode))
+            if (ImplementsAnEventInterface(projectNode, classNode))
                 header = header.Replace("%eventBindingInterface%", ", IEventBinding");
             else
                 header = header.Replace("%eventBindingInterface%", "");
@@ -173,7 +173,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
             return result;
         }
 
-        private static bool ImplentsAnEventInterface(XElement projectNode, XElement faceNode)
+        private static bool ImplementsAnEventInterface(XElement projectNode, XElement faceNode)
         {
             return (faceNode.Element("EventInterfaces").Elements("Ref").Count() > 0);
         }
