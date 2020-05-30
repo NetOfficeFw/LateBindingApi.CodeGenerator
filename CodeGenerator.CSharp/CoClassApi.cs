@@ -30,7 +30,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         private static string _classHeader = "\t[EntityType(EntityType.IsCoClass)%moduleProviderAttribute%]\r\n" +
                                              "%EventSinkAttributes%" +
-                                             "\tpublic class %name% : %inherited%%eventBindingInterface%\r\n\t{\r\n" +
+                                             "\tpublic class %name% : %inherited%%additionalInherited%\r\n\t{\r\n" +
                                              "\t\t#pragma warning disable\r\n\r\n";
 
         private static string _classConstructor;
@@ -79,10 +79,19 @@ namespace LateBindingApi.CodeGenerator.CSharp
             string header = _classHeader.Replace("%name%", classNode.Attribute("Name").Value);
             header = header.Replace("%inherited%", GetInherited(projectNode, classNode));
 
+            string additionalInherited = "";
+            if (classNode.Attribute("Name").Value == "Application")
+            {
+                additionalInherited += ", ICloneable<Application>";
+            }
+
             if (ImplementsAnEventInterface(projectNode, classNode))
-                header = header.Replace("%eventBindingInterface%", ", IEventBinding");
-            else
-                header = header.Replace("%eventBindingInterface%", "");
+            {
+                additionalInherited += ", IEventBinding";
+
+            }
+
+            header = header.Replace("%additionalInherited%", additionalInherited);
 
             string eventSinkAttributes = GetSinkHelperAttributes(projectNode, classNode, eventsNamespace);
             header = header.Replace("%EventSinkAttributes%", eventSinkAttributes);
