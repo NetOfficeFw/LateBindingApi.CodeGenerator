@@ -50,6 +50,7 @@ stages:
         searchFolder: Tests\CodeGenerator.UnitTests\bin\$(buildConfiguration)
 
     - task: PublishPipelineArtifact@1
+      condition: eq(variables['buildConfiguration'], 'Release')
       inputs:
         artifactName: 'codegen'
         targetPath: '$(Build.SourcesDirectory)\CodeGen\bin\$(buildConfiguration)'
