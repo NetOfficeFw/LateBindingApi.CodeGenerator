@@ -16,23 +16,28 @@ strategy:
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Release'
 
-steps:
-- task: NuGetToolInstaller@0
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: NuGetToolInstaller@0
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: Run Unit Tests (CodeGenerator)
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      CodeGenerator.UnitTests.dll
-    searchFolder: Tests\CodeGenerator.UnitTests\bin\$(buildConfiguration)
+    - task: VSTest@2
+      displayName: Run Unit Tests (CodeGenerator)
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          CodeGenerator.UnitTests.dll
+        searchFolder: Tests\CodeGenerator.UnitTests\bin\$(buildConfiguration)
