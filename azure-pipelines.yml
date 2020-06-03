@@ -6,6 +6,13 @@ pool:
 variables:
   solution: LateBindingApi.sln
 
+resources:
+  repositories:
+  - repository: NetOfficeData
+    type: github
+    endpoint: NetOfficeFw
+    name: NetOfficeFw/NetOffice-Data
+
 stages:
 - stage: build
   displayName: Build
@@ -41,3 +48,20 @@ stages:
         testAssemblyVer2: |
           CodeGenerator.UnitTests.dll
         searchFolder: Tests\CodeGenerator.UnitTests\bin\$(buildConfiguration)
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        artifactName: 'codegen'
+        targetPath: '$(Pipeline.Workspace)\CodeGen\bin\$(buildConfiguration)'
+
+- stage: integration_tests
+  displayName: Integration Tests
+  condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'))
+  jobs:
+  - job: RunTests
+    steps:
+    - checkout: NetOfficeData
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'codegen'
+        targetPath: '$(Build.ArtifactStagingDirectory)\codegen'
