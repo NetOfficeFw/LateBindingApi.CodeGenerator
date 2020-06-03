@@ -6,21 +6,21 @@ pool:
 variables:
   solution: LateBindingApi.sln
 
-strategy:
-  maxParallel: 2
-  matrix:
-    Debug:
-      buildPlatform: 'Any CPU'
-      buildConfiguration: 'Debug'
-    Release:
-      buildPlatform: 'Any CPU'
-      buildConfiguration: 'Release'
-
 stages:
 - stage: build
   displayName: Build
   jobs:
   - job: Build
+    strategy:
+      maxParallel: 2
+      matrix:
+        Debug:
+          buildPlatform: 'Any CPU'
+          buildConfiguration: 'Debug'
+        Release:
+          buildPlatform: 'Any CPU'
+          buildConfiguration: 'Release'
+
     steps:
     - task: NuGetToolInstaller@0
 
