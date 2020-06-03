@@ -57,7 +57,7 @@ stages:
 
 - stage: integration_tests
   displayName: Integration Tests
-  condition: and(succeeded(), eq(variables['buildConfiguration'], 'Release'))
+  condition: succeeded()
   jobs:
   - job: RunTests
     steps:
