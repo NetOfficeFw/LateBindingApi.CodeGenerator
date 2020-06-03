@@ -52,7 +52,7 @@ stages:
     - task: PublishPipelineArtifact@1
       inputs:
         artifactName: 'codegen'
-        targetPath: '$(Pipeline.Workspace)\CodeGen\bin\$(buildConfiguration)'
+        targetPath: '$(Build.SourcesDirectory)\CodeGen\bin\$(buildConfiguration)'
 
 - stage: integration_tests
   displayName: Integration Tests
