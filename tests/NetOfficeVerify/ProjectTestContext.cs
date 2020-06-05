@@ -17,8 +17,8 @@ namespace NetOfficeVerify
         {
             this.ProjectName = projectName;
 
-            this.GeneratedProjectDir = GeneratedProjectBaseDir.Value + projectName;
-            this.GoldProjectDir = GoldProjectBaseDir.Value + projectName;
+            this.GeneratedProjectDir = Path.Combine(GeneratedProjectBaseDir.Value, projectName);
+            this.GoldProjectDir = Path.Combine(GoldProjectBaseDir.Value, projectName);
         }
 
         public static string GetProjectBaseDir(string name, string defaultPath)
