@@ -83,5 +83,5 @@ stages:
         codegen.exe --project "%NETOFFICE_DATA%\src" --ref "%NETOFFICE_DATA%\bld\ReferenceIndex2.xml" --keyfiles "%NETOFFICE_DATA%\bld\KeyFiles" --output out
       displayName: Generate NetOffice code
       workingDirectory: '$(Build.StagingDirectory)'
-    - publish: $(Build.StagingDirectory)/out
+    - publish: $(Build.StagingDirectory)/out/NetOffice
       artifact: NetOffice_GeneratedCode_b$(Build.BuildId)
