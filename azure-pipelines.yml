@@ -65,4 +65,11 @@ stages:
     - task: DownloadPipelineArtifact@2
       inputs:
         artifactName: 'codegen'
-        targetPath: '$(Build.ArtifactStagingDirectory)\codegen'
+        targetPath: '$(Build.BinariesDirectory)\codegen'
+    - script: |
+        set PATH="$(Build.BinariesDirectory)\codegen";%PATH%
+        set NETOFFICE_DATA=$(Build.SourcesDirectory)\NetOffice-Data
+        codegen.exe --project "%NETOFFICE_DATA%\src" --ref "%NETOFFICE_DATA%\bld\ReferenceIndex2.xml" --keyfiles "%NETOFFICE_DATA%\bld\KeyFiles" --output out
+      workingDirectory: '$(Build.StagingDirectory)'
+    - publish: $(Build.StagingDirectory)/out
+      artifact: NetOffice_GeneratedCode_b$(Build.BuildId)
