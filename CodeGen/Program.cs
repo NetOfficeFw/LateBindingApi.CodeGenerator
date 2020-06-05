@@ -109,7 +109,7 @@ namespace LateBindingApi.CodeGenerator.CodeGen
 
             Log.Info("Done.");
 
-            //if (Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 Console.ReadKey();
             }
