@@ -12,6 +12,11 @@ resources:
     type: github
     endpoint: NetOfficeFw
     name: NetOfficeFw/NetOffice-Data
+  - repository: NetOfficeRefSourceCode
+    type: github
+    endpoint: NetOfficeFw
+    name: NetOfficeFw/NetOffice
+    branch: late_binding/cleanup_v1.7.4.3
 
 stages:
 - stage: build
@@ -59,6 +64,11 @@ stages:
       inputs:
         artifactName: 'NetOfficeProject'
         targetPath: '$(Build.SourcesDirectory)\NetOffice'
+    - task: PublishPipelineArtifact@1
+      condition: eq(variables['buildConfiguration'], 'Release')
+      inputs:
+        artifactName: 'NetOfficeVerify'
+        targetPath: '$(Build.SourcesDirectory)\NetOfficeVerify\bin\$(buildConfiguration)'
 
 - stage: codegen
   displayName: Code Generation
@@ -85,3 +95,28 @@ stages:
       workingDirectory: '$(Build.StagingDirectory)'
     - publish: $(Build.StagingDirectory)/out/NetOffice
       artifact: NetOffice_GeneratedCode_b$(Build.BuildId)
+
+- stage: codegenverify
+  displayName: CodeGen Verify
+  condition: succeeded()
+  jobs:
+  - job: CodeGenVerifyJob
+    displayName: CodeGen Verify Job
+    steps:
+    - checkout: NetOfficeRefSourceCode
+      path: s/reference-source
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'NetOfficeVerify'
+        targetPath: '$(Build.BinariesDirectory)\verify'
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'NetOfficeProject'
+        targetPath: '$(Build.StagingDirectory)\generated'
+    - task: VSTest@2
+      displayName: Run Integration Tests (NetOfficeVerify)
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          NetOfficeVerify.dll
+        searchFolder: '$(Build.BinariesDirectory)\verify'
