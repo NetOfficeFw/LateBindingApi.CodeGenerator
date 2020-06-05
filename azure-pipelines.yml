@@ -54,6 +54,11 @@ stages:
       inputs:
         artifactName: 'codegen'
         targetPath: '$(Build.SourcesDirectory)\CodeGen\bin\$(buildConfiguration)'
+    - task: PublishPipelineArtifact@1
+      condition: eq(variables['buildConfiguration'], 'Release')
+      inputs:
+        artifactName: 'NetOfficeProject'
+        targetPath: '$(Build.SourcesDirectory)\NetOffice'
 
 - stage: integration_tests
   displayName: Integration Tests
@@ -68,6 +73,10 @@ stages:
       inputs:
         artifactName: 'codegen'
         targetPath: '$(Build.BinariesDirectory)\codegen'
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'NetOfficeProject'
+        targetPath: '$(Build.StagingDirectory)\NetOffice'
     - script: |
         set PATH="$(Build.BinariesDirectory)\codegen";%PATH%
         set NETOFFICE_DATA=$(Build.SourcesDirectory)

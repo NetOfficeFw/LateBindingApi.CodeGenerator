@@ -356,6 +356,12 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
             if (rootSolutionDir == null)
             {
+                var projectPath1 = Path.Combine(Environment.CurrentDirectory, "NetOffice");
+                if (Directory.Exists(projectPath1))
+                {
+                    return projectPath1;
+                }
+
                 throw new InvalidOperationException($"Failed to find path to NetOffice project. Base working path: '{Environment.CurrentDirectory}'. Ensure the LateBindingApi.sln file exists in a parent directory.");
             }
 
