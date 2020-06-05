@@ -60,12 +60,12 @@ stages:
         artifactName: 'NetOfficeProject'
         targetPath: '$(Build.SourcesDirectory)\NetOffice'
 
-- stage: integration_tests
-  displayName: Integration Tests
+- stage: codegen
+  displayName: Code Generation
   condition: succeeded()
   jobs:
-  - job: IntegrationTestsJob
-    displayName: Integration Tests Job
+  - job: CodeGenJob
+    displayName: Code Generation Job
     steps:
     - checkout: NetOfficeData
       path: s/NetOffice-Data
