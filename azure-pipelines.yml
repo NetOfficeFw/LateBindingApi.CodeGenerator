@@ -115,6 +115,7 @@ stages:
         targetPath: '$(Build.StagingDirectory)\generated'
     - task: VSTest@2
       displayName: Run Integration Tests (NetOfficeVerify)
+      continueOnError: true
       inputs:
         testSelector: 'testAssemblies'
         testAssemblyVer2: |
