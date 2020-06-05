@@ -68,7 +68,7 @@ stages:
       condition: eq(variables['buildConfiguration'], 'Release')
       inputs:
         artifactName: 'NetOfficeVerify'
-        targetPath: '$(Build.SourcesDirectory)\NetOfficeVerify\bin\$(buildConfiguration)'
+        targetPath: '$(Build.SourcesDirectory)\Tests\NetOfficeVerify\bin\$(buildConfiguration)'
 
 - stage: codegen
   displayName: Code Generation
