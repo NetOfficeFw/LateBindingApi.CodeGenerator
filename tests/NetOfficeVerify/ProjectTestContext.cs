@@ -10,15 +10,26 @@ namespace NetOfficeVerify
 {
     public abstract class ProjectTestContext
     {
-        public static readonly string GoldProjectBaseDir = @"c:\dev\github\NetOfficeFw\NetOffice-v1.7.4.3\Source\";
-        public static readonly string GeneratedProjectBaseDir = @"c:\dev\github\NetOfficeFw\LateBindingApi.CodeGenerator\out\NetOffice\";
+        public static readonly Lazy<string> GoldProjectBaseDir = new Lazy<string>(() => GetProjectBaseDir("GOLD_PROJECT_DIR", @"c:\dev\github\NetOfficeFw\NetOffice-v1.7.4.3\Source\"));
+        public static readonly Lazy<string> GeneratedProjectBaseDir = new Lazy<string>(() => GetProjectBaseDir("GENERATED_PROJECT_DIR", @"c:\dev\github\NetOfficeFw\LateBindingApi.CodeGenerator\out\NetOffice\"));
 
         public ProjectTestContext(string projectName)
         {
             this.ProjectName = projectName;
 
-            this.GeneratedProjectDir = GeneratedProjectBaseDir + projectName;
-            this.GoldProjectDir = GoldProjectBaseDir + projectName;
+            this.GeneratedProjectDir = GeneratedProjectBaseDir.Value + projectName;
+            this.GoldProjectDir = GoldProjectBaseDir.Value + projectName;
+        }
+
+        public static string GetProjectBaseDir(string name, string defaultPath)
+        {
+            var param = TestContext.Parameters[name];
+            if (String.IsNullOrEmpty(param))
+            {
+                return defaultPath;
+            }
+
+            return param;
         }
 
         /// <summary>
@@ -151,7 +162,7 @@ namespace NetOfficeVerify
 
         public static IEnumerable<string> ProjectCoClassFiles(string projectName)
         {
-            var goldProjectDir = Path.Combine(GoldProjectBaseDir, projectName, "Classes");
+            var goldProjectDir = Path.Combine(GoldProjectBaseDir.Value, projectName, "Classes");
 
             var files = Directory.EnumerateFiles(goldProjectDir, "*.cs");
             return files.Select(Path.GetFileName);
