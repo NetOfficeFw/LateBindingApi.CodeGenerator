@@ -9,6 +9,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
         {
             this.AddDocumentationLinks = true;
             this.SupportByVersionSpacing = 1;
+            this.IgnoredProjects = new List<string>();
         }
 
         // ReSharper disable once InconsistentNaming
@@ -40,6 +41,6 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
         public int SupportByVersionSpacing { get; set; }
 
-        public IEnumerable<string> IgnoredProjects { get; set; }
+        public IList<string> IgnoredProjects { get; set; }
     }
 }
