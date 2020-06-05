@@ -62,6 +62,7 @@ stages:
   - job: RunTests
     steps:
     - checkout: NetOfficeData
+      path: s/NetOffice-Data
     - task: DownloadPipelineArtifact@2
       inputs:
         artifactName: 'codegen'
