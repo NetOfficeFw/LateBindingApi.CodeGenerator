@@ -59,7 +59,8 @@ stages:
   displayName: Integration Tests
   condition: succeeded()
   jobs:
-  - job: RunTests
+  - job: IntegrationTestsJob
+    displayName: Integration Tests Job
     steps:
     - checkout: NetOfficeData
       path: s/NetOffice-Data
@@ -71,6 +72,7 @@ stages:
         set PATH="$(Build.BinariesDirectory)\codegen";%PATH%
         set NETOFFICE_DATA=$(Build.SourcesDirectory)
         codegen.exe --project "%NETOFFICE_DATA%\src" --ref "%NETOFFICE_DATA%\bld\ReferenceIndex2.xml" --keyfiles "%NETOFFICE_DATA%\bld\KeyFiles" --output out
+      displayName: Generate NetOffice code
       workingDirectory: '$(Build.StagingDirectory)'
     - publish: $(Build.StagingDirectory)/out
       artifact: NetOffice_GeneratedCode_b$(Build.BuildId)
