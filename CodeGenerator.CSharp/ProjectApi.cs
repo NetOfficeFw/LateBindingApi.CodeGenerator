@@ -63,7 +63,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
 
                 listAssemblies += libInfo; 
             }
-            assemblyInfo = assemblyInfo.Replace("%List%", listAssemblies);
+            assemblyInfo = assemblyInfo.Replace("%List%", listAssemblies.TrimEnd());
 
             string dependentAssemblies = "";
             string[] depenents = GetRefProjects(project);
