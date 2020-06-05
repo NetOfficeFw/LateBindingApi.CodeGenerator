@@ -121,4 +121,4 @@ stages:
         testAssemblyVer2: |
           NetOfficeVerify.dll
         searchFolder: '$(Build.BinariesDirectory)\verify'
-        overrideTestrunParameters: '-GOLD_PROJECT_DIR "$(Build.SourcesDirectory)\s\reference-source\Source" -GENERATED_PROJECT_DIR "$(Build.StagingDirectory)\generated"'
+        overrideTestrunParameters: '-GOLD_PROJECT_DIR "$(Build.SourcesDirectory)\Source" -GENERATED_PROJECT_DIR "$(Build.StagingDirectory)\generated"'
