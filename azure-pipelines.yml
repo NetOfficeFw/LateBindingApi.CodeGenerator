@@ -69,7 +69,7 @@ stages:
         targetPath: '$(Build.BinariesDirectory)\codegen'
     - script: |
         set PATH="$(Build.BinariesDirectory)\codegen";%PATH%
-        set NETOFFICE_DATA=$(Build.SourcesDirectory)\NetOffice-Data
+        set NETOFFICE_DATA=$(Build.SourcesDirectory)
         codegen.exe --project "%NETOFFICE_DATA%\src" --ref "%NETOFFICE_DATA%\bld\ReferenceIndex2.xml" --keyfiles "%NETOFFICE_DATA%\bld\KeyFiles" --output out
       workingDirectory: '$(Build.StagingDirectory)'
     - publish: $(Build.StagingDirectory)/out
