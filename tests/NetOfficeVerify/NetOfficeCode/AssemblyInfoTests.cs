@@ -33,28 +33,30 @@ namespace NetOfficeVerify.NetOfficeCode
         public void AssemblyInfo_GeneratedFile_MatchesSourceCode(string projectName)
         {
             // Arrange
-            var generatedFile = Path.Combine(this.GeneratedCodeDir, projectName, "AssemblyInfo.cs");
-            var sourceCodeFile = Path.Combine(this.GoldCodeDir, projectName, "AssemblyInfo.cs");
+            var assemblyInfoFilename = Path.Combine(projectName, "AssemblyInfo.cs");
+            var generatedFile = Path.Combine(this.GeneratedCodeDir, assemblyInfoFilename);
+            var sourceCodeFile = Path.Combine(this.GoldCodeDir, assemblyInfoFilename);
 
             // Act
             // nop
 
             // Assert
-            FileAssertEx.AreEqual(sourceCodeFile, generatedFile);
+            FileAssertEx.AreEqual(sourceCodeFile, generatedFile, assemblyInfoFilename);
         }
 
         [Test]
         public void AssemblyInfo_NetOfficeProject_MatchesSourceCode()
         {
             // Arrange
-            var generatedFile = Path.Combine(this.GeneratedCodeDir, "NetOffice", "Properties", "AssemblyInfo.cs");
-            var sourceCodeFile = Path.Combine(this.GoldCodeDir, "NetOffice", "Properties", "AssemblyInfo.cs");
+            var assemblyInfoFilename = Path.Combine("NetOffice", "Properties", "AssemblyInfo.cs");
+            var generatedFile = Path.Combine(this.GeneratedCodeDir, assemblyInfoFilename);
+            var sourceCodeFile = Path.Combine(this.GoldCodeDir, assemblyInfoFilename);
 
             // Act
             // nop
 
             // Assert
-            FileAssertEx.AreEqual(sourceCodeFile, generatedFile);
+            FileAssertEx.AreEqual(sourceCodeFile, generatedFile, assemblyInfoFilename);
         }
     }
 }
