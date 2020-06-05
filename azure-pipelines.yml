@@ -111,7 +111,7 @@ stages:
         targetPath: '$(Build.BinariesDirectory)\verify'
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifactName: 'NetOfficeProject'
+        artifactName: 'NetOffice_GeneratedCode_b$(Build.BuildId)'
         targetPath: '$(Build.StagingDirectory)\generated'
     - task: VSTest@2
       displayName: Run Integration Tests (NetOfficeVerify)
