@@ -16,7 +16,7 @@ resources:
     type: github
     endpoint: NetOfficeFw
     name: NetOfficeFw/NetOffice
-    branch: late_binding/cleanup_v1.7.4.3
+    ref: late_binding/cleanup_v1.7.4.3
 
 stages:
 - stage: build
