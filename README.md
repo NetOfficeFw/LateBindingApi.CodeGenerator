@@ -1,7 +1,7 @@
 # Late Binding API Code Generator
 
 ![version: 0.9.0-alpha](https://img.shields.io/badge/version-0.9.0--alpha-68217a.svg)
-[![AppVeyor](https://img.shields.io/appveyor/ci/jozefizso/latebindingapi-codegenerator.svg)](https://ci.appveyor.com/project/jozefizso/latebindingapi-codegenerator)
+[![Build Status](https://dev.azure.com/netoffice/NetOffice/_apis/build/status/NetOfficeFw.LateBindingApi.CodeGenerator?branchName=dev%2Fintegration_tests)](https://dev.azure.com/netoffice/NetOffice/_build/latest?definitionId=4&branchName=dev%2Fintegration_tests)
 
 Creates .NET proxy components from COM+ Type Libraries. 
 The components will be created as C# or VB.NET source code in a generated Visual Studio solution. 

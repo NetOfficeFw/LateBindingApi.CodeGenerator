@@ -27,20 +27,21 @@ namespace NetOfficeVerify.NetOfficeCode
         [TestCase("DAO")]
         [TestCase("MSComctlLib")]
         [TestCase("MSDATASRC")]
-        [TestCase("MSForms")]
+        [TestCase("MSForms", Ignore = "Code generation not supported")]
         [TestCase("MSHTML")]
         [TestCase("OWC10")]
         public void ProjectInfo_GeneratedFile_MatchesSourceCode(string projectName)
         {
             // Arrange
-            var generatedFile = Path.Combine(this.GeneratedCodeDir, projectName, "Utils", "ProjectInfo.cs");
-            var sourceCodeFile = Path.Combine(this.GoldCodeDir, projectName, "Utils", "ProjectInfo.cs");
+            string projectInfoFilename = Path.Combine(projectName, "Utils", "ProjectInfo.cs");
+            var generatedFile = Path.Combine(this.GeneratedCodeDir, projectInfoFilename);
+            var sourceCodeFile = Path.Combine(this.GoldCodeDir, projectInfoFilename);
 
             // Act
             // nop
 
             // Assert
-            FileAssertEx.AreEqual(sourceCodeFile, generatedFile);
+            FileAssertEx.AreEqual(sourceCodeFile, generatedFile, projectInfoFilename);
         }
     }
 }

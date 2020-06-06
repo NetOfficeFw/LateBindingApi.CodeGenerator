@@ -18,7 +18,7 @@ namespace LateBinding
         private static readonly Logger Log = LogManager.GetLogger(nameof(Program));
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
-        public static async Task<int> Main(string[] args)
+        public static int Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 

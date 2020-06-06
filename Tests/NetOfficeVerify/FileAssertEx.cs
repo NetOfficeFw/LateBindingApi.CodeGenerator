@@ -12,7 +12,7 @@ namespace NetOfficeVerify
 {
     public class FileAssertEx
     {
-        public static void AreEqual(string expected, string actual)
+        public static void AreEqual(string expected, string actual, string filename)
         {
             var expectedFile = File.ReadAllText(expected);
             var actualFile = File.ReadAllText(actual);
@@ -32,7 +32,9 @@ namespace NetOfficeVerify
             if (diff.Count > 0)
             {
                 var delta = dmp.diff_prettyText(diff);
-                Assert.Fail(delta);
+                var msg = $"File {filename} failed to match golden file.\n\n" +
+                          $"Diff:\n\n{delta}";
+                Assert.Fail(msg);
             }
         }
     }

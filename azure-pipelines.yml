@@ -6,33 +6,119 @@ pool:
 variables:
   solution: LateBindingApi.sln
 
-strategy:
-  maxParallel: 2
-  matrix:
-    Debug:
-      buildPlatform: 'Any CPU'
-      buildConfiguration: 'Debug'
-    Release:
-      buildPlatform: 'Any CPU'
-      buildConfiguration: 'Release'
+resources:
+  repositories:
+  - repository: NetOfficeData
+    type: github
+    endpoint: NetOfficeFw
+    name: NetOfficeFw/NetOffice-Data
+  - repository: NetOfficeRefSourceCode
+    type: github
+    endpoint: NetOfficeFw
+    name: NetOfficeFw/NetOffice
+    ref: late_binding/cleanup_v1.7.4.3
 
-steps:
-- task: NuGetToolInstaller@0
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+  - job: Build
+    strategy:
+      maxParallel: 2
+      matrix:
+        Debug:
+          buildPlatform: 'Any CPU'
+          buildConfiguration: 'Debug'
+        Release:
+          buildPlatform: 'Any CPU'
+          buildConfiguration: 'Release'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+    steps:
+    - task: NuGetToolInstaller@0
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
 
-- task: VSTest@2
-  displayName: Run Unit Tests (CodeGenerator)
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      CodeGenerator.UnitTests.dll
-    searchFolder: Tests\CodeGenerator.UnitTests\bin\$(buildConfiguration)
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: VSTest@2
+      displayName: Run Unit Tests (CodeGenerator)
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          CodeGenerator.UnitTests.dll
+        searchFolder: Tests\CodeGenerator.UnitTests\bin\$(buildConfiguration)
+
+    - task: PublishPipelineArtifact@1
+      condition: eq(variables['buildConfiguration'], 'Release')
+      inputs:
+        artifactName: 'codegen'
+        targetPath: '$(Build.SourcesDirectory)\CodeGen\bin\$(buildConfiguration)'
+    - task: PublishPipelineArtifact@1
+      condition: eq(variables['buildConfiguration'], 'Release')
+      inputs:
+        artifactName: 'NetOfficeProject'
+        targetPath: '$(Build.SourcesDirectory)\NetOffice'
+    - task: PublishPipelineArtifact@1
+      condition: eq(variables['buildConfiguration'], 'Release')
+      inputs:
+        artifactName: 'NetOfficeVerify'
+        targetPath: '$(Build.SourcesDirectory)\Tests\NetOfficeVerify\bin\$(buildConfiguration)'
+
+- stage: codegen
+  displayName: Code Generation
+  condition: succeeded()
+  jobs:
+  - job: CodeGenJob
+    displayName: Code Generation Job
+    steps:
+    - checkout: NetOfficeData
+      path: s/NetOffice-Data
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'codegen'
+        targetPath: '$(Build.BinariesDirectory)\codegen'
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'NetOfficeProject'
+        targetPath: '$(Build.StagingDirectory)\NetOffice'
+    - script: |
+        set PATH="$(Build.BinariesDirectory)\codegen";%PATH%
+        set NETOFFICE_DATA=$(Build.SourcesDirectory)
+        codegen.exe --project "%NETOFFICE_DATA%\src" --ref "%NETOFFICE_DATA%\bld\ReferenceIndex2.xml" --keyfiles "%NETOFFICE_DATA%\bld\KeyFiles" --output out
+      displayName: Generate NetOffice code
+      workingDirectory: '$(Build.StagingDirectory)'
+    - publish: $(Build.StagingDirectory)/out/NetOffice
+      artifact: NetOffice_GeneratedCode_b$(Build.BuildId)
+
+- stage: codegenverify
+  displayName: CodeGen Verify
+  condition: succeeded()
+  jobs:
+  - job: CodeGenVerifyJob
+    displayName: CodeGen Verify Job
+    steps:
+    - checkout: NetOfficeRefSourceCode
+      path: s/reference-source
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'NetOfficeVerify'
+        targetPath: '$(Build.BinariesDirectory)\verify'
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: 'NetOffice_GeneratedCode_b$(Build.BuildId)'
+        targetPath: '$(Build.StagingDirectory)\generated'
+    - task: VSTest@2
+      displayName: Run Integration Tests (NetOfficeVerify)
+      continueOnError: true
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          NetOfficeVerify.dll
+        searchFolder: '$(Build.BinariesDirectory)\verify'
+        overrideTestrunParameters: '-GOLD_PROJECT_DIR "$(Build.SourcesDirectory)\Source" -GENERATED_PROJECT_DIR "$(Build.StagingDirectory)\generated"'

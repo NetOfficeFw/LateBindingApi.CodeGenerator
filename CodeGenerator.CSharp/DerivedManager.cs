@@ -47,7 +47,7 @@ namespace LateBindingApi.CodeGenerator.CSharp
                         XElement face = CSharpGenerator.GetInterfaceOrClassFromKey(key);
                         AddType(face);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         Console.WriteLine($"Failed to find derived type with key '{key}'. Skipping the type...");
                     }

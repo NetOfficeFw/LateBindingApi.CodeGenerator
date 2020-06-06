@@ -17,7 +17,6 @@ namespace LateBindingApi.CodeGenerator.Documentation
     {
         #region Fields
 
-        DateTime _startTimeOperation;
         Settings _settings;
         static FakedEnumeratorManager _enumerators;
         static CustomMethodManager _customMethods;
