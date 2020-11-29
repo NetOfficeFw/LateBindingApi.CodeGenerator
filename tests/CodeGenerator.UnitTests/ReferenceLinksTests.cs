@@ -103,7 +103,7 @@ namespace CodeGenerator.UnitTests
                     if (link != null)
                     {
                         var newLink = link.Value;
-                        links[oldLink] = newLink.ToLower(US);
+                        links[oldLink] = newLink;
                     }
                 }
             }
@@ -126,11 +126,13 @@ namespace CodeGenerator.UnitTests
                     var oldLink = match.Value;
                     if (links.TryGetValue(oldLink, out var newLink))
                     {
-                        return newLink;
+                        return @"<see href=""" + newLink + @"""/>";
                     }
 
                     return oldLink;
                 });
+
+                newSource = newSource.Replace("MSDN Online: <", "Docs: <");
 
                 File.WriteAllText(file, newSource, hasBom ? Encoding.UTF8 : UTB8NoBom);
             }
