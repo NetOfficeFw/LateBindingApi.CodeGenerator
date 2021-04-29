@@ -45,7 +45,7 @@ If the library is not registered on your system, use these commands in elevated 
 
 Please, read the [contribution guideline](CONTRIBUTING.md) for information about development process.
 
-The `master` branch contains stable release codebase. Use the `develop` branch to implement new features.
+The `main` branch contains stable release codebase. Use the `develop` branch to implement new features.
 
 
 ## License
