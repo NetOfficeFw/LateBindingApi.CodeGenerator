@@ -32,6 +32,11 @@ namespace DataSplitter
                 await SplitProjects(repo, commit);
             }
 
+            var refIndexCommits = allCommits.Take(3).Reverse().ToList();
+            foreach (var commit in refIndexCommits)
+            {
+                TransformReferenceIndex(repo, commit);
+            }
             Console.WriteLine("Done.");
 
             return 0;
@@ -135,6 +140,71 @@ namespace DataSplitter
             using var fsp = new FileStream(targetProjectPath, FileMode.Create);
             await projectElement.SaveAsync(fsp, SaveOptions.None, CancellationToken.None);
             await fsp.FlushAsync();
+
+            Console.WriteLine($". Done.");
+        }
+
+        private static void TransformReferenceIndex(Repository repo, Commit commit)
+        {
+            Commands.Checkout(repo, commit);
+
+            CopyFile(".gitignore");
+            CopyFile("README.md");
+            CopyFile(@"src\Libraries.xml");
+
+            var projects = new[]
+            {
+                "MSHTML",
+                "Excel",
+                "Word",
+                "MSProject",
+                "Access",
+                "Visio",
+                "Outlook",
+                "Office",
+                "PowerPoint",
+                "Publisher",
+                "OWC10",
+                "MSForms",
+                "ADODB",
+                "MSComctlLib",
+                "DAO",
+                "VBIDE",
+                "stdole",
+                "MSDATASRC"
+            };
+
+            Console.WriteLine($"Commit '{commit.Message}'");
+            
+            foreach (var project in projects)
+            {
+                Console.WriteLine($"Project {project}");
+                CopyReferenceIndex(project);
+            }
+
+            using var repo2 = new Repository(TargetRepo);
+            Commands.Stage(repo2, "*");
+            if (repo2.HasChanges())
+            {
+                var signature = new Signature("Jozef Izso", "jozef.izso@gmail.com", DateTimeOffset.Now);
+                repo2.Commit(commit.Message, signature, signature);
+            }
+        }
+
+        private static void CopyReferenceIndex(string projectName)
+        {
+            var sourceFilename = $"ReferenceIndex.{projectName}.xml";
+            var sourceFilePath = Path.Combine(SourceRepo, "bld", sourceFilename);
+            var targetFolder = Path.Combine(TargetRepo, "src", projectName);
+            var targetFilePath = Path.Combine(targetFolder, $"ReferenceIndex.xml");
+
+            if (!File.Exists(sourceFilePath))
+            {
+                Console.WriteLine($"Reference index does not exist.");
+                return;
+            }
+
+            File.Copy(sourceFilePath, targetFilePath, overwrite: true);
 
             Console.WriteLine($". Done.");
         }
