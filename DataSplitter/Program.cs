@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -16,23 +17,27 @@ namespace DataSplitter
 
         static async Task<int> Main(string[] args)
         {
-            var commits = new[] {
-                "aeda0741974e9fd0b67b4fc2083633eedd25ba3e",
-                "d720b3147f8be1f388b96e8c00fd1378a75a151e",
-                "1afb8214c34173525228f68df6811e27ea6a8c04",
-                "122c59771be0fceeed58370edf95ef86d16ff4d6"
-            };
-
             using var repo = new Repository(SourceRepo);
+            Commands.Checkout(repo, "main");
 
-            await SplitProjects(repo, commits[0]);
+            var filter = new CommitFilter()
+            {
+                SortBy = CommitSortStrategies.Topological
+            };
+            var allCommits = repo.Commits.QueryBy(filter);
+            var commits = allCommits.Reverse().Skip(1).SkipLast(5).ToList();
+
+            foreach (var commit in commits)
+            {
+                await SplitProjects(repo, commit);
+            }
 
             Console.WriteLine("Done.");
 
             return 0;
         }
 
-        private static async Task SplitProjects(Repository repo, string commit)
+        private static async Task SplitProjects(Repository repo, Commit commit)
         {
             Commands.Checkout(repo, commit);
 
@@ -64,18 +69,29 @@ namespace DataSplitter
                 "MSDATASRC"
             };
 
+            Console.WriteLine($"Commit '{commit.Message}'");
+
             foreach (var project in projects)
             {
                 Console.WriteLine($"Project {project}");
                 await SplitProject(project);
             }
+
+            using var repo2 = new Repository(TargetRepo);
+            Commands.Stage(repo2, "*");
+            if (repo2.HasChanges())
+            {
+                var signature = new Signature("Jozef Izso", "jozef.izso@gmail.com", DateTimeOffset.Now);
+                repo2.Commit(commit.Message, signature, signature);
+            }
         }
 
         private static async Task SplitProject(string projectName)
         {
-            var projectFilename = $"Project.{projectName}.xml";
-            var source = Path.Combine(SourceRepo, "src", projectFilename);
+            var sourceProjectFilename = $"Project.{projectName}.xml";
+            var source = Path.Combine(SourceRepo, "src", sourceProjectFilename);
             var targetFolder = Path.Combine(TargetRepo, "src", projectName);
+            var targetProjectPath = Path.Combine(targetFolder, $"Project.xml");
 
             if (!File.Exists(source))
             {
@@ -90,6 +106,8 @@ namespace DataSplitter
             var projectElement = doc.Root;
             var dataTypes = projectElement.Elements().ToList();
 
+            var prefix = "  -> ";
+
             foreach (var dataType in dataTypes)
             {
                 var typeName = dataType.Name.LocalName;
@@ -97,7 +115,8 @@ namespace DataSplitter
                 var typeFilename = $"{typeName}.xml";
                 var typeTarget = Path.Combine(targetFolder, typeFilename);
 
-                Console.WriteLine($"  -> {typeFilename}");
+                Console.Write($"{prefix} {typeFilename}");
+                prefix = ", ";
 
                 using var fs = new FileStream(typeTarget, FileMode.Create);
                 await dataType.SaveAsync(fs, SaveOptions.None, CancellationToken.None);
@@ -109,16 +128,15 @@ namespace DataSplitter
             foreach (var dataType in dataTypes)
             {
                 var typeName = dataType.Name.LocalName;
-                var dataTypeLink = new XElement(xi + "include", new XAttribute("href", $"{projectName}/{typeName}.xml"));
+                var dataTypeLink = new XElement(xi + "include", new XAttribute("href", $"{typeName}.xml"));
                 dataType.ReplaceWith(dataTypeLink);
             }
             
-            var targetProjectFilename = Path.Combine(TargetRepo, "src", $"Project.{projectName}.xml");
-            using var fsp = new FileStream(targetProjectFilename, FileMode.Create);
+            using var fsp = new FileStream(targetProjectPath, FileMode.Create);
             await projectElement.SaveAsync(fsp, SaveOptions.None, CancellationToken.None);
             await fsp.FlushAsync();
 
-            Console.WriteLine($"  Project done.");
+            Console.WriteLine($". Done.");
         }
 
         private static void CopyFile(string filename)
