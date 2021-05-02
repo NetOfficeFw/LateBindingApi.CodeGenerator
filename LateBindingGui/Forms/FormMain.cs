@@ -11,12 +11,13 @@ using System.Linq;
 using System.Threading;
 
 using LateBindingApi.CodeGenerator.ComponentAnalyzer;
- 
+using System.IO;
+
 namespace LateBindingApi.CodeGenerator.WFApplication
 {
     public partial class FormMain : Form
     {
-        private const string FileDialog_ProjectFileFilter = @"Project Files (*.xml)|*.xml";
+        private const string FileDialog_ProjectFileFilter = @"Project file (Libraries.xml)|Libraries.xml";
 
         #region Fields
 
@@ -138,9 +139,11 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 fileDialog.Filter = FileDialog_ProjectFileFilter;
                 if (DialogResult.OK == fileDialog.ShowDialog(this))
                 {
+                    var projectPath = Path.GetDirectoryName(fileDialog.FileName);
+
                     this.Cursor = Cursors.WaitCursor;
                     DateTime startTime = DateTime.Now;
-                    _comAnalyzer.LoadProject(fileDialog.FileName);
+                    _comAnalyzer.LoadProject(projectPath);
                     TimeSpan timeElapsed = DateTime.Now - startTime;
                     comAnalyzer_OnTypeLibrariesLoaded(timeElapsed);
                     InvisiblePanels();

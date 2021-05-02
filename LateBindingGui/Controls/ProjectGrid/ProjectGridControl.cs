@@ -47,7 +47,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication.Controls.ProjectGrid
             dataGridProjects.Rows.Add();
             DataGridViewRow newRow = dataGridProjects.Rows[dataGridProjects.Rows.Count - 1];
 
-            foreach (var attribute in node.Attributes())
+            foreach (var attribute in node.Attributes().Where(a => !a.IsNamespaceDeclaration))
             {
                 string columnName = attribute.Name.LocalName;
                 DataGridViewCell cell = newRow.Cells[columnName];

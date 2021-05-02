@@ -226,11 +226,60 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         /// <summary>
         /// load project from xml file
         /// </summary>
-        /// <param name="fileName"></param>
-        public void LoadProject(string fileName)
+        /// <param name="path">Path to a folder with Libraries.xml file.</param>
+        public void LoadProject(string path)
         {
-            _document = XDocument.Load(fileName);          
+            var librariesDir = path;
+            var librariesPath = Path.Combine(librariesDir, "Libraries.xml");
+
+            if (!File.Exists(librariesPath))
+            {
+                throw new ProjectFileFormatException($"Project is missing Libraries.xml file. Project path is '{path}'.");
+            }
+
+            var documentElm = new XElement("LateBindingApi.CodeGenerator.Document", new XAttribute("Version", "0.8"));
+            var projectsElm = new XElement("Projects");
+            var solutionElm = new XElement("Solution", new XAttribute("Name", "NetOffice"), projectsElm);
+
+            var rootDoc = new XDocument(documentElm);
+            var librariesDoc = XDocument.Load(librariesPath);
+            var projectDirectories = Directory.EnumerateDirectories(librariesDir);
+
+            documentElm.Add(librariesDoc.Root);
+            documentElm.Add(solutionElm);
+
+            foreach (var projectPath in projectDirectories)
+            {
+                var projectDoc = LoadLibraryProject(projectPath);
+                projectsElm.Add(projectDoc.Root);
+            }
+
+            _document = rootDoc;
             ValidateSchema();
+        }
+
+        /// <summary>
+        /// load project from xml file
+        /// </summary>
+        /// <param name="path">Path to a folder with Libraries.xml file.</param>
+        public XDocument LoadLibraryProject(string projectPath)
+        {
+            var projectFile = Path.Combine(projectPath, "Project.xml");
+
+            var xi = (XNamespace)"http://www.w3.org/2001/XInclude";
+            var projectDoc = XDocument.Load(projectFile);
+
+            var includes = projectDoc.Descendants(xi + "include").ToList();
+            foreach (var include in includes)
+            {
+                var href = include.Attribute("href").Value;
+                var includedFilePath = Path.Combine(projectPath, href);
+                var includedDoc = XDocument.Load(includedFilePath);
+
+                include.ReplaceWith(includedDoc.Root);
+            }
+
+            return projectDoc;
         }
 
         public void ScanForOptionals()
