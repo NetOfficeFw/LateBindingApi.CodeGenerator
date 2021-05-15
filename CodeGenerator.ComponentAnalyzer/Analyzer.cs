@@ -396,17 +396,74 @@ namespace LateBindingApi.CodeGenerator.ComponentAnalyzer
         }
 
         /// <summary>
-        /// save project to xml file
+        /// Save project to a folder.
         /// </summary>
-        /// <param name="fileName"></param>
-        public void SaveProject(string fileName)
+        /// <param name="librariesPath"></param>
+        /// <remarks>
+        /// Document structure:
+        /// 
+        /// LateBindingApi.CodeGenerator.Document
+        ///   Libraries
+        ///   Solution
+        ///     Projects
+        ///       Project, Name = XXXX
+        /// 
+        /// </remarks>
+        public void SaveProject(string librariesPath)
         {
-            ValidateSchema();
-            _document.Save(fileName);
+            var librariesFile = Path.Combine(librariesPath, "Libraries.xml");
+
+            var librariesElm = _document.Root.Element("Libraries");
+            librariesElm.Save(librariesFile);
+
+            var allProjects = _document.Root.Element("Solution").Element("Projects").Elements("Project");
+            foreach (var projectElm in allProjects)
+            {
+                SplitProject(projectElm, librariesPath);
+            }
         }
 
+        private static void SplitProject(XElement projectElm, string librariesPath)
+        {
+            var projectName = projectElm.Attribute("Name").Value;
+            var projectPath = Path.Combine(librariesPath, projectName);
+            var projectFile = Path.Combine(projectPath, "Project.xml");
+            EnsureDirectory(projectPath);
+
+            var xi = (XNamespace)"http://www.w3.org/2001/XInclude";
+            var dataTypes = projectElm.Elements().ToList();
+
+            foreach (var dataType in dataTypes)
+            {
+                var typeName = dataType.Name.LocalName;
+                var typeFile = Path.Combine(projectPath, $"{typeName}.xml");
+                dataType.Save(typeFile);
+            }
+
+            if (projectElm.Attribute(XNamespace.Xmlns + "xi") == null)
+            {
+                projectElm.Add(new XAttribute(XNamespace.Xmlns + "xi", xi.NamespaceName));
+            }
+
+            foreach (var dataType in dataTypes)
+            {
+                var typeName = dataType.Name.LocalName;
+                var dataTypeLink = new XElement(xi + "include", new XAttribute("href", $"{typeName}.xml"));
+                dataType.ReplaceWith(dataTypeLink);
+            }
+
+            projectElm.Save(projectFile);
+        }
+
+        private static void EnsureDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
         #endregion
-        
+
         #region Private Methods
 
         /// <summary>

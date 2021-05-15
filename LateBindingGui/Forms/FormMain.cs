@@ -174,7 +174,10 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                 if (DialogResult.OK == fileDialog.ShowDialog(this))
                 {
                     this.Cursor = Cursors.WaitCursor;
-                    _comAnalyzer.SaveProject(fileDialog.FileName);
+
+                    var projectPath = Path.GetDirectoryName(fileDialog.FileName);
+
+                    _comAnalyzer.SaveProject(projectPath);
                     MessageBox.Show("Project successfully saved.", this.GetType().Assembly.GetName().Name, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
