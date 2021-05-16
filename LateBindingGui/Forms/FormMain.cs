@@ -178,7 +178,7 @@ namespace LateBindingApi.CodeGenerator.WFApplication
                     var projectPath = Path.GetDirectoryName(fileDialog.FileName);
 
                     _comAnalyzer.SaveProject(projectPath);
-                    MessageBox.Show("Project successfully saved.", this.GetType().Assembly.GetName().Name, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.toolStripStatusLabel1.Text = "Project was saved successfully.";
                 }
             }
             catch (Exception throwedException)
